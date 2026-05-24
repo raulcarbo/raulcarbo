@@ -6,7 +6,7 @@
 <title>Calculadora ClO₂ · Desinfección de Recipientes a Presión | Carbotecnia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#071B33;
@@ -27,7 +27,7 @@
 body{background:linear-gradient(180deg,#F7FAFD,#EAF2F8);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.55}
 button,input,select{font:inherit}
 h1,h2,h3,h4{font-family:'Poppins',sans-serif}
-.mono{font-family:'JetBrains Mono',monospace}
+.mono{font-family:'Roboto',sans-serif}
 
 .shell{width:min(1320px,calc(100% - 32px));margin:0 auto;padding:28px 0 60px}
 
@@ -36,7 +36,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 .brand{display:flex;align-items:center;gap:13px}
 .logo{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;
   color:#fff;background:linear-gradient(135deg,var(--green),var(--navy));
-  box-shadow:0 14px 28px rgba(15,118,110,.30);font-weight:900;font-family:'JetBrains Mono',monospace;font-size:11px;
+  box-shadow:0 14px 28px rgba(15,118,110,.30);font-weight:900;font-family:'Roboto',sans-serif;font-size:11px;
   letter-spacing:-.02em;text-align:center;line-height:1.2;padding:4px}
 .brand h1{font-size:17px;font-weight:800;color:var(--navy);line-height:1.2}
 .brand span{display:block;margin-top:2px;color:var(--steel);font-size:11px;font-weight:700;letter-spacing:.03em}
@@ -76,14 +76,14 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 .inline-wrap:focus-within{border-color:var(--green);box-shadow:0 0 0 4px rgba(15,118,110,.14)}
 .inline-wrap input,.inline-wrap select{min-width:0;border:0;outline:0;padding:11px 12px;
   color:var(--ink);background:transparent;font-weight:700}
-.inline-wrap input{font-family:'JetBrains Mono',monospace}
+.inline-wrap input{font-family:'Roboto',sans-serif}
 .inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;font-family:'DM Sans',sans-serif}
 .inline-wrap select{border-left:1px solid var(--line);background:#F4F8FB;color:var(--navy);cursor:pointer}
 .sel{width:100%;border:1px solid var(--line);border-radius:13px;background:var(--white);
   color:var(--ink);padding:11px 12px;outline:0;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 .sel:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(15,118,110,.14)}
 .plain-input{width:100%;border:1px solid var(--line);border-radius:13px;background:var(--white);
-  color:var(--ink);padding:11px 14px;outline:0;font-weight:700;font-family:'JetBrains Mono',monospace}
+  color:var(--ink);padding:11px 14px;outline:0;font-weight:700;font-family:'Roboto',sans-serif}
 .plain-input:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(15,118,110,.14)}
 .plain-input::placeholder{color:#AAB7C4;font-weight:400;font-family:'DM Sans',sans-serif}
 .hint{margin-top:5px;color:var(--steel);font-size:11.5px;line-height:1.4}
@@ -91,7 +91,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 /* range slider visual */
 .range-row{display:flex;align-items:center;gap:12px;margin-top:6px}
 .range-row input[type=range]{flex:1;accent-color:var(--green);cursor:pointer}
-.range-val{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:14px;color:var(--green);
+.range-val{font-family:'Roboto',sans-serif;font-weight:800;font-size:14px;color:var(--green);
   background:var(--green-soft);border:1px solid var(--green-border);border-radius:8px;
   padding:4px 10px;white-space:nowrap;min-width:68px;text-align:center}
 
@@ -113,7 +113,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
   padding:15px;min-height:110px}
 .kpi .lbl{color:var(--steel);font-size:10.5px;font-weight:900;letter-spacing:.03em;margin-bottom:7px;font-family:'Poppins',sans-serif;text-transform:uppercase}
 .kpi .val{color:var(--navy);font-size:26px;font-weight:900;letter-spacing:-.04em;line-height:1;
-  font-family:'JetBrains Mono',monospace}
+  font-family:'Roboto',sans-serif}
 .kpi .val small{font-size:12px;color:var(--steel);letter-spacing:0;margin-left:3px;font-family:'DM Sans',sans-serif;font-weight:600}
 .kpi .sub{margin-top:7px;color:var(--steel);font-size:11.5px}
 .kpi.accent{background:linear-gradient(135deg,#EAF7FF,#F0FBFF);border-color:#B8E4FF}
@@ -123,7 +123,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 .recipe-card{background:linear-gradient(135deg,var(--green) 0%,#064E3B 100%);
   border-radius:24px;padding:24px;color:#fff;box-shadow:var(--shadow-green);position:relative;overflow:hidden}
 .recipe-card:after{content:"ClO₂";position:absolute;right:-20px;bottom:-30px;
-  font-size:120px;font-weight:900;font-family:'JetBrains Mono',monospace;
+  font-size:120px;font-weight:900;font-family:'Roboto',sans-serif;
   color:rgba(255,255,255,.06);line-height:1;pointer-events:none;user-select:none}
 .recipe-card .rc-title{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
   color:rgba(255,255,255,.75);margin-bottom:16px;font-family:'Poppins',sans-serif;
@@ -134,7 +134,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
   border-radius:18px;padding:18px;backdrop-filter:blur(8px);text-align:center}
 .reagent .r-name{font-size:11px;font-weight:900;letter-spacing:.04em;color:rgba(255,255,255,.80);
   margin-bottom:10px;font-family:'Poppins',sans-serif;text-transform:uppercase;line-height:1.3}
-.reagent .r-val{font-size:46px;font-weight:900;font-family:'JetBrains Mono',monospace;
+.reagent .r-val{font-size:46px;font-weight:900;font-family:'Roboto',sans-serif;
   line-height:1;color:#fff;letter-spacing:-.04em}
 .reagent .r-unit{font-size:16px;font-weight:700;color:rgba(255,255,255,.75);margin-left:4px;
   font-family:'DM Sans',sans-serif}
@@ -142,7 +142,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 .recipe-total{display:flex;justify-content:space-between;align-items:center;
   background:rgba(0,0,0,.20);border-radius:14px;padding:14px 18px;gap:12px;flex-wrap:wrap}
 .recipe-total span{font-size:12px;color:rgba(255,255,255,.75)}
-.recipe-total strong{font-family:'JetBrains Mono',monospace;font-size:18px;color:#fff;font-weight:900;letter-spacing:-.02em}
+.recipe-total strong{font-family:'Roboto',sans-serif;font-size:18px;color:#fff;font-weight:900;letter-spacing:-.02em}
 
 /* procedure card */
 .proc-card{background:var(--white);border:1px solid var(--line);border-radius:22px;
@@ -158,7 +158,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
   display:grid;place-items:center;box-shadow:0 4px 12px rgba(15,118,110,.25)}
 .step-text{padding-top:4px;font-size:13.5px;color:var(--ink);line-height:1.5}
 .step-text strong{color:var(--navy)}
-.step-dynamic{color:var(--green);font-weight:800;font-family:'JetBrains Mono',monospace}
+.step-dynamic{color:var(--green);font-weight:800;font-family:'Roboto',sans-serif}
 
 /* summary table */
 .az-table{width:100%;border-collapse:separate;border-spacing:0;
@@ -167,7 +167,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 .az-table th{background:#F3F8FC;color:var(--navy);font-weight:900;font-family:'Poppins',sans-serif;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em}
 .az-table tr:last-child td{border-bottom:0}
 .az-table td:last-child{text-align:right;font-weight:800;color:var(--navy);
-  font-family:'JetBrains Mono',monospace;font-size:12px}
+  font-family:'Roboto',sans-serif;font-size:12px}
 .az-table tr.highlight td{background:var(--green-vivid-soft);color:var(--green-vivid)}
 .az-table tr.highlight td:last-child{color:var(--green-vivid)}
 
