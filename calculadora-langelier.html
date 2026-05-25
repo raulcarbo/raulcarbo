@@ -77,6 +77,10 @@ h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif}
 .inline-wrap .unit{border-left:1px solid var(--line);background:#F4F8FB;color:var(--steel);
   display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;
   font-family:'DM Sans',sans-serif;padding:0 8px;white-space:nowrap}
+.inline-wrap select.unit-sel{border:0;border-left:1px solid var(--line);background:#F4F8FB;
+  color:var(--steel);font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;
+  padding:0 6px;outline:0;cursor:pointer;min-width:90px;flex-shrink:0;
+  -webkit-appearance:auto;appearance:auto}
 .hint{margin-top:5px;color:var(--steel);font-size:11.5px;line-height:1.4}
 .divider{height:1px;background:var(--line);margin:6px 0 16px}
 .sec-label{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
@@ -291,24 +295,36 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
           <label for="inp-sdt">Sólidos Disueltos Totales (SDT)</label>
           <div class="inline-wrap">
             <input id="inp-sdt" type="number" min="1" step="1" placeholder="Ej. 450">
-            <span class="unit">mg/L</span>
+            <select class="unit unit-sel" id="unit-sdt">
+              <option value="mgL">mg/L</option>
+              <option value="uS">μS/cm</option>
+            </select>
           </div>
+          <div class="hint" id="hint-sdt">Sólidos disueltos totales</div>
         </div>
 
         <div class="field">
-          <label for="inp-dur">Dureza Cálcica (como CaCO₃)</label>
+          <label for="inp-dur">Dureza Cálcica</label>
           <div class="inline-wrap">
             <input id="inp-dur" type="number" min="1" step="1" placeholder="Ej. 200">
-            <span class="unit">mg/L</span>
+            <select class="unit unit-sel" id="unit-dur">
+              <option value="caco3">mg/L CaCO₃</option>
+              <option value="ion">mg/L Ca²⁺</option>
+            </select>
           </div>
+          <div class="hint" id="hint-dur">Como carbonato de calcio</div>
         </div>
 
         <div class="field">
-          <label for="inp-alk">Alcalinidad Total (como CaCO₃)</label>
+          <label for="inp-alk">Alcalinidad Total</label>
           <div class="inline-wrap">
             <input id="inp-alk" type="number" min="1" step="1" placeholder="Ej. 150">
-            <span class="unit">mg/L</span>
+            <select class="unit unit-sel" id="unit-alk">
+              <option value="caco3">mg/L CaCO₃</option>
+              <option value="ion">mg/L HCO₃⁻</option>
+            </select>
           </div>
+          <div class="hint" id="hint-alk">Como carbonato de calcio</div>
         </div>
 
         <div class="field">
@@ -322,8 +338,11 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
         <div class="field">
           <label for="inp-temp">Temperatura del agua</label>
           <div class="inline-wrap">
-            <input id="inp-temp" type="number" min="1" max="90" step="0.5" value="25" placeholder="25">
-            <span class="unit">°C</span>
+            <input id="inp-temp" type="number" min="1" max="200" step="0.5" value="25" placeholder="25">
+            <select class="unit unit-sel" id="unit-temp">
+              <option value="C">°C</option>
+              <option value="F">°F</option>
+            </select>
           </div>
         </div>
 
@@ -546,6 +565,34 @@ function fmtN(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFraction
 function fmtI(n){ return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'; }
 function sign(n){ return n>=0?'+':''; }
 
+/* ── unit conversion constants ── */
+var CA_ION_TO_CACO3    = 2.497;           // Ca²⁺ ion → CaCO₃
+var HCO3_ION_TO_CACO3  = 50.045 / 61.017; // HCO₃⁻ ion → CaCO₃
+var CONDUCTIVITY_TO_TDS = 0.65;            // μS/cm → mg/L TDS
+
+/* Update field hints when unit changes */
+function updateHints(){
+  var sdtU = el('unit-sdt').value;
+  var durU = el('unit-dur').value;
+  var alkU = el('unit-alk').value;
+  var tU   = el('unit-temp').value;
+  el('hint-sdt').textContent = sdtU === 'uS'
+    ? 'Conductividad eléctrica — se multiplica ×0.65 para obtener SDT'
+    : 'Sólidos disueltos totales';
+  el('hint-dur').textContent = durU === 'ion'
+    ? 'Ca²⁺ como ion — se multiplica ×2.497 para convertir a CaCO₃'
+    : 'Como carbonato de calcio';
+  el('hint-alk').textContent = alkU === 'ion'
+    ? 'HCO₃⁻ como ion — se multiplica ×0.820 para convertir a CaCO₃'
+    : 'Como carbonato de calcio';
+  var inp = el('inp-temp');
+  if(tU === 'F'){
+    inp.placeholder = '77'; inp.max = '392';
+  } else {
+    inp.placeholder = '25'; inp.max = '200';
+  }
+}
+
 /* ── Langelier core ── */
 function calcLangelier(sdt, dureza, alcalinidad, pH, temp){
   if(sdt<=0||dureza<=0.01||alcalinidad<=0) return null;
@@ -636,16 +683,33 @@ function setMarker(id, isl, show){
   m.style.left    = islToPos(isl);
 }
 
-/* ── read inputs ── */
+/* ── read inputs (with unit conversions) ── */
 function getInputs(){
+  var sdtRaw  = parseFloat(el('inp-sdt').value);
+  var durRaw  = parseFloat(el('inp-dur').value);
+  var alkRaw  = parseFloat(el('inp-alk').value);
+  var tempRaw = parseFloat(el('inp-temp').value);
+
+  var sdtU  = el('unit-sdt').value;
+  var durU  = el('unit-dur').value;
+  var alkU  = el('unit-alk').value;
+  var tempU = el('unit-temp').value;
+
+  var sdt  = sdtU  === 'uS'  ? sdtRaw  * CONDUCTIVITY_TO_TDS  : sdtRaw;
+  var dur  = durU  === 'ion' ? durRaw  * CA_ION_TO_CACO3       : durRaw;
+  var alk  = alkU  === 'ion' ? alkRaw  * HCO3_ION_TO_CACO3     : alkRaw;
+  var temp = tempU === 'F'   ? (tempRaw - 32) * 5 / 9          : (tempRaw || 25);
+
   return {
-    sdt:       parseFloat(el('inp-sdt').value),
-    dureza:    parseFloat(el('inp-dur').value),
-    alcalinidad: parseFloat(el('inp-alk').value),
-    pH:        parseFloat(el('inp-ph').value),
-    temp:      parseFloat(el('inp-temp').value) || 25,
+    sdt, dureza: dur, alcalinidad: alk, pH: parseFloat(el('inp-ph').value),
+    temp: isFinite(temp) ? temp : 25,
     fuga:      parseFloat(el('inp-fuga').value) || 1.0,
-    targetISL: parseFloat(el('inp-isl-target').value) || 0
+    targetISL: parseFloat(el('inp-isl-target').value) || 0,
+    /* raw values for display in copy text */
+    _sdtRaw: sdtRaw, _sdtU: sdtU,
+    _durRaw: durRaw, _durU: durU,
+    _alkRaw: alkRaw, _alkU: alkU,
+    _tempRaw: tempRaw, _tempU: tempU
   };
 }
 
@@ -780,11 +844,19 @@ function buildCopyText(){
     '═══════════════════════════════════════════════════════════════',
     '',
     '─── ANÁLISIS AGUA CRUDA ────────────────────────────────────────',
-    'SDT:            '+ fmtN(inp.sdt,1)       +' mg/L',
-    'Dureza Cálcica: '+ fmtN(inp.dureza,1)    +' mg/L como CaCO₃',
-    'Alcalinidad:    '+ fmtN(inp.alcalinidad,1)+' mg/L como CaCO₃',
+    inp._sdtU==='uS'
+      ? 'Conductividad:  '+fmtN(inp._sdtRaw,0)+' μS/cm  →  SDT: '+fmtN(inp.sdt,1)+' mg/L (×0.65)'
+      : 'SDT:            '+fmtN(inp.sdt,1)+' mg/L',
+    inp._durU==='ion'
+      ? 'Ca²⁺:           '+fmtN(inp._durRaw,1)+' mg/L ion  →  Dureza: '+fmtN(inp.dureza,1)+' mg/L CaCO₃ (×2.497)'
+      : 'Dureza Cálcica: '+fmtN(inp.dureza,1)+' mg/L como CaCO₃',
+    inp._alkU==='ion'
+      ? 'HCO₃⁻:          '+fmtN(inp._alkRaw,1)+' mg/L ion  →  Alcalinidad: '+fmtN(inp.alcalinidad,1)+' mg/L CaCO₃ (×0.820)'
+      : 'Alcalinidad:    '+fmtN(inp.alcalinidad,1)+' mg/L como CaCO₃',
     'pH:             '+ fmtN(inp.pH,2),
-    'Temperatura:    '+ fmtN(inp.temp,1)       +' °C',
+    inp._tempU==='F'
+      ? 'Temperatura:    '+fmtN(inp._tempRaw,1)+' °F  →  '+fmtN(inp.temp,1)+' °C'
+      : 'Temperatura:    '+fmtN(inp.temp,1)+' °C',
     rawL?'ISL Agua Cruda: '+sign(rawL.isl)+fmtN(rawL.isl,3)+' (pHs = '+fmtN(rawL.pHs,3)+')':'',
     '',
     '─── AGUA 100% SUAVIZADA (CICLO SODIO) ──────────────────────────',
@@ -833,6 +905,11 @@ el('isl-slider').addEventListener('input', function(){
   el(id).addEventListener('change', function(){ render(); markDirty(); });
 });
 
+// Unit selectors
+['unit-sdt','unit-dur','unit-alk','unit-temp'].forEach(function(id){
+  el(id).addEventListener('change', function(){ updateHints(); render(); markDirty(); });
+});
+
 // Calcular button
 el('btn-calc').addEventListener('click', function(){
   render(); markClean();
@@ -871,7 +948,8 @@ el('btn-reset').addEventListener('click', function(){
   el('isl-slider').value = '0';
   el('isl-badge').textContent = '0.00';
   el('inp-isl-target').value  = '0';
-  clearResults(); markClean();
+  ['unit-sdt','unit-dur','unit-alk','unit-temp'].forEach(function(id){ el(id).selectedIndex=0; });
+  updateHints(); clearResults(); markClean();
 });
 
 // Pending indicator
@@ -888,6 +966,7 @@ function markClean(){
 }
 
 /* ── init ── */
+updateHints();
 render();
 </script>
 </body>
