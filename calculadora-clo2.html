@@ -205,6 +205,31 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
   border-radius:16px;padding:14px 16px;font-size:13px;color:#084D82;line-height:1.55}
 .info-box strong{display:block;margin-bottom:5px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;font-family:'Poppins',sans-serif;font-weight:900}
 
+/* reference table toggle */
+.ref-toggle{display:inline-flex;align-items:center;gap:6px;margin-top:7px;
+  background:none;border:1px solid var(--green-border);border-radius:8px;
+  color:var(--green);font-size:11.5px;font-weight:800;cursor:pointer;
+  padding:5px 10px;font-family:'Poppins',sans-serif;transition:background .15s}
+.ref-toggle:hover{background:var(--green-soft)}
+.ref-toggle .arrow{display:inline-block;transition:transform .2s;font-style:normal}
+.ref-toggle.open .arrow{transform:rotate(180deg)}
+.ref-wrap{display:none;margin-top:8px;border:1px solid var(--green-border);
+  border-radius:14px;overflow:hidden;background:var(--white)}
+.ref-wrap.open{display:block}
+.ref-table{width:100%;border-collapse:collapse;font-size:12px}
+.ref-table thead th{background:linear-gradient(135deg,var(--green),#064E3B);
+  color:#fff;padding:8px 12px;text-align:left;font-family:'Poppins',sans-serif;
+  font-size:10.5px;letter-spacing:.04em;text-transform:uppercase}
+.ref-table tbody tr{border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
+.ref-table tbody tr:last-child{border-bottom:0}
+.ref-table tbody tr:hover{background:var(--green-soft)}
+.ref-table tbody tr:hover td{color:var(--green)}
+.ref-table td{padding:8px 12px;color:var(--ink)}
+.ref-table td:nth-child(2),.ref-table td:nth-child(3){font-family:'Roboto',sans-serif;font-weight:700;text-align:right}
+.ref-table td:nth-child(4){color:var(--steel);font-size:11px}
+.ref-note{padding:7px 12px;background:#F4F8FB;color:var(--steel);font-size:11px;
+  border-top:1px solid var(--line)}
+
 /* footer */
 footer{margin-top:20px;color:var(--steel);font-size:11px;
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;
@@ -275,7 +300,25 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
               <option value="ft3">ft³</option>
             </select>
           </div>
-          <div class="hint">💡 Un recipiente estándar de 48" × 72" tiene aproximadamente <strong>62 ft³</strong> de volumen interno.</div>
+          <div class="hint">💡 Un recipiente estándar de 48" × 72" tiene aproximadamente <strong>62 ft³</strong> de volumen interno. Haz clic en un renglón de la tabla para autocompletar.</div>
+          <button class="ref-toggle" id="ref-toggle" type="button">
+            <span>📋 Ver tabla de recipientes comunes</span>
+            <i class="arrow">▼</i>
+          </button>
+          <div class="ref-wrap" id="ref-wrap">
+            <table class="ref-table">
+              <thead>
+                <tr>
+                  <th>Diámetro × Altura</th>
+                  <th>Vol. interno (ft³)</th>
+                  <th>Vol. interno (L)</th>
+                  <th>Uso típico</th>
+                </tr>
+              </thead>
+              <tbody id="ref-tbody"></tbody>
+            </table>
+            <div class="ref-note">▲ Haz clic en cualquier renglón para usar ese valor. Volúmenes calculados con sección cilíndrica + cabezas elípticas estándar.</div>
+          </div>
         </div>
 
         <div class="field">
@@ -816,6 +859,51 @@ function markClean(){
   el('pending-bar').style.display = 'none';
   el('btn-calc').style.boxShadow = '';
 }
+
+/* ── Tabla de referencia de recipientes ── */
+var TANKS = [
+  {dim:'16" × 65"',  ft3:7.5,   uso:'Residencial / pequeño'},
+  {dim:'18" × 65"',  ft3:9.5,   uso:'Residencial / pequeño'},
+  {dim:'21" × 62"',  ft3:12.5,  uso:'Pequeña industria'},
+  {dim:'24" × 69"',  ft3:17.0,  uso:'Pequeña industria'},
+  {dim:'30" × 60"',  ft3:24.5,  uso:'Industrial ligero'},
+  {dim:'30" × 72"',  ft3:29.5,  uso:'Industrial ligero'},
+  {dim:'36" × 60"',  ft3:35.0,  uso:'Industrial'},
+  {dim:'36" × 72"',  ft3:42.0,  uso:'Industrial'},
+  {dim:'42" × 60"',  ft3:48.0,  uso:'Industrial'},
+  {dim:'42" × 72"',  ft3:57.5,  uso:'Industrial'},
+  {dim:'48" × 72"',  ft3:62.0,  uso:'Industrial (referencia típica)'},
+  {dim:'54" × 72"',  ft3:79.0,  uso:'Gran industria'},
+  {dim:'63" × 72"',  ft3:107.0, uso:'Gran industria'},
+  {dim:'72" × 72"',  ft3:140.0, uso:'Municipal / gran planta'},
+  {dim:'84" × 84"',  ft3:214.0, uso:'Municipal / gran planta'},
+];
+
+(function buildRefTable(){
+  var tbody = el('ref-tbody');
+  TANKS.forEach(function(t){
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><strong>' + t.dim + '</strong></td>' +
+      '<td>' + t.ft3.toFixed(1) + ' ft³</td>' +
+      '<td>' + (t.ft3 * FT3_TO_L).toFixed(0) + ' L</td>' +
+      '<td>' + t.uso + '</td>';
+    tr.addEventListener('click', function(){
+      el('vol-interno').value = t.ft3;
+      el('ref-toggle').classList.remove('open');
+      el('ref-wrap').classList.remove('open');
+      render();
+      markDirty();
+      el('vol-interno').focus();
+    });
+    tbody.appendChild(tr);
+  });
+})();
+
+el('ref-toggle').addEventListener('click', function(){
+  this.classList.toggle('open');
+  el('ref-wrap').classList.toggle('open');
+});
 
 /* ── Init ── */
 render();
