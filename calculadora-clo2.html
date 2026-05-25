@@ -296,8 +296,9 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
           <label for="vol-interno">Volumen interno del recipiente</label>
           <div class="inline-wrap">
             <input id="vol-interno" type="number" min="0" step="0.1" placeholder="Ej. 62">
-            <select id="unit-interno" style="width:60px">
+            <select id="unit-interno">
               <option value="ft3">ft³</option>
+              <option value="L">L</option>
             </select>
           </div>
           <div class="hint">💡 Un recipiente estándar de 48" × 72" tiene aproximadamente <strong>62 ft³</strong> de volumen interno. Haz clic en un renglón de la tabla para autocompletar.</div>
@@ -325,8 +326,9 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
           <label for="vol-medio">Volumen del medio granular instalado</label>
           <div class="inline-wrap">
             <input id="vol-medio" type="number" min="0" step="0.1" placeholder="Ej. 45">
-            <select style="width:60px">
+            <select id="unit-medio">
               <option value="ft3">ft³</option>
+              <option value="L">L</option>
             </select>
           </div>
           <div class="hint">Volumen del lecho de carbón activado, resina o arena.</div>
@@ -336,8 +338,9 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
           <label for="vol-grava">Volumen de grava de soporte</label>
           <div class="inline-wrap">
             <input id="vol-grava" type="number" min="0" step="0.1" placeholder="0" value="0">
-            <select style="width:60px">
+            <select id="unit-grava">
               <option value="ft3">ft³</option>
+              <option value="L">L</option>
             </select>
           </div>
           <div class="hint">Lecho de soporte debajo del medio principal. Dejar en 0 si no aplica.</div>
@@ -563,13 +566,15 @@ function fmtI(n){
   return Math.round(n).toLocaleString('es-MX');
 }
 
+function toFt3(val, unit){ return unit === 'L' ? val / FT3_TO_L : val; }
+
 function getInputs(){
   return {
-    volInterno: parseFloat(el('vol-interno').value) || 0,
-    volMedio:   parseFloat(el('vol-medio').value)   || 0,
-    volGrava:   parseFloat(el('vol-grava').value)   || 0,
+    volInterno: toFt3(parseFloat(el('vol-interno').value) || 0, el('unit-interno').value),
+    volMedio:   toFt3(parseFloat(el('vol-medio').value)   || 0, el('unit-medio').value),
+    volGrava:   toFt3(parseFloat(el('vol-grava').value)   || 0, el('unit-grava').value),
     tipoMedio:  el('tipo-medio').value,
-    concClo2:   parseFloat(el('conc-clo2').value)   || 0
+    concClo2:   parseFloat(el('conc-clo2').value) || 0
   };
 }
 
@@ -794,7 +799,7 @@ el('conc-clo2').addEventListener('input', function(){
 });
 
 // All inputs trigger dirty
-['vol-interno','vol-medio','vol-grava','tipo-medio'].forEach(function(id){
+['vol-interno','vol-medio','vol-grava','tipo-medio','unit-interno','unit-medio','unit-grava'].forEach(function(id){
   el(id).addEventListener('input', function(){ render(); markDirty(); });
   el(id).addEventListener('change', function(){ render(); markDirty(); });
 });
@@ -838,6 +843,9 @@ el('btn-reset').addEventListener('click', function(){
   el('vol-interno').value = '';
   el('vol-medio').value   = '';
   el('vol-grava').value   = '0';
+  el('unit-interno').value = 'ft3';
+  el('unit-medio').value   = 'ft3';
+  el('unit-grava').value   = 'ft3';
   el('tipo-medio').value  = 'cag';
   el('conc-clo2').value   = '50';
   el('conc-slider').value = '50';
@@ -889,7 +897,8 @@ var TANKS = [
       '<td>' + (t.ft3 * FT3_TO_L).toFixed(0) + ' L</td>' +
       '<td>' + t.uso + '</td>';
     tr.addEventListener('click', function(){
-      el('vol-interno').value = t.ft3;
+      el('vol-interno').value  = t.ft3;
+      el('unit-interno').value = 'ft3';
       el('ref-toggle').classList.remove('open');
       el('ref-wrap').classList.remove('open');
       render();
