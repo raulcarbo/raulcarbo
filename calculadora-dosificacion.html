@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Dosificación Continua de Oxidantes | Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Variables ────────────────────── */
+:root {
+  --brand:#0369A1;--brand-dark:#0C4A6E;--brand-mid:#0284C7;
+  --brand-light:#EFF8FF;--brand-border:#BAE6FD;
+  --green:#0F766E;--green-soft:#ECFDF5;--green-border:#A7F3D0;--green-dark:#065F46;
+  --warn:#B45309;--warn-soft:#FFFBEB;--warn-border:#FCD34D;
+  --danger:#991B1B;--danger-soft:#FEF2F2;--danger-border:#FECACA;
+  --ink:#0F1E2E;--steel:#374151;--muted:#6B7280;
+  --line:#E2E8F0;--surface:#FFFFFF;--paper:#F8FAFC;
+  --shadow:0 1px 3px rgba(15,30,46,.06),0 8px 24px rgba(15,30,46,.08);
+  --shadow-sm:0 1px 3px rgba(15,30,46,.07);
+  --radius:16px;--radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'Roboto Mono',monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff;color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+/* ── Shell ────────────────────────── */
+.shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* ── Brand bar ────────────────────── */
+.brand-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px;background:var(--surface);
+  border:1px solid var(--line);border-radius:18px;
+  margin-bottom:16px;flex-wrap:wrap;gap:12px;
+  box-shadow:var(--shadow-sm);
+}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--brand-mid),var(--brand-dark));
+  color:#fff;display:grid;place-items:center;
+  font-family:var(--font-title);font-weight:700;font-size:13px;
+  box-shadow:0 4px 12px rgba(3,105,161,.25);letter-spacing:-.02em;text-align:center;line-height:1.1;padding:3px;
+}
+.brand-name{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--brand-dark)}
+.brand-name span{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:400}
+.brand-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand-tag b{color:var(--brand);font-weight:600}
+
+/* ── Hero ─────────────────────────── */
+.calc-header{
+  background:linear-gradient(135deg,#0C4A6E 0%,#075985 50%,#0369A1 100%);
+  border-radius:var(--radius-lg);padding:28px;color:#fff;
+  margin-bottom:16px;position:relative;overflow:hidden;
+}
+.calc-header::after{
+  content:"";position:absolute;inset:auto -80px -120px auto;
+  width:340px;height:340px;border-radius:50%;
+  border:52px solid rgba(255,255,255,.06);pointer-events:none;
+}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:end}
+.calc-header h1{
+  font-size:clamp(20px,2.6vw,36px);line-height:1.05;letter-spacing:-.04em;
+  color:#fff !important;font-weight:800;margin-bottom:10px;
+}
+.calc-header h1 em{font-style:normal;color:rgba(255,255,255,.78)}
+.calc-header p{color:rgba(255,255,255,.72);font-size:13.5px;line-height:1.6;margin:0}
+.hero-note{
+  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);
+  border-radius:16px;padding:18px;backdrop-filter:blur(16px);
+}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:13px;line-height:1.6}
+
+/* ── Formula bar ──────────────────── */
+.formula-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.formula-chip{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:11px 18px;flex:1;min-width:130px;box-shadow:var(--shadow-sm);
+}
+.fc-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.fc-value{font-family:var(--font-num);font-weight:700;font-size:15px;color:var(--brand)}
+
+/* ── Layout ───────────────────────── */
+.layout{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px;min-width:0}
+.results-col{min-width:0;display:grid;gap:14px}
+
+/* ── Panel ────────────────────────── */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.panel-head h2{font-size:15px;color:var(--brand-dark);font-weight:700}
+.step-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.panel-body{padding:20px}
+
+/* ── Fields ───────────────────────── */
+.sec-label{font-family:var(--font-num);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin:18px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--brand-border)}
+.sec-label:first-child{margin-top:0}
+.field{margin-bottom:14px}
+.field label{display:block;color:var(--ink);font-weight:700;font-size:13px;margin-bottom:6px;font-family:var(--font-title)}
+.inline-wrap{display:grid;grid-template-columns:1fr auto;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.inline-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(3,105,161,.13)}
+.inline-wrap input{min-width:0;border:0;outline:0;padding:11px 12px;color:var(--ink);background:transparent;font-weight:600;font-family:var(--font-num);font-size:15px}
+.inline-wrap input::placeholder{color:#B0BEC5;font-weight:400;font-family:var(--font-body);font-size:13px}
+.inline-wrap .unit-badge{border-left:1px solid var(--line);background:var(--paper);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--font-body);padding:0 10px;white-space:nowrap;min-width:54px}
+.inline-wrap select.unit-sel{border:0;border-left:1px solid var(--line);background:var(--paper);color:var(--muted);font-size:11px;font-weight:700;font-family:var(--font-body);padding:0 8px;outline:0;cursor:pointer;min-width:80px;-webkit-appearance:auto;appearance:auto}
+select.full-sel{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:var(--surface);color:var(--ink);font-size:13px;font-weight:600;font-family:var(--font-body);outline:0;cursor:pointer}
+select.full-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(3,105,161,.13)}
+.hint{margin-top:5px;color:var(--muted);font-size:11.5px;line-height:1.4}
+
+/* Conditional fields */
+.liquid-fields{display:grid;gap:14px;margin-top:14px;padding:14px;background:var(--brand-light);border:1px solid var(--brand-border);border-radius:12px}
+.liquid-fields .lf-title{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin-bottom:2px;font-weight:600}
+.liquid-fields.hidden{display:none}
+.liquid-fields .field{margin-bottom:0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── Action buttons ───────────────── */
+.actions{display:flex;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:999px;padding:12px 20px;font-weight:800;cursor:pointer;font-family:var(--font-title);font-size:13px;transition:transform .12s,box-shadow .12s;flex:1;text-align:center}
+.btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 8px 20px rgba(3,105,161,.22)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(3,105,161,.30)}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.btn-ghost:hover{background:var(--paper)}
+
+/* ── Empty state ──────────────────── */
+.empty-state{text-align:center;padding:60px 24px;color:var(--muted);font-size:14px}
+.empty-state svg{margin-bottom:16px;opacity:.28;display:block;margin-left:auto;margin-right:auto}
+
+/* ── KPI cards ────────────────────── */
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.kpi-card::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:var(--brand)}
+.kpi-card.kpi-green::before{background:var(--green)}
+.kpi-card.kpi-pump{
+  background:linear-gradient(135deg,var(--brand-dark),#063D5C);
+  border-color:rgba(0,0,0,.15);
+}
+.kpi-card.kpi-pump::before{background:linear-gradient(90deg,var(--brand-mid),#38BDF8)}
+.kpi-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:5px}
+.kpi-pump .kpi-label{color:rgba(255,255,255,.55)}
+.kpi-val{font-family:var(--font-num);font-size:1.6rem;font-weight:700;color:var(--ink);line-height:1.1;letter-spacing:-.02em}
+.kpi-val small{font-family:var(--font-body);font-size:.42em;font-weight:500;color:var(--muted);margin-left:4px}
+.kpi-pump .kpi-val{color:#fff}
+.kpi-pump .kpi-val small{color:rgba(255,255,255,.6)}
+.kpi-sub{font-size:.76rem;color:var(--muted);margin:4px 0 8px;line-height:1.4}
+.kpi-pump .kpi-sub{color:rgba(255,255,255,.60)}
+.metric-row{display:flex;justify-content:space-between;align-items:baseline;gap:6px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:.76rem}
+.kpi-pump .metric-row{border-bottom-color:rgba(255,255,255,.08)}
+.metric-row:last-child{border-bottom:none}
+.metric-row span{color:var(--muted)}
+.kpi-pump .metric-row span{color:rgba(255,255,255,.55)}
+.metric-row strong{font-family:var(--font-num);font-size:.76rem;color:var(--ink);text-align:right}
+.kpi-pump .metric-row strong{color:#93C5FD}
+
+/* Demand breakdown bar */
+.demand-bar{height:8px;border-radius:4px;background:var(--line);margin:10px 0 6px;overflow:hidden;display:flex}
+.demand-bar .seg-demand{background:var(--brand);border-radius:4px 0 0 4px}
+.demand-bar .seg-residual{background:#38BDF8}
+.demand-bar-legend{display:flex;gap:12px;flex-wrap:wrap}
+.dbl-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.dbl-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* ── Alerts ───────────────────────── */
+.alert{border-radius:14px;padding:14px 16px;border:1px solid;font-size:13px;line-height:1.55;display:flex;gap:12px;align-items:flex-start}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.alert.info{background:var(--brand-light);border-color:var(--brand-border);color:var(--brand-dark)}
+.alert.warn{background:var(--warn-soft);border-color:var(--warn-border);color:var(--warn)}
+.alert.hidden{display:none}
+.alert b{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+
+/* ── Copy bar ─────────────────────── */
+.copy-bar{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.copy-bar p{font-size:13px;color:var(--muted);max-width:400px}
+.btn-copy{border:0;border-radius:999px;padding:10px 20px;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:13px;box-shadow:0 6px 16px rgba(15,118,110,.22);display:flex;align-items:center;gap:8px;white-space:nowrap;transition:transform .12s}
+.btn-copy:hover{transform:translateY(-1px)}
+.btn-copy svg{width:14px;height:14px;flex-shrink:0}
+.btn-copy.ok{background:linear-gradient(135deg,#0F766E,#065F46)}
+
+/* ── Footer ───────────────────────── */
+footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);font-family:var(--font-num);letter-spacing:.06em;text-transform:uppercase}
+
+/* ── Responsive ───────────────────── */
+@media(max-width:1060px){
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-note{display:none}
+  .cards-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .shell{width:calc(100% - 20px);padding-top:16px}
+  .cards-grid{grid-template-columns:1fr}
+  .formula-bar{display:grid;grid-template-columns:1fr 1fr}
+  .two-col{grid-template-columns:1fr}
+  .actions{flex-direction:column}
+  .copy-bar{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:380px){
+  .formula-bar{grid-template-columns:1fr}
+}
+
+@media print{
+  body{background:#fff}
+  .shell{width:100%;padding:20px}
+  .actions,.btn-copy,.copy-bar{display:none!important}
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .cards-grid{grid-template-columns:repeat(2,1fr)}
+  .calc-header{background:var(--brand-dark)!important;-webkit-print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Brand bar -->
+  <div class="brand-bar">
+    <div class="brand-mark">
+      <div class="brand-icon">Ox</div>
+      <div class="brand-name">
+        Carbotecnia
+        <span>Tratamiento de agua · México</span>
+      </div>
+    </div>
+    <div class="brand-tag">Herramienta de ingeniería · <b>v1.0</b></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="calc-header">
+    <div class="hero-grid">
+      <div>
+        <h1>Dosificación Continua de <em>Oxidantes</em></h1>
+        <p>Calcule la tasa de inyección exacta para su bomba dosificadora. Estequiometría derivada del MIP Carbotecnia 260302 para oxidación de hierro, manganeso y H₂S antes del lecho catalítico Katalox Light.</p>
+      </div>
+      <div class="hero-note">
+        <b>Fuente técnica</b>
+        <span>MIP Catalizadores de MnO₂ Katalox Light · Carbotecnia 260302 · Factores estequiométricos estrictos (reacción neutral). El residual mínimo exigido por el MIP es <strong style="color:#fff">1 ppm</strong> a la salida del lecho catalítico.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula bar -->
+  <div class="formula-bar">
+    <div class="formula-chip">
+      <div class="fc-label">Demanda estequiom.</div>
+      <div class="fc-value" id="chip-demand">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Dosis total</div>
+      <div class="fc-value" id="chip-dose">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Ajuste bomba</div>
+      <div class="fc-value" id="chip-pump">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Consumo diario</div>
+      <div class="fc-value" id="chip-daily">—</div>
+    </div>
+  </div>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- === INPUTS === -->
+    <div class="input-panel">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Parámetros del sistema</h2>
+          <span class="step-tag">01 · Entradas</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="sec-label">Hidráulica</div>
+
+          <div class="field">
+            <label>Caudal de agua</label>
+            <div class="inline-wrap">
+              <input type="number" id="inp-flow" placeholder="Ej. 100" min="0" step="any">
+              <select class="unit-sel" id="unit-flow">
+                <option value="gpm">gpm</option>
+                <option value="m3h" selected>m³/h</option>
+                <option value="lpm">L/min</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sec-label">Calidad del agua cruda (mg/L)</div>
+
+          <div class="field">
+            <label>Hierro Fe²⁺</label>
+            <div class="inline-wrap">
+              <input type="number" id="inp-fe" placeholder="0.0" min="0" step="any" value="0">
+              <span class="unit-badge">mg/L</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Manganeso Mn²⁺</label>
+            <div class="inline-wrap">
+              <input type="number" id="inp-mn" placeholder="0.0" min="0" step="any" value="0">
+              <span class="unit-badge">mg/L</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Ácido sulfhídrico H₂S</label>
+            <div class="inline-wrap">
+              <input type="number" id="inp-h2s" placeholder="0.0" min="0" step="any" value="0">
+              <span class="unit-badge">mg/L</span>
+            </div>
+          </div>
+
+          <div class="sec-label">Parámetros de dosificación</div>
+
+          <div class="field">
+            <label>Residual deseado a la salida</label>
+            <div class="inline-wrap">
+              <input type="number" id="inp-residual" placeholder="1.0" min="0" step="0.1" value="1.0">
+              <span class="unit-badge">mg/L</span>
+            </div>
+            <div class="hint">El MIP exige mínimo 1 ppm a la salida del lecho catalítico.</div>
+          </div>
+
+          <div class="field">
+            <label>Horas de operación / día</label>
+            <div class="inline-wrap">
+              <input type="number" id="inp-hours" placeholder="24" min="1" max="24" step="1" value="24">
+              <span class="unit-badge">h/día</span>
+            </div>
+          </div>
+
+          <div class="sec-label">Oxidante</div>
+
+          <div class="field">
+            <label>Oxidante a utilizar</label>
+            <select class="full-sel" id="sel-oxidant">
+              <option value="naocl">Hipoclorito de Sodio (NaOCl) — 13% p/p</option>
+              <option value="cl2">Gas Cloro (Cl₂) — 100% puro</option>
+              <option value="h2o2">Peróxido de Hidrógeno (H₂O₂) — 30% p/p</option>
+              <option value="kmno4">Permanganato de Potasio (KMnO₄) — sólido 100%</option>
+            </select>
+          </div>
+
+          <!-- Conditional: concentration & density (liquids only) -->
+          <div class="liquid-fields" id="liquid-fields">
+            <div class="lf-title">Concentración del producto comercial</div>
+            <div class="two-col">
+              <div class="field">
+                <label>Concentración (%)</label>
+                <div class="inline-wrap">
+                  <input type="number" id="inp-conc" placeholder="13" min="0.1" max="99" step="0.1" value="13">
+                  <span class="unit-badge">% p/p</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Densidad (kg/L)</label>
+                <div class="inline-wrap">
+                  <input type="number" id="inp-dens" placeholder="1.20" min="0.8" max="2.0" step="0.01" value="1.20">
+                  <span class="unit-badge">kg/L</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" id="btn-calc">Calcular dosificación</button>
+            <button class="btn btn-ghost" id="btn-reset">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- === RESULTS === -->
+    <div class="results-col" id="results-col">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Resultados de la dosificación</h2>
+          <span class="step-tag">02 · Salidas</span>
+        </div>
+        <div class="panel-body" id="results-body">
+          <div class="empty-state">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/>
+              <path d="M12 7v5l3 3"/>
+            </svg>
+            <div>Ingrese los parámetros del sistema<br>para calcular la dosificación exacta.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.layout -->
+
+  <footer>
+    <span>© Carbotecnia · Zapopan, Jalisco · carbotecnia.info</span>
+    <span>Ref. MIP Katalox Light 260302 · Factores estequiométricos estrictos (reacción neutral)</span>
+  </footer>
+
+</div><!-- /.shell -->
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   CALCULADORA DE DOSIFICACIÓN CONTINUA DE OXIDANTES
+   Carbotecnia · Ing. de Proceso · v1.0
+
+   FUENTE DE FACTORES ESTEQUIOMÉTRICOS:
+   MIP Catalizadores de MnO₂ Katalox Light — Carbotecnia (clave 260302)
+   Sección: "Estequiometría de oxidación"
+   Se usan los factores ESTEQUIOMÉTRICOS ESTRICTOS (reacción neutral),
+   no los de diseño conservador, porque se suma el residual por separado.
+
+   FÓRMULA GENERAL:
+   1. Demanda (mg/L) = Fe×k_fe + Mn×k_mn + H₂S×k_h₂s
+   2. Dosis Total (mg/L) = Demanda + Residual deseado
+   3. Masa pura (g/h) = Dosis_Total × Caudal_m3h   [1 mg/L · 1 m³/h = 1 g/h]
+   4. Para líquido p/p: Vol_inyec (L/h) = Masa_pura / (Conc%/100 · Dens_kg_L · 1000)
+   5. mL/min = L/h × 1000/60
+   6. Consumo diario = tasa_horaria × horas_operación
+══════════════════════════════════════════════════════════════════ */
+
+/* ── Factores estequiométricos (MIP 260302) ──
+   Fuente: tabla de estequiometría estricta, reacción neutral
+   Unidades: mg de oxidante puro / mg de contaminante            */
+var OXIDANTS = {
+  naocl: {
+    name: 'NaOCl',
+    label: 'Hipoclorito de Sodio (NaOCl)',
+    // MIP 260302 § Estequiometría estricta NaOCl
+    kFe:  0.67,   // mg NaOCl / mg Fe²⁺
+    kMn:  1.37,   // mg NaOCl / mg Mn²⁺
+    kH2S: 2.20,   // mg NaOCl / mg H₂S
+    isLiquid: true,
+    defaultConc: 13.0,   // % p/p (masa soluto / masa solución)
+    defaultDens: 1.20,   // kg/L
+    unitLabel: 'L/h'
+  },
+  cl2: {
+    name: 'Cl₂',
+    label: 'Gas Cloro (Cl₂)',
+    // MIP 260302 § Estequiometría estricta Cl₂
+    kFe:  0.64,   // mg Cl₂ / mg Fe²⁺
+    kMn:  1.30,   // mg Cl₂ / mg Mn²⁺
+    kH2S: 2.10,   // mg Cl₂ / mg H₂S
+    isLiquid: false,
+    unitLabel: 'kg/h'
+  },
+  h2o2: {
+    name: 'H₂O₂',
+    label: 'Peróxido de Hidrógeno (H₂O₂)',
+    // MIP 260302 § Estequiometría estricta H₂O₂
+    kFe:  0.30,   // mg H₂O₂ / mg Fe²⁺
+    kMn:  0.62,   // mg H₂O₂ / mg Mn²⁺
+    kH2S: 1.00,   // mg H₂O₂ / mg H₂S
+    isLiquid: true,
+    defaultConc: 30.0,   // % p/p
+    defaultDens: 1.11,   // kg/L
+    unitLabel: 'L/h'
+  },
+  kmno4: {
+    name: 'KMnO₄',
+    label: 'Permanganato de Potasio (KMnO₄)',
+    // MIP 260302 § Estequiometría estricta KMnO₄ (reacción neutral)
+    kFe:  0.94,   // mg KMnO₄ / mg Fe²⁺
+    kMn:  1.92,   // mg KMnO₄ / mg Mn²⁺
+    kH2S: 6.19,   // mg KMnO₄ / mg H₂S  (reacción neutral)
+    isLiquid: false,
+    unitLabel: 'kg/h'
+  }
+};
+
+/* ── Helpers ── */
+function el(id){ return document.getElementById(id); }
+function num(id, def){ var v=parseFloat(el(id).value); return isFinite(v)?v:(def||0); }
+function fmtN(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
+function fmtI(n){ return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'; }
+
+/* ── Convert flow to m³/h ── */
+function flowM3h(){
+  var v = num('inp-flow');
+  var u = el('unit-flow').value;
+  if(u==='m3h')  return v;
+  if(u==='gpm')  return v * 0.227124;   // 1 gpm = 0.227124 m³/h
+  if(u==='lpm')  return v * 0.06;       // 1 L/min = 0.06 m³/h
+  return v;
+}
+
+/* ── Show / hide concentration fields ── */
+function updateOxidantUI(){
+  var ox = OXIDANTS[el('sel-oxidant').value];
+  var lf = el('liquid-fields');
+  if(ox.isLiquid){
+    lf.classList.remove('hidden');
+    el('inp-conc').value = ox.defaultConc;
+    el('inp-dens').value = ox.defaultDens;
+  } else {
+    lf.classList.add('hidden');
+  }
+}
+
+/* ── Main calculation ── */
+function calculate(){
+  var Q_m3h = flowM3h();
+  var Fe    = num('inp-fe');
+  var Mn    = num('inp-mn');
+  var H2S   = num('inp-h2s');
+  var resid = num('inp-residual', 1.0);
+  var hours = num('inp-hours', 24);
+  var oxKey = el('sel-oxidant').value;
+  var ox    = OXIDANTS[oxKey];
+
+  // Guard: need at least flow
+  if(!Q_m3h || Q_m3h <= 0){
+    alert('Ingrese un caudal válido mayor a cero.');
+    return;
+  }
+
+  /* ── 1. Demanda estequiométrica (mg/L de oxidante puro) ──
+     Fuente: MIP 260302 factores estrictos.
+     Cada contaminante consume una cantidad proporcional del oxidante
+     según la reacción química de oxidación correspondiente.             */
+  var demFe  = Fe  * ox.kFe;    // contribución del hierro
+  var demMn  = Mn  * ox.kMn;    // contribución del manganeso
+  var demH2S = H2S * ox.kH2S;   // contribución del H₂S
+  var demand = demFe + demMn + demH2S;   // demanda total en mg/L
+
+  /* ── 2. Dosis Total (mg/L) ──
+     = demanda estequiométrica + residual libre deseado
+     El MIP exige ≥ 1 ppm de cloro libre a la salida del lecho.         */
+  var dose = demand + resid;
+
+  /* ── 3. Masa pura requerida (g/h) ──
+     1 mg/L × 1 m³/h = 1 g/h  (conversión directa de unidades)         */
+  var pureMassGh = dose * Q_m3h;
+
+  /* ── 4. Caudal de inyección para líquidos ──
+     Fórmula para soluciones p/p (peso/peso):
+     C_g_L = (Conc%/100) × (Dens_kg_L × 1000 g/kg)  → g de activo por L
+     Vol_L_h = Masa_pura_g_h / C_g_L                                    */
+  var injLh  = null;   // L/h (líquidos)
+  var injKgh = null;   // kg/h (sólidos o gas)
+  var conc = 0, dens = 0;
+
+  if(ox.isLiquid){
+    conc = num('inp-conc');
+    dens = num('inp-dens');
+    var concFrac = conc / 100;
+    var activeGperL = concFrac * dens * 1000;  // g de activo por litro de solución
+    injLh  = pureMassGh / activeGperL;         // L/h de solución comercial
+  } else {
+    injKgh = pureMassGh / 1000;                // kg/h de sólido/gas puro
+  }
+
+  var injMlMin = ox.isLiquid ? (injLh * 1000 / 60) : null;  // mL/min
+
+  /* ── 5. Consumo diario ── */
+  var dailyL  = ox.isLiquid ? injLh  * hours : null;   // L/día de solución
+  var dailyKg = ox.isLiquid ? null   : injKgh * hours; // kg/día de sólido
+
+  var monthlyL  = dailyL  ? dailyL  * 30 : null;
+  var monthlyKg = dailyKg ? dailyKg * 30 : null;
+
+  /* ── Render ── */
+  renderResults({
+    Q_m3h, Fe, Mn, H2S, resid, hours, ox, oxKey,
+    demFe, demMn, demH2S, demand, dose, pureMassGh,
+    injLh, injMlMin, injKgh, dailyL, dailyKg, monthlyL, monthlyKg,
+    conc, dens
+  });
+}
+
+/* ── Render results ── */
+function renderResults(r){
+  // Update formula bar chips
+  el('chip-demand').textContent = fmtN(r.demand,2) + ' mg/L';
+  el('chip-dose').textContent   = fmtN(r.dose,2)   + ' mg/L';
+  el('chip-pump').textContent   = r.injMlMin !== null
+    ? fmtN(r.injMlMin,1) + ' mL/min'
+    : fmtN(r.injKgh*1000,1) + ' g/h';
+  el('chip-daily').textContent  = r.dailyL !== null
+    ? fmtN(r.dailyL,1) + ' L/día'
+    : fmtN(r.dailyKg,2) + ' kg/día';
+
+  // Demand bar percentages
+  var demPct  = r.dose > 0 ? (r.demand / r.dose * 100).toFixed(1) : 0;
+  var resPct  = r.dose > 0 ? (r.resid  / r.dose * 100).toFixed(1) : 0;
+
+  // Card 1: Demand breakdown
+  var card1 = `
+    <div class="kpi-card">
+      <div class="kpi-label">Demanda &amp; Dosis Total</div>
+      <div class="kpi-val">${fmtN(r.dose,2)} <small>mg/L</small></div>
+      <div class="kpi-sub">Dosis total al punto de inyección</div>
+      <div class="demand-bar">
+        <div class="seg-demand"  style="width:${demPct}%"></div>
+        <div class="seg-residual" style="width:${resPct}%"></div>
+      </div>
+      <div class="demand-bar-legend">
+        <div class="dbl-item"><div class="dbl-dot" style="background:var(--brand)"></div>Demanda: ${fmtN(r.demand,2)} mg/L</div>
+        <div class="dbl-item"><div class="dbl-dot" style="background:#38BDF8"></div>Residual: ${fmtN(r.resid,2)} mg/L</div>
+      </div>
+      <div class="metric-row" style="margin-top:10px"><span>Fe²⁺ × ${r.ox.kFe}</span><strong>${fmtN(r.demFe,3)} mg/L</strong></div>
+      <div class="metric-row"><span>Mn²⁺ × ${r.ox.kMn}</span><strong>${fmtN(r.demMn,3)} mg/L</strong></div>
+      <div class="metric-row"><span>H₂S × ${r.ox.kH2S}</span><strong>${fmtN(r.demH2S,3)} mg/L</strong></div>
+      <div class="metric-row"><span>Masa pura requerida</span><strong>${fmtN(r.pureMassGh,1)} g/h</strong></div>
+    </div>`;
+
+  // Card 2: Pump setting (hero card)
+  var pumpMainVal, pumpMainUnit, pumpSub1, pumpSub2, pumpSub3, pumpSub4;
+  if(r.injMlMin !== null){
+    pumpMainVal  = fmtN(r.injMlMin,1);
+    pumpMainUnit = 'mL/min';
+    pumpSub1 = 'Ajuste exacto en el dial de la bomba dosificadora';
+    pumpSub2 = fmtN(r.injLh,3) + ' L/h';
+    pumpSub3 = fmtN(r.injLh,2) + ' L/h de solución comercial';
+    pumpSub4 = r.ox.name + ' ' + fmtN(r.conc,1) + '% · ' + fmtN(r.dens,2) + ' kg/L';
+  } else {
+    pumpMainVal  = fmtN(r.injKgh * 1000, 1);
+    pumpMainUnit = 'g/h';
+    pumpSub1 = 'Masa de ' + r.ox.name + ' puro a inyectar';
+    pumpSub2 = fmtN(r.injKgh,4) + ' kg/h';
+    pumpSub3 = r.ox.name + ' 100% puro';
+    pumpSub4 = 'Masa pura: ' + fmtN(r.pureMassGh,2) + ' g/h';
+  }
+
+  var card2 = `
+    <div class="kpi-card kpi-pump">
+      <div class="kpi-label">Ajuste de Bomba Dosificadora</div>
+      <div class="kpi-val">${pumpMainVal} <small>${pumpMainUnit}</small></div>
+      <div class="kpi-sub">${pumpSub1}</div>
+      <div class="metric-row"><span>En litros por hora</span><strong>${pumpSub2}</strong></div>
+      <div class="metric-row"><span>Producto</span><strong>${pumpSub4}</strong></div>
+      <div class="metric-row"><span>Caudal tratado</span><strong>${fmtN(r.Q_m3h,2)} m³/h</strong></div>
+      <div class="metric-row"><span>Dosis total</span><strong>${fmtN(r.dose,2)} mg/L</strong></div>
+    </div>`;
+
+  // Card 3: Daily consumption (OPEX)
+  var opexMainVal, opexMainUnit, opexSub, opexMonthly;
+  if(r.dailyL !== null){
+    opexMainVal  = fmtN(r.dailyL,1);
+    opexMainUnit = 'L/día';
+    opexSub = 'de solución ' + r.ox.name + ' ' + fmtN(r.conc,1) + '%';
+    opexMonthly = fmtN(r.monthlyL,1) + ' L/mes';
+  } else {
+    opexMainVal  = fmtN(r.dailyKg,3);
+    opexMainUnit = 'kg/día';
+    opexSub = 'de ' + r.ox.name + ' sólido/gas puro';
+    opexMonthly = fmtN(r.monthlyKg,2) + ' kg/mes';
+  }
+
+  var card3 = `
+    <div class="kpi-card kpi-green">
+      <div class="kpi-label">Consumo Diario · OPEX</div>
+      <div class="kpi-val">${opexMainVal} <small>${opexMainUnit}</small></div>
+      <div class="kpi-sub">${opexSub}</div>
+      <div class="metric-row"><span>Por mes (30 días)</span><strong>${opexMonthly}</strong></div>
+      <div class="metric-row"><span>Horas de operación</span><strong>${fmtN(r.hours,0)} h/día</strong></div>
+      <div class="metric-row"><span>Masa pura/día</span><strong>${fmtN(r.pureMassGh * r.hours / 1000,3)} kg/día</strong></div>
+      <div class="metric-row"><span>Masa pura/mes</span><strong>${fmtN(r.pureMassGh * r.hours * 30 / 1000,2)} kg/mes</strong></div>
+    </div>`;
+
+  // Alerts
+  var alertORP = `
+    <div class="alert info">
+      <div class="alert-icon">⚡</div>
+      <div>
+        <b>Control operativo · ORP</b>
+        Esta dosificación busca asegurar que el agua entre en contacto con el oxidante <strong>al menos 10 a 20 segundos antes</strong> del lecho catalítico. El parámetro de control es verificar que el ORP del agua <strong>a la salida del filtro sea mayor a 500 mV</strong>. Si el ORP es menor, incremente la dosificación gradualmente hasta lograr el residual de ${fmtN(r.resid,1)} mg/L.
+      </div>
+    </div>`;
+
+  // pH alert: only for Cl₂ / NaOCl when Mn > 0
+  var alertPH = '';
+  if((r.oxKey === 'naocl' || r.oxKey === 'cl2') && r.Mn > 0){
+    alertPH = `
+      <div class="alert warn">
+        <div class="alert-icon">⚠️</div>
+        <div>
+          <b>pH y eficiencia con Manganeso</b>
+          El cloro pierde eficiencia oxidante a pH alto; sin embargo, para precipitar Mn²⁺ eficientemente se recomienda un pH de <strong>8.5 a 10.5</strong>. El lecho catalítico Katalox Light compensa esta limitación, pero garantice que el residual de cloro libre sea <strong>&gt; 1 ppm a la salida</strong>. Si el Mn persiste, eleve el pH en lugar de aumentar la dosis de cloro (el ion OH⁻ es más eficiente que aumentar oxidante).
+        </div>
+      </div>`;
+  }
+
+  // KMnO4 warning
+  var alertKMnO4 = '';
+  if(r.oxKey === 'kmno4'){
+    alertKMnO4 = `
+      <div class="alert warn">
+        <div class="alert-icon">🟣</div>
+        <div>
+          <b>KMnO₄ — Control de sobredosificación</b>
+          El permanganato de potasio es un oxidante fuerte. <strong>La sobredosificación produce una coloración rosada o violeta</strong> en el agua distribuida. Comience con la dosis calculada y ajuste gradualmente. Monitoree ORP &gt; 500 mV pero evite exceder la demanda significativamente.
+        </div>
+      </div>`;
+  }
+
+  // Copy bar
+  var copyBar = `
+    <div class="copy-bar">
+      <p>Exporte los parámetros de ajuste para registrar en la bitácora de operación o enviar al operador de la planta.</p>
+      <button class="btn-copy" id="btn-copy-params">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+        </svg>
+        Copiar parámetros de bomba
+      </button>
+    </div>`;
+
+  var html = `
+    <div class="cards-grid">${card1}${card2}${card3}</div>
+    ${alertORP}
+    ${alertPH}
+    ${alertKMnO4}
+    ${copyBar}
+  `;
+
+  el('results-body').innerHTML = html;
+
+  // Bind copy button
+  el('btn-copy-params').addEventListener('click', function(){ copyParams(r); });
+}
+
+/* ── Copy to clipboard ── */
+function copyParams(r){
+  var lines = [
+    '═══════════════════════════════════════════════════════════════',
+    'PARÁMETROS DE BOMBA DOSIFICADORA — CARBOTECNIA',
+    'Calculadora de Dosificación Continua de Oxidantes · ' + new Date().toLocaleDateString('es-MX'),
+    '═══════════════════════════════════════════════════════════════',
+    '',
+    '─── AGUA CRUDA ─────────────────────────────────────────────────',
+    'Caudal:         ' + fmtN(r.Q_m3h,2) + ' m³/h',
+    'Fe²⁺:           ' + fmtN(r.Fe,2)    + ' mg/L',
+    'Mn²⁺:           ' + fmtN(r.Mn,2)    + ' mg/L',
+    'H₂S:            ' + fmtN(r.H2S,2)   + ' mg/L',
+    '',
+    '─── OXIDANTE SELECCIONADO ──────────────────────────────────────',
+    'Oxidante:       ' + r.ox.label,
+  ];
+  if(r.ox.isLiquid){
+    lines.push('Concentración:  ' + fmtN(r.conc,1) + '% p/p');
+    lines.push('Densidad:       ' + fmtN(r.dens,2) + ' kg/L');
+  }
+  lines.push('');
+  lines.push('─── ESTEQUIOMETRÍA (MIP Carbotecnia 260302) ────────────────────');
+  lines.push('k(Fe²⁺):        ' + r.ox.kFe + ' mg oxidante/mg Fe²⁺');
+  lines.push('k(Mn²⁺):        ' + r.ox.kMn + ' mg oxidante/mg Mn²⁺');
+  lines.push('k(H₂S):         ' + r.ox.kH2S + ' mg oxidante/mg H₂S');
+  lines.push('');
+  lines.push('─── DOSIFICACIÓN CALCULADA ─────────────────────────────────────');
+  lines.push('Demanda estequiométrica:  ' + fmtN(r.demand,3) + ' mg/L');
+  lines.push('  Fe contribución:        ' + fmtN(r.demFe,3)  + ' mg/L');
+  lines.push('  Mn contribución:        ' + fmtN(r.demMn,3)  + ' mg/L');
+  lines.push('  H₂S contribución:       ' + fmtN(r.demH2S,3) + ' mg/L');
+  lines.push('Residual deseado:         ' + fmtN(r.resid,2)  + ' mg/L');
+  lines.push('DOSIS TOTAL:              ' + fmtN(r.dose,3)   + ' mg/L');
+  lines.push('Masa pura requerida:      ' + fmtN(r.pureMassGh,2) + ' g/h');
+  lines.push('');
+  lines.push('─── ★ AJUSTE DE BOMBA DOSIFICADORA ★ ─────────────────────────');
+  if(r.injMlMin !== null){
+    lines.push('►  AJUSTE:  ' + fmtN(r.injMlMin,1) + ' mL/min');
+    lines.push('   Equivale: ' + fmtN(r.injLh,3)   + ' L/h');
+  } else {
+    lines.push('►  ALIMENTAR: ' + fmtN(r.injKgh*1000,1) + ' g/h  (' + fmtN(r.injKgh,4) + ' kg/h)');
+  }
+  lines.push('');
+  lines.push('─── CONSUMO (OPEX) ─────────────────────────────────────────────');
+  if(r.dailyL !== null){
+    lines.push('Consumo diario:   ' + fmtN(r.dailyL,1)   + ' L/día   de solución ' + r.ox.name + ' ' + fmtN(r.conc,1) + '%');
+    lines.push('Consumo mensual:  ' + fmtN(r.monthlyL,1) + ' L/mes');
+  } else {
+    lines.push('Consumo diario:   ' + fmtN(r.dailyKg,3)   + ' kg/día  de ' + r.ox.name);
+    lines.push('Consumo mensual:  ' + fmtN(r.monthlyKg,2) + ' kg/mes');
+  }
+  lines.push('');
+  lines.push('─── NOTAS OPERATIVAS ───────────────────────────────────────────');
+  lines.push('· Inyectar oxidante 10-20 s antes del lecho catalítico.');
+  lines.push('· Verificar ORP > 500 mV a la salida del filtro.');
+  lines.push('· Residual mínimo exigido: 1 ppm a la salida del lecho (MIP 260302).');
+  lines.push('');
+  lines.push('Generado con Calculadora de Dosificación Continua · Carbotecnia');
+  lines.push('Ref. MIP Katalox Light 260302 · Factores estequiométricos estrictos');
+  lines.push('═══════════════════════════════════════════════════════════════');
+
+  var txt = lines.join('\n');
+  var btn = el('btn-copy-params');
+
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){
+      var orig = btn.innerHTML;
+      btn.classList.add('ok');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Copiado ✓';
+      setTimeout(function(){ btn.classList.remove('ok'); btn.innerHTML = orig; }, 2400);
+    });
+    return;
+  }
+  // Fallback
+  var ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta);
+}
+
+/* ── Reset ── */
+function resetAll(){
+  el('inp-flow').value    = '';
+  el('inp-fe').value      = '0';
+  el('inp-mn').value      = '0';
+  el('inp-h2s').value     = '0';
+  el('inp-residual').value= '1.0';
+  el('inp-hours').value   = '24';
+  el('sel-oxidant').value = 'naocl';
+  updateOxidantUI();
+
+  ['chip-demand','chip-dose','chip-pump','chip-daily'].forEach(function(id){
+    el(id).textContent = '—';
+  });
+
+  el('results-body').innerHTML = `
+    <div class="empty-state">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/>
+        <path d="M12 7v5l3 3"/>
+      </svg>
+      <div>Ingrese los parámetros del sistema<br>para calcular la dosificación exacta.</div>
+    </div>`;
+}
+
+/* ── Event listeners ── */
+el('sel-oxidant').addEventListener('change', updateOxidantUI);
+el('btn-calc').addEventListener('click', calculate);
+el('btn-reset').addEventListener('click', resetAll);
+
+// Enter key on any input triggers calculate
+document.querySelectorAll('input[type="number"]').forEach(function(inp){
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+});
+
+/* ── Init ── */
+updateOxidantUI();
+</script>
+</body>
+</html>
