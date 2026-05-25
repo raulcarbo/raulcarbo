@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de dimensionamiento de filtros de Lecho Profundo | Carbotecnia</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #0b1424;
+  --ink-soft: #1a2438;
+  --ink-mute: #475569;
+  --paper: #f4f6fa;
+  --paper-pure: #ffffff;
+  --paper-soft: #eef2f7;
+  --rule: #d6dde7;
+  --rule-soft: #e6ebf2;
+  --muted: #64748b;
+  --steel: #1e40af;
+  --steel-deep: #0c2461;
+  --steel-soft: #dbe4f5;
+  --accent: #0284c7;
+  --accent-soft: #e0f2fe;
+  --ok: #047857;
+  --ok-soft: #d1fae5;
+  --warn: #b45309;
+  --warn-soft: #fef3c7;
+  --err: #b91c1c;
+  --err-soft: #fee2e2;
+  --media-gravel: #6b7280;
+  --media-garnet812: #b45309;
+  --media-garnet3040: #dc2626;
+  --media-sand: #d97706;
+  --media-anthracite: #1f2937;
+  --shadow: 0 1px 2px rgba(11,20,36,.04), 0 8px 24px rgba(11,20,36,.06);
+  --shadow-sm: 0 1px 3px rgba(11,20,36,.06);
+  --radius: 14px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ── Shell ─────────────────────────── */
+.shell {
+  width: min(1360px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 64px;
+}
+
+/* ── Brand bar ──────────────────────── */
+.brand-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 22px;
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  margin-bottom: 16px;
+  flex-wrap: wrap; gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.brand-mark { display: flex; align-items: center; gap: 12px; }
+.brand-icon {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, #1a3a8f, var(--steel-deep));
+  color: var(--paper-pure);
+  display: grid; place-items: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700; font-size: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(12,36,97,.25);
+}
+.brand-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; font-size: 16px;
+  color: var(--steel-deep);
+}
+.brand-name span {
+  display: block;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted);
+  margin-top: 2px; font-weight: 400;
+}
+.brand-tag {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted);
+}
+.brand-tag b { color: var(--steel); font-weight: 600; }
+
+/* ── Hero ───────────────────────────── */
+.calc-header {
+  background: linear-gradient(135deg, #0c2461 0%, #1a3a8f 55%, #0284c7 100%);
+  border-radius: 20px;
+  padding: 28px;
+  color: #fff;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.calc-header::after {
+  content: '';
+  position: absolute;
+  inset: auto -80px -120px auto;
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  border: 52px solid rgba(255,255,255,.06);
+  pointer-events: none;
+}
+.hero-grid {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 1fr 320px;
+  gap: 28px; align-items: end;
+}
+.calc-header h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 2.8vw, 38px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: #fff !important;
+  margin: 0 0 10px;
+}
+.calc-header h1 em {
+  font-style: normal;
+  color: rgba(255,255,255,.80);
+}
+.calc-header p {
+  color: rgba(255,255,255,.72);
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 620px;
+}
+.hero-note {
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.09);
+  border-radius: 16px;
+  padding: 18px;
+  backdrop-filter: blur(16px);
+}
+.hero-note b {
+  display: block;
+  font-size: 10px; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 7px;
+  color: rgba(255,255,255,.82);
+  font-family: 'Poppins', sans-serif;
+}
+.hero-note span {
+  color: rgba(255,255,255,.75);
+  font-size: 13px; line-height: 1.6;
+}
+.hero-warning {
+  margin-top: 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,.60);
+  line-height: 1.55;
+  border-top: 1px solid rgba(255,255,255,.14);
+  padding-top: 12px;
+}
+.hero-warning strong { color: rgba(255,255,255,.82); }
+
+/* ── Formula bar ────────────────────── */
+.formula-bar {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.formula-chip {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 11px 18px;
+  flex: 1; min-width: 130px;
+  box-shadow: var(--shadow-sm);
+}
+.fc-label {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 4px;
+}
+.fc-value {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600; font-size: 15px;
+  color: var(--steel);
+}
+
+/* ── Two-column layout ─────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.input-panel { position: sticky; top: 20px; min-width: 0; }
+.results-column { min-width: 0; }
+
+/* ── Panel ──────────────────────────── */
+.panel {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.panel-header {
+  padding: 17px 20px 13px;
+  border-bottom: 1px solid var(--rule-soft);
+  display: flex; align-items: baseline;
+  justify-content: space-between; gap: 16px;
+}
+.panel-header h2 {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; font-size: 15px;
+  color: var(--steel-deep);
+}
+.panel-header .step {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--muted);
+  white-space: nowrap;
+}
+.panel-body { padding: 20px; }
+
+/* ── Fields ─────────────────────────── */
+.field-group-title {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--steel);
+  margin: 20px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.field-group-title:first-child { margin-top: 0; }
+
+.field { margin-bottom: 16px; }
+
+.field label {
+  display: block; font-weight: 700;
+  font-size: 13px; color: var(--ink);
+  margin-bottom: 6px;
+  font-family: 'Poppins', sans-serif;
+}
+.field label .req { color: var(--steel); margin-left: 2px; }
+
+.field .hint {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .04em;
+  color: var(--muted); margin-top: 5px;
+}
+
+.input-group {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--paper-pure);
+}
+.input-group:focus-within {
+  border-color: var(--steel);
+  box-shadow: 0 0 0 3px rgba(30,64,175,.12);
+}
+.input-group input {
+  border: none; padding: 11px 12px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 15px; background: transparent;
+  color: var(--ink); outline: none; width: 100%; min-width: 0;
+}
+.input-group input::placeholder { color: #aab5c8; font-family: 'DM Sans', sans-serif; }
+.input-group select,
+select.full {
+  border: none;
+  border-left: 1px solid var(--rule);
+  padding: 11px 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 600;
+  background: var(--paper-soft); color: var(--ink-soft);
+  outline: none; cursor: pointer;
+}
+select.full {
+  width: 100%; border: 1px solid var(--rule);
+  border-radius: 12px; padding: 12px 14px;
+  background: var(--paper-pure); color: var(--ink);
+}
+select.full:focus {
+  border-color: var(--steel);
+  box-shadow: 0 0 0 3px rgba(30,64,175,.12);
+  outline: none;
+}
+
+/* ── Slider ─────────────────────────── */
+.slider-wrap {
+  background: var(--steel-soft);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.slider-display {
+  display: flex; align-items: baseline;
+  justify-content: space-between; margin-bottom: 10px;
+}
+.slider-value {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 22px; font-weight: 600;
+}
+.slider-value .unit {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--muted); margin-left: 4px;
+}
+.slider-zone {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 6px;
+}
+.slider-zone.optimal { background: var(--ok-soft); color: var(--ok); }
+.slider-zone.caution { background: var(--warn-soft); color: var(--warn); }
+
+input[type="range"] {
+  appearance: none; width: 100%; height: 6px;
+  background: linear-gradient(to right, var(--ok-soft) 0%, var(--ok-soft) 63.6%, var(--warn-soft) 63.6%, var(--warn-soft) 100%);
+  border-radius: 3px; outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none; width: 20px; height: 20px;
+  background: var(--steel);
+  border: 3px solid var(--paper-pure); border-radius: 50%;
+  cursor: pointer; box-shadow: 0 2px 6px rgba(30,64,175,.35);
+}
+.slider-ticks {
+  display: flex; justify-content: space-between;
+  margin-top: 6px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; color: var(--muted);
+}
+
+/* ── Filter info card ───────────────── */
+.filter-card {
+  margin-top: 10px; padding: 12px 14px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--steel);
+  border-radius: 10px;
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.filter-card b { display: block; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.filter-card .specs {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; color: var(--steel-deep);
+  margin-top: 6px; font-weight: 500;
+}
+
+/* ── Actions ────────────────────────── */
+.actions { margin-top: 18px; display: flex; gap: 10px; }
+.btn {
+  flex: 1; padding: 12px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700; font-size: 13px;
+  cursor: pointer; border-radius: 999px;
+  border: 1px solid transparent;
+  transition: transform .12s, box-shadow .12s;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--steel), var(--steel-deep));
+  color: var(--paper-pure);
+  box-shadow: 0 8px 20px rgba(30,64,175,.22);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(30,64,175,.32); }
+.btn-ghost {
+  background: var(--paper-pure); color: var(--ink);
+  border-color: var(--rule);
+}
+.btn-ghost:hover { background: var(--paper-soft); }
+
+/* ── Results empty state ────────────── */
+.results-empty {
+  text-align: center; padding: 60px 24px;
+  color: var(--muted); font-size: 14px;
+}
+.results-empty svg { margin-bottom: 16px; opacity: .30; stroke: var(--steel); }
+
+/* ── Summary row ────────────────────── */
+.summary-row {
+  display: grid; grid-template-columns: repeat(2,1fr);
+  gap: 1px; background: var(--rule-soft);
+  border: 1px solid var(--rule); border-radius: 14px;
+  overflow: hidden; margin-bottom: 18px;
+}
+.summary-cell { background: var(--paper-pure); padding: 16px 18px; }
+.summary-cell .lbl {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+}
+.summary-cell .val {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600; font-size: 26px; color: var(--ink); line-height: 1;
+}
+.summary-cell .val small {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: var(--muted); margin-left: 4px;
+}
+.summary-cell .alt {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px; color: var(--ink-mute); margin-top: 5px;
+}
+
+/* ── Hero tank card ─────────────────── */
+.hero-tank {
+  background: var(--steel-soft);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--steel);
+  border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 18px;
+}
+.hero-tank-header {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.hero-tank-tag {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--steel); font-weight: 500;
+}
+.hero-tank-body {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; gap: 16px;
+}
+.hero-tank-lbl {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+}
+.hero-tank-val {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600; font-size: 20px; line-height: 1.2;
+}
+.hero-tank-sub { font-size: 12px; color: var(--ink-mute); margin-top: 3px; }
+.hero-tank-divider { width: 1px; height: 40px; background: var(--rule); }
+
+/* ── Section title ──────────────────── */
+.section-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700; font-size: 14px;
+  color: var(--ink); margin: 22px 0 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--steel); border-radius: 50%;
+  display: inline-block; flex-shrink: 0;
+}
+.section-sub {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 8px; margin-left: 14px;
+}
+
+/* ── Media table ────────────────────── */
+.media-table {
+  width: 100%; border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--rule); border-radius: 12px;
+  overflow: hidden; margin-top: 10px;
+  font-size: 13px;
+}
+.media-table thead { background: var(--paper-soft); }
+.media-table th {
+  font-family: 'Poppins', sans-serif; font-weight: 700;
+  font-size: 11px; text-align: left;
+  padding: 10px 12px; border-bottom: 1px solid var(--rule);
+}
+.media-table th:not(:first-child) { text-align: right; }
+.media-table td {
+  padding: 11px 12px; border-bottom: 1px solid var(--rule-soft);
+  color: var(--ink-soft);
+}
+.media-table tr:last-child td { border-bottom: none; }
+.media-table td:not(:first-child) {
+  text-align: right;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500; color: var(--ink); font-size: 13px;
+}
+.media-table tr.totals { background: var(--accent-soft); }
+.media-table tr.totals td {
+  font-weight: 700; color: var(--ink);
+  border-top: 1px solid var(--rule);
+}
+.media-name { display: flex; align-items: center; gap: 10px; }
+.media-chip {
+  width: 10px; height: 10px; border-radius: 50%;
+  display: inline-block; flex-shrink: 0;
+}
+
+/* ── Result list ────────────────────── */
+.result-list { list-style: none; margin: 0; padding: 0; }
+.result-list li {
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: baseline; gap: 16px;
+  padding: 12px 0; border-bottom: 1px dashed var(--rule);
+}
+.result-list li:last-child { border-bottom: none; }
+.result-list .name { font-size: 13px; color: var(--ink-mute); }
+.result-list .name b {
+  display: block; font-weight: 700;
+  color: var(--ink); font-size: 13.5px; margin-bottom: 2px;
+}
+.result-list .value {
+  text-align: right;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13.5px; font-weight: 600; color: var(--ink);
+  white-space: nowrap;
+}
+.result-list .value em {
+  font-style: normal; display: block;
+  font-size: 10.5px; font-weight: 400;
+  color: var(--muted); margin-top: 3px;
+}
+
+/* ── Tags ───────────────────────────── */
+.tag {
+  display: inline-block;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 999px; margin-left: 6px;
+  vertical-align: middle;
+}
+.tag-ok  { background: var(--ok-soft);   color: var(--ok);   border: 1px solid #a7e3c4; }
+.tag-warn{ background: var(--warn-soft); color: var(--warn); border: 1px solid #f3d28b; }
+.tag-err { background: var(--err-soft);  color: var(--err);  border: 1px solid #f4a7a7; }
+
+/* ── Notices ────────────────────────── */
+.notice {
+  margin-top: 16px; padding: 14px 16px;
+  border-radius: 12px; font-size: 12.5px; line-height: 1.55;
+}
+.notice b {
+  display: block;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; margin-bottom: 6px; font-weight: 700;
+}
+.notice.info { background: var(--accent-soft); border: 1px solid #bae6fd; color: var(--steel-deep); }
+.notice.warn { background: var(--warn-soft); border: 1px solid #f3d28b; color: #7c4a08; }
+.notice.tech { background: var(--paper-soft); border: 1px solid var(--rule); color: var(--ink-mute); }
+.notice ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* ── Bed visual ─────────────────────── */
+.bed-visual { margin-top: 14px; display: flex; gap: 18px; align-items: stretch; }
+.bed-tank {
+  position: relative; width: 80px; flex-shrink: 0;
+  background: var(--paper-pure);
+  border: 2px solid var(--ink);
+  border-radius: 8px 8px 4px 4px;
+  overflow: hidden; display: flex; flex-direction: column;
+}
+.bed-layer {
+  width: 100%; display: flex; align-items: center;
+  justify-content: center;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 9px; font-weight: 600; color: rgba(255,255,255,.85);
+  text-transform: uppercase; letter-spacing: .05em;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+}
+.bed-freeboard {
+  width: 100%;
+  background: repeating-linear-gradient(45deg, var(--paper-pure), var(--paper-pure) 6px, var(--paper-soft) 6px, var(--paper-soft) 12px);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 8px; font-weight: 500; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  border-bottom: 1px dashed var(--rule);
+  text-align: center; line-height: 1.3; padding: 0 4px;
+}
+.bed-legend { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+.bed-legend-item { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.bed-legend-chip { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+.bed-legend-text { display: flex; flex-direction: column; }
+.bed-legend-text b { font-weight: 700; color: var(--ink); font-size: 12.5px; }
+.bed-legend-text span { font-family: 'Roboto Mono', monospace; font-size: 10.5px; color: var(--muted); }
+
+/* ── Parallel options ───────────────── */
+.parallel-section {
+  margin-top: 22px; padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+.parallel-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 14px; margin-bottom: 12px;
+}
+.parallel-header h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px; font-weight: 700; margin: 0 0 2px; color: var(--ink);
+}
+.parallel-header p { margin: 0; color: var(--ink-mute); font-size: 12px; }
+.parallel-grid { display: grid; gap: 10px; }
+.par-option {
+  background: var(--paper-pure);
+  border: 1.5px solid var(--rule);
+  border-radius: 12px; padding: 14px 16px;
+}
+.par-option.par-best {
+  border-color: var(--steel);
+  background: linear-gradient(180deg, var(--steel-soft), #fff);
+}
+.par-option-top {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.par-option-title {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600; font-size: 14px; color: var(--ink);
+}
+.par-tag {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
+.par-tag-best { background: var(--steel); color: #fff; }
+.par-tag-ok   { background: var(--ok-soft); color: var(--ok); }
+.par-tag-warn { background: var(--warn-soft); color: var(--warn); }
+.par-tag-err  { background: var(--err-soft); color: var(--err); }
+.par-details {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+  gap: 4px 14px; margin-top: 10px; font-size: 12px;
+}
+.par-detail-item {
+  display: flex; justify-content: space-between;
+  align-items: baseline; gap: 6px; padding: 3px 0;
+}
+.par-detail-item .pdl { color: var(--muted); }
+.par-detail-item .pdv {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700; color: var(--ink); text-align: right;
+}
+
+/* ── Result actions ─────────────────── */
+.result-actions {
+  margin-top: 22px; padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.btn-sm {
+  padding: 10px 16px;
+  font-family: 'DM Sans', sans-serif; font-weight: 600;
+  font-size: 13px; cursor: pointer;
+  border-radius: 999px; display: inline-flex;
+  align-items: center; gap: 8px;
+  background: var(--paper-pure); color: var(--ink);
+  border: 1px solid var(--rule);
+}
+.btn-sm svg { width: 14px; height: 14px; }
+.btn-sm.copied { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+
+/* ── Validation ─────────────────────── */
+.field .err {
+  display: none; margin-top: 5px;
+  font-size: 11px; color: var(--err);
+  font-family: 'Roboto Mono', monospace;
+}
+.field.has-error .err { display: block; }
+.input-group.error { border-color: var(--err); }
+
+/* ── Footer ─────────────────────────── */
+footer {
+  margin-top: 48px; padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* ── Responsive ─────────────────────── */
+@media (max-width: 1000px) {
+  .layout { grid-template-columns: 1fr; }
+  .input-panel { position: static; }
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-note { display: none; }
+}
+@media (max-width: 640px) {
+  .shell { width: calc(100% - 20px); padding-top: 16px; }
+  .panel-body { padding: 14px; }
+  .summary-row { grid-template-columns: 1fr; }
+  .hero-tank-body { grid-template-columns: 1fr; gap: 10px; }
+  .hero-tank-divider { width: 100%; height: 1px; }
+  .result-list li { grid-template-columns: 1fr; gap: 4px; }
+  .result-list .value { text-align: left; }
+  .formula-bar { display: grid; grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 420px) {
+  .formula-bar { grid-template-columns: 1fr; }
+  .actions { flex-direction: column; }
+}
+
+@media print {
+  body { background: #fff; }
+  .shell { padding: 20px; width: 100%; }
+  .panel { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  .actions, .result-actions, .btn { display: none !important; }
+  .layout { grid-template-columns: 1fr; gap: 16px; }
+  .calc-header { background: var(--steel-deep) !important; -webkit-print-color-adjust: exact; }
+}
+</style>
+</head>
+
+<body>
+<div class="shell">
+
+  <!-- Brand bar -->
+  <div class="brand-bar">
+    <div class="brand-mark">
+      <div class="brand-icon">C</div>
+      <div class="brand-name">
+        Carbotecnia
+        <span>Tratamiento de agua · México</span>
+      </div>
+    </div>
+    <div class="brand-tag">Herramienta de ingeniería · <b>v1.2</b></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="calc-header">
+    <div class="hero-grid">
+      <div>
+        <h1>Dimensionamiento de <em>filtros de lecho profundo</em></h1>
+        <p>Calculadora para el diseño básico de sistemas de filtración a presión con medios granulares. Determine el tamaño del tanque, el volumen y peso de cada medio filtrante, el flujo de retrolavado y configuraciones alternativas en paralelo.</p>
+        <div class="hero-warning">
+          <strong>Advertencia:</strong> para una recomendación final se requiere un análisis físico-químico del agua, revisado por personal de ingeniería.
+        </div>
+      </div>
+      <div class="hero-note">
+        <b>Estándares de referencia</b>
+        <span>ANSI/AWWA B100-16 · MIP Carbotecnia · Velocidad óptima 2.5–6 gpm/ft² · Retrolavado referencial 24 gpm/ft² a 20 °C</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula bar -->
+  <div class="formula-bar">
+    <div class="formula-chip">
+      <div class="fc-label">Área requerida</div>
+      <div class="fc-value" id="chip-area">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Tanque sugerido</div>
+      <div class="fc-value" id="chip-tank">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Velocidad real</div>
+      <div class="fc-value" id="chip-speed">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Q retrolavado</div>
+      <div class="fc-value" id="chip-backwash">—</div>
+    </div>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="layout">
+
+    <!-- Inputs -->
+    <div class="input-panel">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Parámetros del proyecto</h2>
+          <span class="step">01 · Entradas</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="field-group-title">Hidráulica del sistema</div>
+
+          <div class="field" id="f-flow">
+            <label>Flujo a tratar <span class="req">*</span></label>
+            <div class="input-group">
+              <input type="number" id="flow" placeholder="Ej. 200" min="0" step="any">
+              <select id="flow-unit">
+                <option value="gpm">gpm</option>
+                <option value="lpm" selected>L/min</option>
+                <option value="lps">L/s</option>
+                <option value="m3h">m³/h</option>
+              </select>
+            </div>
+            <div class="hint">Flujo continuo de servicio en condiciones normales</div>
+            <div class="err">Ingrese un valor válido mayor a cero.</div>
+          </div>
+
+          <div class="field">
+            <label>Velocidad de filtración <span class="req">*</span></label>
+            <div class="slider-wrap">
+              <div class="slider-display">
+                <div class="slider-value">
+                  <span id="speed-val">5.0</span><span class="unit">gpm/ft²</span>
+                </div>
+                <span class="slider-zone optimal" id="speed-zone">Óptimo</span>
+              </div>
+              <input type="range" id="speed" min="2.5" max="8" step="0.1" value="5">
+              <div class="slider-ticks">
+                <span>2.5</span><span>5.0</span><span>8.0</span>
+              </div>
+            </div>
+            <div class="hint">Rango: 2.5–6 gpm/ft² óptimo · 6–8 gpm/ft² aceptable</div>
+          </div>
+
+          <div class="field-group-title">Configuración del filtro</div>
+
+          <div class="field">
+            <label>Elija el tipo de filtro <span class="req">*</span></label>
+            <select id="filter-type" class="full">
+              <option value="single">Un solo medio · Arena sílica</option>
+              <option value="dual">Filtro dual · Arena sílica + Antracita 1.5</option>
+              <option value="multimedia" selected>Filtro multimedia · Antracita + Arena + Garnet</option>
+            </select>
+            <div class="filter-card" id="filter-info"></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" id="btn-calc">Calcular dimensionamiento</button>
+            <button class="btn btn-ghost" id="btn-reset">Limpiar</button>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- Results -->
+    <div class="results-column">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Resultados del dimensionamiento</h2>
+          <span class="step">02 · Salidas</span>
+        </div>
+        <div class="panel-body" id="results">
+          <div class="results-empty" id="empty-state">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <path d="M12 2L4 7v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V7l-8-5z"/>
+              <path d="M12 8v4M12 16h.01"/>
+            </svg>
+            <div>Capture los parámetros del proyecto<br>para obtener el dimensionamiento sugerido.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div><!-- /.layout -->
+
+  <footer>
+    <span>© Carbotecnia · Calle B No. 2105 Int. A, Zapopan, Jalisco</span>
+    <span>Pre-dimensionamiento referencial · El diseño final requiere análisis de agua y pruebas piloto</span>
+  </footer>
+
+</div><!-- /.shell -->
+
+<script>
+const CONST = {
+  VEL_OPT_MIN: 2.5,
+  VEL_OPT_MAX: 6.0,
+  VEL_HIGH_MAX: 8.0,
+  DENS_GRAVEL: 45.31,
+  DENS_GARNET_812: 63.50,
+  DENS_GARNET_3040: 58.97,
+  DENS_SAND: 45.31,
+  DENS_ANTHRACITE: 45.31,
+  BACKWASH_RATE: 24,
+  BACKWASH_TIME_MIN: 10,
+  GAL_TO_L: 3.78541,
+  FT3_TO_L: 28.3168,
+  IN_TO_CM: 2.54
+};
+
+const COMMERCIAL_TANKS = [
+  { tankSize: '9 x 48', diamIn: 9, heightIn: 48, areaFt2: 0.44, mediaVolFt3: 1 },
+  { tankSize: '10 x 54', diamIn: 10, heightIn: 54, areaFt2: 0.55, mediaVolFt3: 1.5 },
+  { tankSize: '12 x 52', diamIn: 12, heightIn: 52, areaFt2: 0.79, mediaVolFt3: 2 },
+  { tankSize: '13 x 54', diamIn: 13, heightIn: 54, areaFt2: 0.92, mediaVolFt3: 2.5 },
+  { tankSize: '14 x 65', diamIn: 14, heightIn: 65, areaFt2: 1.07, mediaVolFt3: 3 },
+  { tankSize: '16 x 65', diamIn: 16, heightIn: 65, areaFt2: 1.40, mediaVolFt3: 4 },
+  { tankSize: '18 x 65', diamIn: 18, heightIn: 65, areaFt2: 1.77, mediaVolFt3: 5 },
+  { tankSize: '21 x 62', diamIn: 21, heightIn: 62, areaFt2: 2.41, mediaVolFt3: 7 },
+  { tankSize: '24 x 72', diamIn: 24, heightIn: 72, areaFt2: 3.14, mediaVolFt3: 10 },
+  { tankSize: '30 x 72', diamIn: 30, heightIn: 72, areaFt2: 4.91, mediaVolFt3: 15 },
+  { tankSize: '36 x 72', diamIn: 36, heightIn: 72, areaFt2: 7.07, mediaVolFt3: 20 },
+  { tankSize: '42 x 72', diamIn: 42, heightIn: 72, areaFt2: 9.62, mediaVolFt3: 30 },
+  { tankSize: '48 x 72', diamIn: 48, heightIn: 72, areaFt2: 12.57, mediaVolFt3: 40 },
+  { tankSize: '63 x 67', diamIn: 63, heightIn: 67, areaFt2: 21.65, mediaVolFt3: 60 }
+];
+
+const FILTER_PROFILES = {
+  single: {
+    label: 'Filtro de un solo medio · Arena sílica',
+    desc: `Cama de arena sílica 16x35 sobre grava de soporte. Configuración económica para retención de sólidos suspendidos mayores a 25 micras. Velocidad de retrolavado referencial: ${CONST.BACKWASH_RATE} gpm/ft² @ 20 °C.`,
+    specs: 'MEDIO: Arena sílica 16x35 · CAPACIDAD FILTRACIÓN: > 25 micras',
+    backwashRate: CONST.BACKWASH_RATE
+  },
+  dual: {
+    label: 'Filtro dual · Arena sílica + Antracita',
+    desc: 'Cama inferior de arena sílica 16x35 y cama superior de antracita 1.5. La antracita retiene primero partículas grandes y alarga ciclos de retrolavado.',
+    specs: 'CAMAS: Antracita 1.5 + Arena 16x35 · DISTRIBUCIÓN 50% / 50%',
+    backwashRate: CONST.BACKWASH_RATE
+  },
+  multimedia: {
+    label: 'Filtro multimedia · Antracita + Arena + Garnet',
+    desc: 'Camas de antracita, arena sílica y garnet, con distribución proporcional: 50% antracita, 25% arena, 12.5% garnet 30x40 y 12.5% garnet 8x12.',
+    specs: 'CAMAS: Antracita 50% · Arena 25% · Garnet 30x40 12.5% · Garnet 8x12 12.5%',
+    backwashRate: CONST.BACKWASH_RATE
+  }
+};
+
+let lastResult = null;
+
+function fmt(n, decimals = 1) {
+  if (!isFinite(n)) return '—';
+  return n.toLocaleString('es-MX', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+
+function fmtInt(n) {
+  if (!isFinite(n)) return '—';
+  return Math.round(n).toLocaleString('es-MX');
+}
+
+function selectFilterTank(areaRequiredFt2) {
+  for (const t of COMMERCIAL_TANKS) {
+    if (t.areaFt2 >= areaRequiredFt2) return { ...t, oversize: false, tanksNeeded: 1 };
+  }
+  const biggest = COMMERCIAL_TANKS[COMMERCIAL_TANKS.length - 1];
+  const tanksNeeded = Math.ceil(areaRequiredFt2 / biggest.areaFt2);
+  return { ...biggest, oversize: true, tanksNeeded };
+}
+
+function normalizeInputs() {
+  const flowRaw = parseFloat(document.getElementById('flow').value);
+  const flowUnit = document.getElementById('flow-unit').value;
+  let flowGpm;
+
+  if (flowUnit === 'gpm') flowGpm = flowRaw;
+  else if (flowUnit === 'lpm') flowGpm = flowRaw / CONST.GAL_TO_L;
+  else if (flowUnit === 'lps') flowGpm = (flowRaw * 60) / CONST.GAL_TO_L;
+  else flowGpm = (flowRaw * 1000 / 60) / CONST.GAL_TO_L;
+
+  const flowLpm = flowGpm * CONST.GAL_TO_L;
+  const flowLps = flowLpm / 60;
+  const flowM3h = flowLpm * 60 / 1000;
+  const speedGpmFt2 = parseFloat(document.getElementById('speed').value);
+  const filterType = document.getElementById('filter-type').value;
+  const profile = FILTER_PROFILES[filterType];
+
+  return { flowRaw, flowUnit, flowGpm, flowLpm, flowLps, flowM3h, speedGpmFt2, filterType, profile };
+}
+
+function validate() {
+  let ok = true;
+  const wrap = document.getElementById('f-flow');
+  const inp = wrap.querySelector('input');
+  const val = parseFloat(inp.value);
+
+  if (!val || val <= 0 || isNaN(val)) {
+    wrap.classList.add('has-error');
+    wrap.querySelector('.input-group').classList.add('error');
+    ok = false;
+  } else {
+    wrap.classList.remove('has-error');
+    wrap.querySelector('.input-group').classList.remove('error');
+  }
+
+  return ok;
+}
+
+function computeMediaQuantities(tank, filterType) {
+  const vol = tank.mediaVolFt3;
+  const items = [];
+  const gravelVol = vol * 0.20;
+
+  items.push({
+    name: 'Grava de soporte',
+    detail: 'Soporte inferior (20% extra)',
+    volumeFt3: gravelVol,
+    weightKg: gravelVol * CONST.DENS_GRAVEL,
+    color: 'var(--media-gravel)'
+  });
+
+  if (filterType === 'single') {
+    items.push({
+      name: 'Arena sílica 16x35',
+      detail: 'Medio filtrante (100%)',
+      volumeFt3: vol,
+      weightKg: vol * CONST.DENS_SAND,
+      color: 'var(--media-sand)'
+    });
+  }
+
+  if (filterType === 'dual') {
+    items.push({
+      name: 'Arena sílica 16x35',
+      detail: 'Cama inferior (50%)',
+      volumeFt3: vol * 0.50,
+      weightKg: vol * 0.50 * CONST.DENS_SAND,
+      color: 'var(--media-sand)'
+    });
+    items.push({
+      name: 'Antracita 1.5',
+      detail: 'Cama superior (50%)',
+      volumeFt3: vol * 0.50,
+      weightKg: vol * 0.50 * CONST.DENS_ANTHRACITE,
+      color: 'var(--media-anthracite)'
+    });
+  }
+
+  if (filterType === 'multimedia') {
+    items.push({
+      name: 'Garnet 8x12',
+      detail: 'Soporte alta densidad (12.5%)',
+      volumeFt3: vol * 0.125,
+      weightKg: vol * 0.125 * CONST.DENS_GARNET_812,
+      color: 'var(--media-garnet812)'
+    });
+    items.push({
+      name: 'Garnet 30x40',
+      detail: 'Cama inferior (12.5%)',
+      volumeFt3: vol * 0.125,
+      weightKg: vol * 0.125 * CONST.DENS_GARNET_3040,
+      color: 'var(--media-garnet3040)'
+    });
+    items.push({
+      name: 'Arena sílica 16x35',
+      detail: 'Cama intermedia (25%)',
+      volumeFt3: vol * 0.25,
+      weightKg: vol * 0.25 * CONST.DENS_SAND,
+      color: 'var(--media-sand)'
+    });
+    items.push({
+      name: 'Antracita 1.5',
+      detail: 'Cama superior (50%)',
+      volumeFt3: vol * 0.50,
+      weightKg: vol * 0.50 * CONST.DENS_ANTHRACITE,
+      color: 'var(--media-anthracite)'
+    });
+  }
+
+  return items;
+}
+
+function mediaTotalsForTank(tank, filterType, count) {
+  return computeMediaQuantities(tank, filterType).map(m => ({
+    ...m,
+    totalFt3: m.volumeFt3 * count,
+    totalKg: m.weightKg * count
+  }));
+}
+
+function speedTagHtml(speed) {
+  if (speed <= CONST.VEL_OPT_MAX) return '<span class="tag tag-ok">En rango óptimo</span>';
+  if (speed <= CONST.VEL_HIGH_MAX) return '<span class="tag tag-warn">Aceptable</span>';
+  return '<span class="tag tag-err">Velocidad alta</span>';
+}
+
+function parallelLabel(speed) {
+  if (speed < CONST.VEL_OPT_MIN) return { cls: 'par-tag-warn', text: 'Vel. baja' };
+  if (speed <= CONST.VEL_OPT_MAX) return { cls: 'par-tag-ok', text: 'Vel. óptima' };
+  if (speed <= CONST.VEL_HIGH_MAX) return { cls: 'par-tag-warn', text: 'Vel. alta' };
+  return { cls: 'par-tag-err', text: 'Vel. excesiva' };
+}
+
+function buildParallelOptions(r) {
+  const options = [];
+  const maxCount = 16;
+  const parallelDiameters = [36, 42, 48, 63];
+
+  for (const tank of COMMERCIAL_TANKS) {
+    if (!parallelDiameters.includes(tank.diamIn)) continue;
+
+    const count = Math.ceil(r.areaRequiredFt2 / tank.areaFt2);
+    if (count < 2 || count > maxCount) continue;
+
+    const totalAreaFt2 = tank.areaFt2 * count;
+    const actualSpeed = r.I.flowGpm / totalAreaFt2;
+    const flowPerTankGpm = r.I.flowGpm / count;
+    const backwashFlowGpm = r.I.profile.backwashRate * tank.areaFt2;
+    const backwashFlowLpm = backwashFlowGpm * CONST.GAL_TO_L;
+    const media = mediaTotalsForTank(tank, r.I.filterType, count);
+    const totalMediaFt3 = media.reduce((s, m) => s + m.totalFt3, 0);
+    const totalMediaKg = media.reduce((s, m) => s + m.totalKg, 0);
+
+    options.push({
+      tank, count, totalAreaFt2, actualSpeed, flowPerTankGpm,
+      backwashFlowGpm, backwashFlowLpm, media, totalMediaFt3, totalMediaKg
+    });
+  }
+
+  options.sort((a, b) => {
+    const aPenalty = a.actualSpeed >= CONST.VEL_OPT_MIN && a.actualSpeed <= CONST.VEL_OPT_MAX ? 0 : 1;
+    const bPenalty = b.actualSpeed >= CONST.VEL_OPT_MIN && b.actualSpeed <= CONST.VEL_OPT_MAX ? 0 : 1;
+    if (aPenalty !== bPenalty) return aPenalty - bPenalty;
+    if (a.count !== b.count) return a.count - b.count;
+    return a.totalAreaFt2 - b.totalAreaFt2;
+  });
+
+  return options.slice(0, 12);
+}
+
+function renderParallelOptions(r) {
+  const options = buildParallelOptions(r);
+  if (!options.length) return '';
+
+  const cards = options.map((o, idx) => {
+    const vl = parallelLabel(o.actualSpeed);
+    const tag = idx === 0
+      ? '<span class="par-tag par-tag-best">Recomendado</span>'
+      : `<span class="par-tag ${vl.cls}">${vl.text}</span>`;
+
+    return `
+      <div class="par-option ${idx === 0 ? 'par-best' : ''}">
+        <div class="par-option-top">
+          <span class="par-option-title">${o.count}x tanque ${o.tank.tankSize}</span>
+          ${tag}
+        </div>
+        <div class="par-details">
+          <div class="par-detail-item"><span class="pdl">Flujo por tanque</span><span class="pdv">${fmt(o.flowPerTankGpm, 1)} gpm</span></div>
+          <div class="par-detail-item"><span class="pdl">Área total</span><span class="pdv">${fmt(o.totalAreaFt2, 2)} ft²</span></div>
+          <div class="par-detail-item"><span class="pdl">Vel. real</span><span class="pdv">${fmt(o.actualSpeed, 2)} gpm/ft²</span></div>
+          <div class="par-detail-item"><span class="pdl">Vel. real</span><span class="pdv">${fmt(o.actualSpeed * 2.4458, 1)} m/h</span></div>
+          <div class="par-detail-item"><span class="pdl">Q retrolavado / tanque</span><span class="pdv">${fmt(o.backwashFlowGpm, 1)} gpm</span></div>
+          <div class="par-detail-item"><span class="pdl">Q retrolavado / tanque</span><span class="pdv">${fmtInt(o.backwashFlowLpm)} L/min</span></div>
+          <div class="par-detail-item"><span class="pdl">Medios totales</span><span class="pdv">${fmt(o.totalMediaFt3, 2)} ft³</span></div>
+          <div class="par-detail-item"><span class="pdl">Peso total</span><span class="pdv">${fmtInt(o.totalMediaKg)} kg</span></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="parallel-section">
+      <div class="parallel-header">
+        <div>
+          <h3>Configuraciones en paralelo con tanques comerciales</h3>
+          <p>Alternativas calculadas para el mismo flujo total. El retrolavado se reporta por tanque y se recomienda hacerlo en secuencia.</p>
+        </div>
+        <span class="tag tag-ok">${options.length} opciones</span>
+      </div>
+      <div class="parallel-grid">${cards}</div>
+    </div>
+  `;
+}
+
+function calculate() {
+  if (!validate()) return;
+
+  const I = normalizeInputs();
+  const areaRequiredFt2 = I.flowGpm / I.speedGpmFt2;
+  const chosenTank = selectFilterTank(areaRequiredFt2);
+  const mediaPerTank = computeMediaQuantities(chosenTank, I.filterType);
+
+  const media = mediaPerTank.map(m => ({
+    ...m,
+    totalFt3: m.volumeFt3 * chosenTank.tanksNeeded,
+    totalKg: m.weightKg * chosenTank.tanksNeeded
+  }));
+
+  const totalAreaFt2 = chosenTank.areaFt2 * chosenTank.tanksNeeded;
+  const actualSpeed = I.flowGpm / totalAreaFt2;
+  const backwashRate = I.profile.backwashRate;
+  const backwashFlowGpm = backwashRate * chosenTank.areaFt2;
+  const backwashFlowLpm = backwashFlowGpm * CONST.GAL_TO_L;
+  const backwashWaterGal = backwashFlowGpm * CONST.BACKWASH_TIME_MIN;
+  const backwashWaterL = backwashWaterGal * CONST.GAL_TO_L;
+  const linearVelocityMH = actualSpeed * 2.4458;
+
+  renderResults({
+    I, areaRequiredFt2, chosenTank, totalAreaFt2, actualSpeed,
+    media, mediaPerTank, backwashRate, backwashFlowGpm, backwashFlowLpm,
+    backwashWaterGal, backwashWaterL, linearVelocityMH
+  });
+}
+
+function renderResults(r) {
+  // Update formula chips
+  document.getElementById('chip-area').textContent     = fmt(r.areaRequiredFt2, 2) + ' ft²';
+  document.getElementById('chip-tank').textContent     = r.chosenTank.tankSize + (r.chosenTank.tanksNeeded > 1 ? ' ×' + r.chosenTank.tanksNeeded : '');
+  document.getElementById('chip-speed').textContent    = fmt(r.actualSpeed, 1) + ' gpm/ft²';
+  document.getElementById('chip-backwash').textContent = fmtInt(r.backwashFlowLpm) + ' L/min';
+
+  const totalVolFt3 = r.media.reduce((sum, m) => sum + m.totalFt3, 0);
+  const totalKg = r.media.reduce((sum, m) => sum + m.totalKg, 0);
+  const alerts = [];
+
+  if (r.actualSpeed > CONST.VEL_OPT_MAX && r.actualSpeed <= CONST.VEL_HIGH_MAX) {
+    alerts.push(`Velocidad de filtración (${fmt(r.actualSpeed, 1)} gpm/ft²) por encima del rango óptimo de 6 gpm/ft². La calidad de filtrado puede deteriorarse.`);
+  }
+  if (r.actualSpeed > CONST.VEL_HIGH_MAX) {
+    alerts.push('Velocidad superior a 8 gpm/ft²: aumenta la caída de presión y compromete la calidad del filtrado. Considere mayor área de filtración.');
+  }
+  if (r.chosenTank.oversize) {
+    alerts.push(`El área requerida (${fmt(r.areaRequiredFt2, 2)} ft²) excede el tanque comercial más grande. Se sugieren ${r.chosenTank.tanksNeeded} tanques de 63 x 67 en paralelo, o una de las configuraciones alternativas mostradas abajo.`);
+  }
+  if (r.actualSpeed < CONST.VEL_OPT_MIN) {
+    alerts.push('Velocidad menor a 2.5 gpm/ft². Puede indicar sobredimensionamiento o necesidad de revisar distribución hidráulica.');
+  }
+
+  const mediaTopDown = [...r.media].reverse();
+
+  const mediaRows = mediaTopDown.map(m => `
+    <tr>
+      <td>
+        <div class="media-name">
+          <span class="media-chip" style="background: ${m.color}"></span>
+          <div>
+            <div style="font-weight:700;color:var(--ink);">${m.name}</div>
+            <div style="font-size:11px;color:var(--muted);font-family:'Roboto Mono',monospace;">${m.detail}</div>
+          </div>
+        </div>
+      </td>
+      <td>${fmt(m.totalFt3, 2)}</td>
+      <td>${fmtInt(m.totalKg)}</td>
+    </tr>
+  `).join('');
+
+  const TANK_HEIGHT_PX = 280;
+  const freeboardPx = TANK_HEIGHT_PX * 0.50;
+  const bedHeightPx = TANK_HEIGHT_PX * 0.50;
+  const bedTotalFt3 = r.mediaPerTank.reduce((sum, m) => sum + m.volumeFt3, 0);
+
+  const bedLayersHtml = [...r.mediaPerTank].reverse().map(m => {
+    const h = (m.volumeFt3 / bedTotalFt3) * bedHeightPx;
+    const shortName = m.name.split(' ')[0];
+    return `<div class="bed-layer" style="background: ${m.color}; height: ${h}px;" title="${m.name}">${shortName}</div>`;
+  }).join('');
+
+  const legendItems = mediaTopDown.map(m => `
+    <div class="bed-legend-item">
+      <span class="bed-legend-chip" style="background: ${m.color}"></span>
+      <div class="bed-legend-text">
+        <b>${m.name}</b>
+        <span>${fmt(m.volumeFt3, 2)} ft³/tanque · ${fmtInt(m.weightKg)} kg/tanque</span>
+      </div>
+    </div>
+  `).join('');
+
+  const html = `
+    <div class="summary-row">
+      <div class="summary-cell">
+        <div class="lbl">Área transversal requerida</div>
+        <div class="val">${fmt(r.areaRequiredFt2, 2)} <small>ft²</small></div>
+        <div class="alt">${fmt(r.areaRequiredFt2 * 0.0929, 3)} m² · velocidad real ${fmt(r.actualSpeed, 1)} gpm/ft²</div>
+      </div>
+      <div class="summary-cell">
+        <div class="lbl">${r.chosenTank.tanksNeeded > 1 ? 'Configuración en paralelo' : 'Tanque sugerido'}</div>
+        <div class="val">${r.chosenTank.tankSize}</div>
+        <div class="alt">
+          ${r.chosenTank.tanksNeeded > 1
+            ? `${r.chosenTank.tanksNeeded} tanques · área total ${fmt(r.totalAreaFt2, 2)} ft²`
+            : `Área disponible ${r.chosenTank.areaFt2} ft²`}
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-tank">
+      <div class="hero-tank-header">
+        <span class="hero-tank-tag">Equipo recomendado · Catálogo Carbotecnia</span>
+        ${r.chosenTank.oversize ? '<span class="tag tag-warn">Configuración en paralelo</span>' : '<span class="tag tag-ok">Tanque estándar</span>'}
+      </div>
+      <div class="hero-tank-body">
+        <div>
+          <div class="hero-tank-lbl">Tanque ${r.chosenTank.tanksNeeded > 1 ? '(c/u)' : ''}</div>
+          <div class="hero-tank-val">${r.chosenTank.tankSize}</div>
+          <div class="hero-tank-sub">
+            Composite · ${r.chosenTank.diamIn}" Ø × ${r.chosenTank.heightIn}" altura
+            ${r.chosenTank.tanksNeeded > 1 ? ` · ×${r.chosenTank.tanksNeeded} tanques en paralelo` : ''}
+          </div>
+        </div>
+        <div class="hero-tank-divider"></div>
+        <div>
+          <div class="hero-tank-lbl">Configuración</div>
+          <div class="hero-tank-val" style="font-size:15px;">${r.I.profile.label.split(' · ')[0]}</div>
+          <div class="hero-tank-sub">${r.I.profile.label.split(' · ')[1] || ''}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Composición del lecho filtrante</div>
+    <div class="section-sub">Por tanque · de la cama superior al fondo</div>
+    <div class="bed-visual">
+      <div class="bed-tank">
+        <div class="bed-freeboard" style="height: ${freeboardPx}px;">Espacio<br>libre 50%<br>(retrolavado)</div>
+        ${bedLayersHtml}
+      </div>
+      <div class="bed-legend">${legendItems}</div>
+    </div>
+
+    <div class="section-title">Cantidades de medios filtrantes</div>
+    <div class="section-sub">
+      ${r.chosenTank.tanksNeeded > 1 ? `Total para ${r.chosenTank.tanksNeeded} tanques` : 'Por tanque'}
+      · densidades estándar Carbotecnia
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="media-table">
+        <thead>
+          <tr>
+            <th>Medio filtrante</th>
+            <th>Volumen (ft³)</th>
+            <th>Peso (kg)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${mediaRows}
+          <tr class="totals">
+            <td>Total</td>
+            <td>${fmt(totalVolFt3, 2)}</td>
+            <td>${fmtInt(totalKg)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title">Hidráulica y retrolavado</div>
+    <div class="section-sub">Validaciones AWWA B100-16 · Velocidades a 20 °C</div>
+
+    <ul class="result-list">
+      <li>
+        <div class="name">
+          <b>Velocidad real de filtración</b>
+          Velocidad del flujo de servicio sobre el área total seleccionada.
+        </div>
+        <div class="value">
+          ${fmt(r.actualSpeed, 1)} gpm/ft² ${speedTagHtml(r.actualSpeed)}
+          <em>${fmt(r.linearVelocityMH, 1)} m/h · óptimo 2.5–6 gpm/ft²</em>
+        </div>
+      </li>
+      <li>
+        <div class="name">
+          <b>Flujo de retrolavado por tanque</b>
+          A ${r.backwashRate} gpm/ft² para expansión aproximada de cama a 20 °C.
+        </div>
+        <div class="value">
+          ${fmt(r.backwashFlowGpm, 1)} gpm
+          <em>${fmtInt(r.backwashFlowLpm)} L/min · ${fmt(r.backwashFlowGpm * 0.227, 1)} m³/h</em>
+        </div>
+      </li>
+      <li>
+        <div class="name">
+          <b>Agua de retrolavado por ciclo</b>
+          Considerando ${CONST.BACKWASH_TIME_MIN} minutos de retrolavado por tanque.
+        </div>
+        <div class="value">
+          ${fmtInt(r.backwashWaterL)} L
+          <em>${fmtInt(r.backwashWaterGal)} gal · ${fmt(r.backwashWaterL / 1000, 2)} m³</em>
+        </div>
+      </li>
+      ${r.chosenTank.tanksNeeded > 1 ? `
+      <li>
+        <div class="name">
+          <b>Estrategia de retrolavado</b>
+          Con múltiples tanques, retrolavar uno a la vez en secuencia.
+        </div>
+        <div class="value">
+          Secuencial
+          <em>Solo 1 tanque retrolavando · resto en servicio</em>
+        </div>
+      </li>` : ''}
+      <li>
+        <div class="name">
+          <b>Caída de presión inicial</b>
+          Con la cama limpia, como referencia para filtros a presión.
+        </div>
+        <div class="value">
+          ≈ 3 psi
+          <em>retrolavar al aumentar 7–10 psi sobre limpio</em>
+        </div>
+      </li>
+    </ul>
+
+    ${alerts.length > 0 ? `
+      <div class="notice warn">
+        <b>Alertas técnicas</b>
+        <ul>${alerts.map(a => `<li>${a}</li>`).join('')}</ul>
+      </div>
+    ` : ''}
+
+    ${renderParallelOptions(r)}
+
+    <div class="notice info">
+      <b>Parámetros de referencia (AWWA B100-16 · MIP Carbotecnia)</b>
+      Velocidad óptima 2.5–6 gpm/ft² · Velocidad máxima 8 gpm/ft² · Expansión de cama en retrolavado: 50% aproximada · Velocidad de retrolavado referencial: ${CONST.BACKWASH_RATE} gpm/ft² a 20 °C · Frecuencia: 1 vez/semana mínimo, idealmente 2–3 veces/semana · Caída de presión para retrolavar: 7–10 psi sobre la inicial.
+    </div>
+
+    <div class="notice tech">
+      <b>Notas de ingeniería</b>
+      <p>Este resultado es un pre-dimensionamiento aproximado. Se basa en tanques composite del catálogo Carbotecnia y en una velocidad de retrolavado referencial de ${CONST.BACKWASH_RATE} gpm/ft².</p>
+      <p>Para diseños críticos, recomendamos revisar el cálculo con uno de nuestros ingenieros y analizar turbidez, sólidos suspendidos, especificaciones de válvula, temperatura, cloro residual, presión disponible y flujo disponible para retrolavado.</p>
+      <p>Si el agua contiene flóculos provenientes de coagulación, recomendamos evitar velocidades de filtración mayores a 4 gpm/ft².</p>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-sm" id="btn-print">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/>
+        </svg>
+        Imprimir / Guardar PDF
+      </button>
+      <button class="btn-sm" id="btn-copy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+        </svg>
+        Copiar resumen
+      </button>
+    </div>
+  `;
+
+  document.getElementById('results').innerHTML = html;
+  document.getElementById('btn-print').addEventListener('click', () => window.print());
+  document.getElementById('btn-copy').addEventListener('click', () => copySummary(r));
+  lastResult = r;
+}
+
+function copySummary(r) {
+  const lines = [];
+  lines.push('DIMENSIONAMIENTO DE FILTRO DE LECHO PROFUNDO');
+  lines.push('Carbotecnia · Calculadora técnica');
+  lines.push('');
+  lines.push('DATOS DEL PROYECTO');
+  lines.push(`Flujo a tratar: ${fmt(r.I.flowGpm, 1)} gpm (${fmtInt(r.I.flowLpm)} L/min · ${fmt(r.I.flowM3h, 1)} m³/h)`);
+  lines.push(`Velocidad de filtración seleccionada: ${fmt(r.I.speedGpmFt2, 1)} gpm/ft²`);
+  lines.push(`Tipo de filtro: ${r.I.profile.label}`);
+  lines.push('');
+  lines.push('EQUIPO RECOMENDADO');
+  lines.push(`Tanque: ${r.chosenTank.tankSize}${r.chosenTank.tanksNeeded > 1 ? ` x ${r.chosenTank.tanksNeeded} en paralelo` : ''}`);
+  lines.push(`Área transversal: ${fmt(r.chosenTank.areaFt2, 2)} ft² por tanque (total ${fmt(r.totalAreaFt2, 2)} ft²)`);
+  lines.push(`Velocidad real: ${fmt(r.actualSpeed, 1)} gpm/ft²`);
+  lines.push('');
+  lines.push(`MEDIOS FILTRANTES ${r.chosenTank.tanksNeeded > 1 ? `(TOTAL ${r.chosenTank.tanksNeeded} TANQUES)` : '(POR TANQUE)'}`);
+
+  r.media.forEach(m => {
+    lines.push(`${m.name}: ${fmt(m.totalFt3, 2)} ft³ · ${fmtInt(m.totalKg)} kg`);
+  });
+
+  const totalVol = r.media.reduce((s, m) => s + m.totalFt3, 0);
+  const totalKg = r.media.reduce((s, m) => s + m.totalKg, 0);
+
+  lines.push(`TOTAL: ${fmt(totalVol, 2)} ft³ · ${fmtInt(totalKg)} kg`);
+  lines.push('');
+  lines.push('RETROLAVADO');
+  lines.push(`Velocidad retrolavado: ${r.backwashRate} gpm/ft²`);
+  lines.push(`Flujo por tanque: ${fmt(r.backwashFlowGpm, 1)} gpm (${fmtInt(r.backwashFlowLpm)} L/min)`);
+  lines.push(`Agua por ciclo: ${fmtInt(r.backwashWaterL)} L (${fmtInt(r.backwashWaterGal)} gal · ${CONST.BACKWASH_TIME_MIN} min)`);
+  lines.push('');
+  lines.push('Carbotecnia · carbotecnia.info');
+  lines.push('Pre-dimensionamiento referencial · Validar con análisis de agua');
+
+  const text = lines.join('\n');
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btn-copy');
+    const orig = btn.innerHTML;
+    btn.classList.add('copied');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Copiado al portapapeles`;
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = orig;
+    }, 2200);
+  }).catch(() => {
+    alert('No se pudo copiar al portapapeles.');
+  });
+}
+
+function updateFilterCard() {
+  const type = document.getElementById('filter-type').value;
+  const p = FILTER_PROFILES[type];
+  document.getElementById('filter-info').innerHTML = `
+    <b>${p.label}</b>
+    ${p.desc}
+    <div class="specs">${p.specs}</div>
+  `;
+}
+
+function updateSpeedDisplay() {
+  const val = parseFloat(document.getElementById('speed').value);
+  document.getElementById('speed-val').textContent = val.toFixed(1);
+
+  const zone = document.getElementById('speed-zone');
+  if (val <= CONST.VEL_OPT_MAX) {
+    zone.textContent = 'Óptimo';
+    zone.className = 'slider-zone optimal';
+  } else {
+    zone.textContent = 'Aceptable';
+    zone.className = 'slider-zone caution';
+  }
+}
+
+function resetAll() {
+  document.getElementById('flow').value = '';
+  document.getElementById('speed').value = '5';
+  document.getElementById('filter-type').value = 'multimedia';
+
+  updateSpeedDisplay();
+  updateFilterCard();
+
+  document.querySelectorAll('.has-error').forEach(e => e.classList.remove('has-error'));
+  document.querySelectorAll('.input-group.error').forEach(e => e.classList.remove('error'));
+
+  // Clear formula chips
+  ['chip-area', 'chip-tank', 'chip-speed', 'chip-backwash'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+
+  lastResult = null;
+  document.getElementById('results').innerHTML = `
+    <div class="results-empty" id="empty-state">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M12 2L4 7v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V7l-8-5z"/>
+        <path d="M12 8v4M12 16h.01"/>
+      </svg>
+      <div>Capture los parámetros del proyecto<br>para obtener el dimensionamiento sugerido.</div>
+    </div>
+  `;
+}
+
+document.getElementById('btn-calc').addEventListener('click', calculate);
+document.getElementById('btn-reset').addEventListener('click', resetAll);
+document.getElementById('filter-type').addEventListener('change', updateFilterCard);
+document.getElementById('speed').addEventListener('input', updateSpeedDisplay);
+
+document.querySelectorAll('input[type="number"]').forEach(inp => {
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+});
+
+updateFilterCard();
+updateSpeedDisplay();
+</script>
+</body>
+</html>
