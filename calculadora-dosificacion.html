@@ -185,6 +185,9 @@ select.full-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(3,105,
 .btn-copy.ok{background:linear-gradient(135deg,#0F766E,#065F46)}
 
 /* ── Footer ───────────────────────── */
+.disclaimer{display:flex;gap:12px;align-items:flex-start;background:#FFFBEB;border:1px solid #FCD34D;border-radius:14px;padding:16px 18px;margin-top:24px;font-size:12.5px;line-height:1.65;color:#78350F}
+.disclaimer strong{display:block;margin-bottom:4px;font-family:var(--font-title);font-size:12px;letter-spacing:.04em}
+.disclaimer svg{color:#B45309;margin-top:2px}
 footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);font-family:var(--font-num);letter-spacing:.06em;text-transform:uppercase}
 
 /* ── Responsive ───────────────────── */
@@ -400,6 +403,14 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     </div>
 
   </div><!-- /.layout -->
+
+  <div class="disclaimer">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>
+      <strong>Cálculo preliminar — requiere validación en campo.</strong>
+      Los resultados son estimaciones estequiométricas basadas en condiciones de reacción neutral (MIP 260302) y no sustituyen una prueba de jarras ni la puesta en marcha supervisada. La dosis real depende del pH operativo, la temperatura, la presencia de materia orgánica, el tiempo de contacto disponible y la variabilidad de la fuente. Ajuste la bomba dosificadora de forma progresiva y confirme con medición de ORP o residual de oxidante en el efluente del lecho catalítico.
+    </div>
+  </div>
 
   <footer>
     <span>© Carbotecnia · Zapopan, Jalisco · carbotecnia.info</span>
