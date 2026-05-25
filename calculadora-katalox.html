@@ -48,6 +48,7 @@ body {
   width: min(1360px, calc(100% - 32px));
   margin: 0 auto;
   padding: 32px 0 64px;
+  box-sizing: border-box;
 }
 
 /* ── Brand bar ─────────────────────── */
@@ -304,7 +305,8 @@ body {
 }
 
 /* ── Results column ────────────────── */
-.results-column { display: grid; gap: 14px; }
+.results-column { display: grid; gap: 14px; min-width: 0; }
+.input-panel { min-width: 0; }
 
 /* KPI cards */
 .cards-grid {
@@ -464,6 +466,8 @@ body {
   border-left: 4px solid var(--brand);
   border-radius: var(--radius);
   padding: 15px 18px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .bw-table-card h3 {
   font-family: var(--font-title);
@@ -557,14 +561,23 @@ body {
 @media (max-width: 900px) {
   .layout { grid-template-columns: 1fr; }
   .input-panel { position: static; }
+  .steps-grid { grid-template-columns: repeat(3, 1fr); }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 580px) {
-  .calc-wrap { padding: 16px 12px 48px; }
+@media (max-width: 640px) {
+  .calc-wrap { padding: 16px 14px 48px; }
   .cards-grid { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .cycles-grid { grid-template-columns: repeat(2, 1fr); }
+  .formula-bar { flex-direction: column; }
+  .calc-header { padding: 20px 16px; }
+  .formula-chip { width: 100%; }
+  .bc-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 420px) {
   .steps-grid { grid-template-columns: 1fr; }
   .cycles-grid { grid-template-columns: 1fr; }
-  .formula-bar { flex-direction: column; }
-  .calc-header { padding: 20px 18px; }
+  .cards-grid { grid-template-columns: 1fr; }
 }
 @media print {
   body { background: #fff; }
