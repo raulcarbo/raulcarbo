@@ -301,7 +301,7 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
               <option value="L">L</option>
             </select>
           </div>
-          <div class="hint">💡 Un recipiente estándar de 48" × 72" tiene aproximadamente <strong>62 ft³</strong> de volumen interno. Haz clic en un renglón de la tabla para autocompletar.</div>
+          <div class="hint">💡 Un recipiente estándar de 48" × 72" tiene aproximadamente <strong>68.34 ft³ (1,934 L)</strong> de volumen interno. Haz clic en un renglón de la tabla para autocompletar.</div>
           <button class="ref-toggle" id="ref-toggle" type="button">
             <span>📋 Ver tabla de recipientes comunes</span>
             <i class="arrow">▼</i>
@@ -662,10 +662,10 @@ function render(){
   }
 
   // Volume breakdown table
-  el('td-interno').textContent    = r.inp.volInterno > 0 ? fmtN(r.inp.volInterno,2) + ' ft³' : '—';
-  el('td-medio').textContent      = r.inp.volMedio > 0   ? fmtN(r.inp.volMedio,2)   + ' ft³' : '—';
-  el('td-grava').textContent      = fmtN(r.inp.volGrava,2) + ' ft³';
-  el('td-free').textContent       = r.valid ? fmtN(r.freeboard,2)  + ' ft³' : '—';
+  el('td-interno').textContent    = r.inp.volInterno > 0 ? fmtN(r.inp.volInterno,2) + ' ft³  (' + fmtN(r.inp.volInterno*FT3_TO_L,1) + ' L)' : '—';
+  el('td-medio').textContent      = r.inp.volMedio > 0   ? fmtN(r.inp.volMedio,2)   + ' ft³  (' + fmtN(r.inp.volMedio*FT3_TO_L,1)   + ' L)' : '—';
+  el('td-grava').textContent      = fmtN(r.inp.volGrava,2) + ' ft³  (' + fmtN(r.inp.volGrava*FT3_TO_L,1) + ' L)';
+  el('td-free').textContent       = r.valid ? fmtN(r.freeboard,2)  + ' ft³  (' + fmtN(r.freeboard*FT3_TO_L,1)  + ' L)' : '—';
   el('td-void-medio').textContent = r.valid ? fmtN(r.voidMedio,2)  + ' ft³  (' + fmtN(r.voidMedio*FT3_TO_L,1) + ' L)' : '—';
   el('td-void-grava').textContent = r.valid ? fmtN(r.voidGrava,2)  + ' ft³  (' + fmtN(r.voidGrava*FT3_TO_L,1) + ' L)' : '—';
   el('td-total-agua').textContent = r.valid ? fmtN(r.totalFt3,2) + ' ft³  →  ' + fmtN(r.totalL,1) + ' L  (' + fmtN(r.totalGal,1) + ' gal)' : '—';
@@ -718,12 +718,12 @@ function buildProcedureText(){
     '══════════════════════════════════════════════════════════════',
     '',
     '─── PARÁMETROS DEL RECIPIENTE ──────────────────────────────',
-    'Volumen interno:          ' + fmtN(r.inp.volInterno,2) + ' ft³',
-    'Volumen del medio:        ' + fmtN(r.inp.volMedio,2)   + ' ft³  (' + medioLabel[r.inp.tipoMedio] + ')',
-    'Volumen de grava:         ' + fmtN(r.inp.volGrava,2)   + ' ft³',
-    'Freeboard (espacio libre):' + fmtN(r.freeboard,2) + ' ft³',
-    'Vacíos en medio (40%):    ' + fmtN(r.voidMedio,2) + ' ft³',
-    'Vacíos en grava (30%):    ' + fmtN(r.voidGrava,2) + ' ft³',
+    'Volumen interno:          ' + fmtN(r.inp.volInterno,2) + ' ft³  (' + fmtN(r.inp.volInterno*FT3_TO_L,1) + ' L)',
+    'Volumen del medio:        ' + fmtN(r.inp.volMedio,2)   + ' ft³  (' + fmtN(r.inp.volMedio*FT3_TO_L,1)   + ' L)  [' + medioLabel[r.inp.tipoMedio] + ']',
+    'Volumen de grava:         ' + fmtN(r.inp.volGrava,2)   + ' ft³  (' + fmtN(r.inp.volGrava*FT3_TO_L,1)   + ' L)',
+    'Freeboard (espacio libre):' + fmtN(r.freeboard,2) + ' ft³  (' + fmtN(r.freeboard*FT3_TO_L,1) + ' L)',
+    'Vacíos en medio (40%):    ' + fmtN(r.voidMedio,2) + ' ft³  (' + fmtN(r.voidMedio*FT3_TO_L,1) + ' L)',
+    'Vacíos en grava (30%):    ' + fmtN(r.voidGrava,2) + ' ft³  (' + fmtN(r.voidGrava*FT3_TO_L,1) + ' L)',
     '',
     '─── VOLUMEN DE INUNDACIÓN ───────────────────────────────────',
     'Volumen Total de Agua:    ' + fmtN(r.totalFt3,2) + ' ft³',
@@ -870,21 +870,16 @@ function markClean(){
 
 /* ── Tabla de referencia de recipientes ── */
 var TANKS = [
-  {dim:'16" × 65"',  ft3:7.5,   uso:'Residencial / pequeño'},
-  {dim:'18" × 65"',  ft3:9.5,   uso:'Residencial / pequeño'},
-  {dim:'21" × 62"',  ft3:12.5,  uso:'Pequeña industria'},
-  {dim:'24" × 69"',  ft3:17.0,  uso:'Pequeña industria'},
-  {dim:'30" × 60"',  ft3:24.5,  uso:'Industrial ligero'},
-  {dim:'30" × 72"',  ft3:29.5,  uso:'Industrial ligero'},
-  {dim:'36" × 60"',  ft3:35.0,  uso:'Industrial'},
-  {dim:'36" × 72"',  ft3:42.0,  uso:'Industrial'},
-  {dim:'42" × 60"',  ft3:48.0,  uso:'Industrial'},
-  {dim:'42" × 72"',  ft3:57.5,  uso:'Industrial'},
-  {dim:'48" × 72"',  ft3:62.0,  uso:'Industrial (referencia típica)'},
-  {dim:'54" × 72"',  ft3:79.0,  uso:'Gran industria'},
-  {dim:'63" × 72"',  ft3:107.0, uso:'Gran industria'},
-  {dim:'72" × 72"',  ft3:140.0, uso:'Municipal / gran planta'},
-  {dim:'84" × 84"',  ft3:214.0, uso:'Municipal / gran planta'},
+  {dim:'14" × 65"',  ft3:5.23,   uso:'Residencial'},
+  {dim:'16" × 65"',  ft3:6.66,   uso:'Residencial'},
+  {dim:'18" × 65"',  ft3:9.08,   uso:'Residencial / pequeño'},
+  {dim:'21" × 62"',  ft3:11.66,  uso:'Pequeña industria'},
+  {dim:'24" × 72"',  ft3:17.46,  uso:'Pequeña industria'},
+  {dim:'30" × 72"',  ft3:26.13,  uso:'Industrial ligero'},
+  {dim:'36" × 72"',  ft3:35.09,  uso:'Industrial'},
+  {dim:'42" × 72"',  ft3:51.59,  uso:'Industrial'},
+  {dim:'48" × 72"',  ft3:68.34,  uso:'Industrial'},
+  {dim:'63" × 67"',  ft3:107.77, uso:'Gran industria'},
 ];
 
 (function buildRefTable(){
