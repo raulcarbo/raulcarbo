@@ -589,12 +589,19 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
     } else if (LSI >= -0.5) {
       badgeCls  = 'result-badge';  badgeText = 'Ligeramente corrosiva';
       interpBg  = '#FFF3D8';       valColor  = '#B45309';
-      interpText = '<strong>Tendencia corrosiva leve</strong>Agua ligeramente subsaturada respecto al CaCO₃. Puede disolver gradualmente recubrimientos protectores en tuberías.<br><br><b>Acciones recomendadas:</b> Verificar alcalinidad y capacidad buffer. Considerar ajuste de pH o adición de calcita.';
+      interpText = '<strong>Tendencia corrosiva leve</strong>Agua ligeramente subsaturada respecto al CaCO₃. Puede disolver gradualmente recubrimientos protectores en tuberías.<br><br>'
+        + '<b>Acciones recomendadas:</b> Verificar alcalinidad y capacidad buffer. Para elevar el pH de forma natural y segura mediante medios granulares de contacto, considerar:<br>'
+        + '&bull; <a href="https://www.carbotecnia.info/producto/medio-calcite-neutralizacion-del-ph/" target="_blank" rel="noopener" style="color:#B45309;font-weight:700">Medio Calcita</a> — eleva el pH gradualmente disolviéndose en el agua; ideal para correcciones moderadas.<br>'
+        + '&bull; <a href="https://www.carbotecnia.info/producto/medio-corosex-agua-corrosiva/" target="_blank" rel="noopener" style="color:#B45309;font-weight:700">Medio Corosex</a> — neutralización más agresiva, recomendado cuando la calcita sola no es suficiente.';
       badge.style.background = '#FFF3D8'; badge.style.color = '#B45309';
     } else {
       badgeCls  = 'result-badge';  badgeText = '⚠ Fuertemente corrosiva';
       interpBg  = '#FEE2E2';       valColor  = '#B91C1C';
-      interpText = '<strong>Tendencia corrosiva severa</strong>Agua agresiva que disolverá CaCO₃ de tuberías, concreto y equipos. Puede causar picaduras en metales y degradación de infraestructura.<br><br><b>Acciones recomendadas:</b> Elevar pH con soda cáustica o cal, aumentar alcalinidad, remineralizar, agregar inhibidores de corrosión.';
+      interpText = '<strong>Tendencia corrosiva severa</strong>Agua agresiva que disolverá CaCO₃ de tuberías, concreto y equipos. Puede causar picaduras en metales y degradación de infraestructura.<br><br>'
+        + '<b>Acciones recomendadas:</b> Para elevar el pH de forma natural mediante medios granulares de contacto:<br>'
+        + '&bull; <a href="https://www.carbotecnia.info/producto/medio-calcite-neutralizacion-del-ph/" target="_blank" rel="noopener" style="color:#B91C1C;font-weight:700">Medio Calcita</a> — mineralización natural con carbonato de calcio; adecuado en combinación con Corosex para casos severos.<br>'
+        + '&bull; <a href="https://www.carbotecnia.info/producto/medio-corosex-agua-corrosiva/" target="_blank" rel="noopener" style="color:#B91C1C;font-weight:700">Medio Corosex</a> — óxido de magnesio de alta reactividad; eleva el pH rápidamente en aguas muy corrosivas.<br><br>'
+        + 'Complementar con ajuste de alcalinidad y, si aplica, inhibidores de corrosión para protección de equipos.';
       badge.style.background = '#FEE2E2'; badge.style.color = '#B91C1C';
     }
 
