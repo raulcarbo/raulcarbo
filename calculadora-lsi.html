@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora del Índice de Langelier (LSI) | Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#071B33;
+  --blue:#0369A1;--blue-dark:#1E3A5F;--blue-soft:#DBEAFE;--blue-border:#93C5FD;
+  --steel:#5D6B7A;--line:#D9E3EB;--white:#FFFFFF;--ink:#102032;
+  --green:#0F766E;--green-soft:#DFFAF6;--green-border:#7DDDD4;
+  --warn:#B45309;--warn-soft:#FFF3D8;--warn-border:#F8D188;
+  --danger:#B91C1C;--danger-soft:#FEE2E2;--danger-border:#FCA5A5;
+  --shadow:0 18px 48px rgba(7,27,51,.12);
+  --shadow-sm:0 8px 22px rgba(7,27,51,.08);
+  --shadow-blue:0 12px 32px rgba(3,105,161,.24);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:linear-gradient(180deg,#F0F6FC,#E8F1F8);color:var(--ink);
+  font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.55;min-height:100vh}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif}
+
+.shell{width:min(1080px,calc(100% - 32px));margin:0 auto;padding:28px 0 60px}
+
+/* ── topbar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin-bottom:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(135deg,var(--blue),var(--navy));
+  box-shadow:0 14px 28px rgba(3,105,161,.30);font-weight:900;font-family:'Poppins',sans-serif;
+  font-size:13px;letter-spacing:-.02em}
+.brand h1{font-size:17px;font-weight:800;color:var(--navy);line-height:1.2}
+.brand span{display:block;margin-top:2px;color:var(--steel);font-size:11px;font-weight:700;letter-spacing:.03em}
+.pill{background:var(--white);border:1px solid var(--line);border-radius:999px;
+  padding:7px 16px;font-size:12px;font-weight:800;box-shadow:var(--shadow-sm);
+  color:var(--navy);white-space:nowrap}
+
+/* ── hero ── */
+.hero{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--navy) 0%,#0C2A4A 50%,var(--blue) 100%);
+  color:#fff;border-radius:24px;padding:28px 32px;box-shadow:var(--shadow);margin-bottom:24px}
+.hero::after{content:"";position:absolute;inset:auto -80px -120px auto;
+  width:320px;height:320px;border-radius:50%;border:48px solid rgba(255,255,255,.06)}
+.hero-inner{position:relative;z-index:1;display:grid;
+  grid-template-columns:1fr auto;gap:28px;align-items:center}
+.hero h2{font-size:clamp(19px,2.4vw,28px);line-height:1.15;letter-spacing:-.03em}
+.hero p{color:rgba(255,255,255,.72);margin-top:8px;font-size:13.5px;line-height:1.6;max-width:500px}
+.formula-box{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;padding:18px 22px;backdrop-filter:blur(12px);white-space:nowrap;flex-shrink:0}
+.formula-box .fb-lbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:10px}
+.formula-box code{display:block;font-family:'Roboto',sans-serif;font-weight:700;font-size:14px;
+  color:#fff;background:rgba(255,255,255,.08);border-radius:8px;padding:7px 12px;
+  margin-bottom:6px;letter-spacing:.01em}
+.formula-box code:last-child{margin-bottom:0}
+
+/* ── layout ── */
+.layout{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+
+/* ── panel ── */
+.panel{background:var(--white);border:1px solid var(--line);border-radius:22px;
+  box-shadow:var(--shadow-sm);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between}
+.panel-head h3{font-size:15px;color:var(--navy);font-weight:700}
+.step-tag{color:var(--blue);font-size:11px;font-weight:900;letter-spacing:.04em}
+.panel-body{padding:20px}
+
+/* ── fields ── */
+.field{margin-bottom:14px}
+.field label{display:flex;align-items:center;flex-wrap:wrap;gap:6px;
+  color:var(--navy);font-weight:800;font-size:13px;margin-bottom:6px}
+.inline-wrap{display:grid;grid-template-columns:1fr auto;border:1.5px solid var(--line);
+  border-radius:12px;overflow:hidden;background:var(--white);transition:.2s}
+.inline-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(3,105,161,.12)}
+.inline-wrap.error-state{border-color:var(--danger) !important;
+  box-shadow:0 0 0 3px rgba(185,28,28,.10) !important;background:var(--danger-soft) !important}
+.inline-wrap input{min-width:0;border:0;outline:0;padding:11px 13px;
+  color:var(--ink);background:transparent;font-weight:700;
+  font-family:'Roboto',sans-serif;font-size:15px;width:100%}
+.inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;
+  font-family:'DM Sans',sans-serif;font-size:14px}
+.inline-wrap .unit{border-left:1px solid var(--line);background:#F4F8FB;color:var(--steel);
+  display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;
+  font-family:'DM Sans',sans-serif;padding:0 12px;white-space:nowrap}
+.inline-wrap select.unit-sel{border:0;border-left:1px solid var(--line);background:#F4F8FB;
+  color:var(--steel);font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;
+  padding:0 6px;outline:0;cursor:pointer;min-width:110px;
+  -webkit-appearance:auto;appearance:auto}
+.hint{margin-top:4px;color:var(--steel);font-size:11px;font-style:italic;line-height:1.4}
+.error-msg{margin-top:4px;color:var(--danger);font-size:11px;display:none}
+.inline-wrap.error-state ~ .hint{display:none}
+.inline-wrap.error-state ~ .error-msg{display:block}
+
+/* ── temp toggle ── */
+.temp-toggle{display:inline-flex;background:#F0F4F8;border:1px solid var(--line);
+  border-radius:8px;overflow:hidden;flex-shrink:0}
+.temp-toggle button{padding:3px 11px;font-family:'DM Sans',sans-serif;font-size:11px;
+  font-weight:700;border:none;background:transparent;color:var(--steel);cursor:pointer;
+  transition:.18s;white-space:nowrap}
+.temp-toggle button.active{background:var(--blue);color:#fff}
+
+/* ── actions ── */
+.actions{display:flex;gap:10px;margin-top:10px}
+.btn-calc{flex:1;padding:12px 20px;border:0;border-radius:999px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-weight:800;
+  cursor:pointer;font-family:'Poppins',sans-serif;font-size:13px;
+  box-shadow:var(--shadow-blue);transition:transform .15s,box-shadow .15s}
+.btn-calc:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(3,105,161,.35)}
+.btn-clear{padding:12px 18px;border:1.5px solid var(--line);border-radius:999px;
+  background:var(--white);color:var(--steel);font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:13px;transition:.15s}
+.btn-clear:hover{background:#F3F8FC;border-color:#B8C8D8}
+
+/* ── right column ── */
+.right-col{display:flex;flex-direction:column;gap:16px}
+
+/* ── placeholder ── */
+.placeholder-card{background:var(--white);border:1.5px dashed var(--line);
+  border-radius:22px;padding:44px 24px;text-align:center;color:var(--steel)}
+.placeholder-card .ph-icon{font-size:40px;margin-bottom:14px;display:block;opacity:.45}
+.placeholder-card p{font-size:13px;max-width:240px;margin:0 auto;line-height:1.7}
+
+/* ── result card ── */
+.result-card{background:var(--white);border:1px solid var(--line);border-radius:22px;
+  box-shadow:var(--shadow-sm);overflow:hidden;display:none;
+  animation:fadeUp .35s ease}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}}
+
+.result-main{padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--line)}
+.result-val{font-family:'Roboto',sans-serif;font-size:80px;font-weight:900;
+  line-height:1;letter-spacing:-.04em;margin-bottom:6px}
+.result-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--steel);margin-bottom:14px;font-family:'Poppins',sans-serif}
+.result-badge{display:inline-block;padding:7px 22px;border-radius:999px;
+  font-size:12px;font-weight:800;font-family:'Poppins',sans-serif}
+
+/* ── gauge ── */
+.gauge-section{padding:20px 24px 16px}
+.gauge-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--steel);margin-bottom:14px;font-family:'Poppins',sans-serif}
+.gauge-bar{height:14px;border-radius:7px;position:relative;margin-bottom:10px;
+  background:linear-gradient(to right,
+    #7F1D1D 0%,#B91C1C 15%,#EF4444 25%,
+    #FB923C 34%,#FDE68A 43%,
+    #4ADE80 48%,#16A34A 50%,#4ADE80 52%,
+    #FDE68A 57%,#FB923C 66%,
+    #EF4444 75%,#B91C1C 85%,#7F1D1D 100%)}
+.gauge-marker{position:absolute;top:-9px;width:32px;height:32px;
+  background:var(--navy);border:3px solid #fff;border-radius:50%;
+  transform:translateX(-50%);box-shadow:0 4px 14px rgba(0,0,0,.30);
+  transition:left .55s cubic-bezier(0.34,1.56,0.64,1)}
+.gauge-scale{display:flex;justify-content:space-between;
+  font-size:10px;color:var(--steel);font-family:'Roboto',sans-serif;font-weight:700}
+
+/* ── detail strip ── */
+.detail-strip{display:grid;grid-template-columns:repeat(5,1fr);
+  gap:1px;background:var(--line)}
+.detail-cell{background:var(--white);padding:13px 8px;text-align:center}
+.detail-cell .dval{font-size:13px;font-weight:900;color:var(--ink);font-family:'Roboto',sans-serif}
+.detail-cell .dlbl{font-size:9px;color:var(--steel);text-transform:uppercase;
+  letter-spacing:.05em;margin-top:3px;font-family:'Poppins',sans-serif;font-weight:600}
+
+/* ── conversion info ── */
+.conv-info{padding:12px 20px;background:var(--blue-soft);font-size:12px;
+  color:var(--blue-dark);line-height:1.7;display:none}
+.conv-info strong{font-weight:800}
+
+/* ── interpretation ── */
+.interp-section{padding:16px 20px 20px}
+.interp-box{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.7}
+.interp-box strong{display:block;margin-bottom:4px;font-size:9.5px;text-transform:uppercase;
+  letter-spacing:.08em;font-family:'Poppins',sans-serif;font-weight:900}
+
+/* ── reference card ── */
+.ref-card{background:var(--white);border:1px solid var(--line);border-radius:22px;
+  box-shadow:var(--shadow-sm);overflow:hidden}
+.ref-head{padding:15px 20px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px}
+.ref-icon{width:28px;height:28px;border-radius:7px;background:var(--blue-soft);
+  color:var(--blue);display:grid;place-items:center;font-size:14px;flex-shrink:0}
+.ref-head h3{font-size:14px;color:var(--navy);font-weight:700}
+.ref-table{width:100%;border-collapse:collapse}
+.ref-table th{background:#F3F8FC;padding:9px 16px;text-align:left;font-size:9.5px;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--steel);
+  border-bottom:2px solid var(--line);font-family:'Poppins',sans-serif;font-weight:700}
+.ref-table td{padding:10px 16px;border-bottom:1px solid var(--line);
+  vertical-align:middle;font-size:12.5px}
+.ref-table tr:last-child td{border-bottom:0}
+.ref-table tr:hover td{background:#F8FBFF}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;
+  margin-right:7px;vertical-align:middle}
+
+/* ── footer ── */
+.lsi-footer{text-align:center;margin-top:20px;font-size:11px;color:var(--steel);
+  padding-top:16px;border-top:1px solid var(--line)}
+
+/* ── responsive ── */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .hero-inner{grid-template-columns:1fr}
+  .formula-box{display:none}
+  .detail-strip{grid-template-columns:repeat(3,1fr)}
+  .placeholder-card{display:none}
+}
+@media(max-width:560px){
+  .shell{width:calc(100% - 20px);padding-top:16px}
+  .topbar{flex-direction:column;align-items:flex-start}
+  .hero{padding:20px}
+  .result-val{font-size:62px}
+  .detail-strip{grid-template-columns:repeat(2,1fr)}
+  .actions{flex-direction:column}
+  .btn-calc,.btn-clear{width:100%;text-align:center}
+}
+@media print{
+  .actions{display:none}
+  .shell{padding:0}
+  .panel,.result-card,.ref-card{box-shadow:none;border:1px solid #ccc}
+}
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">LSI</div>
+      <div>
+        <h1>Calculadora del Índice de Langelier</h1>
+        <span>Tendencia del agua a incrustación o corrosión de CaCO₃</span>
+      </div>
+    </div>
+    <div class="pill">Carbotecnia · Ing. de Proceso</div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <h2>Determina la tendencia del agua a formar incrustaciones de CaCO₃ o a ser corrosiva.</h2>
+        <p>El Índice de Saturación de Langelier (ISL) mide si el agua está en equilibrio respecto al carbonato de calcio. Un ISL positivo indica tendencia incrustante; negativo indica agua agresiva que disuelve recubrimientos y equipos.</p>
+      </div>
+      <div class="formula-box">
+        <div class="fb-lbl">Fórmula estándar AWWA</div>
+        <code>LSI = pH − pHs</code>
+        <code>pHs = (9.3 + A + B) − (C + D)</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- ═══ INPUTS ═══ -->
+    <section class="panel">
+      <div class="panel-head">
+        <h3>Parámetros del Agua</h3>
+        <span class="step-tag">01 · Entradas</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- pH -->
+        <div class="field">
+          <label>pH del agua</label>
+          <div class="inline-wrap" id="wrap_ph">
+            <input type="number" id="lsi_ph" step="0.1" min="0" max="14" placeholder="Ej: 7.4">
+            <span class="unit">pH</span>
+          </div>
+          <div class="hint">Valor medido (0 – 14)</div>
+          <div class="error-msg">Ingresa un pH válido entre 0 y 14</div>
+        </div>
+
+        <!-- Temperatura -->
+        <div class="field">
+          <label>
+            Temperatura
+            <span class="temp-toggle">
+              <button class="active" onclick="setTempUnit('C')" id="btnC">°C</button>
+              <button onclick="setTempUnit('F')" id="btnF">°F</button>
+            </span>
+          </label>
+          <div class="inline-wrap" id="wrap_temp">
+            <input type="number" id="lsi_temp" step="0.1" placeholder="Ej: 25">
+            <span class="unit" id="unit_temp_lbl">°C</span>
+          </div>
+          <div class="hint">Temperatura del agua</div>
+          <div class="error-msg">Ingresa una temperatura válida</div>
+        </div>
+
+        <!-- TDS -->
+        <div class="field">
+          <label>TDS / Conductividad</label>
+          <div class="inline-wrap" id="wrap_tds">
+            <input type="number" id="lsi_tds" step="1" min="0" placeholder="Ej: 500">
+            <select class="unit-sel" id="lsi_tds_unit">
+              <option value="mgL">mg/L (TDS)</option>
+              <option value="uS">μS/cm (Cond.)</option>
+            </select>
+          </div>
+          <div class="hint">Sólidos Disueltos Totales o conductividad eléctrica</div>
+          <div class="error-msg">Ingresa un valor válido</div>
+        </div>
+
+        <!-- Calcio -->
+        <div class="field">
+          <label>[Ca²⁺] Dureza Cálcica</label>
+          <div class="inline-wrap" id="wrap_ca">
+            <input type="number" id="lsi_ca" step="1" min="0" placeholder="Ej: 200">
+            <select class="unit-sel" id="lsi_ca_unit">
+              <option value="ion">mg/L (Ca²⁺ ion)</option>
+              <option value="caco3">mg/L como CaCO₃</option>
+            </select>
+          </div>
+          <div class="hint">Concentración de calcio</div>
+          <div class="error-msg">Ingresa un valor válido de calcio</div>
+        </div>
+
+        <!-- Alcalinidad -->
+        <div class="field">
+          <label>[HCO₃⁻] Alcalinidad</label>
+          <div class="inline-wrap" id="wrap_alk">
+            <input type="number" id="lsi_alk" step="1" min="0" placeholder="Ej: 100">
+            <select class="unit-sel" id="lsi_alk_unit">
+              <option value="ion">mg/L (HCO₃⁻ ion)</option>
+              <option value="caco3">mg/L como CaCO₃</option>
+            </select>
+          </div>
+          <div class="hint">Alcalinidad como bicarbonato o como CaCO₃</div>
+          <div class="error-msg">Ingresa un valor válido de alcalinidad</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-calc" onclick="calcularLSI()">Calcular LSI</button>
+          <button class="btn-clear" onclick="limpiarCampos()">Limpiar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ RIGHT COLUMN ═══ -->
+    <div class="right-col">
+
+      <!-- Placeholder (before first calc) -->
+      <div class="placeholder-card" id="lsiPlaceholder">
+        <span class="ph-icon">⚗️</span>
+        <p>Ingresa los parámetros del agua y presiona <strong>Calcular LSI</strong> para ver el resultado.</p>
+      </div>
+
+      <!-- Result card (hidden until calculated) -->
+      <div id="lsiResults" class="result-card">
+
+        <div class="result-main">
+          <div class="result-val" id="lsiValue">—</div>
+          <div class="result-lbl">Índice de Saturación de Langelier (LSI)</div>
+          <div class="result-badge" id="lsiBadge">—</div>
+        </div>
+
+        <div class="gauge-section">
+          <div class="gauge-title">Escala de saturación</div>
+          <div class="gauge-bar">
+            <div class="gauge-marker" id="lsiMarker" style="left:50%"></div>
+          </div>
+          <div class="gauge-scale">
+            <span>−2 Corrosivo</span>
+            <span>0 Equilibrio</span>
+            <span>+2 Incrustante</span>
+          </div>
+        </div>
+
+        <div class="detail-strip">
+          <div class="detail-cell">
+            <div class="dval" id="detailPHs">—</div>
+            <div class="dlbl">pHs saturación</div>
+          </div>
+          <div class="detail-cell">
+            <div class="dval" id="detailA">—</div>
+            <div class="dlbl">Factor A · TDS</div>
+          </div>
+          <div class="detail-cell">
+            <div class="dval" id="detailB">—</div>
+            <div class="dlbl">Factor B · Temp</div>
+          </div>
+          <div class="detail-cell">
+            <div class="dval" id="detailC">—</div>
+            <div class="dlbl">Factor C · Ca²⁺</div>
+          </div>
+          <div class="detail-cell">
+            <div class="dval" id="detailD">—</div>
+            <div class="dlbl">Factor D · Alk</div>
+          </div>
+        </div>
+
+        <div class="conv-info" id="lsiConvertedInfo"></div>
+
+        <div class="interp-section">
+          <div class="interp-box" id="lsiInterpretation"></div>
+        </div>
+
+      </div><!-- end result-card -->
+
+      <!-- Reference table (always visible) -->
+      <div class="ref-card">
+        <div class="ref-head">
+          <div class="ref-icon">📋</div>
+          <h3>Tabla de Referencia LSI</h3>
+        </div>
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th>Rango LSI</th>
+              <th>Condición</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>&gt; +0.5</td>
+              <td><span class="dot" style="background:#B91C1C"></span>Fuertemente incrustante</td>
+              <td>Alta probabilidad de precipitación de CaCO₃. Se requiere tratamiento antiincrustante.</td>
+            </tr>
+            <tr>
+              <td>+0.3 a +0.5</td>
+              <td><span class="dot" style="background:#B45309"></span>Ligeramente incrustante</td>
+              <td>Tendencia moderada a formación de depósitos. Puede ser protectora en tuberías.</td>
+            </tr>
+            <tr>
+              <td>−0.3 a +0.3</td>
+              <td><span class="dot" style="background:#0F766E"></span>Equilibrio</td>
+              <td>Agua balanceada. Rango ideal para la mayoría de aplicaciones.</td>
+            </tr>
+            <tr>
+              <td>−0.5 a −0.3</td>
+              <td><span class="dot" style="background:#B45309"></span>Ligeramente corrosiva</td>
+              <td>Tendencia corrosiva leve. Verificar alcalinidad y capacidad buffer.</td>
+            </tr>
+            <tr>
+              <td>&lt; −0.5</td>
+              <td><span class="dot" style="background:#B91C1C"></span>Fuertemente corrosiva</td>
+              <td>Agua agresiva. Puede disolver CaCO₃ de tuberías y equipos. Considerar remineralización.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- end right-col -->
+  </div><!-- end layout -->
+
+  <div class="lsi-footer">
+    Calculadora basada en la fórmula estándar del Índice de Saturación de Langelier (AWWA).<br>
+    Los resultados son indicativos y no sustituyen un análisis completo de laboratorio.
+  </div>
+
+</main>
+
+<script>
+(function() {
+  'use strict';
+
+  var tempUnit = 'C';
+  var CA_ION_TO_CACO3    = 2.497;
+  var HCO3_ION_TO_CACO3  = 50.045 / 61.017;
+  var CONDUCTIVITY_TO_TDS = 0.65;
+
+  window.setTempUnit = function(unit) {
+    tempUnit = unit;
+    document.getElementById('btnC').className = unit === 'C' ? 'active' : '';
+    document.getElementById('btnF').className = unit === 'F' ? 'active' : '';
+    document.getElementById('lsi_temp').placeholder = unit === 'C' ? 'Ej: 25' : 'Ej: 77';
+    document.getElementById('unit_temp_lbl').textContent = unit === 'C' ? '°C' : '°F';
+  };
+
+  function getVal(id) {
+    var v = parseFloat(document.getElementById(id).value);
+    return isNaN(v) ? null : v;
+  }
+
+  function setError(id, err) {
+    var inp  = document.getElementById(id);
+    var key  = id.replace('lsi_', '');
+    var wrap = document.getElementById('wrap_' + key);
+    if (err) {
+      inp.classList.add('error');
+      if (wrap) wrap.classList.add('error-state');
+    } else {
+      inp.classList.remove('error');
+      if (wrap) wrap.classList.remove('error-state');
+    }
+  }
+
+  window.limpiarCampos = function() {
+    ['lsi_ph','lsi_temp','lsi_tds','lsi_ca','lsi_alk'].forEach(function(id) {
+      document.getElementById(id).value = '';
+      setError(id, false);
+    });
+    document.getElementById('lsiResults').style.display = 'none';
+    var ph = document.getElementById('lsiPlaceholder');
+    if (ph) ph.style.display = '';
+  };
+
+  window.calcularLSI = function() {
+    var pH     = getVal('lsi_ph');
+    var temp   = getVal('lsi_temp');
+    var tdsRaw = getVal('lsi_tds');
+    var caRaw  = getVal('lsi_ca');
+    var alkRaw = getVal('lsi_alk');
+
+    var tdsUnit = document.getElementById('lsi_tds_unit').value;
+    var caUnit  = document.getElementById('lsi_ca_unit').value;
+    var alkUnit = document.getElementById('lsi_alk_unit').value;
+
+    var valid = true;
+    if (pH === null || pH < 0 || pH > 14)  { setError('lsi_ph',   true);  valid = false; } else { setError('lsi_ph',   false); }
+    if (temp === null)                       { setError('lsi_temp', true);  valid = false; } else { setError('lsi_temp', false); }
+    if (tdsRaw === null || tdsRaw < 0)      { setError('lsi_tds',  true);  valid = false; } else { setError('lsi_tds',  false); }
+    if (caRaw  === null || caRaw  <= 0)     { setError('lsi_ca',   true);  valid = false; } else { setError('lsi_ca',   false); }
+    if (alkRaw === null || alkRaw <= 0)     { setError('lsi_alk',  true);  valid = false; } else { setError('lsi_alk',  false); }
+    if (!valid) return;
+
+    var tds      = tdsUnit === 'uS'   ? tdsRaw  * CONDUCTIVITY_TO_TDS  : tdsRaw;
+    var caCaCO3  = caUnit  === 'ion'  ? caRaw   * CA_ION_TO_CACO3      : caRaw;
+    var alkCaCO3 = alkUnit === 'ion'  ? alkRaw  * HCO3_ION_TO_CACO3    : alkRaw;
+
+    var tempC = tempUnit === 'F' ? (temp - 32) * 5 / 9 : temp;
+    var tempK = tempC + 273.15;
+
+    var A   = (Math.log10(Math.max(tds, 1)) - 1) / 10;
+    var B   = -13.12 * Math.log10(tempK) + 34.55;
+    var C   = Math.log10(caCaCO3) - 0.4;
+    var D   = Math.log10(alkCaCO3);
+    var pHs = (9.3 + A + B) - (C + D);
+    var LSI = pH - pHs;
+
+    /* show results */
+    var ph = document.getElementById('lsiPlaceholder');
+    if (ph) ph.style.display = 'none';
+    var resultsEl = document.getElementById('lsiResults');
+    resultsEl.style.display = 'block';
+
+    document.getElementById('lsiValue').textContent  = LSI.toFixed(2);
+    document.getElementById('detailPHs').textContent = pHs.toFixed(2);
+    document.getElementById('detailA').textContent   = A.toFixed(4);
+    document.getElementById('detailB').textContent   = B.toFixed(4);
+    document.getElementById('detailC').textContent   = C.toFixed(4);
+    document.getElementById('detailD').textContent   = D.toFixed(4);
+
+    /* conversion info */
+    var infoEl = document.getElementById('lsiConvertedInfo');
+    var convParts = [];
+    if (tdsUnit === 'uS')   convParts.push('Conductividad ' + tdsRaw.toFixed(0) + ' μS/cm → <strong>' + tds.toFixed(0) + ' mg/L TDS</strong> (×0.65)');
+    if (caUnit  === 'ion')  convParts.push('Ca²⁺ ' + caRaw.toFixed(0) + ' mg/L → <strong>' + caCaCO3.toFixed(1) + ' mg/L CaCO₃</strong> (×' + CA_ION_TO_CACO3 + ')');
+    if (alkUnit === 'ion')  convParts.push('HCO₃⁻ ' + alkRaw.toFixed(0) + ' mg/L → <strong>' + alkCaCO3.toFixed(1) + ' mg/L CaCO₃</strong> (×' + HCO3_ION_TO_CACO3.toFixed(4) + ')');
+    if (convParts.length) {
+      infoEl.innerHTML = '<strong>Conversiones aplicadas:</strong><br>' + convParts.join('<br>');
+      infoEl.style.display = 'block';
+    } else {
+      infoEl.style.display = 'none';
+    }
+
+    /* badge + interpretation */
+    var badge     = document.getElementById('lsiBadge');
+    var valueEl   = document.getElementById('lsiValue');
+    var interpEl  = document.getElementById('lsiInterpretation');
+    var badgeCls, badgeText, interpText, interpBg, valColor;
+
+    if (LSI > 0.5) {
+      badgeCls  = 'result-badge';  badgeText = '⚠ Fuertemente incrustante';
+      interpBg  = '#FEE2E2';       valColor  = '#B91C1C';
+      interpText = '<strong>Tendencia incrustante severa</strong>El agua tiene alta probabilidad de precipitar CaCO₃. En membranas RO puede causar incrustación rápida, reducción de flujo de permeado y aumento de presión diferencial.<br><br><b>Acciones recomendadas:</b> Reducir pH, ablandar el agua, utilizar antiincrustantes, o mezclar con agua de menor dureza.';
+      badge.style.background = '#FEE2E2'; badge.style.color = '#B91C1C';
+    } else if (LSI > 0.3) {
+      badgeCls  = 'result-badge';  badgeText = 'Ligeramente incrustante';
+      interpBg  = '#FFF3D8';       valColor  = '#B45309';
+      interpText = '<strong>Tendencia incrustante moderada</strong>Ligera tendencia a depositar CaCO₃. En tuberías metálicas esta capa puede ser protectora, pero en membranas RO y equipos de intercambio de calor puede ser problemática.<br><br><b>Acciones recomendadas:</b> Monitorear. En membranas, considerar dosificación de antiincrustante preventivo.';
+      badge.style.background = '#FFF3D8'; badge.style.color = '#B45309';
+    } else if (LSI >= -0.3) {
+      badgeCls  = 'result-badge';  badgeText = '✓ Agua en equilibrio';
+      interpBg  = '#DFFAF6';       valColor  = '#0F766E';
+      interpText = '<strong>Agua balanceada</strong>El agua se encuentra cerca del equilibrio de saturación de CaCO₃. No se espera formación significativa de incrustaciones ni corrosión acelerada. Rango ideal para la mayoría de aplicaciones industriales.';
+      badge.style.background = '#DFFAF6'; badge.style.color = '#0F766E';
+    } else if (LSI >= -0.5) {
+      badgeCls  = 'result-badge';  badgeText = 'Ligeramente corrosiva';
+      interpBg  = '#FFF3D8';       valColor  = '#B45309';
+      interpText = '<strong>Tendencia corrosiva leve</strong>Agua ligeramente subsaturada respecto al CaCO₃. Puede disolver gradualmente recubrimientos protectores en tuberías.<br><br><b>Acciones recomendadas:</b> Verificar alcalinidad y capacidad buffer. Considerar ajuste de pH o adición de calcita.';
+      badge.style.background = '#FFF3D8'; badge.style.color = '#B45309';
+    } else {
+      badgeCls  = 'result-badge';  badgeText = '⚠ Fuertemente corrosiva';
+      interpBg  = '#FEE2E2';       valColor  = '#B91C1C';
+      interpText = '<strong>Tendencia corrosiva severa</strong>Agua agresiva que disolverá CaCO₃ de tuberías, concreto y equipos. Puede causar picaduras en metales y degradación de infraestructura.<br><br><b>Acciones recomendadas:</b> Elevar pH con soda cáustica o cal, aumentar alcalinidad, remineralizar, agregar inhibidores de corrosión.';
+      badge.style.background = '#FEE2E2'; badge.style.color = '#B91C1C';
+    }
+
+    badge.className   = badgeCls;
+    badge.textContent = badgeText;
+    valueEl.style.color   = valColor;
+    interpEl.innerHTML    = interpText;
+    interpEl.style.background = interpBg;
+
+    /* gauge marker */
+    function getScalePercent(lsi) {
+      if (lsi <= -1)   return 0;
+      if (lsi <= -0.5) return ((lsi + 1)   / 0.5) * 25;
+      if (lsi <= -0.3) return 25 + ((lsi + 0.5) / 0.2) * 15;
+      if (lsi <= 0)    return 40 + ((lsi + 0.3) / 0.3) * 10;
+      if (lsi <= 0.3)  return 50 + (lsi / 0.3) * 10;
+      if (lsi <= 0.5)  return 60 + ((lsi - 0.3) / 0.2) * 15;
+      if (lsi <= 1)    return 75 + ((lsi - 0.5) / 0.5) * 25;
+      return 100;
+    }
+    document.getElementById('lsiMarker').style.left = getScalePercent(LSI) + '%';
+
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+})();
+</script>
+</body>
+</html>
