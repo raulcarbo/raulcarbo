@@ -182,13 +182,13 @@
       <div class="oi-mark">C</div>
       <div class="oi-name">Carbotecnia<span>Tratamiento de agua · México</span></div>
     </div>
-    <div class="oi-badge"><b>Ósmosis inversa</b> Dashboard de diseño · v2.1</div>
+    <div class="oi-badge"><b>Ósmosis inversa</b> Dashboard de diseño · v2.2</div>
   </header>
 
   <section class="oi-hero">
     <div>
       <h1>Dimensionamiento básico de <span>ósmosis inversa industrial</span></h1>
-      <p>Balance hidráulico, balance de sales, corrección por temperatura (TCF) e índice de saturación de Langelier en el rechazo. Muestra opciones de módulos en formato 4"×40" y 8"×40" con arreglo de vasijas. Fichas técnicas: LG BW 400 R Dura / BW 400 ES / SW 400 R · Hydranautics CPA5-LD / ESPA4-LD / SWC5-LD. <strong>Predimensionamiento preliminar — requiere análisis físico-químico completo para diseño final.</strong></p>
+      <p>Balance hidráulico, balance de sales con corrección de paso de sales por temperatura (+6%/°C), TCF, ISL de Langelier en el rechazo, validación de flujo mínimo de brine, factor de calidad de agua (WQF) por fuente y alerta de sílice en el rechazo. Módulos en formato 4"×40" y 8"×40". Fichas técnicas: LG BW 400 R Dura / BW 400 ES / SW 400 R · Hydranautics CPA5-LD / ESPA4-LD / SWC5-LD. <strong>Predimensionamiento preliminar — requiere análisis físico-químico completo para diseño final.</strong></p>
     </div>
     <aside class="oi-standards">
       Membranas de referencia
@@ -243,6 +243,18 @@
         <div class="oi-section-label">Fisicoquímica del agua</div>
 
         <div class="oi-field">
+          <label>Fuente del agua <span class="oi-req">*</span></label>
+          <select class="oi-select" id="oi-source">
+            <option value="pozo_profundo" selected>Pozo profundo (WQF 1.00)</option>
+            <option value="pozo_somero">Pozo somero (WQF 0.90)</option>
+            <option value="red_municipal">Red municipal (WQF 0.85)</option>
+            <option value="superficial">Cuerpo superficial (WQF 0.65)</option>
+            <option value="residual">Agua residual tratada (WQF 0.50)</option>
+          </select>
+          <div class="oi-hint">Ajusta el flux de diseño para prevenir fouling prematuro.</div>
+        </div>
+
+        <div class="oi-field">
           <label>Temperatura <span class="oi-opt">TCF</span></label>
           <div class="oi-input-row">
             <input type="number" id="oi-temp" min="1" max="45" step="any" placeholder="25">
@@ -282,6 +294,15 @@
             <input type="number" id="oi-alkalinity" min="0" step="any" placeholder="Ej. 180">
             <span class="oi-unit">mg/L</span>
           </div>
+        </div>
+
+        <div class="oi-field">
+          <label>Sílice (SiO₂) <span class="oi-opt">Incrustación</span></label>
+          <div class="oi-input-row">
+            <input type="number" id="oi-silica" min="0" step="any" placeholder="Ej. 15">
+            <span class="oi-unit">mg/L</span>
+          </div>
+          <div class="oi-hint">Limite en rechazo: 20 mg/L. Limita automaticamente la recuperacion maxima.</div>
         </div>
 
         <div class="oi-actions">
@@ -327,14 +348,14 @@ var MEM_DB = {
       designM3d: 39.7,
       hydModel: 'ESPA4-LD', hydM3d: 45.4, hydPPM: 500,  hydPSI: 100,
       lgModel:  'BW 400 ES', lgM3d:  39.7, lgPPM: 2000, lgPSI: 150,
-      maxFeedM3h: 19.3, elPerVessel: 6,
+      maxFeedM3h: 19.3, elPerVessel: 6, minBrineM3h: 2.7,
       note: 'Baja presion de operacion (7-15 bar). Para agua de pozo o red municipal.'
     },
     m4040: {
       designM3d: 8.90,
       hydModel: 'ESPA4-LD-4040', hydM3d: 8.90, hydPPM: 500, hydPSI: 100,
       lgModel:  null,
-      maxFeedM3h: 3.6, elPerVessel: 4,
+      maxFeedM3h: 3.6, elPerVessel: 4, minBrineM3h: 0.7,
       note: 'Formato compacto. Max. alimentacion: 3.6 m3/h por vasija.'
     }
   },
@@ -345,14 +366,14 @@ var MEM_DB = {
       designM3d: 39.7,
       hydModel: 'CPA5-LD',        hydM3d: 41.6, hydPPM: 1500, hydPSI: 225,
       lgModel:  'BW 400 R Dura',  lgM3d:  39.7, lgPPM: 2000,  lgPSI: 225,
-      maxFeedM3h: 19.3, elPerVessel: 6,
+      maxFeedM3h: 19.3, elPerVessel: 6, minBrineM3h: 2.7,
       note: 'Rechazo >= 99.7%. Para agua de pozo profundo, salobre industrial y reuso.'
     },
     m4040: {
       designM3d: 7.57,
       hydModel: 'ESPA2-LD-4040', hydM3d: 7.57, hydPPM: 1500, hydPSI: 150,
       lgModel:  null,
-      maxFeedM3h: 3.6, elPerVessel: 4,
+      maxFeedM3h: 3.6, elPerVessel: 4, minBrineM3h: 0.7,
       note: 'Formato compacto para agua salobre. Rechazo >= 99.6%.'
     }
   },
@@ -363,11 +384,23 @@ var MEM_DB = {
       designM3d: 34.0,
       hydModel: 'SWC5-LD',   hydM3d: 34.1, hydPPM: 32000, hydPSI: 800,
       lgModel:  'SW 400 R',  lgM3d:  34.0, lgPPM: 32000,  lgPSI: 800,
-      maxFeedM3h: 19.3, elPerVessel: 7,
+      maxFeedM3h: 19.3, elPerVessel: 7, minBrineM3h: 2.7,
       note: 'Desalinizacion marina. Alta presion 55-80 bar. Rechazo >= 99.8%.'
     },
     m4040: null
   }
+};
+
+/* ══════════════════════════════════════════════════════════
+   FACTOR DE CALIDAD DE AGUA (WQF) POR FUENTE — MIP OI Carbotecnia
+   Penaliza el flux de diseño para prevenir ensuciamiento prematuro
+   ══════════════════════════════════════════════════════════ */
+var WQF_MAP = {
+  pozo_profundo: { label: 'Pozo profundo',        wqf: 1.00 },
+  pozo_somero:   { label: 'Pozo somero',           wqf: 0.90 },
+  red_municipal: { label: 'Red municipal',         wqf: 0.85 },
+  superficial:   { label: 'Cuerpo superficial',    wqf: 0.65 },
+  residual:      { label: 'Agua residual tratada', wqf: 0.50 }
 };
 
 /* ══════════════════════════════════════════════════════════
@@ -406,26 +439,30 @@ function getFamilyKey(tds) {
 }
 
 /* Calcular elementos y vasijas para un formato dado */
-function sizeMembranes(qpM3d, qfM3h, spec, tcf) {
-  var effFlow = spec.designM3d * tcf;
+function sizeMembranes(qpM3d, qfM3h, qrM3h, spec, tcf, wqf) {
+  var effFlow = spec.designM3d * tcf * wqf;
   var nEl = Math.max(1, Math.ceil(qpM3d / effFlow));
 
-  /* Para 4040: el caudal de alimentacion limita el numero minimo de vasijas */
+  /* El caudal de alimentacion limita el numero minimo de vasijas */
   var minV = Math.ceil(qfM3h / spec.maxFeedM3h);
   var nV   = Math.max(minV, Math.ceil(nEl / spec.elPerVessel));
 
   /* Al menos 1 elemento por vasija */
   if (nEl < nV) nEl = nV;
 
-  var feedPerV = qfM3h / nV;
+  var feedPerV  = qfM3h / nV;
+  var brinePerV = qrM3h / nV;
 
   return {
-    nEl:      nEl,
-    nV:       nV,
-    elpv:     spec.elPerVessel,
-    effFlow:  effFlow,
-    feedPerV: feedPerV,
-    overFeed: feedPerV > spec.maxFeedM3h * 1.02
+    nEl:         nEl,
+    nV:          nV,
+    elpv:        spec.elPerVessel,
+    effFlow:     effFlow,
+    feedPerV:    feedPerV,
+    overFeed:    feedPerV > spec.maxFeedM3h * 1.02,
+    brinePerV:   brinePerV,
+    lowBrine:    brinePerV < spec.minBrineM3h,
+    minBrineM3h: spec.minBrineM3h
   };
 }
 
@@ -436,13 +473,25 @@ function calculate() {
   var baseFlow = Math.max(0, getNum('oi-flow', 0));
   var unit     = getel('oi-flow-unit').value;
   var basis    = getel('oi-flow-basis').value;
-  var recovery = clamp(getNum('oi-recovery', 75), 30, 85);
   var tempC    = getNum('oi-temp', 25);
   var tdsFeed  = Math.max(0, getNum('oi-tds', 0));
+  var sourceKey = getel('oi-source').value;
+  var silica    = getNum('oi-silica', NaN);
+  var hasSilica = isFinite(silica) && silica > 0;
+
+  /* ── Calcular recuperacion maxima por silice antes de cualquier otra cosa ── */
+  var siO2MaxRec = hasSilica && silica < 20 ? Math.floor((1 - silica / 20) * 100) : (hasSilica && silica >= 20 ? 0 : 85);
+
+  /* Clamp slider max por silice */
+  var sliderMax = hasSilica ? Math.min(85, siO2MaxRec) : 85;
+  getel('oi-rec-range').max = sliderMax;
+  getel('oi-recovery').max  = sliderMax;
+
+  var recovery = clamp(getNum('oi-recovery', 75), 30, sliderMax);
 
   /* Sync slider / badge */
-  getel('oi-recovery').value   = recovery;
-  getel('oi-rec-range').value  = recovery;
+  getel('oi-recovery').value        = recovery;
+  getel('oi-rec-range').value       = recovery;
   getel('oi-rec-badge').textContent = recovery + '%';
 
   if (baseFlow <= 0 || tdsFeed <= 0) {
@@ -468,9 +517,13 @@ function calculate() {
   var fc    = 1 / (1 - rf);
   var tdsR  = tdsFeed * fc;
 
+  /* ── Silice en el rechazo ── */
+  var siO2R = hasSilica ? silica * fc : NaN;
+
   /* ── Presion osmotica estimada ── */
-  var tK     = (isFinite(tempC) && tempC > 0 ? tempC : 25) + 273.15;
-  var osmPsi = ((tdsFeed + tdsR) / 2) * 0.01 * tK / 298;
+  var tK       = (isFinite(tempC) && tempC > 0 ? tempC : 25) + 273.15;
+  var tempUsed = isFinite(tempC) && tempC > 0 ? tempC : 25;
+  var osmPsi   = ((tdsFeed + tdsR) / 2) * 0.01 * tK / 298;
 
   /* ── ISL de Langelier en el rechazo ── */
   var ph   = getNum('oi-ph',        NaN);
@@ -495,12 +548,19 @@ function calculate() {
   /* ── Familia y membranas ── */
   var famKey = getFamilyKey(tdsFeed);
   var fam    = MEM_DB[famKey];
-  var tdsPerm = tdsFeed * (1 - fam.rejection);
-  var tcf     = isFinite(tempC) && tempC > 0 ? calcTCF(tempC) : 1.0;
-  var tempUsed = isFinite(tempC) && tempC > 0 ? tempC : 25;
+  var tcf    = calcTCF(tempUsed);
 
-  var res8040 = sizeMembranes(qpM3d, qfM3h, fam.m8040, tcf);
-  var res4040 = fam.m4040 ? sizeMembranes(qpM3d, qfM3h, fam.m4040, tcf) : null;
+  /* Paso de sales corregido por temperatura (MIP: +6% por °C) */
+  var spRef   = 1 - fam.rejection;
+  var spT     = spRef * (1 + 0.06 * (tempUsed - 25));
+  var tdsPerm = tdsFeed * spT;
+
+  /* WQF — factor de calidad de agua por fuente */
+  var wqfEntry = WQF_MAP[sourceKey] || WQF_MAP['pozo_profundo'];
+  var wqf      = wqfEntry.wqf;
+
+  var res8040 = sizeMembranes(qpM3d, qfM3h, qrM3h, fam.m8040, tcf, wqf);
+  var res4040 = fam.m4040 ? sizeMembranes(qpM3d, qfM3h, qrM3h, fam.m4040, tcf, wqf) : null;
 
   /* 8040 es recomendado cuando: agua de mar, o caudal alim >= 5 m3/h */
   var rec8040 = (famKey === 'seawater' || qfM3h >= 5);
@@ -516,6 +576,9 @@ function calculate() {
     lsi: lsi, lsiOk: lsiOk, ph: ph, phR: phR,
     famKey: famKey, fam: fam,
     tcf: tcf, tempUsed: tempUsed,
+    spRef: spRef, spT: spT,
+    sourceKey: sourceKey, wqfEntry: wqfEntry, wqf: wqf,
+    silica: silica, hasSilica: hasSilica, siO2R: siO2R, siO2MaxRec: siO2MaxRec,
     res8040: res8040, res4040: res4040, rec8040: rec8040
   };
 
@@ -542,12 +605,16 @@ function renderResults(r) {
     : (r.lsi > 0.3 ? mkpill('red','Incrustante') : (r.lsi < -0.5 ? mkpill('blue','Corrosivo') : mkpill('ok','Controlado')));
   var lsiSub  = r.lsiOk ? 'pH rechazo est. ' + fmtN(r.phR,2) : 'Ingrese pH, dureza calcica y alcalinidad';
 
+  var spNote = Math.abs(r.tempUsed - 25) > 1
+    ? ' · T=' + fmtN(r.tempUsed,0) + '°C (+6%/°C)'
+    : ' · a 25 °C';
+
   html += '<div class="oi-hero-result">';
-  html +=   '<div class="oi-hero-tag">Balance de materia · recuperacion ' + fmtN(r.recovery,0) + '% · ' + r.fam.label + '</div>';
+  html +=   '<div class="oi-hero-tag">Balance de materia · recuperacion ' + fmtN(r.recovery,0) + '% · ' + r.fam.label + ' · ' + r.wqfEntry.label + ' (WQF ' + fmtN(r.wqf,2) + ')</div>';
   html +=   '<div class="oi-hero-grid">';
   html +=     '<div><div class="oi-hero-label">TDS permeado estimado</div>';
   html +=       '<div class="oi-hero-value">' + fmtN(r.tdsPerm,1) + ' mg/L</div>';
-  html +=       '<div class="oi-hero-sub">Rechazo nominal ' + fmtN(r.fam.rejection*100,1) + '%</div></div>';
+  html +=       '<div class="oi-hero-sub">Paso de sales ' + fmtN(r.spT*100,2) + '%' + spNote + '</div></div>';
   html +=     '<div class="oi-h-divider"></div>';
   html +=     '<div><div class="oi-hero-label">ISL en rechazo ' + lsiBadge + '</div>';
   html +=       '<div class="oi-hero-value">' + lsiTxt + '</div>';
@@ -556,6 +623,24 @@ function renderResults(r) {
   html += '</div>';
 
   /* ── Alertas ── */
+
+  /* Silice */
+  if (r.hasSilica) {
+    if (r.siO2R > 20) {
+      html += notice('red','Alerta de silice: SiO₂ en rechazo = ' + fmtN(r.siO2R,1) + ' mg/L (limite 20 mg/L)',
+        'La concentracion de silice en el rechazo supera el limite. Riesgo de incrustacion por SiO2 amorfa en membranas. ' +
+        'Recuperacion maxima permitida por silice: <strong>' + r.siO2MaxRec + '%</strong>. ' +
+        'Reducir la recuperacion o agregar inhibidor de silice.');
+    } else if (r.siO2R > 10) {
+      html += notice('warn','Silice en rechazo = ' + fmtN(r.siO2R,1) + ' mg/L (precaucion &gt; 10 mg/L)',
+        'Cerca del limite interno Carbotecnia (10 mg/L) / limite general (20 mg/L). ' +
+        'Recuperacion maxima por silice: <strong>' + r.siO2MaxRec + '%</strong>. Monitorear y usar inhibidor de silice.');
+    } else {
+      html += notice('gray','Silice en rechazo = ' + fmtN(r.siO2R,1) + ' mg/L — dentro de limite',
+        'SiO2 &lt; 10 mg/L en el rechazo. Recuperacion maxima por silice: ' + r.siO2MaxRec + '%.');
+    }
+  }
+
   if (r.lsiOk && r.lsi > 0.3) {
     html += notice('red','Alta tendencia incrustante (ISL ' + fmtN(r.lsi,2) + ')',
       'ISL &gt; +0.3: riesgo de precipitacion de CaCO3 en membranas y rechazo. Requiere dosificacion de antiincrustante para OI o suavizador/ablandador previo.');
@@ -567,6 +652,11 @@ function renderResults(r) {
   if (r.famKey === 'seawater' && r.recovery > 50) {
     html += notice('warn','Recuperacion alta para agua de mar (' + fmtN(r.recovery,0) + '%)',
       'En agua de mar se recomiendan recuperaciones de 30-50% por presion osmotica y concentracion de incrustantes.');
+  }
+  if (r.wqf < 0.85) {
+    html += notice('warn','Fuente de agua con ensuciamiento elevado — WQF = ' + fmtN(r.wqf,2),
+      'Agua de ' + r.wqfEntry.label + ': el flux de diseño se reduce al ' + fmtN(r.wqf*100,0) + '% del nominal para prevenir fouling prematuro. ' +
+      'Se requiere pretratamiento mas robusto (coagulacion, filtracion multimedia, UF o MF).');
   }
 
   /* ── KPIs secundarios ── */
@@ -597,10 +687,16 @@ function renderResults(r) {
   html += drow('Flujo de rechazo','Concentrado o purga del sistema.',      fmtN(r.qrM3h,2)+' m3/h', fmtN(r.qrGPM,1)+' GPM');
   html += drow('Factor de concentracion','Concentracion de sales en rechazo vs alimentacion.', fmtN(r.fc,2)+' FC', '1 / (1 - '+fmtN(r.recovery,0)+'%)');
   html += drow('TDS entrada','Salinidad del agua de alimentacion.',        fmtN(r.tdsFeed,0)+' mg/L', 'Dato de analisis');
-  html += drow('TDS permeado','Rechazo nominal '+fmtN(r.fam.rejection*100,1)+'%.', fmtN(r.tdsPerm,1)+' mg/L', '');
+  html += drow('TDS permeado','Paso de sales '+fmtN(r.spT*100,2)+'% a '+fmtN(r.tempUsed,0)+' °C (ref. nominal '+fmtN(r.spRef*100,2)+'% a 25 °C).', fmtN(r.tdsPerm,1)+' mg/L', '');
   html += drow('TDS rechazo','Sales concentradas en el rechazo.',          fmtN(r.tdsR,0)+' mg/L', 'FC '+fmtN(r.fc,2));
   html += drow('Presion osmotica media','Estimacion termodinamica.',       fmtN(r.osmPsi,1)+' psi', fmtN(r.osmPsi*0.0689476,2)+' bar');
   html += drow('ISL del rechazo','Langelier en el concentrado.',           lsiTxt, r.lsiOk ? 'pH alim. '+fmtN(r.ph,2)+' -> pH rec. est. '+fmtN(r.phR,2) : 'Datos incompletos');
+  html += drow('Fuente del agua','Factor de calidad de agua (WQF) aplicado al flux de diseno.', r.wqfEntry.label, 'WQF = '+fmtN(r.wqf,2)+' · flux efectivo = '+fmtN(r.wqf*100,0)+'% del nominal');
+  if (r.hasSilica) {
+    html += drow('SiO₂ en rechazo','Silice concentrada: SiO2 x FC.',
+      fmtN(r.siO2R,1)+' mg/L',
+      'SiO2 alim. '+fmtN(r.silica,1)+' mg/L · limite: 20 mg/L · max rec. '+r.siO2MaxRec+'%');
+  }
   html += '</ul>';
 
   /* ── Pretratamiento ── */
@@ -658,6 +754,12 @@ function buildOneCard(format, res, spec, isRec, famKey, tempUsed, tcf) {
 
   var feedWarn = res.overFeed
     ? '<div style="margin-top:6px">' + mkpill('warn','Verificar Q/vasija') + '</div>' : '';
+  var brineWarn = res.lowBrine
+    ? '<div style="margin-top:6px">' + mkpill('red','Flujo minimo rechazo!') +
+      '<div style="font-size:11px;color:var(--err);margin-top:4px">Rechazo por vasija: <strong>' + fmtN(res.brinePerV,2) +
+      ' m3/h</strong> — minimo requerido: ' + fmtN(res.minBrineM3h,1) +
+      ' m3/h. Riesgo de polarizacion de concentracion. Aumentar el numero de vasijas o reducir la recuperacion.</div></div>'
+    : '';
 
   var lgLine = spec.lgModel
     ? '<div><strong>LG Chem:</strong> ' + spec.lgModel +
@@ -677,9 +779,11 @@ function buildOneCard(format, res, spec, isRec, famKey, tempUsed, tcf) {
   html += '<div class="oi-fmt-count-label">modulos necesarios</div>';
   html += '<div class="oi-fmt-arr">';
   html +=   '<b>' + arrStr + '</b><br>';
-  html +=   'Q alim. por vasija: ' + fmtN(res.feedPerV,2) + ' m3/h &nbsp;·&nbsp; max. ' + fmtN(spec.maxFeedM3h,1) + ' m3/h';
+  html +=   'Q alim. por vasija: ' + fmtN(res.feedPerV,2) + ' m3/h &nbsp;·&nbsp; max. ' + fmtN(spec.maxFeedM3h,1) + ' m3/h<br>';
+  html +=   'Q rechazo por vasija: ' + fmtN(res.brinePerV,2) + ' m3/h &nbsp;·&nbsp; min. ' + fmtN(spec.minBrineM3h,1) + ' m3/h';
   html += '</div>';
   html += feedWarn;
+  html += brineWarn;
   html += '<div class="oi-fmt-models">';
   html +=   '<div><strong>Hydranautics/Nitto:</strong> ' + spec.hydModel +
             ' &nbsp;(' + fmtN(spec.hydM3d,1) + ' m3/d @ ' + spec.hydPPM.toLocaleString('es-MX') + ' ppm, ' + spec.hydPSI + ' psi)</div>';
@@ -747,15 +851,20 @@ function copySummary() {
     'Rechazo      : ' + fmtN(r.qrM3h,2) + ' m3/h  (' + fmtN(r.qrGPM,1) + ' GPM)',
     'Recuperacion : ' + fmtN(r.recovery,0) + ' %',
     '',
-    'CALIDAD Y SALES (' + r.fam.label + ')',
-    'TDS entrada  : ' + fmtN(r.tdsFeed,0) + ' mg/L',
-    'TDS permeado : ' + fmtN(r.tdsPerm,1) + ' mg/L  (rechazo nominal ' + fmtN(r.fam.rejection*100,1) + '%)',
-    'TDS rechazo  : ' + fmtN(r.tdsR,0) + ' mg/L  (FC ' + fmtN(r.fc,2) + ')',
+    'FUENTE Y CALIDAD DEL AGUA',
+    'Fuente         : ' + r.wqfEntry.label + '  (WQF = ' + fmtN(r.wqf,2) + ')',
+    'TDS entrada    : ' + fmtN(r.tdsFeed,0) + ' mg/L  (' + r.fam.label + ')',
+    'TDS permeado   : ' + fmtN(r.tdsPerm,1) + ' mg/L  (paso de sales ' + fmtN(r.spT*100,2) + '% a ' + fmtN(r.tempUsed,0) + ' degC)',
+    'TDS rechazo    : ' + fmtN(r.tdsR,0) + ' mg/L  (FC ' + fmtN(r.fc,2) + ')',
+    r.hasSilica
+      ? 'SiO2 rechazo   : ' + fmtN(r.siO2R,1) + ' mg/L  (limite 20 mg/L · max rec. por silice: ' + r.siO2MaxRec + '%)'
+      : 'SiO2: no ingresado',
     'Pres. osmotica media: ' + fmtN(r.osmPsi,1) + ' psi  (' + fmtN(r.osmPsi*0.0689476,2) + ' bar)',
     '',
-    'TEMPERATURA Y TCF',
+    'TEMPERATURA Y CORRECCION',
     'Temperatura de diseno : ' + fmtN(r.tempUsed,0) + ' degC',
     'TCF (correccion flujo): ' + fmtN(r.tcf,3),
+    'Paso de sales (ref 25 degC): ' + fmtN(r.spRef*100,2) + '%  -->  a ' + fmtN(r.tempUsed,0) + ' degC: ' + fmtN(r.spT*100,2) + '%',
     '',
     'LANGELIER EN RECHAZO',
     'ISL rechazo: ' + (r.lsiOk
@@ -803,12 +912,15 @@ function flashCopied() {
    RESET
    ══════════════════════════════════════════════════════════ */
 function resetForm() {
-  var campos = ['oi-flow','oi-temp','oi-tds','oi-ph','oi-hardness','oi-alkalinity'];
+  var campos = ['oi-flow','oi-temp','oi-tds','oi-ph','oi-hardness','oi-alkalinity','oi-silica'];
   for (var i = 0; i < campos.length; i++) { getel(campos[i]).value = ''; }
-  getel('oi-flow-unit').value  = 'gpm';
-  getel('oi-flow-basis').value = 'permeate';
-  getel('oi-recovery').value   = 75;
-  getel('oi-rec-range').value  = 75;
+  getel('oi-flow-unit').value    = 'gpm';
+  getel('oi-flow-basis').value   = 'permeate';
+  getel('oi-source').value       = 'pozo_profundo';
+  getel('oi-recovery').value     = 75;
+  getel('oi-recovery').max       = 85;
+  getel('oi-rec-range').value    = 75;
+  getel('oi-rec-range').max      = 85;
   getel('oi-rec-badge').textContent = '75%';
   window._oiR = null;
   showEmpty('Ingrese caudal y TDS, luego presione Calcular diseno.');
@@ -831,8 +943,27 @@ getel('oi-recovery').addEventListener('input', function () {
   getel('oi-rec-badge').textContent = v + '%';
 });
 
+/* Actualizar max del slider cuando cambia la silice */
+getel('oi-silica').addEventListener('input', function () {
+  var s = parseFloat(this.value);
+  if (isFinite(s) && s > 0 && s < 20) {
+    var maxRec = Math.max(0, Math.floor((1 - s / 20) * 100));
+    getel('oi-rec-range').max = maxRec;
+    getel('oi-recovery').max  = maxRec;
+    var cur = parseInt(getel('oi-recovery').value) || 75;
+    if (cur > maxRec) {
+      getel('oi-recovery').value        = maxRec;
+      getel('oi-rec-range').value       = maxRec;
+      getel('oi-rec-badge').textContent = maxRec + '%';
+    }
+  } else {
+    getel('oi-rec-range').max = 85;
+    getel('oi-recovery').max  = 85;
+  }
+});
+
 /* Calcular con Enter */
-var inputIds = ['oi-flow','oi-temp','oi-tds','oi-ph','oi-hardness','oi-alkalinity'];
+var inputIds = ['oi-flow','oi-temp','oi-tds','oi-ph','oi-hardness','oi-alkalinity','oi-silica'];
 for (var i = 0; i < inputIds.length; i++) {
   (function(id){
     getel(id).addEventListener('keyup', function(e){ if (e.key === 'Enter') calculate(); });
