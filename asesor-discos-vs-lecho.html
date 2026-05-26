@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asesor de selección | Discos vs lecho profundo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#071B33;
+  --navy-2:#0D2D4F;
+  --blue:#0B8FEA;
+  --blue-2:#21A7FF;
+  --steel:#5F7082;
+  --steel-2:#9BA9B7;
+  --paper:#F3F7FA;
+  --white:#FFFFFF;
+  --line:#D8E3EC;
+  --ink:#102234;
+  --green:#0F766E;
+  --green-soft:#DDF7F3;
+  --amber:#A15C08;
+  --amber-soft:#FFF4D8;
+  --red:#B91C1C;
+  --red-soft:#FEE2E2;
+  --shadow:0 18px 48px rgba(7,27,51,.12);
+  --shadow-sm:0 8px 22px rgba(7,27,51,.08);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:linear-gradient(180deg,#F8FBFD 0%,#EAF1F7 100%);
+  color:var(--ink);
+  font-family:'DM Sans',Segoe UI,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.55;
+}
+h1,h2,h3,h4,.adv-big,.adv-winner{font-family:'Poppins',Segoe UI,Arial,sans-serif}
+input,.adv-number,.adv-kpi strong{font-family:'Roboto',Segoe UI,Arial,sans-serif}
+button,input,select{font:inherit}
+
+.adv-shell{
+  width:min(1220px,calc(100% - 32px));
+  margin:0 auto;
+  padding:30px 0 58px;
+}
+
+.adv-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:22px;
+}
+.adv-brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.adv-logo{
+  width:50px;
+  height:50px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  color:var(--white);
+  font-weight:900;
+  letter-spacing:-.05em;
+  box-shadow:0 14px 30px rgba(11,143,234,.22);
+}
+.adv-brand h1{
+  color:var(--navy);
+  font-size:19px;
+  line-height:1.15;
+  font-weight:800;
+}
+.adv-brand span{
+  display:block;
+  color:var(--steel);
+  margin-top:3px;
+  font-size:12px;
+  font-weight:700;
+}
+.adv-chip{
+  border:1px solid var(--line);
+  background:var(--white);
+  color:var(--navy);
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:12px;
+  font-weight:800;
+  box-shadow:var(--shadow-sm);
+  white-space:nowrap;
+}
+
+.adv-hero{
+  background:linear-gradient(135deg,var(--navy) 0%,#0A345F 52%,#124E82 100%);
+  color:var(--white);
+  border-radius:24px;
+  padding:28px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  position:relative;
+  margin-bottom:22px;
+}
+.adv-hero:after{
+  content:"";
+  position:absolute;
+  width:340px;
+  height:340px;
+  border-radius:50%;
+  border:52px solid rgba(33,167,255,.18);
+  right:-96px;
+  bottom:-160px;
+}
+.adv-hero-inner{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 330px;
+  gap:26px;
+  align-items:end;
+}
+.adv-hero h2{
+  color:var(--white) !important;
+  font-size:clamp(30px,4vw,52px);
+  line-height:1.03;
+  letter-spacing:-.04em;
+  max-width:820px;
+}
+.adv-hero p{
+  color:rgba(255,255,255,.78) !important;
+  max-width:740px;
+  margin-top:12px;
+}
+.adv-hero-note{
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.10);
+  border-radius:18px;
+  padding:16px;
+  backdrop-filter:blur(16px);
+}
+.adv-hero-note b{
+  display:block;
+  font-size:13px;
+  margin-bottom:6px;
+}
+.adv-hero-note span{
+  color:rgba(255,255,255,.78) !important;
+  font-size:13px;
+}
+
+.adv-layout{
+  display:grid;
+  grid-template-columns:390px minmax(0,1fr);
+  gap:22px;
+  align-items:start;
+}
+.adv-panel{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow-sm);
+  overflow:hidden;
+}
+.adv-head{
+  padding:18px 20px 14px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+}
+.adv-head h3{
+  color:var(--navy);
+  font-size:16px;
+}
+.adv-step{
+  color:var(--blue);
+  font-size:11px;
+  font-weight:900;
+}
+.adv-body{padding:20px}
+
+.adv-field{margin-bottom:17px}
+.adv-field label{
+  display:block;
+  color:var(--navy);
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:7px;
+}
+.adv-flow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 104px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+  background:var(--white);
+}
+.adv-flow:focus-within{
+  border-color:var(--blue);
+  box-shadow:0 0 0 4px rgba(11,143,234,.14);
+}
+.adv-flow input,.adv-flow select,.adv-select{
+  border:0;
+  outline:0;
+  background:var(--white);
+  color:var(--ink);
+  padding:12px 13px;
+  font-weight:750;
+  width:100%;
+}
+.adv-flow input::placeholder{color:#AAB7C4;font-weight:500}
+.adv-flow select{
+  border-left:1px solid var(--line);
+  background:#F4F8FB;
+  color:var(--navy);
+  cursor:pointer;
+}
+.adv-select{
+  border:1px solid var(--line);
+  border-radius:14px;
+  cursor:pointer;
+}
+.adv-select:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 4px rgba(11,143,234,.14);
+}
+.adv-hint{
+  margin-top:6px;
+  color:var(--steel);
+  font-size:11.5px;
+}
+
+.adv-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+.adv-btn{
+  border:0;
+  border-radius:999px;
+  padding:12px 16px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  color:var(--white);
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 12px 24px rgba(11,143,234,.22);
+  transition:transform .15s,box-shadow .15s,background .15s;
+}
+.adv-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 16px 32px rgba(11,143,234,.26);
+}
+.adv-btn.secondary{
+  background:var(--white);
+  color:var(--navy);
+  border:1px solid var(--line);
+  box-shadow:none;
+}
+.adv-btn.secondary:hover{background:#F3F8FC}
+
+.adv-preview{
+  display:grid;
+  gap:16px;
+}
+.adv-card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow-sm);
+  padding:20px;
+}
+.adv-card h3,.adv-card h4{color:var(--navy)}
+.adv-card p{color:var(--steel);margin-top:8px}
+.adv-kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+.adv-kpi{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#FFFFFF,#F7FAFC);
+  border-radius:18px;
+  padding:16px;
+}
+.adv-kpi span{
+  display:block;
+  color:var(--steel);
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:7px;
+}
+.adv-kpi strong{
+  display:block;
+  color:var(--navy);
+  font-size:26px;
+  line-height:1;
+}
+.adv-kpi small{
+  display:block;
+  color:var(--steel);
+  margin-top:8px;
+}
+
+.adv-result{
+  display:none;
+}
+.adv-result.is-visible{display:block}
+.adv-form.is-hidden,.adv-preview.is-hidden{display:none}
+.adv-diagnosis{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.adv-diagnosis-top{
+  background:linear-gradient(135deg,var(--navy) 0%,#123F6B 58%,var(--blue) 100%);
+  color:var(--white);
+  padding:26px;
+}
+.adv-diagnosis-top span{
+  display:inline-flex;
+  color:var(--white);
+  background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+.adv-winner{
+  color:var(--white) !important;
+  font-size:clamp(26px,4vw,44px);
+  line-height:1.08;
+  letter-spacing:-.04em;
+}
+.adv-diagnosis-top p{
+  color:rgba(255,255,255,.80) !important;
+  margin-top:10px;
+  max-width:820px;
+}
+.adv-diagnosis-body{padding:22px}
+.adv-grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.adv-list{
+  list-style:none;
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+.adv-list li{
+  position:relative;
+  padding:12px 12px 12px 36px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#F8FBFD;
+  color:var(--ink);
+}
+.adv-list li:before{
+  content:"";
+  position:absolute;
+  left:14px;
+  top:18px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--blue);
+}
+.adv-alert{
+  border-radius:18px;
+  padding:15px 16px;
+  border:1px solid;
+  margin-top:16px;
+}
+.adv-alert b{
+  display:block;
+  margin-bottom:5px;
+  font-size:12px;
+}
+.adv-alert.green{background:var(--green-soft);border-color:#9DE4D9;color:var(--green)}
+.adv-alert.amber{background:var(--amber-soft);border-color:#F3CD83;color:var(--amber)}
+.adv-alert.red{background:var(--red-soft);border-color:#F3A3A3;color:var(--red)}
+.adv-muted{color:var(--steel);font-size:13px;margin-top:8px}
+
+.adv-footer{
+  margin-top:22px;
+  color:var(--steel);
+  font-size:11px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+@media(max-width:1040px){
+  .adv-layout{grid-template-columns:1fr}
+  .adv-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .adv-shell{width:min(100% - 20px,1220px);padding-top:14px}
+  .adv-top{align-items:flex-start;flex-direction:column}
+  .adv-hero{padding:22px 18px}
+  .adv-hero-inner,.adv-grid-2{grid-template-columns:1fr}
+  .adv-kpi-grid{grid-template-columns:1fr}
+  .adv-flow{grid-template-columns:1fr 96px}
+}
+</style>
+</head>
+<body>
+<main class="adv-shell">
+  <header class="adv-top">
+    <div class="adv-brand">
+      <div class="adv-logo">CT</div>
+      <div>
+        <h1>Asesor de selección: filtros de discos vs. lecho profundo</h1>
+        <span>Diagnóstico técnico y económico para preselección</span>
+      </div>
+    </div>
+    <div class="adv-chip">Dashboard de ingeniería</div>
+  </header>
+
+  <section class="adv-hero">
+    <div class="adv-hero-inner">
+      <div>
+        <h2>Compare filtración en discos Azud contra filtros de lecho profundo.</h2>
+        <p>Responda el cuestionario y obtenga una recomendación razonada: discos, lecho profundo o sistema combinado, con criterios de operación, espacio, agua de retrolavado y naturaleza de los sólidos.</p>
+      </div>
+      <div class="adv-hero-note">
+        <b>Criterio base</b>
+        <span>Los discos son barreras mecánicas de alta eficiencia y bajo consumo de agua. El lecho profundo puede operar como reactor fisicoquímico, biológico o adsorbente cuando el agua requiere algo más que retener partículas.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="adv-layout">
+    <section class="adv-panel adv-form" id="adv-form">
+      <div class="adv-head">
+        <h3>Cuestionario técnico</h3>
+        <span class="adv-step">01 · Entradas</span>
+      </div>
+      <div class="adv-body">
+        <div class="adv-field">
+          <label for="adv-flow">Flujo a tratar</label>
+          <div class="adv-flow">
+            <input id="adv-flow" class="adv-number" type="number" min="0" step="0.1" placeholder="Ej. 60">
+            <select id="adv-unit" aria-label="Unidad de flujo">
+              <option value="gpm">GPM</option>
+              <option value="m3h">m³/h</option>
+            </select>
+          </div>
+          <div class="adv-hint">Dato clave para evaluar viabilidad económica relativa.</div>
+        </div>
+
+        <div class="adv-field">
+          <label for="adv-objective">Objetivo de la filtración</label>
+          <select class="adv-select" id="adv-objective">
+            <option value="physical">Solo retener partículas físicas</option>
+            <option value="prefilter">Prefiltrar un tren de tratamiento (lecho profundo, membranas OI)</option>
+            <option value="physchem">Filtrar y causar cambios fisicoquímicos en el agua</option>
+          </select>
+          <div class="adv-hint">Incluye proteger medios filtrantes, reducir SDI, adsorber cloro, hierro, manganeso u olor.</div>
+        </div>
+
+        <div class="adv-field">
+          <label for="adv-particle">Tamaño de partícula a retener</label>
+          <select class="adv-select" id="adv-particle">
+            <option value="lt5">Menor a 5 micras</option>
+            <option value="5to400" selected>Entre 5 y 400 micras</option>
+          </select>
+        </div>
+
+        <div class="adv-field">
+          <label for="adv-solids">Naturaleza de los sólidos</label>
+          <select class="adv-select" id="adv-solids">
+            <option value="inorganic" selected>Arenas y polvos inorgánicos</option>
+            <option value="deformable">Algas, flóculos o sólidos deformables / algo adherentes</option>
+            <option value="sticky">Aceites, grasas o sólidos muy pegajosos (no retrolavables)</option>
+          </select>
+        </div>
+
+        <div class="adv-field">
+          <label for="adv-site">Limitantes del sitio</label>
+          <select class="adv-select" id="adv-site">
+            <option value="limited">Hay escasez de agua para retrolavado y poco espacio físico</option>
+            <option value="open" selected>Sin restricciones de agua o espacio</option>
+          </select>
+        </div>
+
+        <div class="adv-actions">
+          <button class="adv-btn" type="button" id="adv-run">Obtener recomendación</button>
+          <button class="adv-btn secondary" type="button" id="adv-clear">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="adv-preview" id="adv-preview">
+      <div class="adv-card">
+        <h3>Cómo se toma la decisión</h3>
+        <p>La herramienta prioriza primero la función requerida por el agua. Si el proceso necesita adsorción, oxidación, catálisis o remoción química, gana lecho profundo. Si el objetivo es retención física dentro del rango de discos y los sólidos no son aceitosos, ganan discos Azud.</p>
+        <div class="adv-kpi-grid">
+          <div class="adv-kpi">
+            <span>Discos Azud</span>
+            <strong>5–400</strong>
+            <small>micras en filtración física</small>
+          </div>
+          <div class="adv-kpi">
+            <span>Retrolavado hidráulico</span>
+            <strong>50–60 L</strong>
+            <small>por elemento; AA solo 10 L/elemento</small>
+          </div>
+          <div class="adv-kpi">
+            <span>Espacio</span>
+            <strong>Mínimo</strong>
+            <small>fracción del área de un lecho equivalente</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="adv-card">
+        <h3>Advertencia de ingeniería</h3>
+        <p>Este asesor entrega una recomendación preliminar. La selección final debe validarse con presión disponible, carga de sólidos, objetivo real del tratamiento, compatibilidad química, frecuencia de retrolavado y, cuando sea posible, pruebas con el líquido real.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="adv-result" id="adv-result">
+    <div class="adv-diagnosis">
+      <div class="adv-diagnosis-top">
+        <span id="adv-result-type">Diagnóstico</span>
+        <div class="adv-winner" id="adv-winner">Recomendación pendiente</div>
+        <p id="adv-summary">Complete el cuestionario para generar el diagnóstico.</p>
+      </div>
+      <div class="adv-diagnosis-body">
+        <div class="adv-grid-2">
+          <div>
+            <h3>Justificación técnica</h3>
+            <ul class="adv-list" id="adv-technical-list"></ul>
+          </div>
+          <div>
+            <h3>Lectura económica y operativa</h3>
+            <ul class="adv-list" id="adv-business-list"></ul>
+          </div>
+        </div>
+
+        <div id="adv-capex-note"></div>
+        <div id="adv-caution-note"></div>
+
+        <div class="adv-actions">
+          <button class="adv-btn secondary" type="button" id="adv-edit">Modificar parámetros</button>
+          <button class="adv-btn" type="button" id="adv-copy">Copiar reporte</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="adv-footer">
+    <span>Basado en criterios de filtración física, lecho granular, retrolavado, espacio y naturaleza de sólidos.</span>
+    <span>La recomendación es preliminar y debe revisarse con ingeniería de aplicación.</span>
+  </footer>
+</main>
+
+<script>
+var LABELS = {
+  objective:{
+    physical:'Solo retener partículas físicas',
+    prefilter:'Prefiltrar un tren de tratamiento (lecho profundo, membranas OI)',
+    physchem:'Filtrar y causar cambios fisicoquímicos en el agua'
+  },
+  particle:{
+    lt5:'Menor a 5 micras',
+    '5to400':'Entre 5 y 400 micras'
+  },
+  solids:{
+    inorganic:'Arenas y polvos inorgánicos',
+    deformable:'Algas, flóculos o sólidos deformables / algo adherentes',
+    sticky:'Aceites, grasas o sólidos muy pegajosos (no retrolavables)'
+  },
+  site:{
+    limited:'Escasez de agua para retrolavado y poco espacio físico',
+    open:'Sin restricciones de agua o espacio'
+  }
+};
+
+function el(id){ return document.getElementById(id); }
+function fmt(n,d){ return isFinite(n) ? n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}) : '—'; }
+function toGpm(value,unit){ return unit==='m3h' ? value*4.402867 : value; }
+function toM3h(value,unit){ return unit==='gpm' ? value*0.2271247 : value; }
+
+function getInputs(){
+  var raw = el('adv-flow').value;
+  var flow = parseFloat(raw);
+  var unit = el('adv-unit').value;
+  return {
+    rawFlow:raw,
+    flow:isFinite(flow) && flow>0 ? flow : 0,
+    unit:unit,
+    flowGpm:isFinite(flow) && flow>0 ? toGpm(flow,unit) : 0,
+    flowM3h:isFinite(flow) && flow>0 ? toM3h(flow,unit) : 0,
+    objective:el('adv-objective').value,
+    particle:el('adv-particle').value,
+    solids:el('adv-solids').value,
+    site:el('adv-site').value
+  };
+}
+
+function analyze(){
+  var i = getInputs();
+  var result = {
+    inputs:i,
+    winner:'',
+    headline:'',
+    summary:'',
+    type:'',
+    technical:[],
+    business:[],
+    capex:'',
+    caution:'',
+    cleaning:''
+  };
+
+  var highFlow = i.flowGpm>80;
+  var siteLimited = i.site==='limited';
+  var hasPhyschem = i.objective==='physchem';
+  var isPrefilter = i.objective==='prefilter';
+  var hasSticky = i.solids==='sticky';
+  var hasDeformable = i.solids==='deformable';
+  var validDiscRange = i.particle==='5to400';
+  var physicalOnly = i.objective==='physical';
+
+  // Case 1: Physico-chemical objective + site limited or high flow → combined
+  if(hasPhyschem && (siteLimited || highFlow)){
+    result.winner = 'combined';
+    result.type = 'Sistema combinado';
+    result.headline = 'Recomendación: discos Azud como prefiltro + lecho profundo';
+    result.summary = 'El agua requiere cambios fisicoquímicos, por lo que el tratamiento principal debe ser lecho profundo. Las condiciones del sitio o el caudal elevado justifican protegerlo con discos Azud antes del lecho.';
+    result.technical.push('Los medios granulares en un lecho profundo operan como verdaderos reactores fisicoquímicos y biológicos: carbón activado (adsorción), catalizadores con MnO₂ (hierro, manganeso), calcita, zeolita o resinas de intercambio iónico.');
+    result.technical.push('Los discos Azud se recomiendan como barrera mecánica previa para reducir la carga de sólidos suspendidos y evitar que el lecho profundo se sature prematuramente.');
+    result.technical.push('Esta combinación es especialmente valiosa cuando el agua de entrada tiene alta turbidez o TSS y además requiere un cambio fisicoquímico aguas abajo.');
+    result.business.push('El prefiltro de discos reduce consumo de agua de retrolavado del lecho profundo aguas abajo y estabiliza la operación del sistema.');
+    result.business.push('En caudales altos, la protección previa puede disminuir frecuencia de mantenimiento, pérdida de carga y saturación prematura del medio granular.');
+    result.caution = 'El filtro de discos no sustituye la función química del lecho profundo; solo protege hidráulica y mecánicamente el tren de tratamiento.';
+    return result;
+  }
+
+  // Case 2: Physico-chemical objective (no site constraints) → deep bed
+  if(hasPhyschem){
+    result.winner = 'bed';
+    result.type = 'Lecho profundo';
+    result.headline = 'Recomendación: filtro de lecho profundo';
+    result.summary = 'El objetivo no es solo retener partículas. El proceso requiere interacción fisicoquímica, por lo que los discos no son la tecnología principal adecuada.';
+    result.technical.push('Los medios granulares en un lecho profundo pueden adsorber compuestos orgánicos (carbón activado), precipitar y retener hierro y manganeso mediante catálisis (Katalox Light, Greensand Plus, Birm), remover arsénico (oxihidróxido férrico), o ajustar pH (calcita, óxido de magnesio).');
+    result.technical.push('El filtro de discos está limitado a filtración física por tamaño; no retiene gases, no adsorbe cloro libre ni olor y no remueve metales disueltos por reacción.');
+    result.technical.push('Para objetivos fisicoquímicos, la selección del medio granular es tan importante como el equipo mismo: cada medio actúa sobre un contaminante específico.');
+    result.business.push('La inversión se justifica cuando el agua requiere una transformación química o biológica que un disco no puede entregar.');
+    result.business.push('Permite seleccionar medios como carbón activado, zeolita, arena verde (MnO₂), antracita o combinaciones según el contaminante a remover.');
+    return result;
+  }
+
+  // Case 3: Pre-filtration objective → discs as protection
+  if(isPrefilter){
+    result.winner = 'discs';
+    result.cleaning = hasDeformable ? 'aa' : 'standard';
+    result.type = result.cleaning==='aa' ? 'Discos Azud asistidos por aire (prefiltro)' : 'Discos Azud convencionales (prefiltro)';
+    result.headline = result.cleaning==='aa'
+      ? 'Recomendación: discos Azud asistidos por aire como prefiltro'
+      : 'Recomendación: discos Azud convencionales como prefiltro';
+    result.summary = 'Los filtros de discos son particularmente útiles como protección de medios filtrantes en lechos profundos y como prefiltración antes de membranas de ósmosis inversa. Reducen la frecuencia de retrolavado del lecho aguas abajo y protegen las membranas de ensuciamiento prematuro.';
+    result.technical.push('Los discos retienen partículas entre 5 y 400 micras y reducen la carga de sólidos que llega al lecho profundo o a las membranas, extendiendo su vida útil y ciclos de limpieza.');
+    result.technical.push('En prefiltración para ósmosis inversa, el objetivo es reducir el SDI (Silt Density Index) a valores menores a 5 (idealmente < 3) para evitar ensuciamiento prematuro de membranas.');
+    result.technical.push(result.cleaning==='aa'
+      ? 'La limpieza asistida por aire (10 L/elemento por retrolavado) es preferible cuando el agua contiene algas, flóculos o sólidos deformables que se adhieren a los discos durante la filtración.'
+      : 'La limpieza hidráulica convencional (50–60 L/elemento por retrolavado) es adecuada para arenas y polvos inorgánicos no pegajosos.');
+    result.technical.push('Los discos WS (polietileno) se recomiendan frente a los MG (polipropileno) cuando la carga de sólidos es alta o los sólidos son algo adherentes: tienen mayor capacidad de retención y menor tendencia a que los discos se peguen entre sí.');
+    result.business.push('Al actuar como barrera previa, los discos reducen la frecuencia de retrolavado del lecho profundo, ahorrando agua y tiempo de operación del sistema completo.');
+    result.business.push('Su retrolavado automatizado y compacto facilita la integración en trenes de tratamiento existentes sin grandes obras civiles.');
+    if(siteLimited){
+      result.capex = 'Los discos Azud, además de proteger el lecho, usan radicalmente menos agua de retrolavado que el lecho mismo, lo que es clave cuando el sitio tiene restricción de agua.';
+    }
+    return result;
+  }
+
+  // Case 4: Sticky solids → deep bed or pre-treatment
+  if(hasSticky){
+    result.winner = 'bed';
+    result.type = 'Lecho profundo';
+    result.headline = 'Recomendación: lecho profundo o pretratamiento especializado';
+    result.summary = 'Los aceites, grasas o sólidos extremadamente pegajosos pueden impregnar los discos de plástico de manera irreversible. No son retrolavables por el sistema automático.';
+    result.technical.push('El agua con aceites, emulsiones o sólidos muy pegajosos tiende a impregnar los discos de plástico de manera que no se eliminan en el retrolavado automático, incluso con limpieza asistida por aire.');
+    result.technical.push('En casos límite (sólidos algo adherentes pero no aceitosos), se puede intentar con discos WS y retrolavado con agua que contenga surfactante, pero requerirá limpieza mecánica periódica (lavadora tipo Kärcher) cada algunas semanas o meses.');
+    result.technical.push('El lecho profundo tolera mejor ciertas cargas pegajosas o puede combinarse con coagulación, flotación, desengrase o pretratamiento específico.');
+    result.business.push('Evita adquirir un equipo de discos que puede fallar por ensuciamiento irreversible en pocas semanas.');
+    result.business.push('Conviene realizar jar tests y definir si hay separación de grasas o pretratamiento antes de dimensionar el tren final.');
+    result.caution = 'Si se desea usar discos, primero debe resolverse la presencia de aceites o grasas con un pretratamiento adecuado (separador de grasas, flotación, coagulación).';
+    return result;
+  }
+
+  // Case 5: Particles < 5 microns
+  if(i.particle==='lt5'){
+    result.winner = 'bed';
+    result.type = 'Lecho profundo';
+    result.headline = 'Recomendación: lecho profundo o tecnología fina complementaria';
+    result.summary = 'El tamaño de partícula indicado está por debajo del rango mínimo de los discos Azud (5 µm). Se requiere evaluar otras tecnologías.';
+    result.technical.push('Los discos Azud operan en el rango de 5 a 400 micras; el filtro de lecho profundo con arena fina puede alcanzar partículas desde ~20-25 µm con arena estándar.');
+    result.technical.push('Para partículas menores a 5 µm se requiere revisar filtración fina (membranas de ultrafiltración o nanofiltración), coagulación-floculación o un tren granular especializado.');
+    result.business.push('La selección correcta evita alta frecuencia de retrolavado, pérdida de carga excesiva o baja eficiencia de remoción.');
+    result.business.push('El costo real debe evaluarse como tren completo, no solo como equipo aislado.');
+    return result;
+  }
+
+  // Case 6: Physical, valid disc range → discs
+  if(physicalOnly && validDiscRange){
+    // AA only for deformable solids — site-limited does NOT imply AA
+    result.winner = 'discs';
+    result.cleaning = hasDeformable ? 'aa' : 'standard';
+    result.type = result.cleaning==='aa' ? 'Discos Azud asistidos por aire' : 'Discos Azud convencionales';
+    result.headline = result.cleaning==='aa'
+      ? 'Recomendación: filtro de discos Azud asistido por aire'
+      : 'Recomendación: filtro de discos Azud convencional';
+    result.summary = 'El objetivo es retención mecánica de partículas dentro del rango de operación de discos, sin requerir reacción química ni adsorción.';
+    result.technical.push('Retrolavado automático con solo 50–60 L por elemento filtrante en limpieza hidráulica, o 10 L por elemento en limpieza asistida por aire.');
+    result.technical.push('Ocupa una fracción del espacio físico requerido por tanques de lecho profundo.');
+    result.technical.push('No sufre canalización, petrificación de cama ni migración de medios filtrantes.');
+    result.technical.push(result.cleaning==='aa'
+      ? 'La asistencia por aire mejora el desprendimiento de algas, flóculos o sólidos deformables y reduce aún más el consumo de agua de retrolavado a 10 L/elemento. Disponible solo en elementos de 2" (no en 4").'
+      : 'La limpieza hidráulica convencional es adecuada para arenas y polvos inorgánicos no pegajosos. Para algas o flóculos, considere discos con asistencia de aire.');
+    if(hasDeformable){
+      result.technical.push('Para TSS alto o sólidos algo adherentes (flóculos, algas), los discos tipo WS (polietileno) tienen mayor capacidad de retención y menor tendencia a pegarse que los discos MG (polipropileno).');
+    }
+    result.business.push('La operación es compacta, automatizable y con bajo volumen de agua de retrolavado.');
+    result.business.push('Es una buena solución cuando se busca filtración física repetible sin cambiar la química del agua.');
+    if(siteLimited){
+      result.business.push('El sitio tiene restricción de agua y espacio: los discos son la alternativa más adecuada, ya que usan radicalmente menos agua de retrolavado y ocupan una fracción del espacio de un lecho equivalente.');
+    }
+    if((result.cleaning==='standard' && i.flowGpm>14) || (result.cleaning==='aa' && i.flowGpm>29)){
+      result.capex = result.cleaning==='aa'
+        ? 'Para flujos superiores a 29 GPM, el filtro de discos asistido por aire puede ser más económico en inversión inicial que adquirir el tanque y medio filtrante de lecho profundo equivalente.'
+        : 'Para flujos superiores a 14 GPM, el filtro de discos convencional puede ser más económico en inversión inicial que adquirir el tanque y medio filtrante de lecho profundo equivalente.';
+    }
+    return result;
+  }
+
+  // Default: review required
+  result.winner = 'review';
+  result.type = 'Revisión requerida';
+  result.headline = 'Recomendación: revisar caso con ingeniería';
+  result.summary = 'Las respuestas no forman un caso directo. Conviene revisar muestra, presión, objetivo real y carga de sólidos.';
+  result.technical.push('La selección debe confirmar si el proceso es únicamente mecánico o si existe una necesidad química o biológica oculta.');
+  result.business.push('Una prueba con líquido real puede evitar sobredimensionamiento o selección de tecnología incorrecta.');
+  return result;
+}
+
+function renderList(id, items){
+  el(id).innerHTML = items.map(function(item){ return '<li>'+item+'</li>'; }).join('');
+}
+
+function renderResult(){
+  var r = analyze();
+  el('adv-form').classList.add('is-hidden');
+  el('adv-preview').classList.add('is-hidden');
+  el('adv-result').classList.add('is-visible');
+  el('adv-result-type').textContent = r.type;
+  el('adv-winner').textContent = r.headline;
+  el('adv-summary').textContent = r.summary;
+  renderList('adv-technical-list',r.technical);
+  renderList('adv-business-list',r.business);
+
+  el('adv-capex-note').innerHTML = r.capex ? '<div class="adv-alert green"><b>Ventaja económica</b>'+r.capex+'</div>' : '';
+  el('adv-caution-note').innerHTML = r.caution
+    ? '<div class="adv-alert amber"><b>Advertencia técnica</b>'+r.caution+'</div>'
+    : '<div class="adv-alert amber"><b>Cálculo preliminar</b>Esta recomendación debe validarse con un ingeniero de aplicación y, cuando sea posible, con pruebas del líquido real.</div>';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showForm(){
+  el('adv-form').classList.remove('is-hidden');
+  el('adv-preview').classList.remove('is-hidden');
+  el('adv-result').classList.remove('is-visible');
+}
+
+function clearForm(){
+  el('adv-flow').value = '';
+  el('adv-unit').value = 'gpm';
+  el('adv-objective').value = 'physical';
+  el('adv-particle').value = '5to400';
+  el('adv-solids').value = 'inorganic';
+  el('adv-site').value = 'open';
+}
+
+function buildReport(){
+  var r = analyze();
+  var i = r.inputs;
+  var lines = [
+    'ASESOR DE SELECCIÓN: FILTROS DE DISCOS VS. LECHO PROFUNDO',
+    '---------------------------------------------------------',
+    'Flujo: '+(i.flow ? fmt(i.flow,1)+' '+(i.unit==='gpm'?'GPM':'m³/h')+' ('+fmt(i.flowGpm,1)+' GPM / '+fmt(i.flowM3h,2)+' m³/h)' : 'No indicado'),
+    'Objetivo: '+LABELS.objective[i.objective],
+    'Tamaño de partícula: '+LABELS.particle[i.particle],
+    'Naturaleza de sólidos: '+LABELS.solids[i.solids],
+    'Limitantes del sitio: '+LABELS.site[i.site],
+    '',
+    r.headline,
+    r.summary,
+    '',
+    'Justificación técnica:'
+  ];
+  r.technical.forEach(function(item){ lines.push('- '+item); });
+  lines.push('', 'Lectura económica y operativa:');
+  r.business.forEach(function(item){ lines.push('- '+item); });
+  if(r.capex) lines.push('', 'Ventaja económica: '+r.capex);
+  if(r.caution) lines.push('', 'Advertencia técnica: '+r.caution);
+  lines.push('', 'Nota: Recomendación preliminar. Validar con ingeniería de aplicación y, cuando sea posible, con pruebas del líquido real.');
+  return lines.join('\n');
+}
+
+function copyReport(){
+  var text = buildReport();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(copied);
+    return;
+  }
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  copied();
+}
+
+function copied(){
+  var btn = el('adv-copy');
+  var old = btn.textContent;
+  btn.textContent = 'Reporte copiado';
+  setTimeout(function(){ btn.textContent = old; },1800);
+}
+
+el('adv-run').addEventListener('click',renderResult);
+el('adv-edit').addEventListener('click',showForm);
+el('adv-clear').addEventListener('click',clearForm);
+el('adv-copy').addEventListener('click',copyReport);
+</script>
+</body>
+</html>
