@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora Azud Helix | Filtros de Discos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#071B33;
+  --azud:#008FE3;
+  --steel:#5D6B7A;
+  --line:#D9E3EB;
+  --white:#FFFFFF;
+  --ink:#102032;
+  --ok:#0F766E;--ok-soft:#DDF7F3;
+  --warn:#B45309;--warn-soft:#FFF3D8;
+  --err:#991B1B;--err-soft:#FEE2E2;
+  --shadow:0 18px 48px rgba(7,27,51,.12);
+  --shadow-sm:0 8px 22px rgba(7,27,51,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:linear-gradient(180deg,#F7FAFD,#EAF2F8);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.55}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+
+.shell{width:min(1280px,calc(100% - 32px));margin:0 auto;padding:28px 0 56px}
+
+/* topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(135deg,var(--azud),var(--navy));
+  box-shadow:0 14px 28px rgba(0,143,227,.24);font-weight:900;font-family:'Poppins',sans-serif;font-size:13px}
+.brand h1{font-size:18px;font-weight:800;color:var(--navy);line-height:1.15}
+.brand span{display:block;margin-top:2px;color:var(--steel);font-size:11px;font-weight:700;letter-spacing:.03em}
+.pill{background:var(--white);border:1px solid var(--line);border-radius:999px;padding:7px 14px;
+  font-size:12px;font-weight:800;box-shadow:var(--shadow-sm);color:var(--navy);white-space:nowrap}
+
+/* hero */
+.hero{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--navy) 0%,#0A345F 46%,var(--azud) 100%);
+  color:#fff;border-radius:24px;padding:28px;box-shadow:var(--shadow);margin-bottom:20px}
+.hero:after{content:"";position:absolute;inset:auto -80px -120px auto;width:320px;height:320px;
+  border-radius:50%;border:48px solid rgba(255,255,255,.10)}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:end}
+.hero h2{font-size:clamp(26px,3.2vw,46px);line-height:1.05;letter-spacing:-.04em;color:#ffffff !important}
+.hero p{color:rgba(255,255,255,.78) !important;margin-top:10px;font-size:14.5px}
+.hero-note{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);
+  border-radius:18px;padding:16px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;color:#fff !important}
+.hero-note span{color:rgba(255,255,255,.80) !important;font-size:13px;line-height:1.5}
+
+/* serie tabs */
+.serie-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.tab{border:1.5px solid var(--line);background:var(--white);border-radius:14px;
+  padding:10px 16px;font-weight:800;font-size:13px;cursor:pointer;
+  color:var(--steel);transition:all .15s;font-family:'Poppins',sans-serif;
+  display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.tab small{font-size:10.5px;font-weight:600;color:#AAB7C4;font-family:'DM Sans',sans-serif}
+.tab:hover{border-color:var(--azud);color:var(--azud)}
+.tab.active{background:linear-gradient(135deg,var(--azud),var(--navy));
+  color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(0,143,227,.25)}
+.tab.active small{color:rgba(255,255,255,.70)}
+
+/* layout */
+.layout{display:grid;grid-template-columns:370px minmax(0,1fr);gap:20px;align-items:start}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow-sm);overflow:hidden}
+.panel-head{padding:17px 20px 13px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between}
+.panel-head h3{font-size:15px;color:var(--navy)}
+.step-tag{color:var(--azud);font-size:11px;font-weight:900;letter-spacing:.04em}
+.panel-body{padding:20px}
+
+/* fields */
+.field{margin-bottom:15px}
+.field label{display:block;color:var(--navy);font-weight:800;font-size:13px;margin-bottom:6px}
+.inline-wrap{display:grid;grid-template-columns:1fr 100px;border:1px solid var(--line);
+  border-radius:13px;overflow:hidden;background:var(--white)}
+.inline-wrap:focus-within{border-color:var(--azud);box-shadow:0 0 0 4px rgba(0,143,227,.14)}
+.inline-wrap input,.inline-wrap select{min-width:0;border:0;outline:0;padding:11px 12px;
+  color:var(--ink);background:transparent;font-weight:700}
+.inline-wrap input{font-family:'JetBrains Mono',monospace}
+.inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;font-family:'DM Sans',sans-serif}
+.inline-wrap select{border-left:1px solid var(--line);background:#F4F8FB;color:var(--navy);cursor:pointer}
+.sel{width:100%;border:1px solid var(--line);border-radius:13px;background:var(--white);
+  color:var(--ink);padding:11px 12px;outline:0;font-weight:700;cursor:pointer}
+.sel:focus{border-color:var(--azud);box-shadow:0 0 0 4px rgba(0,143,227,.14)}
+.hint{margin-top:5px;color:var(--steel);font-size:11.5px}
+
+/* serie info box */
+.serie-info{background:linear-gradient(135deg,#EAF7FF,#F4F8FB);border:1px solid #B8E4FF;
+  border-radius:14px;padding:13px 14px;margin-bottom:15px;font-size:12.5px;color:#084D82}
+.serie-info strong{display:block;margin-bottom:4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+
+/* TSS chip */
+.tss-chip{display:inline-block;margin-top:6px;padding:4px 10px;background:#EAF7FF;
+  border:1px solid #B8E4FF;border-radius:999px;font-size:11.5px;color:#084D82;font-weight:700}
+
+/* biofilm field highlight */
+.biofilm-active{border-color:#B45309 !important;background:var(--warn-soft) !important}
+
+/* results */
+.results{display:grid;gap:14px}
+.main-card{background:var(--white);border:1px solid var(--line);border-radius:22px;
+  box-shadow:var(--shadow-sm);padding:20px}
+.card-title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.card-title h3{color:var(--navy);font-size:17px;line-height:1.2}
+.badge{background:var(--navy);color:#fff;border-radius:999px;padding:6px 12px;
+  font-size:11px;font-weight:900;letter-spacing:.04em;white-space:nowrap;font-family:'Poppins',sans-serif}
+.badge.aa{background:linear-gradient(135deg,var(--azud),var(--navy))}
+.badge.std{background:linear-gradient(135deg,#53677B,var(--navy))}
+.badge.g4{background:linear-gradient(135deg,#0F766E,var(--navy))}
+.badge.sw{background:linear-gradient(135deg,#7C3AED,var(--navy))}
+.badge.bio{background:linear-gradient(135deg,#B45309,#7C2D12)}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#F7FAFC);
+  padding:15px;min-height:120px}
+.kpi.kpi-warn{border-color:#F8D188;background:linear-gradient(180deg,#FFF9EE,#FFF3D8)}
+.kpi.kpi-err{border-color:#FCA5A5;background:linear-gradient(180deg,#FFF5F5,var(--err-soft))}
+.kpi .lbl{color:var(--steel);font-size:10.5px;font-weight:900;letter-spacing:.03em;margin-bottom:7px}
+.kpi .val{color:var(--navy);font-size:28px;font-weight:900;letter-spacing:-.04em;line-height:1;
+  font-family:'JetBrains Mono',monospace}
+.kpi .val small{font-size:12px;color:var(--steel);letter-spacing:0;margin-left:3px;font-family:'DM Sans',sans-serif}
+.kpi .sub{margin-top:7px;color:var(--steel);font-size:11.5px}
+
+.spec-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-sm);padding:17px}
+.card h4{color:var(--navy);font-size:13px;margin-bottom:7px}
+.big-line{color:var(--navy);font-size:18px;font-weight:800;line-height:1.2;letter-spacing:-.02em}
+.muted{color:var(--steel);font-size:12.5px;margin-top:7px}
+
+.alert{border-radius:16px;padding:14px 16px;border:1px solid;font-size:13px;line-height:1.5}
+.alert b{display:block;margin-bottom:4px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.alert.info{background:#EAF7FF;border-color:#B8E4FF;color:#084D82}
+.alert.warn{background:var(--warn-soft);border-color:#F8D188;color:var(--warn)}
+.alert.ok{background:var(--ok-soft);border-color:#99E5DB;color:var(--ok)}
+.alert.err{background:var(--err-soft);border-color:#FCA5A5;color:var(--err)}
+.alert.orange{background:#FFF7ED;border-color:#FDBA74;color:#9A3412}
+
+.az-table{width:100%;border-collapse:separate;border-spacing:0;
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--white)}
+.az-table th,.az-table td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:12.5px}
+.az-table th{background:#F3F8FC;color:var(--navy);font-weight:900;font-family:'Poppins',sans-serif}
+.az-table tr:last-child td{border-bottom:0}
+.az-table td:last-child{text-align:right;font-weight:800;color:var(--navy);
+  font-family:'JetBrains Mono',monospace;font-size:12px}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.btn{border:0;border-radius:999px;padding:11px 18px;
+  background:linear-gradient(135deg,var(--azud),var(--navy));
+  color:#fff;font-weight:800;cursor:pointer;font-family:'Poppins',sans-serif;font-size:13px;
+  box-shadow:0 10px 22px rgba(0,143,227,.20);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(0,143,227,.28)}
+.btn.sec{background:var(--white);color:var(--navy);border:1.5px solid var(--line);box-shadow:none}
+.btn.sec:hover{background:#F3F8FC}
+
+footer{margin-top:20px;color:var(--steel);font-size:11px;
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media(max-width:1060px){.layout{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){
+  .shell{width:calc(100% - 20px);padding-top:16px}
+  .hero-grid{grid-template-columns:1fr}
+  .spec-grid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr}
+  .topbar{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">AZ</div>
+      <div>
+        <h1>Dimensionamiento · Filtros de Discos Azud Helix Automatic</h1>
+        <span>FT200 AA DLP · FT200 DLP · FT200 SW DLP · FT4DCL DLP · FT4DCL SW DLP</span>
+      </div>
+    </div>
+    <div class="pill">Carbotecnia · Ing. de Proceso</div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <h2>Seleccione la serie, micraje, calidad del agua y caudal.</h2>
+        <p>La herramienta aplica la matriz de flujo por micraje (tabla Azud), respeta los caudales mínimos por filtro, aplica el factor de sobredimensionamiento para agua residual / biofilm y agrega +1 elemento de redundancia operativa.</p>
+      </div>
+      <div class="hero-note">
+        <b>Caudales mínimos por filtro</b>
+        <span><strong>Hidráulico (DLP):</strong> mínimo 9 m³/h por filtro para activación correcta de la autolimpieza.<br><strong>Asistido por Aire (AA DLP):</strong> mínimo 1 m³/h por filtro.<br>Agua residual tratada / biofilm: sobredimensionamiento +50%.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Selector de serie -->
+  <div class="serie-tabs" role="tablist">
+    <button class="tab active" data-serie="ft200aa" role="tab">
+      FT200 AA DLP
+      <small>Ø2" · 1.620 cm² · Aire + agua · 1–10</small>
+    </button>
+    <button class="tab" data-serie="ft200dlp" role="tab">
+      FT200 DLP
+      <small>Ø2" · 1.620 cm² · Hidráulico · 1–12</small>
+    </button>
+    <button class="tab" data-serie="ft200sw" role="tab">
+      FT200 SW DLP
+      <small>Ø2" · 1.620 cm² · Alta salinidad · 2–12</small>
+    </button>
+    <button class="tab" data-serie="s4dcl" role="tab">
+      FT4DCL DLP
+      <small>Ø4" · 3.240 cm² · Hidráulico · 3–12</small>
+    </button>
+    <button class="tab" data-serie="s4dclsw" role="tab">
+      FT4DCL SW DLP
+      <small>Ø4" · 3.240 cm² · Alta salinidad · 3–12</small>
+    </button>
+  </div>
+
+  <div class="layout">
+    <!-- INPUTS -->
+    <section class="panel">
+      <div class="panel-head">
+        <h3>Entradas del proyecto</h3>
+        <span class="step-tag">01 · Inputs</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="serie-info" id="serie-info">—</div>
+
+        <div class="field">
+          <label for="az-flow">Flujo a tratar</label>
+          <div class="inline-wrap">
+            <input id="az-flow" type="number" min="0" step="0.1" placeholder="Ej. 120">
+            <select id="az-unit">
+              <option value="m3h">m³/h</option>
+              <option value="gpm">GPM</option>
+              <option value="lpm">L/min</option>
+            </select>
+          </div>
+          <div class="hint">El cálculo se normaliza a m³/h internamente.</div>
+        </div>
+
+        <div class="field">
+          <label for="az-micron">Grado de filtración</label>
+          <select class="sel" id="az-micron">
+            <option value="5">5 µm — Discos WS (HDPE) · 1–3 m³/h/filtro</option>
+            <option value="10">10 µm — Discos WS (HDPE) · 3–6 m³/h/filtro</option>
+            <option value="20">20 µm — Discos WS (HDPE) · 6–8 m³/h/filtro</option>
+            <option value="50" selected>50 µm — Discos WS (HDPE) · 10–14 m³/h/filtro</option>
+            <option value="100">100 µm — Discos WS (HDPE) · 16–18 m³/h/filtro</option>
+            <option value="130">130 µm — Discos MG (PP) · 18–20 m³/h/filtro</option>
+            <option value="200">200 µm — Discos MG (PP) · 20–22 m³/h/filtro</option>
+            <option value="400">400 µm — Discos MG (PP) · 20–24 m³/h/filtro</option>
+          </select>
+          <div class="hint" id="disk-hint">WS = Polietileno Alta Densidad · MG = Polipropileno</div>
+          <div id="tss-chip-wrap"></div>
+        </div>
+
+        <div class="field">
+          <label for="az-quality">Calidad del agua</label>
+          <select class="sel" id="az-quality">
+            <option value="buena">Buena</option>
+            <option value="media" selected>Media</option>
+            <option value="mala">Mala</option>
+            <option value="muy_mala">Muy Mala</option>
+          </select>
+          <div class="hint" id="quality-hint">La calidad condiciona el caudal máximo por filtro según la tabla de micraje.</div>
+        </div>
+
+        <div class="field">
+          <label for="az-apptype">Tipo de aplicación / agua</label>
+          <select class="sel" id="az-apptype">
+            <option value="standard" selected>Estándar — agua dulce, torre enfriamiento, proceso</option>
+            <option value="biofilm">Agua residual tratada (ART) / retención de biofilm · +50% filtros</option>
+          </select>
+          <div class="hint" id="apptype-hint">ART y aguas con tendencia a biofilm requieren sobredimensionamiento del 50%.</div>
+        </div>
+
+        <div class="field">
+          <label for="az-solids">Naturaleza de los sólidos</label>
+          <select class="sel" id="az-solids">
+            <option value="standard" selected>Estándar — arenas, polvos inorgánicos</option>
+            <option value="difficult">Difíciles — pegajosos, orgánicos, biológicos, pulpa</option>
+          </select>
+        </div>
+
+        <!-- Modo autolimpieza: solo visible en FT200 AA -->
+        <div class="field" id="field-mode" style="display:none">
+          <label for="az-mode">Modo de autolimpieza</label>
+          <select class="sel" id="az-mode">
+            <option value="aa" selected>Asistido por Aire — AA DLP (recomendado)</option>
+            <option value="std">Hidráulico Estándar — DLP</option>
+          </select>
+          <div class="hint">AA DLP ahorra hasta 80% del agua de retrolavado; requiere compresor.</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" type="button" id="az-calc">Ver resultado</button>
+          <button class="btn sec" type="button" id="az-copy">Copiar especificación</button>
+          <button class="btn sec" type="button" id="az-reset">Restablecer</button>
+        </div>
+        <div id="az-pending" style="display:none;margin-top:10px;font-size:12px;color:var(--warn);font-weight:700;align-items:center;gap:6px">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block"></span>
+          Hay cambios sin aplicar — presione Ver resultado
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTADOS -->
+    <section class="results">
+      <div class="main-card">
+        <div class="card-title">
+          <div>
+            <h3 id="r-title">Sistema de filtros Azud</h3>
+            <p class="muted" id="r-sub">Incluye +1 filtro de redundancia para continuidad durante retrolavado.</p>
+          </div>
+          <span class="badge" id="r-badge">Azud</span>
+        </div>
+        <div class="kpis">
+          <div class="kpi" id="kpi-total">
+            <div class="lbl">Filtros totales</div>
+            <div class="val mono" id="r-total">—</div>
+            <div class="sub" id="r-total-note">—</div>
+          </div>
+          <div class="kpi" id="kpi-qcrit">
+            <div class="lbl">Caudal crítico / filtro</div>
+            <div class="val"><span class="mono" id="r-qcrit">—</span><small>m³/h</small></div>
+            <div class="sub" id="r-qcrit-gpm">—</div>
+          </div>
+          <div class="kpi" id="kpi-qlim">
+            <div class="lbl">Límite por filtro (ficha)</div>
+            <div class="val"><span class="mono" id="r-qlim">—</span><small>m³/h</small></div>
+            <div class="sub" id="r-qlim-note">—</div>
+          </div>
+          <div class="kpi" id="kpi-bw">
+            <div class="lbl">Agua / retrolavado</div>
+            <div class="val"><span class="mono" id="r-bw">—</span><small>L</small></div>
+            <div class="sub" id="r-bw-note">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spec-grid">
+        <div class="card">
+          <h4>Modelo y tecnología de disco</h4>
+          <div class="big-line" id="r-model">—</div>
+          <p class="muted" id="r-tech">—</p>
+        </div>
+        <div class="card">
+          <h4>Referencia de equipo Azud</h4>
+          <div class="big-line" id="r-ref">—</div>
+          <p class="muted" id="r-ref-note">+1 filtro garantiza caudal continuo mientras una estación contralavada.</p>
+        </div>
+      </div>
+
+      <div id="r-minflow-alert" style="display:none" class="alert err">
+        <b>⚠ Caudal por filtro por debajo del mínimo</b>
+        <span id="r-minflow-text">—</span>
+      </div>
+
+      <div id="r-biofilm-alert" style="display:none" class="alert orange">
+        <b>Factor de sobredimensionamiento biofilm / ART activo</b>
+        <span id="r-biofilm-text">—</span>
+      </div>
+
+      <div class="alert info" id="r-install">
+        <b>Requerimiento de instalación</b>
+        <span id="r-install-text">—</span>
+      </div>
+
+      <div class="alert ok">
+        <b>Verificación hidráulica</b>
+        <span id="r-safe">—</span>
+      </div>
+
+      <div class="alert warn">
+        <b>Cálculo preliminar · solo para preselección y cotización</b>
+        <span>Este dimensionamiento es una estimación inicial. La selección final debe validarse con ingeniería de detalle: presión disponible, análisis fisicoquímico del agua, naturaleza real de los sólidos, frecuencia esperada de retrolavado, límites de colector según configuración y, cuando sea posible, pruebas con el agua real. El caudal asignado por filtro condiciona la frecuencia de activación de la autolimpieza (ajustable por ΔP o temporizador en la unidad AZUD FBC).</span>
+      </div>
+
+      <div class="card">
+        <h4>Resumen técnico</h4>
+        <table class="az-table">
+          <tbody id="r-table"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <span>Datos base: fichas Azud — FT200 AA DLP (00000546) · FT200 DLP (00000544) · FT200 SW DLP (00000638) · FT4DCL DLP (00000542) · FT4DCL SW DLP (00000640) · Tabla de caudales por micraje Carbotecnia.</span>
+    <span>Validar con presión disponible, calidad y salinidad real del agua y configuración de colectores.</span>
+  </footer>
+</main>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   TABLA DE CAUDALES POR MICRAJE — Carbotecnia / Azud Helix
+   Fuente: TABLA_MICRONES_TSS_cafs.xlsx
+   Rango de caudal por micraje (m³/h por filtro FT200 Ø2"):
+     5µm:   1–3   · 10µm:   3–6   · 20µm:   6–8
+     50µm: 10–14  · 100µm: 16–18  · 130µm: 18–20
+     200µm: 20–22 · 400µm: 20–24
+   Distribución por calidad de agua: buena=máx, media≈75%, mala≈50%, muy_mala=mín
+   FT4DCL Ø4" tiene el doble de área filtrante (3.240 cm² vs 1.620 cm²), los
+   valores de caudal se escalan ×2 manteniendo la misma distribución.
+══════════════════════════════════════════════════════════════════════ */
+
+/* Tabla TSS (mg/L) por micraje y calidad — para mostrar referencia al usuario */
+var TSS_RANGES = {
+  5:   {buena:'0–10',   media:'10–20',  mala:'20–30',   muy_mala:'30–40'},
+  10:  {buena:'0–10',   media:'10–20',  mala:'20–30',   muy_mala:'30–40'},
+  20:  {buena:'0–20',   media:'20–40',  mala:'40–60',   muy_mala:'60–80'},
+  50:  {buena:'0–20',   media:'25–50',  mala:'50–75',   muy_mala:'75–100'},
+  100: {buena:'0–30',   media:'35–70',  mala:'70–95',   muy_mala:'95–130'},
+  130: {buena:'0–40',   media:'40–80',  mala:'80–120',  muy_mala:'120–160'},
+  200: {buena:'0–40',   media:'45–90',  mala:'90–135',  muy_mala:'135–180'},
+  400: {buena:'0–40',   media:'45–90',  mala:'90–135',  muy_mala:'135–180'}
+};
+
+/* Matriz FT200 Ø2" — caudal máximo m³/h/filtro según micraje y calidad de agua */
+var MATRIX_FT200 = {
+  5:   {buena:3,   media:2,   mala:1.5, muy_mala:1},
+  10:  {buena:6,   media:5,   mala:4,   muy_mala:3},
+  20:  {buena:8,   media:7,   mala:6.5, muy_mala:6},
+  50:  {buena:14,  media:13,  mala:11,  muy_mala:10},
+  100: {buena:18,  media:17,  mala:16,  muy_mala:16},
+  130: {buena:20,  media:19,  mala:19,  muy_mala:18},
+  200: {buena:22,  media:21,  mala:21,  muy_mala:20},
+  400: {buena:24,  media:23,  mala:21,  muy_mala:20}
+};
+
+/* Matriz FT4DCL Ø4" — doble de área filtrante, caudales ×2 respecto a FT200 */
+var MATRIX_FT4DCL = {
+  5:   {buena:6,   media:4,   mala:3,   muy_mala:2},
+  10:  {buena:12,  media:10,  mala:8,   muy_mala:6},
+  20:  {buena:16,  media:14,  mala:13,  muy_mala:12},
+  50:  {buena:28,  media:26,  mala:22,  muy_mala:20},
+  100: {buena:36,  media:34,  mala:32,  muy_mala:32},
+  130: {buena:40,  media:38,  mala:38,  muy_mala:36},
+  200: {buena:44,  media:42,  mala:42,  muy_mala:40},
+  400: {buena:48,  media:46,  mala:42,  muy_mala:40}
+};
+
+/* Caudales mínimos por filtro (m³/h) para correcta activación de autolimpieza */
+var MIN_FLOW = {
+  aa:  1,   // Asistido por Aire — el aire hace el trabajo, umbral muy bajo
+  std: 9    // Hidráulico — necesita presión diferencial mínima para activarse
+};
+
+var SERIES = {
+  ft200aa: {
+    name:'FT200 AA DLP',
+    desc:'Filtros Ø2" · 1.620 cm² por filtro · hasta 10 filtros en batería · DLP Technology · Asistido por Aire opcional',
+    area:1620, valve:'2"', maxFilters:10,
+    hydroCap:20,   // límite hidráulico válvulas membrana 3-vías DN50
+    matrix: MATRIX_FT200,
+    waterAA:10,    // L/filtro modo AA (ficha oficial)
+    waterStd:55,   // L/filtro modo hidráulico estándar
+    installAA:'<strong>Requerimiento Neumático e Hidráulico:</strong> Compresor capaz de suministrar <strong>18 L/s (285 GPM) a 4.5–6 bar durante 10 segundos</strong> por ciclo de limpieza (ficha FT200 AA DLP; presión de aire siempre superior a la presión del agua). Presión mínima del agua a la salida del filtro: <strong>0.8 bar (11.6 psi)</strong> para cargar el depósito auxiliar AA (A/INOX 304).',
+    installStd:'<strong>Requerimiento Hidráulico:</strong> Presión mínima a la salida del filtro durante retrolavado: <strong>1.5 bar (22 psi)</strong>. Caudal mínimo de contralavado: 2.5 L/s (39 GPM) para 200–130 µm; 3.1 L/s (50 GPM) para 100 µm. Si el sistema descarga a tanque abierto o sin contrapresión, cotizar Válvula Sostenedora de Presión Azud.',
+    hasModeToggle:true
+  },
+  ft200dlp: {
+    name:'FT200 DLP',
+    desc:'Filtros Ø2" · 1.620 cm² por filtro · válvula hidráulica 1 por filtro · 1–12 filtros · salinidad <6000 mg/L · Torres de enfriamiento, intercambiadores, UF',
+    area:1620, valve:'2"', maxFilters:12, minFilters:1,
+    hydroCap:null,
+    salinityNote:'Agua dulce / baja salinidad (<6.000 mg/L). Para alta salinidad usar FT200 SW DLP.',
+    matrix: MATRIX_FT200,
+    waterAA:null, waterStd:55,
+    installStd:'<strong>Requerimiento Hidráulico (ficha 00000544):</strong> Presión mínima de limpieza: <strong>1.5 bar (22 psi)</strong>. Caudal mínimo de limpieza: <strong>2.5 L/s (39 GPM) por filtro</strong>. Duración de la fase de limpieza: 15–25 s por filtro.',
+    hasModeToggle:false
+  },
+  ft200sw: {
+    name:'FT200 SW DLP',
+    desc:'Filtros Ø2" · 1.620 cm² por filtro · alta salinidad 6.000–55.000 mg/L · 2–12 filtros · materiales HASTELLOY/316L/DUPLEX · Colectores HDPE PE-100',
+    area:1620, valve:'2"', maxFilters:12, minFilters:2,
+    hydroCap:null,
+    salinityNote:'Agua de alta salinidad (6.000–55.000 mg/L): agua de mar, salmuera, agua brackish. Para agua dulce usar FT200 DLP.',
+    matrix: MATRIX_FT200,
+    waterAA:null, waterStd:55,
+    installStd:'<strong>Requerimiento Hidráulico (ficha 00000638):</strong> Presión mínima de limpieza: <strong>1.5 bar (22 psi)</strong>. Caudal mínimo de limpieza: <strong>2.5 L/s (39 GPM) por filtro</strong>. <strong>Mínimo 2 filtros</strong> en esta serie. Materiales: muelle HASTELLOY, abrazadera A/INOX 316L, válvulas A/INOX DUPLEX.',
+    hasModeToggle:false
+  },
+  s4dcl: {
+    name:'FT4DCL DLP',
+    desc:'Filtros Ø4" · 3.240 cm² por filtro · válvula hidráulica Ø3" · 3–12 filtros · salinidad <6000 mg/L · Torres de enfriamiento, UF, intercambiadores',
+    area:3240, valve:'4"', maxFilters:12, minFilters:3,
+    hydroCap:null,
+    salinityNote:'Agua dulce / baja salinidad (<6.000 mg/L). Para alta salinidad usar FT4DCL SW DLP.',
+    matrix: MATRIX_FT4DCL,
+    waterAA:null, waterStd:120,
+    installStd:'<strong>Requerimiento Hidráulico (ficha 00000542):</strong> Presión mínima de limpieza: <strong>1.5 bar (22 psi)</strong>. Caudal mínimo de limpieza: <strong>5 L/s (79 GPM) por filtro Ø4"</strong>. Duración: 20–30 s por filtro. <strong>Mínimo 3 filtros</strong>.',
+    hasModeToggle:false
+  },
+  s4dclsw: {
+    name:'FT4DCL SW DLP',
+    desc:'Filtros Ø4" · 3.240 cm² por filtro · alta salinidad 6.000–55.000 mg/L · 3–12 filtros · materiales HASTELLOY/316L/DUPLEX',
+    area:3240, valve:'4"', maxFilters:12, minFilters:3,
+    hydroCap:null,
+    salinityNote:'Agua de alta salinidad (6.000–55.000 mg/L): agua de mar, salmuera, agua brackish. Para agua dulce usar FT4DCL DLP.',
+    matrix: MATRIX_FT4DCL,
+    waterAA:null, waterStd:120,
+    installStd:'<strong>Requerimiento Hidráulico (ficha 00000640):</strong> Presión mínima de limpieza: <strong>1.5 bar (22 psi)</strong>. Caudal mínimo de limpieza: <strong>5 L/s (79 GPM) por filtro Ø4"</strong>. <strong>Mínimo 3 filtros</strong>. Materiales: muelle HASTELLOY, abrazadera A/INOX 316L, válvulas A/INOX DUPLEX.',
+    hasModeToggle:false
+  }
+};
+
+var QLABELS={buena:'Buena (<25 ppm SST)',media:'Media (25–50 ppm SST)',mala:'Mala (50–75 ppm SST)',muy_mala:'Muy Mala (>75 ppm SST)'};
+var SLABELS={standard:'Estándar: arenas y polvos inorgánicos',difficult:'Difíciles: pegajosos, orgánicos, biológicos o pulpa'};
+
+var currentSerie='ft200aa';
+
+function el(id){return document.getElementById(id)}
+function fmt(n,d){return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'}
+function fmtI(n){return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'}
+function toM3h(v,u){if(u==='gpm')return v*0.227124;if(u==='lpm')return v*0.06;return v}
+
+function getSerie(){return SERIES[currentSerie]}
+
+function getAllowedFlow(serie,micron,quality){
+  var mf=serie.matrix[micron][quality];
+  return serie.hydroCap?Math.min(mf,serie.hydroCap):mf;
+}
+
+function isAA(){return currentSerie==='ft200aa'&&el('az-mode').value==='aa'}
+
+function calc(){
+  var raw=el('az-flow').value;
+  var fi=parseFloat(raw);
+  if(!raw||!isFinite(fi)||fi<=0)return{ready:false};
+  var unit=el('az-unit').value;
+  var flowM3h=toM3h(fi,unit);
+  var micron=parseInt(el('az-micron').value,10);
+  var quality=el('az-quality').value;
+  var solids=el('az-solids').value;
+  var mode=el('az-mode').value;
+  var apptype=el('az-apptype').value;
+  var serie=getSerie();
+  var aa=currentSerie==='ft200aa'&&mode==='aa';
+
+  var matrixFlow=serie.matrix[micron][quality];
+  var allowedFlow=getAllowedFlow(serie,micron,quality);
+
+  /* Factor de sobredimensionamiento para ART / biofilm (+50% más filtros) */
+  var biofilmFactor=apptype==='biofilm'?1.5:1.0;
+  var effectiveFlow=allowedFlow/biofilmFactor; // caudal efectivo por filtro tras factor
+
+  var minFlow=aa?MIN_FLOW.aa:MIN_FLOW.std;
+
+  var minFilters=serie.minFilters||1;
+  var baseFilters=Math.max(minFilters,Math.ceil(flowM3h/effectiveFlow));
+  var totalFilters=baseFilters+1;
+  var overMax=totalFilters>serie.maxFilters;
+
+  var critFlow=flowM3h/baseFilters;       // Q por filtro con 1 en retrolavado
+  var normFlow=flowM3h/totalFilters;      // Q por filtro en operación normal
+  var belowMin=critFlow<minFlow;
+
+  var diskShort=micron<=100?'WS':'MG';
+  var diskFull=micron<=100?'Discos WS — Polietileno de Alta Densidad (HDPE)':'Discos MG — Polipropileno (PP)';
+  var waterPerFilter=aa?serie.waterAA:serie.waterStd;
+  var backwashL=totalFilters*waterPerFilter;
+  var capped=serie.hydroCap&&matrixFlow>serie.hydroCap;
+
+  return{ready:true,flowM3h,unit,fi,micron,quality,solids,mode,apptype,serie,aa,
+    matrixFlow,allowedFlow,effectiveFlow,biofilmFactor,
+    baseFilters,totalFilters,critFlow,normFlow,
+    diskShort,diskFull,waterPerFilter,backwashL,capped,overMax,
+    belowMin,minFlow};
+}
+
+function render(){
+  var r=calc();
+  if(!r.ready){renderEmpty();return}
+
+  var s=r.serie;
+  var badgeTxt=r.aa?'AA DLP':s.name;
+  var badgeCls=(currentSerie==='ft200aa'?(r.aa?'badge aa':'badge std')
+    :(currentSerie==='ft200sw'||currentSerie==='s4dclsw'?'badge sw'
+    :(currentSerie==='s4dcl'?'badge g4':'badge std')));
+  if(r.apptype==='biofilm')badgeCls+=' bio';
+
+  el('r-title').textContent='Sistema de '+fmtI(r.totalFilters)+' Filtros '+s.name;
+  el('r-sub').textContent=fmtI(r.baseFilters)+' filtros por caudal + 1 filtro de redundancia operativa.'
+    +(r.apptype==='biofilm'?' Factor biofilm/ART +50% aplicado.':'');
+  el('r-badge').textContent=badgeTxt+(r.apptype==='biofilm'?' · ART':'');
+  el('r-badge').className=badgeCls;
+
+  /* KPI total */
+  el('kpi-total').className='kpi'+(r.overMax?' kpi-warn':'');
+  el('r-total').textContent=fmtI(r.totalFilters);
+  el('r-total-note').textContent=fmtI(r.baseFilters)+' base + 1 redundante'+(r.overMax?' ⚠ Supera máx. serie':'');
+
+  /* KPI Q crítico */
+  el('kpi-qcrit').className='kpi'+(r.belowMin?' kpi-err':'');
+  el('r-qcrit').textContent=fmt(r.critFlow,1);
+  el('r-qcrit-gpm').textContent=fmt(r.critFlow*4.40287,1)+' GPM · 1 en retrolavado'+(r.belowMin?' ⚠ < mín '+r.minFlow+' m³/h':'');
+
+  /* KPI límite */
+  el('r-qlim').textContent=fmt(r.allowedFlow,1);
+  el('r-qlim-note').textContent=(r.apptype==='biofilm'?'Efectivo: '+fmt(r.effectiveFlow,1)+' m³/h (÷1.5 ART) · ':'')+(r.capped?'Topado 20 m³/h (válvulas 3-vías)':'Ficha técnica '+s.name);
+
+  /* KPI retrolavado */
+  el('r-bw').textContent=fmtI(r.backwashL);
+  el('r-bw-note').textContent=fmtI(r.waterPerFilter)+' L/filtro · '+(r.aa?'AA DLP':'Estándar');
+
+  el('r-model').textContent=s.name+' · Disco '+r.diskShort+' '+r.micron+' µm';
+  el('r-tech').textContent=r.diskFull+'. Asignación: ≤100 µm → WS; >100 µm → MG.';
+
+  /* Referencia */
+  var refStr='';
+  if(currentSerie==='ft200aa'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+(r.aa?' AA':'')+' DLP';}
+  else if(currentSerie==='ft200dlp'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+' DLP';}
+  else if(currentSerie==='ft200sw'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+' SW DLP';}
+  else if(currentSerie==='s4dcl'){refStr='FT4DCL'+r.totalFilters+' DLP';}
+  else{refStr='FT4DCL'+r.totalFilters+' SW DLP';}
+  el('r-ref').textContent=refStr;
+  el('r-ref-note').textContent=r.overMax
+    ?'⚠ '+fmtI(r.totalFilters)+' filtros supera el máximo ('+s.maxFilters+'). Considerar dos baterías en paralelo.'
+    :'+1 filtro garantiza caudal continuo mientras una estación contralavada.';
+
+  /* Alerta caudal mínimo */
+  if(r.belowMin){
+    el('r-minflow-alert').style.display='block';
+    el('r-minflow-text').textContent=
+      'Q por filtro calculado: '+fmt(r.critFlow,2)+' m³/h — inferior al mínimo de '+r.minFlow+' m³/h para activación correcta de la autolimpieza '+(r.aa?'AA':'hidráulica')+'. '
+      +'Considere reducir el número de filtros, cambiar a filtros de mayor micraje, o usar el modo AA DLP (mínimo 1 m³/h).';
+  }else{el('r-minflow-alert').style.display='none';}
+
+  /* Alerta biofilm */
+  if(r.apptype==='biofilm'){
+    el('r-biofilm-alert').style.display='block';
+    el('r-biofilm-text').textContent=
+      'Sobredimensionamiento +50% activo para agua residual tratada / retención de biofilm. '
+      +'Caudal efectivo por filtro: '+fmt(r.effectiveFlow,2)+' m³/h (en lugar de '+fmt(r.allowedFlow,2)+' m³/h estándar). '
+      +'Esto resulta en '+fmtI(r.baseFilters)+' filtros de proceso en lugar de '+fmtI(Math.ceil(r.flowM3h/r.allowedFlow))+' del dimensionamiento estándar.';
+  }else{el('r-biofilm-alert').style.display='none';}
+
+  el('r-install-text').innerHTML=r.aa?s.installAA:s.installStd;
+
+  el('r-safe').textContent=
+    'Q crítico: '+fmt(r.critFlow,2)+' m³/h/filtro ('+fmt(r.critFlow*4.40287,1)+' GPM) '
+    +'vs. límite ficha: '+fmt(r.allowedFlow,2)+' m³/h. '
+    +(r.belowMin?'⚠ Por debajo del mínimo de '+r.minFlow+' m³/h.':'Verificación correcta. ')
+    +'Q normal: '+fmt(r.normFlow,2)+' m³/h/filtro.';
+
+  var overStr=r.overMax?'<tr><td><strong>⚠ Aviso</strong></td><td>'+fmtI(r.totalFilters)+' filtros supera el máximo de la serie ('+s.maxFilters+'). Evaluar 2 baterías en paralelo.</td></tr>':'';
+  var minStr=(s.minFilters&&r.totalFilters<s.minFilters)?'<tr><td><strong>⚠ Mínimo</strong></td><td>Esta serie requiere mínimo '+s.minFilters+' filtros.</td></tr>':'';
+  var salStr=s.salinityNote?'<tr><td>Salinidad</td><td>'+s.salinityNote+'</td></tr>':'';
+  var bioStr=r.apptype==='biofilm'?'<tr><td>Factor ART/Biofilm</td><td>×1.5 → caudal efectivo '+fmt(r.effectiveFlow,2)+' m³/h/filtro</td></tr>':'';
+  var minFlowStr=r.belowMin?'<tr><td><strong>⚠ Q mínimo</strong></td><td>'+fmt(r.critFlow,2)+' m³/h/filtro &lt; mínimo '+r.minFlow+' m³/h</td></tr>':'';
+
+  el('r-table').innerHTML=
+    '<tr><th>Parámetro</th><th>Resultado</th></tr>'+
+    overStr+minStr+minFlowStr+bioStr+salStr+
+    '<tr><td>Flujo de diseño</td><td>'+fmt(r.flowM3h,2)+' m³/h · '+fmt(r.flowM3h*4.40287,1)+' GPM</td></tr>'+
+    '<tr><td>Serie seleccionada</td><td>'+s.name+' (válvulas '+s.valve+' · '+fmtI(s.area)+' cm²/filtro)</td></tr>'+
+    '<tr><td>Grado de filtración</td><td>'+r.micron+' µm</td></tr>'+
+    '<tr><td>Calidad del agua</td><td>'+QLABELS[r.quality]+' · TSS ref. '+getTSS(r.micron,r.quality)+' mg/L</td></tr>'+
+    '<tr><td>Naturaleza de sólidos</td><td>'+SLABELS[r.solids]+'</td></tr>'+
+    '<tr><td>Tipo de aplicación</td><td>'+(r.apptype==='biofilm'?'ART / Biofilm — factor ×1.5':'Estándar')+'</td></tr>'+
+    '<tr><td>Q máx./filtro (ficha · '+r.micron+' µm · '+r.quality+')</td><td>'+fmt(r.matrixFlow,1)+' m³/h'+(r.capped?' [topado 20 m³/h]':'')+'</td></tr>'+
+    '<tr><td>Q efectivo por filtro</td><td>'+fmt(r.effectiveFlow,1)+' m³/h'+(r.apptype==='biofilm'?' (÷1.5 ART)':'')+'</td></tr>'+
+    '<tr><td>Q mínimo por filtro</td><td>'+r.minFlow+' m³/h ('+(r.aa?'AA DLP':'Hidráulico')+')'+(r.belowMin?' ⚠ No cumple':'')+'</td></tr>'+
+    '<tr><td>Filtros requeridos</td><td>'+fmtI(r.baseFilters)+' + 1 redundante = '+fmtI(r.totalFilters)+'</td></tr>'+
+    '<tr><td>Referencia equipo</td><td>'+refStr+'</td></tr>'+
+    '<tr><td>Disco</td><td>'+r.diskShort+' ('+r.micron+' µm) · '+r.diskFull+'</td></tr>'+
+    '<tr><td>Agua por retrolavado</td><td>'+fmtI(r.backwashL)+' L ('+fmtI(r.waterPerFilter)+' L/filtro)</td></tr>'+
+    '<tr><td>Superficie filtrante total</td><td>'+fmtI(r.totalFilters*s.area)+' cm²</td></tr>';
+}
+
+function getTSS(micron,quality){
+  return TSS_RANGES[micron]?TSS_RANGES[micron][quality]||'—':'—';
+}
+
+function updateTSSChip(){
+  var micron=parseInt(el('az-micron').value,10);
+  var quality=el('az-quality').value;
+  var tss=getTSS(micron,quality);
+  var wrap=el('tss-chip-wrap');
+  wrap.innerHTML=tss!=='—'?'<span class="tss-chip">TSS referencia: '+tss+' mg/L</span>':'';
+}
+
+function renderEmpty(){
+  var s=getSerie();
+  el('r-title').textContent='Ingrese el flujo de diseño';
+  el('r-sub').textContent='La calculadora estimará los filtros necesarios al ingresar un caudal válido.';
+  el('r-badge').textContent=s.name;el('r-badge').className='badge';
+  el('r-total').textContent='—';el('r-total-note').textContent='Sin flujo de entrada';
+  el('r-qcrit').textContent='—';el('r-qcrit-gpm').textContent='Ingrese el caudal para calcular';
+  el('r-qlim').textContent='—';el('r-qlim-note').textContent='Se aplicará según micraje y calidad';
+  el('r-bw').textContent='—';el('r-bw-note').textContent='Pendiente';
+  el('r-model').textContent='Pendiente de cálculo';
+  el('r-tech').textContent='Seleccione grado, calidad del agua y modo de autolimpieza.';
+  el('r-ref').textContent='—';el('r-ref-note').textContent='+1 filtro de redundancia operativa incluido.';
+  el('r-install-text').innerHTML='El requerimiento se mostrará al configurar los parámetros.';
+  el('r-safe').textContent='El caudal por filtro se verificará contra la ficha técnica seleccionada.';
+  el('r-minflow-alert').style.display='none';
+  el('r-biofilm-alert').style.display='none';
+  el('r-table').innerHTML=
+    '<tr><th>Parámetro</th><th>Resultado</th></tr>'+
+    '<tr><td>Serie</td><td>'+s.name+'</td></tr>'+
+    '<tr><td>Superficie por filtro</td><td>'+fmtI(s.area)+' cm²</td></tr>'+
+    '<tr><td>Estado</td><td>Ingrese el flujo a tratar</td></tr>';
+}
+
+function updateSerieUI(){
+  var s=getSerie();
+  el('serie-info').innerHTML='<strong>'+s.name+'</strong>'+s.desc;
+  el('field-mode').style.display=s.hasModeToggle?'block':'none';
+  updateTSSChip();
+  render();
+}
+
+/* Selector de serie */
+document.querySelectorAll('.tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    currentSerie=btn.dataset.serie;
+    updateSerieUI();
+    markDirty();
+  });
+});
+
+/* Inputs — recalcular en tiempo real */
+['az-flow','az-unit','az-micron','az-quality','az-solids','az-mode','az-apptype'].forEach(function(id){
+  el(id).addEventListener('input',function(){updateTSSChip();render();});
+  el(id).addEventListener('change',function(){updateTSSChip();render();});
+});
+
+/* Copiar especificación */
+function buildSpec(){
+  var r=calc();
+  if(!r.ready)return'Ingrese un flujo de diseño válido para generar la especificación.';
+  var s=r.serie;
+  var refStr='';
+  if(currentSerie==='ft200aa'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+(r.aa?' AA':'')+' DLP';}
+  else if(currentSerie==='ft200dlp'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+' DLP';}
+  else if(currentSerie==='ft200sw'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+' SW DLP';}
+  else if(currentSerie==='s4dcl'){refStr='FT4DCL'+r.totalFilters+' DLP';}
+  else{refStr='FT4DCL'+r.totalFilters+' SW DLP';}
+  return[
+    'ESPECIFICACIÓN PRELIMINAR — FILTROS DE DISCOS AZUD HELIX AUTOMATIC',
+    '────────────────────────────────────────────────────────────────────',
+    'Serie: '+s.name+' · Válvulas '+s.valve+' · '+fmtI(s.area)+' cm² por filtro',
+    'Flujo de diseño: '+fmt(r.flowM3h,2)+' m³/h ('+fmt(r.flowM3h*4.40287,1)+' GPM)',
+    'Grado de filtración: '+r.micron+' µm · Rango caudal: según tabla micraje',
+    'Calidad del agua: '+QLABELS[r.quality]+' · TSS referencia: '+getTSS(r.micron,r.quality)+' mg/L',
+    'Naturaleza de sólidos: '+SLABELS[r.solids],
+    'Tipo de aplicación: '+(r.apptype==='biofilm'?'ART / Biofilm — sobredimensionamiento ×1.5':'Estándar'),
+    currentSerie==='ft200aa'?'Modo de autolimpieza: '+(r.aa?'Asistido por Aire (AA DLP)':'Hidráulico Estándar (DLP)'):'Modo de autolimpieza: Hidráulico Estándar',
+    s.salinityNote?'Salinidad: '+s.salinityNote:'',
+    '',
+    'CONFIGURACIÓN RECOMENDADA',
+    'Filtros totales: '+fmtI(r.totalFilters)+' ('+fmtI(r.baseFilters)+' por caudal + 1 redundante)',
+    r.overMax?'⚠ '+fmtI(r.totalFilters)+' filtros supera el máximo de la serie ('+s.maxFilters+'). Evaluar 2 baterías en paralelo.':'',
+    'Q máx. por filtro (ficha · '+r.micron+' µm · '+r.quality+'): '+fmt(r.matrixFlow,1)+' m³/h'+(r.capped?' [topado 20 m³/h — regla válvulas 3-vías]':''),
+    r.apptype==='biofilm'?'Q efectivo por filtro (÷1.5 ART): '+fmt(r.effectiveFlow,2)+' m³/h':'',
+    'Q mínimo por filtro ('+( r.aa?'AA DLP':'Hidráulico')+'): '+r.minFlow+' m³/h'+(r.belowMin?' ⚠ No cumple — revisar selección':''),
+    'Q crítico por filtro (1 en retrolavado): '+fmt(r.critFlow,2)+' m³/h ('+fmt(r.critFlow*4.40287,1)+' GPM)',
+    'Q normal por filtro: '+fmt(r.normFlow,2)+' m³/h',
+    'Disco: '+r.diskShort+' — '+r.diskFull,
+    'Agua estimada por ciclo de retrolavado: '+fmtI(r.backwashL)+' L ('+fmtI(r.waterPerFilter)+' L/filtro)',
+    'Superficie filtrante total: '+fmtI(r.totalFilters*s.area)+' cm²',
+    '',
+    'REQUERIMIENTO DE INSTALACIÓN',
+    r.aa
+      ?'Compresor: 18 L/s (285 GPM) a 4.5–6 bar por 10 s/ciclo. Presión mín. agua salida filtro: 0.8 bar.'
+      :(currentSerie==='s4dcl'||currentSerie==='s4dclsw'
+          ?'Presión mín. retrolavado: 1.5 bar. Caudal mín.: 5 L/s (79 GPM) por filtro.'
+          :'Presión mín. retrolavado: 1.5 bar. Caudal mín.: 2.5 L/s (39 GPM) por filtro.'),
+    '',
+    'Nota: Selección preliminar. Validar con análisis fisicoquímico del agua, presión disponible,',
+    'configuración de colectores y arreglo hidráulico. Consultar ficha técnica '+s.name+'.'
+  ].filter(function(l){return l!==undefined&&l!==''}).join('\n');
+}
+
+el('az-calc').addEventListener('click',function(){
+  render();markClean();
+  var res=document.querySelector('.results');
+  if(res&&window.innerWidth<1060){res.scrollIntoView({behavior:'smooth',block:'start'});}
+});
+
+el('az-copy').addEventListener('click',function(){
+  var txt=buildSpec();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(copied);return;
+  }
+  var ta=document.createElement('textarea');
+  ta.value=txt;document.body.appendChild(ta);ta.select();
+  document.execCommand('copy');document.body.removeChild(ta);copied();
+});
+function copied(){
+  var btn=el('az-copy'),old=btn.textContent;
+  btn.textContent='Copiado ✓';setTimeout(function(){btn.textContent=old},1800);
+}
+
+el('az-reset').addEventListener('click',function(){
+  el('az-flow').value='';el('az-unit').value='m3h';
+  el('az-micron').value='50';el('az-quality').value='media';
+  el('az-solids').value='standard';el('az-mode').value='aa';
+  el('az-apptype').value='standard';
+  render();markClean();
+  el('tss-chip-wrap').innerHTML='';
+});
+
+var dirty=false;
+function markDirty(){
+  if(dirty)return;dirty=true;
+  el('az-pending').style.display='flex';
+  el('az-calc').style.boxShadow='0 0 0 3px rgba(0,143,227,.45),0 10px 22px rgba(0,143,227,.30)';
+}
+function markClean(){
+  dirty=false;el('az-pending').style.display='none';el('az-calc').style.boxShadow='';
+}
+['az-flow','az-unit','az-micron','az-quality','az-solids','az-mode','az-apptype'].forEach(function(id){
+  el(id).addEventListener('input',markDirty);
+  el(id).addEventListener('change',markDirty);
+});
+
+/* Init */
+updateSerieUI();
+</script>
+</body>
+</html>
