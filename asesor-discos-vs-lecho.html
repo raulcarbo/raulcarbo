@@ -470,10 +470,10 @@ button,input,select{font:inherit}
           <select class="adv-select" id="adv-objective">
             <option value="physical">Solo retener partículas físicas</option>
             <option value="prefilter_bed">Proteger un lecho profundo o medio granular aguas abajo</option>
-            <option value="prefilter_ro">Prefiltrar directamente antes de membranas de ósmosis inversa</option>
+            <option value="prefilter_ro">Reducir carga de sólidos en un tren de pretratamiento para OI</option>
             <option value="physchem">Filtrar y causar cambios fisicoquímicos en el agua</option>
           </select>
-          <div class="adv-hint">Incluye proteger medios filtrantes, reducir SDI antes de OI, adsorber cloro, hierro, manganeso u olor.</div>
+          <div class="adv-hint">Los discos nunca sustituyen los cartuchos de seguridad ni el carbón activo en un tren de OI.</div>
         </div>
 
         <div class="adv-field">
@@ -579,7 +579,7 @@ var LABELS = {
   objective:{
     physical:'Solo retener partículas físicas',
     prefilter_bed:'Proteger un lecho profundo o medio granular aguas abajo',
-    prefilter_ro:'Prefiltrar directamente antes de membranas de ósmosis inversa',
+    prefilter_ro:'Reducir carga de sólidos en un tren de pretratamiento para OI',
     physchem:'Filtrar y causar cambios fisicoquímicos en el agua'
   },
   particle:{
@@ -696,26 +696,24 @@ function analyze(){
     return result;
   }
 
-  // Case 3b: Pre-filter directly before RO membranes
+  // Case 3b: Disc filter at the START of an RO pretreatment train
   if(isPrefilterRO){
     result.winner = 'discs';
     result.cleaning = hasDeformable ? 'aa' : 'standard';
-    result.type = result.cleaning==='aa' ? 'Discos Azud asistidos por aire (prefiltro OI)' : 'Discos Azud convencionales (prefiltro OI)';
+    result.type = result.cleaning==='aa' ? 'Discos Azud asistidos por aire (inicio de tren OI)' : 'Discos Azud convencionales (inicio de tren OI)';
     result.headline = result.cleaning==='aa'
-      ? 'Recomendación: discos Azud asistidos por aire antes de ósmosis inversa'
-      : 'Recomendación: discos Azud convencionales antes de ósmosis inversa';
-    result.summary = 'Los discos retiran las partículas que ensucias las membranas de ósmosis inversa. El objetivo es reducir el SDI (Silt Density Index) del agua de alimentación a la membrana para protegerla y extender su vida útil.';
-    result.technical.push('El SDI mide la tendencia del agua a obstruir membranas. Para OI se requiere SDI₁₅ < 5; idealmente < 3. Los discos reducen la carga de sólidos suspendidos que es la principal causa de ensuciamiento particulado en membranas.');
-    result.technical.push('Los discos retienen partículas entre 5 y 400 µm. Partículas más finas, coloides o compuestos disueltos que afectan las membranas requieren etapas adicionales (coagulación, ultrafiltración) antes de la OI.');
+      ? 'Recomendación: discos Azud al inicio del tren de pretratamiento para OI'
+      : 'Recomendación: discos Azud al inicio del tren de pretratamiento para OI';
+    result.summary = 'Un filtro de discos NUNCA debe instalarse directamente antes de la OI como única etapa de pretratamiento. Su rol correcto es al inicio del tren, cuando el agua cruda tiene alta carga de sólidos, para proteger todo el pretratamiento posterior.';
+    result.technical.push('Las membranas de OI exigen SDI₁₅ < 5 (idealmente < 3), turbidez < 1 NTU y cloro libre < 0.1 mg/L. Siempre se requieren filtros de cartucho de 1–5 µm como última barrera antes de la bomba de alta presión.');
+    result.technical.push('Los discos realizan solo filtración física. No eliminan cloro libre (que destruye el polímero de membrana), ni remueven dureza, hierro disuelto, manganeso ni aluminio que comprometen la OI.');
+    result.technical.push('El tren correcto con discos para OI es: Discos Azud (desbaste de sólidos gruesos) → Carbón activado (eliminación de cloro) → Filtros de cartucho 1–5 µm (pulido final) → OI.');
     result.technical.push(result.cleaning==='aa'
-      ? 'La limpieza asistida por aire (10 L/elemento) es preferible cuando el agua contiene algas o sólidos deformables, comunes en fuentes superficiales que alimentan trenes de OI.'
-      : 'La limpieza hidráulica convencional (50–60 L/elemento) es adecuada para agua de pozo o de proceso con sólidos inorgánicos.');
-    result.technical.push('Para fuentes con alta variabilidad de TSS o con algas, los discos WS (polietileno) son preferibles a los MG por su mayor capacidad de retención y menor tendencia al taponamiento irreversible.');
-    result.business.push('Proteger las membranas de OI reduce costos de limpieza química (CIP), extiende la vida de los elementos de membrana y mejora la disponibilidad del sistema.');
-    result.business.push('Los discos se retrolavan automáticamente con muy poca agua, lo que es especialmente valioso en trenes de OI donde el agua de proceso es costosa o escasa.');
-    if(siteLimited){
-      result.capex = 'Con restricción de agua: el retrolavado de los discos (10–60 L/elemento) representa una fracción mínima del rechazo de la propia OI, sin impacto operativo significativo.';
-    }
+      ? 'La limpieza asistida por aire (10 L/elemento) es preferible cuando el agua contiene algas o flóculos, frecuentes en fuentes superficiales de alta turbidez.'
+      : 'La limpieza hidráulica convencional (50–60 L/elemento) es adecuada cuando los sólidos son inorgánicos y no adherentes.');
+    result.business.push('Instalar los discos al inicio del tren extiende enormemente la vida útil de los cartuchos de seguridad y del carbón activado, reduciendo los costos de reposición de medios.');
+    result.business.push('Solo vale la pena instalar los discos si la carga de sólidos suspendidos del agua cruda es tan alta que tapa los cartuchos o satura el lecho granular en pocos días. Si el agua ya es clara, los cartuchos solos pueden ser suficientes.');
+    result.caution = 'No instalar discos directamente antes de la OI. Los filtros de cartucho de 1–5 µm son la barrera de seguridad obligatoria inmediatamente antes de la membrana, y el carbón activado (o metabisulfito de sodio) es indispensable para eliminar el cloro libre.';
     return result;
   }
 
