@@ -602,6 +602,13 @@ function fmt(n,d){ return isFinite(n) ? n.toLocaleString('es-MX',{minimumFractio
 function toGpm(value,unit){ return unit==='m3h' ? value*4.402867 : value; }
 function toM3h(value,unit){ return unit==='gpm' ? value*0.2271247 : value; }
 
+// Rough element estimate: 15 m³/h per FT200 element (100 µm, medium water quality, conservative)
+function discElementNote(flowM3h){
+  if(!flowM3h || flowM3h<=0) return null;
+  var n = Math.max(1, Math.ceil(flowM3h/15));
+  return 'Para los '+fmt(flowM3h,1)+' m³/h indicados se requieren aproximadamente '+n+' elemento'+(n>1?'s':'')+' filtrante'+(n>1?'s':'')+' Azud (referencia: 100 µm, calidad de agua media; use la calculadora Azud Helix para el dimensionamiento exacto).';
+}
+
 function getInputs(){
   var raw = el('adv-flow').value;
   var flow = parseFloat(raw);
@@ -655,6 +662,7 @@ function analyze(){
     result.technical.push('Esta combinación es especialmente valiosa cuando el agua de entrada tiene alta turbidez o TSS y además requiere un cambio fisicoquímico aguas abajo.');
     result.business.push('El prefiltro de discos reduce consumo de agua de retrolavado del lecho profundo aguas abajo y estabiliza la operación del sistema.');
     result.business.push('En caudales altos, la protección previa puede disminuir frecuencia de mantenimiento, pérdida de carga y saturación prematura del medio granular.');
+    var note1 = discElementNote(i.flowM3h); if(note1) result.business.push(note1);
     result.caution = 'El filtro de discos no sustituye la función química del lecho profundo; solo protege hidráulica y mecánicamente el tren de tratamiento.';
     return result;
   }
@@ -690,6 +698,7 @@ function analyze(){
     result.technical.push('Para TSS alto o sólidos algo adherentes, los discos tipo WS (polietileno) ofrecen mayor capacidad de retención y se pegan menos entre sí que los discos MG (polipropileno).');
     result.business.push('Al proteger el lecho, los discos reducen la frecuencia de retrolavado del medio granular y su consumo de agua, estabilizando la operación del tren completo.');
     result.business.push('El retrolavado de los discos es automático, compacto y usa muy poca agua, por lo que no añade una carga operativa significativa al proceso.');
+    var note3a = discElementNote(i.flowM3h); if(note3a) result.business.push(note3a);
     if(siteLimited){
       result.capex = 'Con restricción de agua: los discos usan radicalmente menos agua de retrolavado que el propio lecho, lo que es clave cuando el sitio tiene agua limitada.';
     }
@@ -713,6 +722,7 @@ function analyze(){
       : 'La limpieza hidráulica convencional (50–60 L/elemento) es adecuada cuando los sólidos son inorgánicos y no adherentes.');
     result.business.push('Instalar los discos al inicio del tren extiende enormemente la vida útil de los cartuchos de seguridad y del carbón activado, reduciendo los costos de reposición de medios.');
     result.business.push('Solo vale la pena instalar los discos si la carga de sólidos suspendidos del agua cruda es tan alta que tapa los cartuchos o satura el lecho granular en pocos días. Si el agua ya es clara, los cartuchos solos pueden ser suficientes.');
+    var note3b = discElementNote(i.flowM3h); if(note3b) result.business.push(note3b);
     result.caution = 'No instalar discos directamente antes de la OI. Los filtros de cartucho de 1–5 µm son la barrera de seguridad obligatoria inmediatamente antes de la membrana, y el carbón activado (o metabisulfito de sodio) es indispensable para eliminar el cloro libre.';
     return result;
   }
@@ -769,11 +779,7 @@ function analyze(){
     if(siteLimited){
       result.business.push('El sitio tiene restricción de agua y espacio: los discos son la alternativa más adecuada, ya que usan radicalmente menos agua de retrolavado y ocupan una fracción del espacio de un lecho equivalente.');
     }
-    if((result.cleaning==='standard' && i.flowGpm>14) || (result.cleaning==='aa' && i.flowGpm>29)){
-      result.capex = result.cleaning==='aa'
-        ? 'Para flujos superiores a 29 GPM, el filtro de discos asistido por aire puede ser más económico en inversión inicial que adquirir el tanque y medio filtrante de lecho profundo equivalente.'
-        : 'Para flujos superiores a 14 GPM, el filtro de discos convencional puede ser más económico en inversión inicial que adquirir el tanque y medio filtrante de lecho profundo equivalente.';
-    }
+    var note6 = discElementNote(i.flowM3h); if(note6) result.business.push(note6);
     return result;
   }
 
