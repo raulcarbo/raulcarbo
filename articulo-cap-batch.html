@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dosificación de Carbón Activado en Polvo en Procesos Batch | Guía Técnica Carbotecnia</title>
+<meta name="description" content="Aprende a calcular la dosis exacta de carbón activado en polvo (CAP) y filtroayuda para tanques de agitación batch. Guía técnica basada en MIP Carbotecnia con calculadora gratuita.">
+<meta name="keywords" content="carbón activado en polvo, CAP batch, Megapol, filtroayuda, tierra diatomea, dosificación carbón activado, decoloración destilados, tratamiento vinos">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#910080;--brand-dark:#3d0036;--brand-mid:#7a006c;
+  --brand-light:#fdf0fc;--brand-border:#e9a8e4;
+  --ok:#047857;--ok-soft:#d1fae5;--ok-border:#6ee7b7;
+  --warn:#b45309;--warn-soft:#fffbeb;--warn-border:#fcd34d;
+  --danger:#991b1b;--danger-soft:#fef2f2;--danger-border:#fecaca;
+  --accent:#7c3aed;--accent-soft:#ede9fe;--accent-border:#c4b5fd;
+  --ink:#0b1424;--muted:#64748b;
+  --line:#d6dde7;--surface:#ffffff;--paper:#f4f6fa;--paper-soft:#eef2f7;
+  --shadow:0 1px 3px rgba(11,20,36,.06),0 8px 24px rgba(11,20,36,.08);
+  --shadow-sm:0 1px 3px rgba(11,20,36,.05);
+  --radius:16px;--radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'Roboto Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#fff;color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.7}
+h1,h2,h3,h4{font-family:var(--font-title)}
+a{color:var(--brand);text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%;display:block}
+
+/* ── Brand bar ── */
+.brand-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px;background:var(--surface);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:100;
+  box-shadow:var(--shadow-sm);
+}
+.brand-mark{display:flex;align-items:center;gap:11px}
+.brand-icon{
+  width:38px;height:38px;border-radius:9px;
+  background:linear-gradient(135deg,#910080,#3d0036);
+  color:#fff;display:grid;place-items:center;
+  font-family:var(--font-title);font-weight:800;font-size:11px;
+  box-shadow:0 4px 12px rgba(145,0,128,.28);
+}
+.brand-name{font-family:var(--font-title);font-weight:700;font-size:15px;color:var(--ink)}
+.brand-name span{display:block;font-size:10px;font-weight:400;color:var(--muted);font-family:var(--font-num);letter-spacing:.08em;text-transform:uppercase}
+.brand-cta{
+  background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+  color:#fff;padding:8px 18px;border-radius:999px;
+  font-family:var(--font-title);font-size:12px;font-weight:700;
+  white-space:nowrap;box-shadow:0 4px 12px rgba(145,0,128,.25);
+  transition:transform .12s,box-shadow .12s;
+}
+.brand-cta:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(145,0,128,.35);text-decoration:none}
+
+/* ── Hero ── */
+.hero{
+  background:linear-gradient(140deg,#3d0036 0%,#6b005e 45%,#910080 80%,#c0009e 100%);
+  color:#fff;padding:80px 24px 72px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero::after{
+  content:"";position:absolute;right:-100px;bottom:-140px;
+  width:400px;height:400px;border-radius:50%;
+  border:70px solid rgba(255,255,255,.06);pointer-events:none;
+}
+.hero-inner{position:relative;z-index:1;max-width:780px;margin:0 auto}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;padding:6px 16px;
+  font-family:var(--font-num);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.85);margin-bottom:24px;backdrop-filter:blur(8px);
+}
+.hero-badge span{width:6px;height:6px;background:#f9a8d4;border-radius:50%;display:inline-block}
+.hero h1{
+  font-size:clamp(28px,4.5vw,52px);font-weight:900;line-height:1.05;
+  letter-spacing:-.04em;color:#fff;margin-bottom:20px;
+}
+.hero h1 em{font-style:normal;color:#f9a8d4}
+.hero-sub{font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,.75);line-height:1.65;margin-bottom:32px;max-width:620px;margin-left:auto;margin-right:auto}
+.hero-meta{
+  display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;
+  font-family:var(--font-num);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);
+}
+.hero-meta span{display:flex;align-items:center;gap:6px}
+
+/* ── Breadcrumb ── */
+.breadcrumb{background:var(--paper);border-bottom:1px solid var(--line);padding:10px 24px;font-size:12px;color:var(--muted);font-family:var(--font-num);letter-spacing:.04em}
+.breadcrumb a{color:var(--brand)}
+.breadcrumb span{margin:0 6px;opacity:.4}
+
+/* ── Layout ── */
+.page{max-width:1200px;margin:0 auto;padding:0 24px}
+.article-layout{display:grid;grid-template-columns:1fr 300px;gap:40px;padding:52px 0 80px;align-items:start}
+.article-body{min-width:0}
+.article-aside{position:sticky;top:80px;min-width:0;display:grid;gap:16px}
+
+/* ── Prose ── */
+.prose h2{
+  font-size:clamp(20px,2.5vw,26px);font-weight:800;letter-spacing:-.03em;
+  color:var(--ink);margin:52px 0 16px;padding-top:12px;
+  border-top:2px solid var(--brand-border);
+  display:flex;align-items:center;gap:10px;
+}
+.prose h2 .h2-num{
+  font-family:var(--font-num);font-size:13px;font-weight:600;
+  color:var(--brand);background:var(--brand-light);
+  border:1px solid var(--brand-border);border-radius:8px;
+  padding:2px 8px;flex-shrink:0;
+}
+.prose h3{font-size:18px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin:28px 0 10px}
+.prose p{margin-bottom:16px;color:#2d3748;line-height:1.75}
+.prose p:last-child{margin-bottom:0}
+.prose ul,
+.prose ol{padding-left:22px;margin-bottom:16px;color:#2d3748}
+.prose li{margin-bottom:6px;line-height:1.65}
+.prose strong{color:var(--ink);font-weight:700}
+
+/* ── Lead paragraph ── */
+.lead{font-size:18px;line-height:1.8;color:#334155;margin-bottom:32px;font-weight:500;border-left:4px solid var(--brand);padding-left:20px}
+
+/* ── Key stat cards ── */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:32px 0}
+.stat-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 20px;box-shadow:var(--shadow-sm);text-align:center;
+  border-top:3px solid var(--brand);
+}
+.stat-card .sc-val{font-family:var(--font-num);font-size:30px;font-weight:700;color:var(--brand);letter-spacing:-.02em;line-height:1}
+.stat-card .sc-unit{font-size:13px;color:var(--muted);margin-left:3px}
+.stat-card .sc-label{font-family:var(--font-body);font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+/* ── Formula block ── */
+.formula-block{
+  background:linear-gradient(135deg,var(--brand-light),#fce7f3);
+  border:1px solid var(--brand-border);border-left:4px solid var(--brand);
+  border-radius:var(--radius);padding:22px 24px;margin:24px 0;
+}
+.formula-block .fb-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-mid);font-weight:600;margin-bottom:10px}
+.formula-block .fb-eq{font-family:var(--font-num);font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-bottom:8px}
+.formula-block .fb-eq em{font-style:normal;color:var(--brand)}
+.formula-block .fb-desc{font-size:13px;color:var(--muted);line-height:1.55}
+
+/* ── Process flow visual ── */
+.process-flow{display:flex;align-items:stretch;gap:0;margin:32px 0;overflow-x:auto;padding-bottom:4px}
+.pf-step{
+  flex:1;min-width:120px;background:var(--surface);border:1px solid var(--line);
+  border-radius:0;padding:16px 14px;text-align:center;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.pf-step:first-child{border-radius:14px 0 0 14px}
+.pf-step:last-child{border-radius:0 14px 14px 0}
+.pf-step::after{
+  content:"→";position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+  font-size:18px;color:var(--brand);z-index:2;font-weight:700;background:#fff;
+  width:22px;text-align:center;
+}
+.pf-step:last-child::after{display:none}
+.pf-step.active{background:var(--brand-light);border-color:var(--brand-border)}
+.pf-icon{width:36px;height:36px;border-radius:10px;background:var(--brand-light);border:1px solid var(--brand-border);display:grid;place-items:center;font-size:18px}
+.pf-step.active .pf-icon{background:var(--brand);border-color:var(--brand)}
+.pf-step.active .pf-icon svg{stroke:#fff}
+.pf-num{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.pf-name{font-family:var(--font-title);font-size:11.5px;font-weight:700;color:var(--ink);line-height:1.3}
+.pf-step.active .pf-name{color:var(--brand-mid)}
+.pf-sub{font-size:10px;color:var(--muted);line-height:1.35}
+
+/* ── Comparison table ── */
+.compare-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px}
+.compare-table th{
+  background:linear-gradient(135deg,#3d0036,#6b005e);color:#fff;
+  padding:12px 16px;font-family:var(--font-title);font-size:12px;font-weight:700;
+  letter-spacing:.02em;text-align:left;
+}
+.compare-table th:first-child{border-radius:12px 0 0 0}
+.compare-table th:last-child{border-radius:0 12px 0 0}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5;color:#334155}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table tr:nth-child(even) td{background:var(--paper)}
+.compare-table .badge{display:inline-block;font-family:var(--font-num);font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px}
+.badge-ok{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok-border)}
+.badge-warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-border)}
+.badge-brand{background:var(--brand-light);color:var(--brand-mid);border:1px solid var(--brand-border)}
+
+/* ── Viscosity visual ── */
+.visc-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}
+.visc-card{border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center;background:var(--surface)}
+.visc-card.light{border-top:3px solid #06b6d4}
+.visc-card.medium{border-top:3px solid #f59e0b}
+.visc-card.high{border-top:3px solid var(--brand)}
+.vc-icon{font-size:28px;margin-bottom:8px}
+.vc-title{font-family:var(--font-title);font-weight:700;font-size:14px;color:var(--ink);margin-bottom:4px}
+.vc-cp{font-family:var(--font-num);font-size:11px;color:var(--muted);margin-bottom:8px}
+.vc-time{
+  font-family:var(--font-num);font-size:12px;font-weight:700;
+  padding:4px 10px;border-radius:999px;display:inline-block;margin-bottom:6px;
+}
+.visc-card.light .vc-time{background:#e0f2fe;color:#0369a1}
+.visc-card.medium .vc-time{background:#fef3c7;color:#92400e}
+.visc-card.high .vc-time{background:var(--brand-light);color:var(--brand-mid)}
+.vc-examples{font-size:11px;color:var(--muted);line-height:1.4}
+
+/* ── Megapol product cards ── */
+.megapol-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:24px 0}
+.megapol-card{
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  background:var(--surface);box-shadow:var(--shadow-sm);
+}
+.megapol-card-head{
+  background:linear-gradient(135deg,#3d0036,#7a006c);
+  padding:14px 16px;color:#fff;
+}
+.mc-name{font-family:var(--font-title);font-weight:800;font-size:16px;letter-spacing:-.01em}
+.mc-tag{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:3px}
+.megapol-card-body{padding:14px 16px}
+.mc-desc{font-size:13px;color:#334155;line-height:1.6;margin-bottom:10px}
+.mc-spec{display:flex;gap:6px;flex-wrap:wrap}
+.mc-pill{font-family:var(--font-num);font-size:9.5px;background:var(--brand-light);color:var(--brand-mid);border:1px solid var(--brand-border);padding:3px 9px;border-radius:999px;font-weight:600}
+
+/* ── Highlight box ── */
+.highlight{
+  background:linear-gradient(135deg,#fdf0fc,#fce7f3);
+  border:1px solid var(--brand-border);border-radius:var(--radius);
+  padding:22px 24px;margin:28px 0;position:relative;overflow:hidden;
+}
+.highlight::before{
+  content:"";position:absolute;right:-30px;top:-30px;
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(145,0,128,.1),transparent 70%);
+}
+.highlight-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:600;margin-bottom:8px}
+.highlight p{color:#4a0040;font-size:14px;line-height:1.65;margin:0;position:relative}
+.highlight strong{color:var(--brand-dark)}
+
+/* ── Warning / Alert inline ── */
+.alert{border-radius:14px;padding:16px 18px;border:1px solid;margin:20px 0;font-size:13.5px;line-height:1.6}
+.alert b{display:block;font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-weight:700}
+.alert.warn{background:var(--warn-soft);border-color:var(--warn-border);color:#7c4a08}
+.alert.warn b{color:var(--warn)}
+.alert.danger{background:var(--danger-soft);border-color:var(--danger-border);color:#7f1d1d}
+.alert.danger b{color:var(--danger)}
+.alert.info{background:var(--accent-soft);border-color:var(--accent-border);color:#3b0764}
+.alert.info b{color:var(--accent)}
+
+/* ── FAQ ── */
+.faq{margin:20px 0}
+.faq-item{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.faq-q{
+  padding:16px 20px;font-family:var(--font-title);font-weight:700;font-size:14.5px;
+  color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  background:var(--surface);user-select:none;
+  transition:background .15s;
+}
+.faq-q:hover{background:var(--paper)}
+.faq-q.open{background:var(--brand-light);color:var(--brand-mid)}
+.faq-q .faq-icon{font-size:18px;font-weight:400;color:var(--brand);flex-shrink:0;transition:transform .2s}
+.faq-q.open .faq-icon{transform:rotate(45deg)}
+.faq-a{padding:0 20px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+.faq-a.open{padding:0 20px 18px;max-height:400px}
+.faq-a p{font-size:13.5px;color:#334155;line-height:1.7;margin:0;padding-top:2px}
+
+/* ── CTA card ── */
+.cta-card{
+  background:linear-gradient(140deg,#3d0036,#6b005e,#910080);
+  border-radius:var(--radius-lg);padding:32px 28px;text-align:center;
+  color:#fff;margin:40px 0;position:relative;overflow:hidden;
+}
+.cta-card::after{
+  content:"";position:absolute;left:-60px;bottom:-80px;
+  width:240px;height:240px;border-radius:50%;
+  border:50px solid rgba(255,255,255,.07);pointer-events:none;
+}
+.cta-card h3{font-size:24px;font-weight:800;letter-spacing:-.03em;margin-bottom:10px;position:relative;z-index:1}
+.cta-card h3 em{font-style:normal;color:#f9a8d4}
+.cta-card p{color:rgba(255,255,255,.75);font-size:14px;margin-bottom:24px;position:relative;z-index:1}
+.cta-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#fff;color:var(--brand);
+  padding:14px 28px;border-radius:999px;
+  font-family:var(--font-title);font-weight:800;font-size:14px;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  transition:transform .12s,box-shadow .12s;position:relative;z-index:1;
+}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,0,0,.28);text-decoration:none}
+
+/* ── Aside widgets ── */
+.toc-widget{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
+.widget-head{padding:14px 18px;border-bottom:1px solid var(--line);background:var(--paper);display:flex;align-items:center;gap:8px}
+.widget-head h4{font-size:13px;font-weight:700;color:var(--ink)}
+.widget-dot{width:8px;height:8px;background:var(--brand);border-radius:50%;flex-shrink:0}
+.toc-list{list-style:none;padding:14px 18px;display:grid;gap:4px}
+.toc-list a{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:baseline;transition:color .12s;padding:3px 0}
+.toc-list a:hover{color:var(--brand);text-decoration:none}
+.toc-list a .toc-n{font-family:var(--font-num);font-size:10px;color:var(--brand-border);font-weight:600;flex-shrink:0}
+.toc-list a:hover .toc-n{color:var(--brand)}
+
+.aside-cta{
+  background:linear-gradient(135deg,#3d0036,#910080);
+  border-radius:var(--radius);padding:20px;color:#fff;text-align:center;
+}
+.aside-cta h4{font-size:15px;font-weight:800;margin-bottom:6px}
+.aside-cta p{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:16px;line-height:1.5}
+.aside-cta a{
+  display:block;background:#fff;color:var(--brand);
+  padding:10px;border-radius:999px;
+  font-family:var(--font-title);font-weight:800;font-size:12px;
+  transition:transform .12s;
+}
+.aside-cta a:hover{transform:translateY(-1px);text-decoration:none}
+
+.aside-quick{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
+.quick-row{display:flex;justify-content:space-between;align-items:baseline;padding:11px 18px;border-bottom:1px solid var(--line);font-size:13px}
+.quick-row:last-child{border-bottom:none}
+.quick-row .qr-k{color:var(--muted)}
+.quick-row .qr-v{font-family:var(--font-num);font-weight:700;font-size:12.5px;color:var(--brand-mid)}
+
+/* ── Related ── */
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+.related-card{border:1px solid var(--line);border-radius:var(--radius);padding:18px;background:var(--surface);box-shadow:var(--shadow-sm);transition:box-shadow .15s,transform .15s}
+.related-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.rc-tag{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:600;margin-bottom:8px}
+.rc-title{font-family:var(--font-title);font-weight:700;font-size:14px;color:var(--ink);margin-bottom:6px;line-height:1.3}
+.rc-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ── Footer ── */
+.footer{background:var(--paper);border-top:1px solid var(--line);padding:32px 24px;text-align:center;color:var(--muted);font-size:12px;font-family:var(--font-num);letter-spacing:.06em;text-transform:uppercase}
+.footer strong{display:block;font-size:14px;font-family:var(--font-title);font-weight:700;color:var(--ink);margin-bottom:6px;text-transform:none;letter-spacing:0}
+
+/* ── Responsive ── */
+@media(max-width:960px){
+  .article-layout{grid-template-columns:1fr}
+  .article-aside{position:static;grid-template-columns:repeat(2,1fr)}
+  .toc-widget{grid-column:1/-1}
+  .related-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .visc-cards{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .page{padding:0 16px}
+  .article-layout{padding:32px 0 48px}
+  .megapol-grid{grid-template-columns:1fr}
+  .related-grid{grid-template-columns:1fr}
+  .stat-row{grid-template-columns:1fr}
+  .article-aside{grid-template-columns:1fr}
+  .process-flow{flex-direction:column}
+  .pf-step{border-radius:0 !important;border-left:3px solid var(--brand) !important;border-right:1px solid var(--line) !important;border-top:1px solid var(--line) !important;border-bottom:1px solid var(--line) !important;flex-direction:row;gap:12px;align-items:center;text-align:left}
+  .pf-step::after{content:"↓";right:auto;left:50%;transform:translateX(-50%);top:auto;bottom:-16px}
+  .pf-step:last-child::after{display:none}
+  .hero{padding:52px 20px 48px}
+}
+</style>
+</head>
+<body>
+
+<!-- Brand bar -->
+<nav class="brand-bar">
+  <div class="brand-mark">
+    <div class="brand-icon">CAP</div>
+    <div class="brand-name">
+      Carbotecnia
+      <span>carbotecnia.com · Tratamiento de líquidos</span>
+    </div>
+  </div>
+  <a href="calculadora-cap-batch.html" class="brand-cta">Abrir calculadora →</a>
+</nav>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <div class="page">
+    <a href="#">Inicio</a><span>/</span>
+    <a href="#">Recursos técnicos</a><span>/</span>
+    Dosificación de CAP en procesos batch
+  </div>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span></span> Guía técnica · MIP Carbotecnia</div>
+    <h1>Dosificación de <em>Carbón Activado en Polvo</em> en Procesos Batch</h1>
+    <p class="hero-sub">Cómo calcular la dosis exacta de CAP y filtroayuda para tanques de agitación en la purificación de destilados, vinos, aceites y jarabes industriales.</p>
+    <div class="hero-meta">
+      <span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Lectura: ~8 minutos
+      </span>
+      <span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Basado en MIP CAP 240524 · MIP Filtroayudas 240603
+      </span>
+      <span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Ingenieros Carbotecnia
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- Content -->
+<div class="page">
+  <div class="article-layout">
+
+    <!-- ── ARTICLE BODY ── -->
+    <article class="article-body">
+
+      <p class="lead">Dosificar carbón activado en polvo en un proceso batch no es solo pesar un saco y vaciarlo al tanque. La diferencia entre un proceso eficiente y uno fallido está en tres variables: la dosis correcta, el filtroayuda adecuado y el tiempo de agitación según la viscosidad del líquido.</p>
+
+      <!-- Stats row -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="sc-val">1:1<span class="sc-unit">g/g</span></div>
+          <div class="sc-label">Ratio CAP : Filtroayuda<br>para retener malla 325 en filtro prensa</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-val">15<span class="sc-unit">min</span></div>
+          <div class="sc-label">Tiempo mínimo con agitación perfecta y viscosidad ~1 cP</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-val">3×</div>
+          <div class="sc-label">Más rápido: CAP malla 325 vs. malla 200 en cinética de adsorción</div>
+        </div>
+      </div>
+
+      <!-- ─ Sección 1 ─ -->
+      <div class="prose">
+        <h2 id="que-es"><span class="h2-num">01</span> ¿Qué es el carbón activado en polvo (CAP) y cuándo se usa en batch?</h2>
+
+        <p>El carbón activado en polvo (CAP) es un material con una estructura porosa excepcional, capaz de adsorber moléculas orgánicas, colorantes, olores y otros contaminantes presentes en líquidos industriales. La norma ASTM establece que al menos el 90 % de las partículas de un CAP deben pasar la malla 80 (0.177 mm), aunque en la práctica la mayoría de los carbones comerciales tienen el 90 % de sus partículas por debajo de la malla 200 (0.074 mm).</p>
+
+        <p>La primera regla de oro del CAP es absoluta: <strong>nunca se aplica en el tratamiento de gases</strong>. Su campo de acción es exclusivamente la fase líquida.</p>
+
+        <h3>¿Cuándo elegir CAP sobre carbón activado granular (CAG)?</h3>
+        <p>El CAP es la elección correcta cuando se presentan alguna de estas condiciones:</p>
+        <ul>
+          <li>El proceso ya incluye una etapa de <strong>clarificación o filtración</strong> que puede separar el carbón del líquido tratado (filtro prensa, clarificador).</li>
+          <li>Se requiere una <strong>dosis precisa por lote</strong>, como en la producción de destilados donde cada batch puede ser diferente.</li>
+          <li>Solo ciertos lotes requieren tratamiento, no todos.</li>
+          <li>El carbón disponible no tiene suficiente resistencia mecánica para operar como lecho granular.</li>
+          <li>La cinética del CAG resulta demasiado lenta para la aplicación.</li>
+        </ul>
+
+        <div class="highlight">
+          <div class="highlight-label">Ventaja clave del CAP vs. CAG</div>
+          <p>El CAP <strong>siempre alcanza su punto de saturación completo</strong>, ya que se utiliza en contacto total con el líquido. El CAG, en cambio, requiere instalarse en columnas en serie para asegurar la saturación completa y la recuperación eficiente. Además, el CAP permite dosificar la cantidad exacta requerida por cada lote.</p>
+        </div>
+      </div>
+
+      <!-- ─ Sección 2 ─ -->
+      <div class="prose">
+        <h2 id="cinematica"><span class="h2-num">02</span> Por qué el tamaño de partícula sí importa: cinética de adsorción</h2>
+
+        <p>Un error frecuente es asumir que pulverizar un carbón granular aumenta su capacidad de adsorción. Esto es falso: el área de los poros internos es varios órdenes de magnitud mayor que el área externa de la partícula, por lo que pulverizar no cambia significativamente el área superficial total.</p>
+
+        <p>Lo que sí cambia — y de forma dramática — es la <strong>velocidad de adsorción (cinética)</strong>. El paso limitante de todo el proceso es la difusión de moléculas hacia el interior de los poros. Al reducir el tamaño de partícula, se reduce la distancia de difusión, y la velocidad aumenta inversamente proporcional al cuadrado del diámetro:</p>
+
+        <div class="formula-block">
+          <div class="fb-label">Relación entre tamaño de partícula y cinética</div>
+          <div class="fb-eq">t₂ / t₁ = <em>(d₂ / d₁)²</em></div>
+          <div class="fb-desc">Donde t es el tiempo hasta saturación y d es el diámetro promedio de partícula. Un carbón malla 325 (44 µm) trabaja <strong>casi 3 veces más rápido</strong> que uno malla 200 (74 µm).</div>
+        </div>
+
+        <p>Como referencia práctica: un carbón granular 12×40 (diámetro promedio 1.05 mm) necesitaría <strong>142 horas</strong> para completar la misma adsorción que un CAP malla 325 logra en 15 minutos bajo agitación perfecta.</p>
+      </div>
+
+      <!-- ─ Sección 3 ─ -->
+      <div class="prose">
+        <h2 id="calculo"><span class="h2-num">03</span> Cómo calcular la dosis de CAP y filtroayuda</h2>
+
+        <p>El cálculo parte de dos datos que se determinan siempre en laboratorio: el volumen del lote y la dosis de CAP en gramos por litro. A partir de ellos, la fórmula es directa:</p>
+
+        <div class="formula-block">
+          <div class="fb-label">Fórmula principal — Masa de CAP</div>
+          <div class="fb-eq">Masa CAP (kg) = <em>Vol (L) × Dosis (g/L)</em> ÷ 1000</div>
+          <div class="fb-desc">Por ejemplo: un lote de 2,000 L con dosis de 1.5 g/L requiere 3.0 kg de Megapol.</div>
+        </div>
+
+        <div class="formula-block">
+          <div class="fb-label">Killer Feature — Masa de Filtroayuda (Tierra Diatomea)</div>
+          <div class="fb-eq">Masa Filtroayuda (kg) = <em>Masa CAP (kg)</em> × 1</div>
+          <div class="fb-desc">Ratio 1:1 según MIP Carbotecnia. Por cada kilogramo de CAP se dosifica un kilogramo de filtroayuda para garantizar la retención del polvo fino en el filtro prensa.</div>
+        </div>
+
+        <h3>¿Por qué el ratio 1:1 con filtroayuda?</h3>
+        <p>El CAP contiene partículas por debajo de la malla 325 (44 µm) — más pequeñas que los intersticios del septum de casi cualquier filtro prensa. Sin filtroayuda, estas partículas ultrafinas traspasarían el medio filtrante y contaminarían el producto final.</p>
+
+        <p>La tierra diatomea actúa como agente estructural: sus partículas irregulares y porosas se entrelazan formando una red (precapa) con intersticios suficientemente pequeños para atrapar el carbón. La regla de <strong>1 g de filtroayuda por 1 g de CAP</strong> es la dosis que garantiza una torta filtrante permeable pero retentiva.</p>
+      </div>
+
+      <!-- Proceso flow -->
+      <div class="prose">
+        <h2 id="proceso"><span class="h2-num">04</span> El proceso batch paso a paso</h2>
+        <p>El flujo típico de un proceso batch con CAP sigue esta secuencia:</p>
+      </div>
+
+      <div class="process-flow">
+        <div class="pf-step">
+          <div class="pf-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#910080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="pf-num">01</div>
+          <div class="pf-name">Llenar tanque</div>
+          <div class="pf-sub">Volumen completo del lote</div>
+        </div>
+        <div class="pf-step">
+          <div class="pf-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#910080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+          </div>
+          <div class="pf-num">02</div>
+          <div class="pf-name">Calentar</div>
+          <div class="pf-sub">Solo si viscosidad media/alta</div>
+        </div>
+        <div class="pf-step active">
+          <div class="pf-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#910080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
+          <div class="pf-num">03</div>
+          <div class="pf-name">Añadir CAP + Filtroayuda</div>
+          <div class="pf-sub">Simultáneos, agitación suave</div>
+        </div>
+        <div class="pf-step">
+          <div class="pf-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#910080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </div>
+          <div class="pf-num">04</div>
+          <div class="pf-name">Agitar suavemente</div>
+          <div class="pf-sub">15–60 min según viscosidad</div>
+        </div>
+        <div class="pf-step">
+          <div class="pf-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#910080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          </div>
+          <div class="pf-num">05</div>
+          <div class="pf-name">Filtro prensa</div>
+          <div class="pf-sub">Con agitación activa al vaciar</div>
+        </div>
+      </div>
+
+      <!-- ─ Sección 5: Viscosidad ─ -->
+      <div class="prose">
+        <h2 id="viscosidad"><span class="h2-num">05</span> El factor decisivo: la viscosidad del líquido</h2>
+
+        <p>La viscosidad es el parámetro que más afecta la eficiencia del CAP. La difusión de moléculas hacia el interior de los poros se ralentiza proporcionalmente con la viscosidad del medio. El carbón activado es efectivo cuando se aplica a <strong>líquidos con viscosidad no muy superior a 1 cP</strong>.</p>
+      </div>
+
+      <div class="visc-cards">
+        <div class="visc-card light">
+          <div class="vc-icon">💧</div>
+          <div class="vc-title">Viscosidad Ligera</div>
+          <div class="vc-cp">~1 cP</div>
+          <div class="vc-time">15 – 60 min</div>
+          <div class="vc-examples">Agua, tequila, destilados, mezcal, vodka, etanol</div>
+        </div>
+        <div class="visc-card medium">
+          <div class="vc-icon">🍷</div>
+          <div class="vc-title">Viscosidad Media</div>
+          <div class="vc-cp">2 – 10 cP</div>
+          <div class="vc-time">60 min mínimo</div>
+          <div class="vc-examples">Vinos, mostos dulces, jugos clarificados, vinagre</div>
+        </div>
+        <div class="visc-card high">
+          <div class="vc-icon">🫙</div>
+          <div class="vc-title">Viscosidad Alta</div>
+          <div class="vc-cp">&gt;10 cP</div>
+          <div class="vc-time">60 min + calentamiento</div>
+          <div class="vc-examples">Aceites vegetales, glicerina, jarabes, mieles, melazas</div>
+        </div>
+      </div>
+
+      <div class="alert danger">
+        <b>Alerta crítica — Viscosidad alta</b>
+        Si el líquido tiene viscosidad sustancialmente superior a 1 cP y <em>no puede calentarse sin degradarse</em>, el CAP puede ser ineficiente. En ese caso se deben evaluar alternativas de tratamiento. Si el líquido <strong>sí puede calentarse</strong>, el calentamiento previo es <strong>obligatorio</strong> antes de añadir el carbón.
+      </div>
+
+      <div class="alert warn">
+        <b>Alerta — Agitación excesiva</b>
+        Debe evitarse la agitación rápida o violenta. Una turbulencia excesiva puede oxidar las impurezas o fraccionar moléculas, cambiando su respuesta a la filtración posterior y haciéndola considerablemente más difícil. La consigna es: agitación suave y constante.
+      </div>
+
+      <!-- ─ Sección 6: Megapol ─ -->
+      <div class="prose">
+        <h2 id="megapol"><span class="h2-num">06</span> Línea Megapol: cuál producto elegir</h2>
+
+        <p>Carbotecnia ofrece cuatro formulaciones de carbón activado en polvo bajo la línea Megapol, cada una optimizada para diferentes aplicaciones y requerimientos de pureza:</p>
+      </div>
+
+      <div class="megapol-grid">
+        <div class="megapol-card">
+          <div class="megapol-card-head">
+            <div class="mc-name">Megapol C</div>
+            <div class="mc-tag">Decoloración estándar</div>
+          </div>
+          <div class="megapol-card-body">
+            <div class="mc-desc">Activado con ácido fosfórico. Excelente tasa de filtración y capacidad de decoloración en destilados, vinos y líquidos de viscosidad ligera a media. Recomendado para aplicaciones industriales de propósito general.</div>
+            <div class="mc-spec">
+              <span class="mc-pill">Activación química</span>
+              <span class="mc-pill">Alta filtración</span>
+              <span class="mc-pill">Propósito general</span>
+            </div>
+          </div>
+        </div>
+        <div class="megapol-card">
+          <div class="megapol-card-head">
+            <div class="mc-name">Megapol 28-4</div>
+            <div class="mc-tag">Alta pureza / Alimentos</div>
+          </div>
+          <div class="megapol-card-body">
+            <div class="mc-desc">Grado alimenticio con lavados de alta eficiencia para minimizar compuestos residuales solubles. Ideal para productos de consumo humano donde la pureza del efluente es crítica.</div>
+            <div class="mc-spec">
+              <span class="mc-pill">Grado alimenticio</span>
+              <span class="mc-pill">Bajo pH residual</span>
+              <span class="mc-pill">Bebidas finas</span>
+            </div>
+          </div>
+        </div>
+        <div class="megapol-card">
+          <div class="megapol-card-head">
+            <div class="mc-name">Megapol M</div>
+            <div class="mc-tag">Moléculas grandes / Proteínas</div>
+          </div>
+          <div class="megapol-card-body">
+            <div class="mc-desc">Formulado con predominancia de mesoporos y macroporos para retener moléculas de alto peso molecular, proteínas y coloides. Óptimo para aceites y jarabes con contaminantes grandes.</div>
+            <div class="mc-spec">
+              <span class="mc-pill">Mesoporos</span>
+              <span class="mc-pill">Macroporos</span>
+              <span class="mc-pill">Proteínas / Coloides</span>
+            </div>
+          </div>
+        </div>
+        <div class="megapol-card">
+          <div class="megapol-card-head">
+            <div class="mc-name">Megapol E</div>
+            <div class="mc-tag">Decoloración económica</div>
+          </div>
+          <div class="megapol-card-body">
+            <div class="mc-desc">Alternativa de costo reducido para procesos donde los requerimientos de pureza son estándar y los volúmenes de proceso son altos. Buenas tasas de decoloración a menor costo operativo.</div>
+            <div class="mc-spec">
+              <span class="mc-pill">Alto volumen</span>
+              <span class="mc-pill">Costo reducido</span>
+              <span class="mc-pill">Estándar industrial</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Sección 7: CAP vs CAG ─ -->
+      <div class="prose">
+        <h2 id="comparativa"><span class="h2-num">07</span> CAP vs. CAG: tabla comparativa</h2>
+        <p>Para elegir correctamente entre carbón en polvo y carbón granular, esta tabla resume las diferencias clave desde la perspectiva de proceso:</p>
+      </div>
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Característica</th>
+            <th>CAP (Megapol)</th>
+            <th>CAG (Lecho fijo)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Dosis por lote</strong></td>
+            <td>Exacta y ajustable por batch <span class="badge badge-ok">Ventaja</span></td>
+            <td>Fija por diseño del lecho</td>
+          </tr>
+          <tr>
+            <td><strong>Saturación</strong></td>
+            <td>100 % aprovechado siempre <span class="badge badge-ok">Ventaja</span></td>
+            <td>Requiere columnas en serie para saturar completamente</td>
+          </tr>
+          <tr>
+            <td><strong>Cinética</strong></td>
+            <td>Muy rápida (15–60 min) <span class="badge badge-ok">Ventaja</span></td>
+            <td>Lenta (horas a días)</td>
+          </tr>
+          <tr>
+            <td><strong>Reactivación</strong></td>
+            <td>No reutilizable <span class="badge badge-warn">Limitante</span></td>
+            <td>Reactivable <span class="badge badge-ok">Ventaja</span></td>
+          </tr>
+          <tr>
+            <td><strong>Separación</strong></td>
+            <td>Requiere filtro prensa + filtroayuda <span class="badge badge-warn">Requiere equipo</span></td>
+            <td>Integrada en el lecho</td>
+          </tr>
+          <tr>
+            <td><strong>Flexibilidad de proceso</strong></td>
+            <td>Alta: cada lote puede tratarse diferente <span class="badge badge-ok">Ventaja</span></td>
+            <td>Baja: operación continua</td>
+          </tr>
+          <tr>
+            <td><strong>Costo operativo</strong></td>
+            <td>Variable según dosis <span class="badge badge-brand">Según lote</span></td>
+            <td>Fijo con reactivación periódica</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- CTA -->
+      <div class="cta-card">
+        <h3>Calcula tu <em>Receta de Lote</em> ahora</h3>
+        <p>Ingresa el volumen del lote, la dosis de laboratorio y la viscosidad. La calculadora genera automáticamente los kg exactos de Megapol y filtroayuda, el tiempo de agitación y el checklist del operador listo para imprimir.</p>
+        <a href="calculadora-cap-batch.html" class="cta-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+          Abrir Calculadora CAP Batch
+        </a>
+      </div>
+
+      <!-- ─ FAQ ─ -->
+      <div class="prose">
+        <h2 id="faq"><span class="h2-num">08</span> Preguntas frecuentes</h2>
+      </div>
+
+      <div class="faq">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            ¿El CAP tiene más área superficial que el CAG y por eso adsorbe más?
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-a">
+            <p>No. El área superficial de un carbón activado está determinada por sus poros internos, no por el tamaño externo de las partículas. Pulverizar un CAG a malla 325 no aumenta significativamente el área superficial total. Lo que sí aumenta de forma importante es la <strong>velocidad de adsorción (cinética)</strong>, porque se reduce la distancia de difusión dentro de los poros. Por eso el CAP trabaja mucho más rápido que el CAG, aunque la capacidad total (punto de saturación) es prácticamente la misma.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            ¿Puedo aplicar CAP en un líquido muy viscoso como aceite de coco?
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-a">
+            <p>Es posible, pero con condición: el aceite debe calentarse previamente para reducir su viscosidad a valores cercanos a 1 cP. Si el aceite no puede calentarse sin degradarse o generar compuestos indeseables, el CAP puede resultar ineficiente y se deben evaluar otras alternativas. En aceites que sí toleran calentamiento (aceite de girasol, maíz, soya, coco), el proceso batch con CAP y filtroayuda es una solución probada industrialmente.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            ¿Por qué no puedo simplemente usar más filtroayuda para mejorar la claridad del filtrado?
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-a">
+            <p>Una dosis excesiva de filtroayuda es contraproducente: forma una torta demasiado gruesa que <strong>disminuye la tasa de filtración</strong> y eleva el costo del proceso. La dosis óptima de filtroayuda siempre se determina experimentalmente. Para la dosificación junto con CAP, la regla de 1 g filtroayuda/g CAP es el punto de partida validado; puede ajustarse según la concentración de sólidos y las condiciones específicas de cada proceso.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            ¿El CAP puede usarse en tequila o mezcal sin afectar el perfil organoléptico?
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-a">
+            <p>Sí, con la selección correcta del producto. Para destilados de agave, el Megapol 28-4 (grado alimenticio) es la elección recomendada porque minimiza la transferencia de compuestos residuales al producto. La dosis se determina en laboratorio para alcanzar el nivel de decoloración o pureza deseado sin eliminar los compuestos aromáticos que definen el perfil del destilado. La dosis típica oscila entre 0.5 y 2 g/L dependiendo de las características del lote.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            ¿Qué tipo de filtroayuda se recomienda para retener CAP en destilados?
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-a">
+            <p>Para destilados con CAP malla 325 y requerimientos de filtración menores a 3 µm, la <strong>tierra diatomea Filter-Cel</strong> (tamaño medio de poros 2.5 µm) es la recomendación técnica estándar de Carbotecnia, según el ejemplo de aplicación del MIP Filtroayudas. La perlita no ofrece el grado de filtración requerido para partículas tan finas; la celulosa es innecesaria cuando el sílice no representa un problema para el producto.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related articles -->
+      <div class="prose" style="margin-top:48px">
+        <h2 id="relacionados"><span class="h2-num">09</span> Otras calculadoras Carbotecnia</h2>
+      </div>
+      <div class="related-grid">
+        <a href="calculadora-carbon-activado.html" class="related-card" style="text-decoration:none">
+          <div class="rc-tag">Calculadora</div>
+          <div class="rc-title">Carbón activado para aire y gases</div>
+          <div class="rc-desc">Dimensionamiento de lechos fijos para control de VOC, H₂S, olores y vapores en corrientes gaseosas.</div>
+        </a>
+        <a href="calculadora-gac.html" class="related-card" style="text-decoration:none">
+          <div class="rc-tag">Calculadora</div>
+          <div class="rc-title">Carbón activado granular (CAG)</div>
+          <div class="rc-desc">Diseño de columnas de CAG para tratamiento continuo de agua y líquidos industriales.</div>
+        </a>
+        <a href="calculadora-dosificacion.html" class="related-card" style="text-decoration:none">
+          <div class="rc-tag">Calculadora</div>
+          <div class="rc-title">Dosificación de reactivos</div>
+          <div class="rc-desc">Cálculo de dosis de coagulantes, floculantes y otros reactivos en procesos de clarificación.</div>
+        </a>
+      </div>
+
+    </article>
+
+    <!-- ── ASIDE ── -->
+    <aside class="article-aside">
+
+      <!-- TOC -->
+      <div class="toc-widget">
+        <div class="widget-head">
+          <div class="widget-dot"></div>
+          <h4>Contenido del artículo</h4>
+        </div>
+        <ul class="toc-list">
+          <li><a href="#que-es"><span class="toc-n">01</span> ¿Qué es el CAP y cuándo usarlo?</a></li>
+          <li><a href="#cinematica"><span class="toc-n">02</span> Cinética de adsorción</a></li>
+          <li><a href="#calculo"><span class="toc-n">03</span> Cálculo de dosis y filtroayuda</a></li>
+          <li><a href="#proceso"><span class="toc-n">04</span> El proceso batch paso a paso</a></li>
+          <li><a href="#viscosidad"><span class="toc-n">05</span> El factor viscosidad</a></li>
+          <li><a href="#megapol"><span class="toc-n">06</span> Línea Megapol: cuál elegir</a></li>
+          <li><a href="#comparativa"><span class="toc-n">07</span> CAP vs. CAG</a></li>
+          <li><a href="#faq"><span class="toc-n">08</span> Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+
+      <!-- CTA aside -->
+      <div class="aside-cta">
+        <h4>Calculadora gratuita</h4>
+        <p>Obtén los kg exactos de Megapol y filtroayuda para tu proceso en segundos.</p>
+        <a href="calculadora-cap-batch.html">Calcular mi receta de lote →</a>
+      </div>
+
+      <!-- Quick reference -->
+      <div class="aside-quick">
+        <div class="widget-head">
+          <div class="widget-dot"></div>
+          <h4>Referencia rápida</h4>
+        </div>
+        <div class="quick-row">
+          <span class="qr-k">Ratio filtroayuda</span>
+          <span class="qr-v">1:1 g/g</span>
+        </div>
+        <div class="quick-row">
+          <span class="qr-k">Visc. ligera</span>
+          <span class="qr-v">15–60 min</span>
+        </div>
+        <div class="quick-row">
+          <span class="qr-k">Visc. media/alta</span>
+          <span class="qr-v">60 min +</span>
+        </div>
+        <div class="quick-row">
+          <span class="qr-k">Agitación</span>
+          <span class="qr-v">Suave</span>
+        </div>
+        <div class="quick-row">
+          <span class="qr-k">Malla CAP típica</span>
+          <span class="qr-v">&lt; 200–325</span>
+        </div>
+        <div class="quick-row">
+          <span class="qr-k">CAP en gases</span>
+          <span class="qr-v">❌ Nunca</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="page">
+    <strong>Carbotecnia — Tratamiento de agua y líquidos industriales</strong>
+    Información técnica basada en MIP Carbón Activado en Polvo (240524) y MIP Filtroayudas (240603) · Elaborado por ingenieros Carbotecnia · carbotecnia.com
+  </div>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-q.open').forEach(q => {
+    q.classList.remove('open');
+    q.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) {
+    el.classList.add('open');
+    answer.classList.add('open');
+  }
+}
+
+/* Highlight active TOC link on scroll */
+const sections = document.querySelectorAll('[id]');
+const tocLinks = document.querySelectorAll('.toc-list a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(a => a.style.color = '');
+      const active = document.querySelector(`.toc-list a[href="#${entry.target.id}"]`);
+      if (active) active.style.color = 'var(--brand)';
+    }
+  });
+}, {rootMargin: '-20% 0px -70% 0px'});
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
