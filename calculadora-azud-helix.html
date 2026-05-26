@@ -301,6 +301,15 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
           <div class="hint">AA DLP ahorra hasta 80% del agua de retrolavado; requiere compresor.</div>
         </div>
 
+        <div class="field">
+          <label for="az-redundancy">Continuidad de caudal</label>
+          <select class="sel" id="az-redundancy">
+            <option value="no" selected>Sin redundancia — pausa de ~20 s durante retrolavado aceptable</option>
+            <option value="yes">Con redundancia (+1 elemento) — caudal continuo obligatorio</option>
+          </select>
+          <div class="hint">La guía de selección Azud dimensiona en elementos base. Solo añada redundancia si el proceso no puede tolerar una pausa breve durante el retrolavado.</div>
+        </div>
+
         <div class="actions">
           <button class="btn" type="button" id="az-calc">Ver resultado</button>
           <button class="btn sec" type="button" id="az-copy">Copiar especificación</button>
@@ -325,22 +334,22 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
         </div>
         <div class="kpis">
           <div class="kpi" id="kpi-total">
-            <div class="lbl">Filtros totales</div>
+            <div class="lbl">Elementos base (por caudal)</div>
             <div class="val mono" id="r-total">—</div>
             <div class="sub" id="r-total-note">—</div>
           </div>
+          <div class="kpi" id="kpi-qserv">
+            <div class="lbl">Q por elemento (servicio)</div>
+            <div class="val"><span class="mono" id="r-qserv">—</span><small>m³/h</small></div>
+            <div class="sub" id="r-qserv-note">—</div>
+          </div>
           <div class="kpi" id="kpi-qcrit">
-            <div class="lbl">Caudal crítico / filtro</div>
+            <div class="lbl">Q por elemento (pico / retrolavado)</div>
             <div class="val"><span class="mono" id="r-qcrit">—</span><small>m³/h</small></div>
             <div class="sub" id="r-qcrit-gpm">—</div>
           </div>
-          <div class="kpi" id="kpi-qlim">
-            <div class="lbl">Límite por filtro (ficha)</div>
-            <div class="val"><span class="mono" id="r-qlim">—</span><small>m³/h</small></div>
-            <div class="sub" id="r-qlim-note">—</div>
-          </div>
           <div class="kpi" id="kpi-bw">
-            <div class="lbl">Agua / retrolavado</div>
+            <div class="lbl">Agua / ciclo retrolavado</div>
             <div class="val"><span class="mono" id="r-bw">—</span><small>L</small></div>
             <div class="sub" id="r-bw-note">—</div>
           </div>
@@ -356,8 +365,13 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
         <div class="card">
           <h4>Referencia de equipo Azud</h4>
           <div class="big-line" id="r-ref">—</div>
-          <p class="muted" id="r-ref-note">+1 filtro garantiza caudal continuo mientras una estación contralavada.</p>
+          <p class="muted" id="r-ref-note">Referencia preliminar basada en el número de elementos calculados.</p>
         </div>
+      </div>
+
+      <div class="alert info" id="r-redundancy-note" style="display:none">
+        <b>Redundancia operativa (+1 elemento)</b>
+        <span id="r-redundancy-text">—</span>
       </div>
 
       <div id="r-minflow-alert" style="display:none" class="alert err">
@@ -556,12 +570,13 @@ function calc(){
 
   var minFlow=aa?MIN_FLOW.aa:MIN_FLOW.std;
 
+  var redundancy=el('az-redundancy').value==='yes';
   var minFilters=serie.minFilters||1;
   var baseFilters=Math.max(minFilters,Math.ceil(flowM3h/effectiveFlow));
-  var totalFilters=baseFilters+1;
+  var totalFilters=redundancy?baseFilters+1:baseFilters;
   var overMax=totalFilters>serie.maxFilters;
 
-  var critFlow=flowM3h/baseFilters;       // Q por filtro con 1 en retrolavado
+  var critFlow=redundancy?flowM3h/baseFilters:flowM3h/totalFilters; // Q pico: con 1 en retrolavado
   var normFlow=flowM3h/totalFilters;      // Q por filtro en operación normal
   var belowMin=critFlow<minFlow;
 
@@ -573,7 +588,7 @@ function calc(){
 
   return{ready:true,flowM3h,unit,fi,micron,quality,solids,mode,apptype,serie,aa,
     matrixFlow,allowedFlow,effectiveFlow,biofilmFactor,
-    baseFilters,totalFilters,critFlow,normFlow,
+    redundancy,baseFilters,totalFilters,critFlow,normFlow,
     diskShort,diskFull,waterPerFilter,backwashL,capped,overMax,
     belowMin,minFlow};
 }
@@ -590,28 +605,33 @@ function render(){
   if(r.apptype==='biofilm')badgeCls+=' bio';
 
   el('r-title').textContent='Sistema de '+fmtI(r.totalFilters)+' Filtros '+s.name;
-  el('r-sub').textContent=fmtI(r.baseFilters)+' filtros por caudal + 1 filtro de redundancia operativa.'
-    +(r.apptype==='biofilm'?' Factor biofilm/ART +50% aplicado.':'');
+  el('r-sub').textContent=r.redundancy
+    ? fmtI(r.baseFilters)+' elementos base + 1 redundancia operativa = '+fmtI(r.totalFilters)+' total.'+(r.apptype==='biofilm'?' Factor biofilm/ART +50% aplicado.':'')
+    : fmtI(r.baseFilters)+' elementos base (sin redundancia — pausa de ~20 s tolerable en retrolavado).'+(r.apptype==='biofilm'?' Factor biofilm/ART +50% aplicado.':'');
   el('r-badge').textContent=badgeTxt+(r.apptype==='biofilm'?' · ART':'');
   el('r-badge').className=badgeCls;
 
-  /* KPI total */
+  /* KPI base elements */
   el('kpi-total').className='kpi'+(r.overMax?' kpi-warn':'');
-  el('r-total').textContent=fmtI(r.totalFilters);
-  el('r-total-note').textContent=fmtI(r.baseFilters)+' base + 1 redundante'+(r.overMax?' ⚠ Supera máx. serie':'');
+  el('r-total').textContent=fmtI(r.baseFilters)+(r.redundancy?' +1':'');
+  el('r-total-note').textContent=r.redundancy
+    ? fmtI(r.baseFilters)+' proceso + 1 redundancia = '+fmtI(r.totalFilters)+' total'+(r.overMax?' ⚠ Supera máx. serie':'')
+    : fmtI(r.baseFilters)+' elementos (guía Azud base)'+(r.overMax?' ⚠ Supera máx. serie':'');
 
-  /* KPI Q crítico */
+  /* KPI Q servicio (normal operation) */
+  el('r-qserv').textContent=fmt(r.normFlow,1);
+  el('r-qserv-note').textContent=fmt(r.normFlow*4.40287,1)+' GPM · Q ficha: '+fmt(r.allowedFlow,1)+' m³/h'+(r.apptype==='biofilm'?' (ef. ÷1.5)':'');
+
+  /* KPI Q pico (worst case: 1 in backwash) */
   el('kpi-qcrit').className='kpi'+(r.belowMin?' kpi-err':'');
-  el('r-qcrit').textContent=fmt(r.critFlow,1);
-  el('r-qcrit-gpm').textContent=fmt(r.critFlow*4.40287,1)+' GPM · 1 en retrolavado'+(r.belowMin?' ⚠ < mín '+r.minFlow+' m³/h':'');
-
-  /* KPI límite */
-  el('r-qlim').textContent=fmt(r.allowedFlow,1);
-  el('r-qlim-note').textContent=(r.apptype==='biofilm'?'Efectivo: '+fmt(r.effectiveFlow,1)+' m³/h (÷1.5 ART) · ':'')+(r.capped?'Topado 20 m³/h (válvulas 3-vías)':'Ficha técnica '+s.name);
+  el('r-qcrit').textContent=r.redundancy?fmt(r.critFlow,1):'=';
+  el('r-qcrit-gpm').textContent=r.redundancy
+    ? fmt(r.critFlow*4.40287,1)+' GPM · 1 en retrolavado'+(r.belowMin?' ⚠ < mín '+r.minFlow+' m³/h':'')
+    : 'Sin redundancia: el único elemento en retrolavado pausa ~20 s';
 
   /* KPI retrolavado */
   el('r-bw').textContent=fmtI(r.backwashL);
-  el('r-bw-note').textContent=fmtI(r.waterPerFilter)+' L/filtro · '+(r.aa?'AA DLP':'Estándar');
+  el('r-bw-note').textContent=fmtI(r.waterPerFilter)+' L/filtro · '+fmtI(r.totalFilters)+' filtros · '+(r.aa?'AA DLP':'Estándar');
 
   el('r-model').textContent=s.name+' · Disco '+r.diskShort+' '+r.micron+' µm';
   el('r-tech').textContent=r.diskFull+'. Asignación: ≤100 µm → WS; >100 µm → MG.';
@@ -626,7 +646,17 @@ function render(){
   el('r-ref').textContent=refStr;
   el('r-ref-note').textContent=r.overMax
     ?'⚠ '+fmtI(r.totalFilters)+' filtros supera el máximo ('+s.maxFilters+'). Considerar dos baterías en paralelo.'
-    :'+1 filtro garantiza caudal continuo mientras una estación contralavada.';
+    :'Referencia preliminar — confirmar con ingeniería de detalle.';
+
+  /* Nota redundancia */
+  if(r.redundancy){
+    el('r-redundancy-note').style.display='block';
+    el('r-redundancy-text').textContent=
+      'Se incluye 1 elemento de redundancia operativa. Durante el retrolavado de cualquier elemento, los '+fmtI(r.baseFilters)+' restantes cubren el caudal total a '+fmt(r.critFlow,2)+' m³/h/filtro. '
+      +(r.belowMin?'⚠ Este caudal pico es inferior al mínimo de '+r.minFlow+' m³/h — revisar selección.':'Caudal pico dentro del rango aceptable.');
+  }else{
+    el('r-redundancy-note').style.display='none';
+  }
 
   /* Alerta caudal mínimo */
   if(r.belowMin){
@@ -696,8 +726,9 @@ function renderEmpty(){
   el('r-sub').textContent='La calculadora estimará los filtros necesarios al ingresar un caudal válido.';
   el('r-badge').textContent=s.name;el('r-badge').className='badge';
   el('r-total').textContent='—';el('r-total-note').textContent='Sin flujo de entrada';
-  el('r-qcrit').textContent='—';el('r-qcrit-gpm').textContent='Ingrese el caudal para calcular';
-  el('r-qlim').textContent='—';el('r-qlim-note').textContent='Se aplicará según micraje y calidad';
+  el('r-qserv').textContent='—';el('r-qserv-note').textContent='Ingrese el caudal para calcular';
+  el('r-qcrit').textContent='—';el('r-qcrit-gpm').textContent='—';
+  el('r-redundancy-note').style.display='none';
   el('r-bw').textContent='—';el('r-bw-note').textContent='Pendiente';
   el('r-model').textContent='Pendiente de cálculo';
   el('r-tech').textContent='Seleccione grado, calidad del agua y modo de autolimpieza.';
@@ -733,7 +764,7 @@ document.querySelectorAll('.tab').forEach(function(btn){
 });
 
 /* Inputs — recalcular en tiempo real */
-['az-flow','az-unit','az-micron','az-quality','az-solids','az-mode','az-apptype'].forEach(function(id){
+['az-flow','az-unit','az-micron','az-quality','az-solids','az-mode','az-apptype','az-redundancy'].forEach(function(id){
   el(id).addEventListener('input',function(){updateTSSChip();render();});
   el(id).addEventListener('change',function(){updateTSSChip();render();});
 });
@@ -762,13 +793,14 @@ function buildSpec(){
     s.salinityNote?'Salinidad: '+s.salinityNote:'',
     '',
     'CONFIGURACIÓN RECOMENDADA',
-    'Filtros totales: '+fmtI(r.totalFilters)+' ('+fmtI(r.baseFilters)+' por caudal + 1 redundante)',
+    'Continuidad de caudal: '+(r.redundancy?'Con redundancia (+1 elemento) — caudal continuo':'Sin redundancia — pausa ~20 s durante retrolavado aceptable'),
+    'Elementos base (por caudal): '+fmtI(r.baseFilters)+(r.redundancy?' | Elemento redundante: +1 | Total: '+fmtI(r.totalFilters):''),
     r.overMax?'⚠ '+fmtI(r.totalFilters)+' filtros supera el máximo de la serie ('+s.maxFilters+'). Evaluar 2 baterías en paralelo.':'',
     'Q máx. por filtro (ficha · '+r.micron+' µm · '+r.quality+'): '+fmt(r.matrixFlow,1)+' m³/h'+(r.capped?' [topado 20 m³/h — regla válvulas 3-vías]':''),
     r.apptype==='biofilm'?'Q efectivo por filtro (÷1.5 ART): '+fmt(r.effectiveFlow,2)+' m³/h':'',
     'Q mínimo por filtro ('+( r.aa?'AA DLP':'Hidráulico')+'): '+r.minFlow+' m³/h'+(r.belowMin?' ⚠ No cumple — revisar selección':''),
-    'Q crítico por filtro (1 en retrolavado): '+fmt(r.critFlow,2)+' m³/h ('+fmt(r.critFlow*4.40287,1)+' GPM)',
-    'Q normal por filtro: '+fmt(r.normFlow,2)+' m³/h',
+    r.redundancy?'Q pico por filtro (1 en retrolavado): '+fmt(r.critFlow,2)+' m³/h ('+fmt(r.critFlow*4.40287,1)+' GPM)':'',
+    'Q de servicio por filtro: '+fmt(r.normFlow,2)+' m³/h ('+fmt(r.normFlow*4.40287,1)+' GPM)',
     'Disco: '+r.diskShort+' — '+r.diskFull,
     'Agua estimada por ciclo de retrolavado: '+fmtI(r.backwashL)+' L ('+fmtI(r.waterPerFilter)+' L/filtro)',
     'Superficie filtrante total: '+fmtI(r.totalFilters*s.area)+' cm²',
@@ -809,7 +841,7 @@ el('az-reset').addEventListener('click',function(){
   el('az-flow').value='';el('az-unit').value='m3h';
   el('az-micron').value='50';el('az-quality').value='media';
   el('az-solids').value='standard';el('az-mode').value='aa';
-  el('az-apptype').value='standard';
+  el('az-apptype').value='standard';el('az-redundancy').value='no';
   render();markClean();
   el('tss-chip-wrap').innerHTML='';
 });
@@ -823,7 +855,7 @@ function markDirty(){
 function markClean(){
   dirty=false;el('az-pending').style.display='none';el('az-calc').style.boxShadow='';
 }
-['az-flow','az-unit','az-micron','az-quality','az-solids','az-mode','az-apptype'].forEach(function(id){
+['az-flow','az-unit','az-micron','az-quality','az-solids','az-mode','az-apptype','az-redundancy'].forEach(function(id){
   el(id).addEventListener('input',markDirty);
   el(id).addEventListener('change',markDirty);
 });
