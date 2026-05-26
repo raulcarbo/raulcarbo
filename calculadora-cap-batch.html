@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optimizador de Procesos Batch con CAP | Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Variables ────────────────────── */
+:root {
+  --brand:#0d9488;--brand-dark:#052e16;--brand-mid:#0f766e;
+  --brand-light:#f0fdf9;--brand-border:#99f6e4;
+  --ok:#047857;--ok-soft:#d1fae5;--ok-border:#6ee7b7;--ok-dark:#065f46;
+  --warn:#b45309;--warn-soft:#fffbeb;--warn-border:#fcd34d;
+  --danger:#991b1b;--danger-soft:#fef2f2;--danger-border:#fecaca;
+  --accent:#0284c7;--accent-soft:#e0f2fe;--accent-border:#bae6fd;
+  --ink:#0b1424;--steel:#1e3a5f;--muted:#64748b;
+  --line:#d6dde7;--surface:#ffffff;--paper:#f4f6fa;--paper-soft:#eef2f7;
+  --shadow:0 1px 3px rgba(11,20,36,.06),0 8px 24px rgba(11,20,36,.08);
+  --shadow-sm:0 1px 3px rgba(11,20,36,.05);
+  --radius:16px;--radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'Roboto Mono',monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff;color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+/* ── Shell ────────────────────────── */
+.shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* ── Brand bar ────────────────────── */
+.brand-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px;background:var(--surface);
+  border:1px solid var(--line);border-radius:18px;
+  margin-bottom:16px;flex-wrap:wrap;gap:12px;
+  box-shadow:var(--shadow-sm);
+}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,#0d9488,#052e16);
+  color:#fff;display:grid;place-items:center;
+  font-family:var(--font-title);font-weight:800;font-size:13px;
+  box-shadow:0 4px 12px rgba(13,148,136,.28);letter-spacing:-.01em;text-align:center;line-height:1.1;padding:3px;
+}
+.brand-name{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--ink)}
+.brand-name span{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:400}
+.brand-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand-tag b{color:var(--brand-mid);font-weight:600}
+
+/* ── Hero ─────────────────────────── */
+.calc-header{
+  background:linear-gradient(135deg,#052e16 0%,#065f46 50%,#0d9488 100%);
+  border-radius:var(--radius-lg);padding:28px;color:#fff;
+  margin-bottom:16px;position:relative;overflow:hidden;
+}
+.calc-header::after{
+  content:"";position:absolute;inset:auto -80px -120px auto;
+  width:340px;height:340px;border-radius:50%;
+  border:52px solid rgba(255,255,255,.06);pointer-events:none;
+}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:end}
+.calc-header h1{
+  font-size:clamp(20px,2.6vw,34px);line-height:1.05;letter-spacing:-.04em;
+  color:#fff !important;font-weight:800;margin-bottom:10px;
+}
+.calc-header h1 em{font-style:normal;color:rgba(167,243,208,.92)}
+.calc-header p{color:rgba(255,255,255,.72);font-size:13.5px;line-height:1.6;margin:0}
+.hero-note{
+  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);
+  border-radius:16px;padding:18px;backdrop-filter:blur(16px);
+}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:13px;line-height:1.6}
+
+/* ── Formula bar ──────────────────── */
+.formula-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.formula-chip{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:11px 18px;flex:1;min-width:130px;box-shadow:var(--shadow-sm);
+}
+.fc-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.fc-value{font-family:var(--font-num);font-weight:700;font-size:15px;color:var(--brand-mid)}
+
+/* ── Layout ───────────────────────── */
+.layout{display:grid;grid-template-columns:380px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px;min-width:0}
+.results-col{min-width:0;display:grid;gap:14px}
+
+/* ── Panel ────────────────────────── */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.panel-head h2{font-size:15px;color:var(--ink);font-weight:700}
+.step-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.panel-body{padding:20px}
+
+/* ── Section label ────────────────── */
+.sec-label{font-family:var(--font-num);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-mid);margin:18px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--brand-border)}
+.sec-label:first-child{margin-top:0}
+
+/* ── Fields ───────────────────────── */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;color:var(--ink);font-weight:700;font-size:13px;margin-bottom:6px;font-family:var(--font-title)}
+.req{color:var(--brand);font-weight:700}
+.inline-wrap{display:grid;grid-template-columns:1fr auto;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.inline-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,148,136,.13)}
+.inline-wrap input{min-width:0;border:0;outline:0;padding:11px 12px;color:var(--ink);background:transparent;font-weight:600;font-family:var(--font-num);font-size:15px}
+.inline-wrap input::placeholder{color:#B0BEC5;font-weight:400;font-family:var(--font-body);font-size:13px}
+.inline-wrap select.unit-sel{border:0;border-left:1px solid var(--line);background:var(--paper-soft);color:var(--muted);font-size:11px;font-weight:700;font-family:var(--font-body);padding:0 8px;outline:0;cursor:pointer;min-width:80px;-webkit-appearance:auto;appearance:auto}
+select.full-sel{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:var(--surface);color:var(--ink);font-size:13px;font-weight:600;font-family:var(--font-body);outline:0;cursor:pointer}
+select.full-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,148,136,.13)}
+.hint{margin-top:5px;color:var(--muted);font-size:11.5px;line-height:1.4}
+
+/* ── Product cards (Megapol selector) */
+.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:2px}
+.product-btn{
+  display:flex;flex-direction:column;align-items:flex-start;gap:3px;
+  padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;
+  background:var(--surface);cursor:pointer;text-align:left;transition:all .15s;
+}
+.product-btn:hover{border-color:var(--brand);background:var(--brand-light)}
+.product-btn.active{border-color:var(--brand);background:var(--brand-light);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+.product-btn .pb-name{font-family:var(--font-title);font-weight:700;font-size:12.5px;color:var(--ink)}
+.product-btn.active .pb-name{color:var(--brand-mid)}
+.product-btn .pb-sub{font-family:var(--font-num);font-size:9px;color:var(--muted);line-height:1.3}
+
+/* ── Action buttons ───────────────── */
+.actions{display:flex;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:999px;padding:12px 20px;font-weight:800;cursor:pointer;font-family:var(--font-title);font-size:13px;transition:transform .12s,box-shadow .12s;flex:1;text-align:center}
+.btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 8px 20px rgba(13,148,136,.22)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(13,148,136,.30)}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line)}
+.btn-ghost:hover{background:var(--paper-soft)}
+.btn-copy{background:linear-gradient(135deg,#1d4ed8,#1e40af);color:#fff;box-shadow:0 8px 20px rgba(29,78,216,.22)}
+.btn-copy:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(29,78,216,.30)}
+
+/* ── Empty state ──────────────────── */
+.results-empty{text-align:center;padding:60px 24px;color:var(--muted);font-size:14px;line-height:1.6}
+.results-empty svg{margin:0 auto 16px;display:block;opacity:.3;stroke:var(--brand)}
+
+/* ── Hero recipe card ─────────────── */
+.recipe-hero{
+  background:linear-gradient(135deg,#052e16,#065f46);
+  border-radius:var(--radius-lg);padding:24px 28px;color:#fff;
+  position:relative;overflow:hidden;
+}
+.recipe-hero::after{
+  content:"";position:absolute;right:-60px;bottom:-80px;
+  width:240px;height:240px;border-radius:50%;
+  border:40px solid rgba(255,255,255,.07);pointer-events:none;
+}
+.recipe-hero-tag{font-family:var(--font-num);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(167,243,208,.85);margin-bottom:14px;font-weight:600}
+.recipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;position:relative;z-index:1}
+.recipe-cell{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:16px 18px}
+.recipe-cell .rc-label{font-family:var(--font-num);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:6px}
+.recipe-cell .rc-val{font-family:var(--font-num);font-weight:700;font-size:32px;color:#fff;line-height:1;letter-spacing:-.02em}
+.recipe-cell .rc-unit{font-family:var(--font-body);font-size:14px;font-weight:500;color:rgba(255,255,255,.7);margin-left:5px}
+.recipe-cell .rc-name{font-family:var(--font-title);font-weight:700;font-size:13px;color:rgba(167,243,208,.9);margin-top:5px}
+.recipe-cell .rc-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;line-height:1.4}
+.recipe-ratio{margin-top:12px;position:relative;z-index:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12px;color:rgba(255,255,255,.7);line-height:1.5}
+.recipe-ratio strong{color:rgba(167,243,208,.9);font-family:var(--font-num)}
+
+/* ── Operation params card ─────────── */
+.op-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.op-cell{background:var(--surface);padding:14px 16px}
+.op-cell .oc-label{font-family:var(--font-num);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.op-cell .oc-val{font-family:var(--font-num);font-weight:700;font-size:17px;color:var(--brand-mid);line-height:1.1;letter-spacing:-.01em}
+.op-cell .oc-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+
+/* ── Product spec strip ───────────── */
+.spec-strip{background:var(--brand-light);border:1px solid var(--brand-border);border-left:3px solid var(--brand);border-radius:var(--radius);padding:14px 18px;margin-bottom:14px}
+.spec-strip-tag{font-family:var(--font-num);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-mid);margin-bottom:6px;font-weight:600}
+.spec-strip-name{font-family:var(--font-title);font-weight:700;font-size:16px;color:var(--ink);margin-bottom:4px}
+.spec-strip-desc{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* ── Notices ──────────────────────── */
+.notice{border-radius:14px;padding:14px 16px;border:1px solid;font-size:13px;line-height:1.55;margin-bottom:10px}
+.notice:last-child{margin-bottom:0}
+.notice b{display:block;font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.notice.warn{background:var(--warn-soft);border-color:var(--warn-border);color:#7c4a08}
+.notice.warn b{color:var(--warn)}
+.notice.danger{background:var(--danger-soft);border-color:var(--danger-border);color:#7f1d1d}
+.notice.danger b{color:var(--danger)}
+.notice.info{background:var(--accent-soft);border-color:var(--accent-border);color:#1e3a5f}
+.notice.info b{color:var(--accent)}
+.notice.teal{background:var(--brand-light);border-color:var(--brand-border);color:#134e4a}
+.notice.teal b{color:var(--brand-mid)}
+
+/* ── Checklist ────────────────────── */
+.checklist{list-style:none;padding:0;margin:0}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--line);font-size:13px;color:var(--ink);line-height:1.5}
+.checklist li:last-child{border-bottom:none;padding-bottom:0}
+.checklist li:first-child{padding-top:0}
+.cl-num{min-width:22px;height:22px;background:var(--brand);color:#fff;border-radius:50%;display:grid;place-items:center;font-family:var(--font-title);font-weight:800;font-size:11px;flex-shrink:0;margin-top:1px}
+.cl-text b{display:block;font-weight:700;font-size:13px;margin-bottom:1px;color:var(--ink)}
+.cl-text span{color:var(--muted);font-size:12px}
+
+/* ── Tags ─────────────────────────── */
+.tag{display:inline-block;font-family:var(--font-num);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.tag-ok{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok-border)}
+.tag-warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-border)}
+.tag-err{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border)}
+
+/* ── Section title ─────────────────── */
+.section-title{font-family:var(--font-title);font-weight:600;font-size:14.5px;color:var(--ink);margin:4px 0 10px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:6px;height:6px;background:var(--brand);border-radius:50%;flex-shrink:0}
+
+/* ── Copy toast ───────────────────── */
+#copy-toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#052e16;color:#fff;padding:12px 24px;border-radius:999px;
+  font-family:var(--font-title);font-size:13px;font-weight:600;
+  opacity:0;transition:all .3s;pointer-events:none;z-index:999;
+  box-shadow:0 8px 24px rgba(5,46,22,.3);
+}
+#copy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Disclaimer ───────────────────── */
+.disclaimer{display:flex;gap:12px;align-items:flex-start;background:#fffbeb;border:1px solid #fcd34d;border-radius:14px;padding:16px 18px;margin-top:24px;font-size:12.5px;line-height:1.65;color:#78350f}
+.disclaimer strong{display:block;margin-bottom:4px;font-family:var(--font-title);font-size:12px;letter-spacing:.04em}
+footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);font-family:var(--font-num);letter-spacing:.06em;text-transform:uppercase}
+
+/* ── Responsive ───────────────────── */
+@media(max-width:1060px){
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-note{display:none}
+  .op-grid{grid-template-columns:repeat(2,1fr)}
+  .recipe-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .shell{width:calc(100% - 20px);padding-top:16px}
+  .recipe-grid{grid-template-columns:1fr}
+  .op-grid{grid-template-columns:1fr}
+  .actions{flex-direction:column}
+  .product-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:400px){
+  .product-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Brand bar -->
+  <div class="brand-bar">
+    <div class="brand-mark">
+      <div class="brand-icon">CAP</div>
+      <div class="brand-name">
+        Carbotecnia
+        <span>Línea Megapol · Tratamiento de líquidos en batch</span>
+      </div>
+    </div>
+    <div class="brand-tag">Optimizador Batch CAP · <b>v 1.0</b></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="calc-header">
+    <div class="hero-grid">
+      <div>
+        <h1>Optimizador de Procesos Batch con <em>Carbón Activado en Polvo (CAP)</em></h1>
+        <p>Profesionaliza la dosificación de carbón en polvo (línea Megapol) y tierras diatomeas (filtroayuda) en tanques de agitación. Aplicable a destilados, vinos, aceites, jarabes y otros líquidos industriales. Lógica basada en MIP Carbotecnia.</p>
+      </div>
+      <div class="hero-note">
+        <b>Línea Megapol Carbotecnia</b>
+        <span>Megapol C · Megapol 28-4 · Megapol M · Megapol E<br><br>Ratio de filtroayuda 1:1 (g filtroayuda / g CAP) — regla MIP Carbotecnia para retener polvo fino malla 325 en filtro prensa.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula chips -->
+  <div class="formula-bar">
+    <div class="formula-chip">
+      <div class="fc-label">Masa de CAP (Megapol)</div>
+      <div class="fc-value" id="chip-cap">— kg</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Masa de Filtroayuda</div>
+      <div class="fc-value" id="chip-fa">— kg</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Volumen del lote (L)</div>
+      <div class="fc-value" id="chip-vol">— L</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Tiempo de agitación</div>
+      <div class="fc-value" id="chip-time">—</div>
+    </div>
+  </div>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- ── INPUT PANEL ── -->
+    <div class="input-panel">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Parámetros del lote</h2>
+          <span class="step-tag">4 entradas requeridas</span>
+        </div>
+        <div class="panel-body">
+
+          <!-- Volumen -->
+          <div class="sec-label">Volumen del lote</div>
+          <div class="field">
+            <label>Volumen <span class="req">*</span></label>
+            <div class="inline-wrap" id="wrap-vol">
+              <input type="number" id="inp-vol" placeholder="ej. 1000" min="0.001" step="any">
+              <select class="unit-sel" id="sel-vol-unit">
+                <option value="L">Litros</option>
+                <option value="gal">Galones</option>
+                <option value="m3">m³</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dosis CAP -->
+          <div class="sec-label">Dosis de CAP (laboratorio)</div>
+          <div class="field">
+            <label>Dosis determinada en laboratorio <span class="req">*</span></label>
+            <div class="inline-wrap" id="wrap-dosis">
+              <input type="number" id="inp-dosis" placeholder="ej. 1.5" min="0" step="any">
+              <select class="unit-sel" id="sel-dosis-unit">
+                <option value="gL">g/L</option>
+                <option value="mgL">mg/L</option>
+                <option value="kgm3">kg/m³</option>
+                <option value="pct">%</option>
+              </select>
+            </div>
+            <div class="hint">Dosis obtenida en pruebas de laboratorio con el líquido real.</div>
+          </div>
+
+          <!-- Viscosidad -->
+          <div class="sec-label">Viscosidad del líquido</div>
+          <div class="field">
+            <label>Categoría de viscosidad <span class="req">*</span></label>
+            <select class="full-sel" id="sel-visc">
+              <option value="">— Seleccionar —</option>
+              <option value="light">Ligera (~1 cP) — agua, tequila, destilados</option>
+              <option value="medium">Media — vinos, mostos dulces</option>
+              <option value="high">Alta — aceites, glicerina, jarabes</option>
+            </select>
+          </div>
+
+          <!-- Producto Megapol -->
+          <div class="sec-label">Producto a utilizar</div>
+          <div class="field">
+            <label>Línea Megapol <span class="req">*</span></label>
+            <div class="product-grid">
+              <button class="product-btn" data-prod="C" onclick="selectProduct('C')">
+                <span class="pb-name">Megapol C</span>
+                <span class="pb-sub">Decoloración estándar</span>
+              </button>
+              <button class="product-btn" data-prod="284" onclick="selectProduct('284')">
+                <span class="pb-name">Megapol 28-4</span>
+                <span class="pb-sub">Alta pureza / Alimentos</span>
+              </button>
+              <button class="product-btn" data-prod="M" onclick="selectProduct('M')">
+                <span class="pb-name">Megapol M</span>
+                <span class="pb-sub">Moléculas grandes / Proteínas</span>
+              </button>
+              <button class="product-btn" data-prod="E" onclick="selectProduct('E')">
+                <span class="pb-name">Megapol E</span>
+                <span class="pb-sub">Decoloración económica</span>
+              </button>
+            </div>
+            <input type="hidden" id="inp-prod" value="">
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" onclick="calculate()">Calcular receta</button>
+            <button class="btn btn-ghost" onclick="resetForm()">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /input-panel -->
+
+    <!-- ── RESULTS PANEL ── -->
+    <div class="results-col" id="results-col">
+
+      <!-- Empty state -->
+      <div id="empty-state" class="panel">
+        <div class="results-empty">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+          Ingresa el volumen del lote, la dosis de laboratorio,<br>la viscosidad y el producto Megapol para<br>calcular la receta del proceso batch.
+        </div>
+      </div>
+
+      <!-- Results (hidden until calculate) -->
+      <div id="results-wrap" style="display:none;display:none;grid-gap:14px;display:grid">
+
+        <!-- 1. Receta del lote (hero) -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2>La Receta del Lote</h2>
+            <span class="step-tag">Resultados principales</span>
+          </div>
+          <div class="panel-body">
+            <div class="recipe-hero">
+              <div class="recipe-hero-tag">Dosificación exacta para el tanque de agitación</div>
+              <div class="recipe-grid">
+                <div class="recipe-cell">
+                  <div class="rc-label">Carbón Activado en Polvo</div>
+                  <div><span class="rc-val" id="res-cap-kg">0.00</span><span class="rc-unit">kg</span></div>
+                  <div class="rc-name" id="res-cap-prod">Megapol —</div>
+                  <div class="rc-sub" id="res-cap-sub">Verter directamente al tanque con el líquido</div>
+                </div>
+                <div class="recipe-cell">
+                  <div class="rc-label">Filtroayuda (Tierra Diatomea)</div>
+                  <div><span class="rc-val" id="res-fa-kg">0.00</span><span class="rc-unit">kg</span></div>
+                  <div class="rc-name">Ratio 1:1 — MIP Carbotecnia</div>
+                  <div class="rc-sub">Dosificar junto con la suspensión de CAP</div>
+                </div>
+              </div>
+              <div class="recipe-ratio">
+                <strong>Regla de oro:</strong> Se usa <strong>1 g de filtroayuda por cada 1 g de CAP</strong> dosificado. El CAP contiene partículas menores a malla 325 (44 µm) que pasarían el septum sin el filtroayuda — la tierra diatomea forma los puentes necesarios en la precapa del filtro prensa.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Parámetros de operación -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Parámetros de Operación</h2>
+            <span class="step-tag">Condiciones del proceso</span>
+          </div>
+          <div class="panel-body">
+            <div class="op-grid">
+              <div class="op-cell">
+                <div class="oc-label">Tiempo de mezclado</div>
+                <div class="oc-val" id="res-tiempo">—</div>
+                <div class="oc-sub" id="res-tiempo-sub">—</div>
+              </div>
+              <div class="op-cell">
+                <div class="oc-label">Tipo de agitación</div>
+                <div class="oc-val">Suave</div>
+                <div class="oc-sub">Evitar agitación violenta durante todo el proceso</div>
+              </div>
+              <div class="op-cell">
+                <div class="oc-label">Vaciado al filtro</div>
+                <div class="oc-val">Agitación activa</div>
+                <div class="oc-sub">Mantener agitación suave durante el vaciado al filtro prensa</div>
+              </div>
+            </div>
+
+            <!-- Alertas dinámicas -->
+            <div id="alert-agitacion" class="notice warn" style="display:none">
+              <b>Alerta — Agitación</b>
+              Debe evitarse la agitación excesivamente rápida. Una agitación violenta puede hacer que las impurezas se oxiden o fraccionen, cambiando su respuesta a la filtración y haciéndola más difícil.
+            </div>
+            <div id="alert-viscosidad" class="notice danger" style="display:none">
+              <b>Alerta — Viscosidad alta</b>
+              El CAP es ineficiente en líquidos con viscosidad sustancialmente superior a 1 cP, ya que la difusión en los poros se vuelve extremadamente lenta. Si el líquido no se degrada, es <strong>OBLIGATORIO calentarlo antes de añadir el carbón</strong> para disminuir su viscosidad a valores cercanos a 1 cP.
+            </div>
+            <div class="notice teal">
+              <b>Recordatorio — Aplicación exclusiva en líquidos</b>
+              Un carbón activado en polvo (CAP) <strong>NUNCA se aplica para el tratamiento de gases</strong>. La línea Megapol está diseñada exclusivamente para procesos batch en fase líquida.
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Especificación del producto -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Especificación del Producto</h2>
+            <span class="step-tag">Ficha técnica Megapol</span>
+          </div>
+          <div class="panel-body">
+            <div class="spec-strip" id="spec-strip">
+              <div class="spec-strip-tag">Carbón activado en polvo seleccionado</div>
+              <div class="spec-strip-name" id="spec-name">—</div>
+              <div class="spec-strip-desc" id="spec-desc">—</div>
+            </div>
+            <div class="notice info">
+              <b>Fundamento técnico — Cinética de adsorción</b>
+              El CAP trabaja más rápido que el carbón granular porque reduce la distancia de difusión interna. Un carbón malla 325 (44 µm) adsorbe casi <strong>3 veces más rápido</strong> que uno malla 200 (74 µm). El paso limitante es la difusión de los adsorbatos dentro de los poros — no el área superficial, que permanece prácticamente constante al pulverizar.
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Checklist del operador -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Checklist del Operador</h2>
+            <span class="step-tag">Instrucciones paso a paso</span>
+          </div>
+          <div class="panel-body">
+            <ul class="checklist" id="checklist-body">
+              <!-- generado por JS -->
+            </ul>
+            <div class="actions" style="margin-top:20px">
+              <button class="btn btn-copy" onclick="copyRecipe()">Copiar Receta de Lote</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div><strong>Uso orientativo — Verificar con laboratorio</strong>
+          Los resultados de esta calculadora se basan en la metodología del MIP Carbotecnia y datos técnicos de la línea Megapol. La dosis definitiva debe determinarse mediante pruebas de laboratorio con el líquido real del proceso. Las condiciones específicas de cada lote pueden requerir ajustes. Carbotecnia · carbotecnia.com</div>
+        </div>
+
+      </div><!-- /results-wrap -->
+    </div><!-- /results-col -->
+  </div><!-- /layout -->
+
+  <footer>
+    <span>Carbotecnia · Línea Megapol · Carbón Activado en Polvo</span>
+    <span>MIP CAP v240524 · MIP Filtroayudas v240603</span>
+  </footer>
+</div>
+
+<div id="copy-toast">Receta copiada al portapapeles</div>
+
+<script>
+/* ── Product catalogue ──────────────── */
+const PRODUCTS = {
+  C: {
+    name: 'Megapol C',
+    full: 'Megapol C — Decoloración estándar',
+    desc: 'Activado con ácido fosfórico. Excelente tasa de filtración y capacidad de decoloración en destilados, vinos y líquidos de viscosidad ligera a media. Recomendado para aplicaciones industriales de propósito general.',
+  },
+  '284': {
+    name: 'Megapol 28-4',
+    full: 'Megapol 28-4 — Alta pureza / Alimentos',
+    desc: 'Grado alimenticio con lavados de alta eficiencia para minimizar compuestos residuales solubles. Ideal cuando el CAP se aplica a productos de consumo humano o cuando la pureza del efluente es crítica (vinos finos, jarabes, bebidas, alimentos). Bajo impacto en pH.',
+  },
+  M: {
+    name: 'Megapol M',
+    full: 'Megapol M — Moléculas grandes / Proteínas',
+    desc: 'Formulado con poros predominantemente mesoporos y macroporos para retener moléculas de alto peso molecular, proteínas y coloides. Óptimo para aceites, mieles y líquidos con contaminantes de gran tamaño molecular que no ingresan a microporos.',
+  },
+  E: {
+    name: 'Megapol E',
+    full: 'Megapol E — Decoloración económica',
+    desc: 'Alternativa de costo reducido para aplicaciones donde los requerimientos de pureza son estándar y el volumen de proceso es alto. Mantiene buenas tasas de decoloración con un costo operativo menor.',
+  },
+};
+
+let selectedProduct = '';
+
+function selectProduct(code) {
+  selectedProduct = code;
+  document.getElementById('inp-prod').value = code;
+  document.querySelectorAll('.product-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.prod === code);
+  });
+}
+
+/* ── Unit conversions → Litros ─────── */
+function toLitros(val, unit) {
+  if (unit === 'L')   return val;
+  if (unit === 'gal') return val * 3.78541;
+  if (unit === 'm3')  return val * 1000;
+  return val;
+}
+
+/* ── Unit conversions → g/L ─────────── */
+function toGramsPerLiter(val, unit) {
+  if (unit === 'gL')   return val;
+  if (unit === 'mgL')  return val / 1000;
+  if (unit === 'kgm3') return val;        // kg/m³ = g/L
+  if (unit === 'pct')  return val * 10;   // % w/v ≈ g/100mL = 10 g/L
+  return val;
+}
+
+/* ── Main calculation ──────────────── */
+function calculate() {
+  const volRaw   = parseFloat(document.getElementById('inp-vol').value);
+  const dosiRaw  = parseFloat(document.getElementById('inp-dosis').value);
+  const volUnit  = document.getElementById('sel-vol-unit').value;
+  const dosUnit  = document.getElementById('sel-dosis-unit').value;
+  const visc     = document.getElementById('sel-visc').value;
+  const prod     = selectedProduct;
+
+  // Validate
+  let valid = true;
+  if (!volRaw || volRaw <= 0) {
+    document.getElementById('wrap-vol').style.borderColor = 'var(--danger)';
+    valid = false;
+  } else {
+    document.getElementById('wrap-vol').style.borderColor = '';
+  }
+  if (!dosiRaw || dosiRaw <= 0) {
+    document.getElementById('wrap-dosis').style.borderColor = 'var(--danger)';
+    valid = false;
+  } else {
+    document.getElementById('wrap-dosis').style.borderColor = '';
+  }
+  if (!visc) { valid = false; }
+  if (!prod) { valid = false; }
+
+  if (!valid) {
+    alert('Por favor completa todos los campos requeridos.');
+    return;
+  }
+
+  // Convert units
+  const volL    = toLitros(volRaw, volUnit);
+  const dosGperL = toGramsPerLiter(dosiRaw, dosUnit);
+
+  // Core equations (MIP Carbotecnia)
+  const masaCAP_kg = (volL * dosGperL) / 1000;  // Masa CAP (kg) = Vol(L) × Dosis(g/L) / 1000
+  const masaFA_kg  = masaCAP_kg;                  // Ratio 1:1
+
+  // Time based on viscosity
+  let tiempoLabel, tiempoSub, showViscAlert = false, calentamiento = false;
+  if (visc === 'light') {
+    tiempoLabel = '15 – 60 min';
+    tiempoSub   = '15 min con agitación perfecta; ~60 min industrial para compensar ineficiencias';
+  } else if (visc === 'medium') {
+    tiempoLabel = '60 min mínimo';
+    tiempoSub   = 'Viscosidad media: asegurar agitación homogénea durante todo el ciclo';
+    calentamiento = true;
+  } else {
+    tiempoLabel = '60+ min + calentamiento';
+    tiempoSub   = 'OBLIGATORIO calentar antes de añadir el CAP para reducir viscosidad';
+    showViscAlert = true;
+    calentamiento = true;
+  }
+
+  // Update chip bar
+  document.getElementById('chip-cap').textContent  = masaCAP_kg.toFixed(3) + ' kg';
+  document.getElementById('chip-fa').textContent   = masaFA_kg.toFixed(3) + ' kg';
+  document.getElementById('chip-vol').textContent  = volL.toFixed(1) + ' L';
+  document.getElementById('chip-time').textContent = tiempoLabel;
+
+  // Recipe hero
+  document.getElementById('res-cap-kg').textContent   = masaCAP_kg.toFixed(3);
+  document.getElementById('res-fa-kg').textContent    = masaFA_kg.toFixed(3);
+  document.getElementById('res-cap-prod').textContent = PRODUCTS[prod].name;
+
+  // Operation params
+  document.getElementById('res-tiempo').textContent     = tiempoLabel;
+  document.getElementById('res-tiempo-sub').textContent = tiempoSub;
+
+  // Alerts
+  document.getElementById('alert-agitacion').style.display  = 'block';
+  document.getElementById('alert-viscosidad').style.display = showViscAlert ? 'block' : 'none';
+
+  // Spec strip
+  document.getElementById('spec-name').textContent = PRODUCTS[prod].full;
+  document.getElementById('spec-desc').textContent = PRODUCTS[prod].desc;
+
+  // Checklist
+  buildChecklist(masaCAP_kg, masaFA_kg, PRODUCTS[prod].name, tiempoLabel, visc, calentamiento);
+
+  // Show results
+  document.getElementById('empty-state').style.display   = 'none';
+  document.getElementById('results-wrap').style.display  = 'grid';
+}
+
+function buildChecklist(capKg, faKg, prodName, tiempo, visc, calentamiento) {
+  const steps = [];
+  let n = 1;
+
+  steps.push({
+    title: `Llenar el tanque de agitación`,
+    detail: `Introducir el volumen completo del lote al tanque. Verificar que el sistema de agitación esté operativo.`
+  });
+
+  if (calentamiento) {
+    steps.push({
+      title: `Calentar el líquido${visc === 'high' ? ' (OBLIGATORIO)' : ''}`,
+      detail: `Elevar la temperatura para reducir la viscosidad a valores cercanos a 1 cP. Para líquidos de viscosidad alta (aceites, jarabes) esto es imprescindible; el CAP es ineficiente en líquidos con viscosidad muy superior a 1 cP.`
+    });
+  }
+
+  steps.push({
+    title: `Pesar y preparar los materiales`,
+    detail: `Pesar ${capKg.toFixed(3)} kg de ${prodName} (CAP) y ${faKg.toFixed(3)} kg de filtroayuda (tierra diatomea). Mantener separados hasta el momento de dosificación.`
+  });
+
+  steps.push({
+    title: `Añadir CAP y Filtroayuda al tanque`,
+    detail: `Verter los ${capKg.toFixed(3)} kg de ${prodName} al líquido en agitación. Añadir simultáneamente los ${faKg.toFixed(3)} kg de filtroayuda. Iniciar con agitación SUAVE.`
+  });
+
+  steps.push({
+    title: `Agitar suavemente durante ${tiempo}`,
+    detail: `Mantener agitación suave y constante. EVITAR agitación violenta — puede oxidar las impurezas y dificultar la filtración posterior. En equipo industrial se recomienda ~1 hora para compensar ineficiencias de mezclado.`
+  });
+
+  steps.push({
+    title: `Enviar al filtro prensa con agitación activa`,
+    detail: `Mantener la agitación durante el vaciado para conservar la suspensión homogénea. Los ${faKg.toFixed(3)} kg de filtroayuda formarán la precapa sobre el septum, reteniendo las partículas finas de CAP (malla 325). Verificar claridad del efluente.`
+  });
+
+  steps.push({
+    title: `Verificar calidad del filtrado`,
+    detail: `Comprobar visualmente la claridad del producto. Si el filtrado presenta turbidez, revisar la integridad de la precapa y la concentración de filtroayuda.`
+  });
+
+  const ul = document.getElementById('checklist-body');
+  ul.innerHTML = steps.map((s, i) => `
+    <li>
+      <div class="cl-num">${i + 1}</div>
+      <div class="cl-text">
+        <b>${s.title}</b>
+        <span>${s.detail}</span>
+      </div>
+    </li>
+  `).join('');
+}
+
+/* ── Copy recipe ───────────────────── */
+function copyRecipe() {
+  const cap   = document.getElementById('res-cap-kg').textContent;
+  const fa    = document.getElementById('res-fa-kg').textContent;
+  const prod  = document.getElementById('res-cap-prod').textContent;
+  const volL  = document.getElementById('chip-vol').textContent;
+  const tiem  = document.getElementById('chip-time').textContent;
+
+  const items = document.querySelectorAll('#checklist-body li');
+  let steps = '';
+  items.forEach((li, i) => {
+    const title  = li.querySelector('b').textContent;
+    const detail = li.querySelector('span').textContent;
+    steps += `${i + 1}. ${title}\n   ${detail}\n\n`;
+  });
+
+  const text =
+`RECETA DE LOTE — PROCESO BATCH CAP (Carbotecnia)
+================================================
+Volumen del lote : ${volL}
+Producto CAP     : ${prod}
+Masa de CAP      : ${cap} kg
+Masa Filtroayuda : ${fa} kg  (ratio 1:1 g/g)
+Tiempo agitación : ${tiem}
+
+CHECKLIST DEL OPERADOR
+----------------------
+${steps}
+NOTAS IMPORTANTES
+- Evitar agitación violenta (oxida impurezas y dificulta filtración)
+- Mantener agitación suave durante vaciado al filtro prensa
+- El CAP NUNCA se aplica para tratamiento de gases
+- Generado por Optimizador Batch CAP · Carbotecnia`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const toast = document.getElementById('copy-toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2800);
+  }).catch(() => {
+    prompt('Copia el texto:', text);
+  });
+}
+
+/* ── Reset ─────────────────────────── */
+function resetForm() {
+  document.getElementById('inp-vol').value   = '';
+  document.getElementById('inp-dosis').value = '';
+  document.getElementById('sel-visc').value  = '';
+  selectedProduct = '';
+  document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('inp-prod').value  = '';
+  ['chip-cap','chip-fa','chip-vol','chip-time'].forEach(id => {
+    document.getElementById(id).textContent = id === 'chip-time' ? '—' : '— kg';
+  });
+  document.getElementById('chip-vol').textContent = '— L';
+  document.getElementById('empty-state').style.display   = 'block';
+  document.getElementById('results-wrap').style.display  = 'none';
+  document.getElementById('wrap-vol').style.borderColor  = '';
+  document.getElementById('wrap-dosis').style.borderColor = '';
+}
+</script>
+</body>
+</html>
