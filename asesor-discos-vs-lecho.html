@@ -469,10 +469,11 @@ button,input,select{font:inherit}
           <label for="adv-objective">Objetivo de la filtración</label>
           <select class="adv-select" id="adv-objective">
             <option value="physical">Solo retener partículas físicas</option>
-            <option value="prefilter">Prefiltrar un tren de tratamiento (lecho profundo, membranas OI)</option>
+            <option value="prefilter_bed">Proteger un lecho profundo o medio granular aguas abajo</option>
+            <option value="prefilter_ro">Prefiltrar directamente antes de membranas de ósmosis inversa</option>
             <option value="physchem">Filtrar y causar cambios fisicoquímicos en el agua</option>
           </select>
-          <div class="adv-hint">Incluye proteger medios filtrantes, reducir SDI, adsorber cloro, hierro, manganeso u olor.</div>
+          <div class="adv-hint">Incluye proteger medios filtrantes, reducir SDI antes de OI, adsorber cloro, hierro, manganeso u olor.</div>
         </div>
 
         <div class="adv-field">
@@ -577,7 +578,8 @@ button,input,select{font:inherit}
 var LABELS = {
   objective:{
     physical:'Solo retener partículas físicas',
-    prefilter:'Prefiltrar un tren de tratamiento (lecho profundo, membranas OI)',
+    prefilter_bed:'Proteger un lecho profundo o medio granular aguas abajo',
+    prefilter_ro:'Prefiltrar directamente antes de membranas de ósmosis inversa',
     physchem:'Filtrar y causar cambios fisicoquímicos en el agua'
   },
   particle:{
@@ -635,7 +637,8 @@ function analyze(){
   var highFlow = i.flowGpm>80;
   var siteLimited = i.site==='limited';
   var hasPhyschem = i.objective==='physchem';
-  var isPrefilter = i.objective==='prefilter';
+  var isPrefilterBed = i.objective==='prefilter_bed';
+  var isPrefilterRO = i.objective==='prefilter_ro';
   var hasSticky = i.solids==='sticky';
   var hasDeformable = i.solids==='deformable';
   var validDiscRange = i.particle==='5to400';
@@ -670,25 +673,48 @@ function analyze(){
     return result;
   }
 
-  // Case 3: Pre-filtration objective → discs as protection
-  if(isPrefilter){
+  // Case 3a: Pre-filter to protect deep bed media
+  if(isPrefilterBed){
     result.winner = 'discs';
     result.cleaning = hasDeformable ? 'aa' : 'standard';
-    result.type = result.cleaning==='aa' ? 'Discos Azud asistidos por aire (prefiltro)' : 'Discos Azud convencionales (prefiltro)';
+    result.type = result.cleaning==='aa' ? 'Discos Azud asistidos por aire (prefiltro de lecho)' : 'Discos Azud convencionales (prefiltro de lecho)';
     result.headline = result.cleaning==='aa'
-      ? 'Recomendación: discos Azud asistidos por aire como prefiltro'
-      : 'Recomendación: discos Azud convencionales como prefiltro';
-    result.summary = 'Los filtros de discos son particularmente útiles como protección de medios filtrantes en lechos profundos y como prefiltración antes de membranas de ósmosis inversa. Reducen la frecuencia de retrolavado del lecho aguas abajo y protegen las membranas de ensuciamiento prematuro.';
-    result.technical.push('Los discos retienen partículas entre 5 y 400 micras y reducen la carga de sólidos que llega al lecho profundo o a las membranas, extendiendo su vida útil y ciclos de limpieza.');
-    result.technical.push('En prefiltración para ósmosis inversa, el objetivo es reducir el SDI (Silt Density Index) a valores menores a 5 (idealmente < 3) para evitar ensuciamiento prematuro de membranas.');
+      ? 'Recomendación: discos Azud asistidos por aire antes del lecho profundo'
+      : 'Recomendación: discos Azud convencionales antes del lecho profundo';
+    result.summary = 'Los discos filtran las partículas gruesas antes de que lleguen al lecho profundo o medio granular, reduciendo la frecuencia con la que el lecho necesita retrolavarse y extendiendo su vida útil.';
+    result.technical.push('El lecho profundo colmata y pierde eficiencia cuando recibe agua con alta carga de sólidos. Los discos actúan como primera barrera mecánica, dejando pasar al lecho solo lo que los discos no pueden retener.');
+    result.technical.push('Los discos retienen partículas entre 5 y 400 µm; el lecho profundo gestiona la fracción más fina y realiza cualquier función fisicoquímica adicional (adsorción, catálisis, ajuste de pH) para la que fue diseñado.');
     result.technical.push(result.cleaning==='aa'
-      ? 'La limpieza asistida por aire (10 L/elemento por retrolavado) es preferible cuando el agua contiene algas, flóculos o sólidos deformables que se adhieren a los discos durante la filtración.'
-      : 'La limpieza hidráulica convencional (50–60 L/elemento por retrolavado) es adecuada para arenas y polvos inorgánicos no pegajosos.');
-    result.technical.push('Los discos WS (polietileno) se recomiendan frente a los MG (polipropileno) cuando la carga de sólidos es alta o los sólidos son algo adherentes: tienen mayor capacidad de retención y menor tendencia a que los discos se peguen entre sí.');
-    result.business.push('Al actuar como barrera previa, los discos reducen la frecuencia de retrolavado del lecho profundo, ahorrando agua y tiempo de operación del sistema completo.');
-    result.business.push('Su retrolavado automatizado y compacto facilita la integración en trenes de tratamiento existentes sin grandes obras civiles.');
+      ? 'La limpieza asistida por aire (10 L/elemento) es recomendable cuando el agua contiene algas, flóculos o sólidos algo adherentes que podrían pegarse a los discos.'
+      : 'La limpieza hidráulica convencional (50–60 L/elemento) es suficiente para arenas y polvos inorgánicos.');
+    result.technical.push('Para TSS alto o sólidos algo adherentes, los discos tipo WS (polietileno) ofrecen mayor capacidad de retención y se pegan menos entre sí que los discos MG (polipropileno).');
+    result.business.push('Al proteger el lecho, los discos reducen la frecuencia de retrolavado del medio granular y su consumo de agua, estabilizando la operación del tren completo.');
+    result.business.push('El retrolavado de los discos es automático, compacto y usa muy poca agua, por lo que no añade una carga operativa significativa al proceso.');
     if(siteLimited){
-      result.capex = 'Los discos Azud, además de proteger el lecho, usan radicalmente menos agua de retrolavado que el lecho mismo, lo que es clave cuando el sitio tiene restricción de agua.';
+      result.capex = 'Con restricción de agua: los discos usan radicalmente menos agua de retrolavado que el propio lecho, lo que es clave cuando el sitio tiene agua limitada.';
+    }
+    return result;
+  }
+
+  // Case 3b: Pre-filter directly before RO membranes
+  if(isPrefilterRO){
+    result.winner = 'discs';
+    result.cleaning = hasDeformable ? 'aa' : 'standard';
+    result.type = result.cleaning==='aa' ? 'Discos Azud asistidos por aire (prefiltro OI)' : 'Discos Azud convencionales (prefiltro OI)';
+    result.headline = result.cleaning==='aa'
+      ? 'Recomendación: discos Azud asistidos por aire antes de ósmosis inversa'
+      : 'Recomendación: discos Azud convencionales antes de ósmosis inversa';
+    result.summary = 'Los discos retiran las partículas que ensucias las membranas de ósmosis inversa. El objetivo es reducir el SDI (Silt Density Index) del agua de alimentación a la membrana para protegerla y extender su vida útil.';
+    result.technical.push('El SDI mide la tendencia del agua a obstruir membranas. Para OI se requiere SDI₁₅ < 5; idealmente < 3. Los discos reducen la carga de sólidos suspendidos que es la principal causa de ensuciamiento particulado en membranas.');
+    result.technical.push('Los discos retienen partículas entre 5 y 400 µm. Partículas más finas, coloides o compuestos disueltos que afectan las membranas requieren etapas adicionales (coagulación, ultrafiltración) antes de la OI.');
+    result.technical.push(result.cleaning==='aa'
+      ? 'La limpieza asistida por aire (10 L/elemento) es preferible cuando el agua contiene algas o sólidos deformables, comunes en fuentes superficiales que alimentan trenes de OI.'
+      : 'La limpieza hidráulica convencional (50–60 L/elemento) es adecuada para agua de pozo o de proceso con sólidos inorgánicos.');
+    result.technical.push('Para fuentes con alta variabilidad de TSS o con algas, los discos WS (polietileno) son preferibles a los MG por su mayor capacidad de retención y menor tendencia al taponamiento irreversible.');
+    result.business.push('Proteger las membranas de OI reduce costos de limpieza química (CIP), extiende la vida de los elementos de membrana y mejora la disponibilidad del sistema.');
+    result.business.push('Los discos se retrolavan automáticamente con muy poca agua, lo que es especialmente valioso en trenes de OI donde el agua de proceso es costosa o escasa.');
+    if(siteLimited){
+      result.capex = 'Con restricción de agua: el retrolavado de los discos (10–60 L/elemento) representa una fracción mínima del rechazo de la propia OI, sin impacto operativo significativo.';
     }
     return result;
   }
