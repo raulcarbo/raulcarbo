@@ -8,7 +8,8 @@
   --rule:#DDE3EC; --rule-soft:#EAF0F6; --muted:#8A96A8;
   --violet:#7C3AED; --violet-deep:#4C1D95; --violet-soft:#EDE9FE; --violet-light:#F7F3FF;
   --blue:#2563EB; --blue-soft:#DBEAFE; --blue-light:#EFF6FF;
-  --ok:#065F46; --ok-soft:#D1FAE5; --warn:#92400E; --warn-soft:#FEF3C7;
+  --ok:#065F46; --ok-soft:#D1FAE5;
+  --warn:#92400E; --warn-soft:#FEF3C7;
   --err:#991B1B; --err-soft:#FEE2E2;
   --shadow-md:0 4px 20px rgba(76,29,149,.10),0 2px 6px rgba(76,29,149,.05);
   --shadow-lg:0 8px 40px rgba(76,29,149,.14),0 4px 12px rgba(76,29,149,.07);
@@ -16,130 +17,162 @@
   font-family:'DM Sans',system-ui,sans-serif; font-size:15px; line-height:1.55;
   -webkit-font-smoothing:antialiased; position:relative; overflow:hidden;
 }
-#calculadora-oi-industrial,#calculadora-oi-industrial *,#calculadora-oi-industrial *::before,#calculadora-oi-industrial *::after{box-sizing:border-box;}
-#calculadora-oi-industrial::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(circle at 1px 1px,rgba(76,29,149,.06) 1px,transparent 0);background-size:28px 28px;}
-#calculadora-oi-industrial .oi-wrap{position:relative;z-index:1;max-width:1320px;margin:0 auto;padding:40px 32px 80px;}
-#calculadora-oi-industrial .oi-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:24px;border-bottom:1px solid var(--rule);margin-bottom:40px;flex-wrap:wrap;gap:14px;}
-#calculadora-oi-industrial .oi-brand{display:flex;align-items:center;gap:14px;}
-#calculadora-oi-industrial .oi-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,var(--violet-deep),var(--violet));color:#fff;font-family:'Poppins',sans-serif;font-size:22px;font-weight:800;box-shadow:0 4px 12px rgba(76,29,149,.32);}
-#calculadora-oi-industrial .oi-name{font-family:'Poppins',sans-serif;font-size:18px;font-weight:500;color:var(--ink);}
-#calculadora-oi-industrial .oi-name span{display:block;font-family:'Roboto Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:400;}
-#calculadora-oi-industrial .oi-badge{display:flex;align-items:center;gap:10px;font-family:'Roboto Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
-#calculadora-oi-industrial .oi-badge b{background:linear-gradient(135deg,var(--violet-deep),var(--violet));color:#fff;font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.06em;padding:5px 12px;border-radius:999px;text-transform:uppercase;}
-#calculadora-oi-industrial .oi-hero{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end;margin-bottom:34px;}
-#calculadora-oi-industrial .oi-hero h1{font-family:'Poppins',sans-serif;font-size:clamp(27px,3.8vw,46px);line-height:1.1;letter-spacing:-.02em;font-weight:700;color:var(--ink);margin:0 0 12px;}
-#calculadora-oi-industrial .oi-hero h1 span{color:var(--violet);font-weight:800;}
-#calculadora-oi-industrial .oi-hero p{max-width:720px;color:var(--ink-mute);font-size:14.5px;line-height:1.65;margin:0;}
-#calculadora-oi-industrial .oi-standards{min-width:230px;border-left:2px solid var(--violet-soft);padding-left:20px;text-align:right;font-family:'Roboto Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
-#calculadora-oi-industrial .oi-standards b{display:block;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--violet-deep);margin-top:4px;}
-#calculadora-oi-industrial .oi-grid{display:grid;grid-template-columns:minmax(360px,.85fr) minmax(0,1.45fr);gap:28px;align-items:start;}
-#calculadora-oi-industrial .oi-card{background:var(--paper-pure);border:1px solid var(--rule);border-radius:22px;box-shadow:var(--shadow-md);overflow:hidden;}
-#calculadora-oi-industrial .oi-card-title{padding:20px 24px 14px;border-bottom:1px solid var(--rule-soft);background:linear-gradient(180deg,#fff,#FAFBFF);display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
-#calculadora-oi-industrial .oi-card-title h2{margin:0;font-family:'Poppins',sans-serif;font-size:18px;font-weight:600;letter-spacing:-.02em;color:var(--ink);}
-#calculadora-oi-industrial .oi-step{font-family:'Roboto Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
-#calculadora-oi-industrial .oi-body,#calculadora-oi-industrial .oi-results{padding:22px 24px 26px;}
-#calculadora-oi-industrial .oi-section-label{font-family:'Roboto Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--violet);margin:22px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--rule-soft);}
-#calculadora-oi-industrial .oi-section-label:first-child{margin-top:0;}
-#calculadora-oi-industrial .oi-field{margin-bottom:16px;}
-#calculadora-oi-industrial .oi-field label{display:block;font-weight:500;font-size:13px;color:var(--ink);margin-bottom:7px;}
-#calculadora-oi-industrial .oi-req{color:var(--violet);font-weight:700;}
-#calculadora-oi-industrial .oi-opt{font-family:'Roboto Mono',monospace;font-size:9px;font-weight:400;color:var(--muted);background:var(--paper-soft);border:1px solid var(--rule);padding:1px 6px;border-radius:999px;margin-left:6px;letter-spacing:.06em;text-transform:uppercase;}
-#calculadora-oi-industrial .oi-input-row{display:grid;grid-template-columns:1fr 112px;border:1.5px solid var(--rule);border-radius:14px;overflow:hidden;background:#fff;transition:border-color .15s,box-shadow .15s;}
-#calculadora-oi-industrial .oi-input-row:focus-within,#calculadora-oi-industrial .oi-select:focus{border-color:var(--violet);box-shadow:0 0 0 4px rgba(124,58,237,.13);}
-#calculadora-oi-industrial input,#calculadora-oi-industrial select{font:inherit;}
-#calculadora-oi-industrial .oi-input-row input{border:0;outline:0;padding:11px 13px;font-family:'Roboto Mono',monospace;font-size:15px;color:var(--ink);min-width:0;background:#fff;}
-#calculadora-oi-industrial input::placeholder{color:#AAB4C2;}
-#calculadora-oi-industrial .oi-input-row select,#calculadora-oi-industrial .oi-unit{border:0;border-left:1px solid var(--rule);background:var(--paper-soft);padding:11px 10px;color:var(--ink-soft);font-size:13px;font-weight:500;outline:0;}
-#calculadora-oi-industrial .oi-unit{display:flex;align-items:center;justify-content:center;font-family:'Roboto Mono',monospace;font-size:11px;color:var(--muted);}
-#calculadora-oi-industrial .oi-select{width:100%;border:1.5px solid var(--rule);border-radius:14px;padding:11px 13px;background:#fff;color:var(--ink);outline:0;transition:border-color .15s,box-shadow .15s;}
-#calculadora-oi-industrial .oi-hint{font-family:'Roboto Mono',monospace;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:6px;line-height:1.5;}
-#calculadora-oi-industrial .oi-range-wrap{display:grid;grid-template-columns:1fr 92px;gap:10px;align-items:center;}
-#calculadora-oi-industrial input[type="range"]{width:100%;accent-color:var(--violet);}
-#calculadora-oi-industrial .oi-recovery-badge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--violet-soft);color:var(--violet-deep);font-family:'Roboto Mono',monospace;font-size:10px;font-weight:600;}
-#calculadora-oi-industrial .oi-actions{display:flex;gap:10px;margin-top:22px;}
-#calculadora-oi-industrial .oi-btn,#calculadora-oi-industrial .oi-small-btn{border-radius:999px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
-#calculadora-oi-industrial .oi-btn{flex:1;padding:13px 18px;border:1.5px solid transparent;font-size:13.5px;font-weight:600;}
-#calculadora-oi-industrial .oi-btn-primary{background:linear-gradient(135deg,var(--violet-deep),var(--violet));color:#fff;border-color:var(--violet-deep);box-shadow:0 4px 12px rgba(76,29,149,.28);}
-#calculadora-oi-industrial .oi-btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(76,29,149,.36);}
-#calculadora-oi-industrial .oi-btn-ghost{background:#fff;color:var(--ink);border-color:var(--rule);}
-#calculadora-oi-industrial .oi-btn-ghost:hover,#calculadora-oi-industrial .oi-small-btn:hover{border-color:var(--violet);color:var(--violet);background:var(--violet-light);}
-#calculadora-oi-industrial .oi-empty{min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);padding:40px 24px;}
-#calculadora-oi-industrial .oi-empty-icon{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;margin-bottom:14px;background:var(--violet-soft);color:var(--violet-deep);font-family:'Roboto Mono',monospace;font-weight:700;}
-#calculadora-oi-industrial .oi-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule-soft);border:1px solid var(--rule);border-radius:18px;overflow:hidden;margin-bottom:20px;}
-#calculadora-oi-industrial .oi-kpis-4{grid-template-columns:repeat(4,1fr);}
-#calculadora-oi-industrial .oi-kpi{background:#fff;padding:16px 18px;}
-#calculadora-oi-industrial .oi-kpi-label{font-family:'Roboto Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-#calculadora-oi-industrial .oi-kpi-value{font-family:'Roboto Mono',monospace;font-size:24px;font-weight:600;color:var(--ink);line-height:1;}
-#calculadora-oi-industrial .oi-kpi-value small{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--muted);margin-left:5px;font-weight:500;}
-#calculadora-oi-industrial .oi-kpi-sub{font-family:'Roboto Mono',monospace;font-size:11px;color:var(--ink-mute);margin-top:6px;}
-#calculadora-oi-industrial .oi-hero-result{background:linear-gradient(135deg,var(--violet-deep),var(--violet));border-radius:20px;padding:20px 22px;color:#fff;box-shadow:var(--shadow-lg);margin-bottom:18px;}
-#calculadora-oi-industrial .oi-hero-tag{font-family:'Roboto Mono',monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.68);margin-bottom:12px;}
-#calculadora-oi-industrial .oi-hero-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;}
-#calculadora-oi-industrial .oi-divider{width:1px;height:54px;background:rgba(255,255,255,.24);}
-#calculadora-oi-industrial .oi-hero-label{font-family:'Roboto Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:4px;}
-#calculadora-oi-industrial .oi-hero-value{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;line-height:1.15;}
-#calculadora-oi-industrial .oi-hero-sub{font-size:11.5px;color:rgba(255,255,255,.72);margin-top:4px;}
-#calculadora-oi-industrial .oi-detail-title{font-family:'Poppins',sans-serif;font-weight:600;font-size:14.5px;color:var(--ink);margin:20px 0 12px;display:flex;align-items:center;gap:8px;}
-#calculadora-oi-industrial .oi-detail-title::before{content:'';width:6px;height:6px;background:var(--violet);border-radius:50%;}
-#calculadora-oi-industrial .oi-rows{list-style:none;margin:0;padding:0;}
-#calculadora-oi-industrial .oi-rows li{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px dashed var(--rule);}
-#calculadora-oi-industrial .oi-row-name{font-size:13px;color:var(--ink-mute);line-height:1.4;}
-#calculadora-oi-industrial .oi-row-name b{display:block;color:var(--ink);font-weight:600;font-size:13.5px;margin-bottom:2px;}
-#calculadora-oi-industrial .oi-row-value{text-align:right;font-family:'Roboto Mono',monospace;font-size:13.5px;font-weight:500;color:var(--ink);white-space:nowrap;}
-#calculadora-oi-industrial .oi-row-value em{display:block;font-style:normal;font-size:10.5px;color:var(--muted);font-weight:400;margin-top:3px;}
-#calculadora-oi-industrial .oi-pill{display:inline-block;font-family:'Roboto Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;margin-left:7px;}
-#calculadora-oi-industrial .oi-pill-ok{background:var(--ok-soft);color:var(--ok);border:1px solid #6EE7B7;}
-#calculadora-oi-industrial .oi-pill-red{background:var(--err-soft);color:var(--err);border:1px solid #FCA5A5;}
-#calculadora-oi-industrial .oi-pill-blue{background:var(--blue-soft);color:#1E40AF;border:1px solid #BFDBFE;}
-#calculadora-oi-industrial .oi-pill-warn{background:var(--warn-soft);color:var(--warn);border:1px solid #FCD34D;}
-#calculadora-oi-industrial .oi-notice{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:12.5px;line-height:1.6;}
-#calculadora-oi-industrial .oi-notice b{display:block;font-family:'Roboto Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;}
-#calculadora-oi-industrial .oi-notice-red{background:var(--err-soft);border:1px solid #FCA5A5;color:var(--err);}
-#calculadora-oi-industrial .oi-notice-blue{background:var(--blue-light);border:1px solid #BFDBFE;color:#1E3A8A;}
-#calculadora-oi-industrial .oi-notice-gray{background:var(--paper-soft);border:1px solid var(--rule);color:var(--ink-mute);}
-#calculadora-oi-industrial .oi-notice-warn{background:var(--warn-soft);border:1px solid #FCD34D;color:var(--warn);}
+#calculadora-oi-industrial,#calculadora-oi-industrial *,#calculadora-oi-industrial *::before,#calculadora-oi-industrial *::after { box-sizing:border-box; }
+#calculadora-oi-industrial::before { content:''; position:absolute; inset:0; pointer-events:none; z-index:0; background-image:radial-gradient(circle at 1px 1px,rgba(76,29,149,.06) 1px,transparent 0); background-size:28px 28px; }
+
+#calculadora-oi-industrial .oi-wrap { position:relative; z-index:1; max-width:1320px; margin:0 auto; padding:40px 32px 80px; }
+
+/* Header */
+#calculadora-oi-industrial .oi-header { display:flex; align-items:center; justify-content:space-between; padding-bottom:24px; border-bottom:1px solid var(--rule); margin-bottom:40px; flex-wrap:wrap; gap:14px; }
+#calculadora-oi-industrial .oi-brand { display:flex; align-items:center; gap:14px; }
+#calculadora-oi-industrial .oi-mark { width:42px; height:42px; display:grid; place-items:center; border-radius:12px; background:linear-gradient(135deg,var(--violet-deep),var(--violet)); color:#fff; font-family:'Poppins',sans-serif; font-size:22px; font-weight:800; box-shadow:0 4px 12px rgba(76,29,149,.32); }
+#calculadora-oi-industrial .oi-name { font-family:'Poppins',sans-serif; font-size:18px; font-weight:500; }
+#calculadora-oi-industrial .oi-name span { display:block; font-family:'Roboto Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-top:2px; font-weight:400; }
+#calculadora-oi-industrial .oi-badge { display:flex; align-items:center; gap:10px; font-family:'Roboto Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+#calculadora-oi-industrial .oi-badge b { background:linear-gradient(135deg,var(--violet-deep),var(--violet)); color:#fff; font-family:'Poppins',sans-serif; font-size:11px; padding:5px 12px; border-radius:999px; text-transform:uppercase; letter-spacing:.06em; }
+
+/* Hero */
+#calculadora-oi-industrial .oi-hero { display:grid; grid-template-columns:1fr auto; gap:40px; align-items:end; margin-bottom:34px; }
+#calculadora-oi-industrial .oi-hero h1 { font-family:'Poppins',sans-serif; font-size:clamp(27px,3.8vw,46px); line-height:1.1; letter-spacing:-.02em; font-weight:700; margin:0 0 12px; }
+#calculadora-oi-industrial .oi-hero h1 span { color:var(--violet); font-weight:800; }
+#calculadora-oi-industrial .oi-hero p { max-width:720px; color:var(--ink-mute); font-size:14.5px; line-height:1.65; margin:0; }
+#calculadora-oi-industrial .oi-standards { min-width:220px; border-left:2px solid var(--violet-soft); padding-left:20px; text-align:right; font-family:'Roboto Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+#calculadora-oi-industrial .oi-standards b { display:block; font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--violet-deep); margin-top:4px; }
+
+/* Grid layout */
+#calculadora-oi-industrial .oi-grid { display:grid; grid-template-columns:minmax(360px,.85fr) minmax(0,1.45fr); gap:28px; align-items:start; }
+#calculadora-oi-industrial .oi-card { background:var(--paper-pure); border:1px solid var(--rule); border-radius:22px; box-shadow:var(--shadow-md); overflow:hidden; }
+#calculadora-oi-industrial .oi-card-title { padding:20px 24px 14px; border-bottom:1px solid var(--rule-soft); background:linear-gradient(180deg,#fff,#FAFBFF); display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+#calculadora-oi-industrial .oi-card-title h2 { margin:0; font-family:'Poppins',sans-serif; font-size:18px; font-weight:600; letter-spacing:-.02em; }
+#calculadora-oi-industrial .oi-step { font-family:'Roboto Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+#calculadora-oi-industrial .oi-body, #calculadora-oi-industrial .oi-results { padding:22px 24px 26px; }
+
+/* Form fields */
+#calculadora-oi-industrial .oi-section-label { font-family:'Roboto Mono',monospace; font-size:10px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--violet); margin:22px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--rule-soft); }
+#calculadora-oi-industrial .oi-section-label:first-child { margin-top:0; }
+#calculadora-oi-industrial .oi-field { margin-bottom:16px; }
+#calculadora-oi-industrial .oi-field label { display:block; font-weight:500; font-size:13px; color:var(--ink); margin-bottom:7px; }
+#calculadora-oi-industrial .oi-req { color:var(--violet); font-weight:700; }
+#calculadora-oi-industrial .oi-opt { font-family:'Roboto Mono',monospace; font-size:9px; color:var(--muted); background:var(--paper-soft); border:1px solid var(--rule); padding:1px 6px; border-radius:999px; margin-left:6px; letter-spacing:.06em; text-transform:uppercase; }
+#calculadora-oi-industrial .oi-input-row { display:grid; grid-template-columns:1fr 112px; border:1.5px solid var(--rule); border-radius:14px; overflow:hidden; background:#fff; transition:border-color .15s,box-shadow .15s; }
+#calculadora-oi-industrial .oi-input-row:focus-within { border-color:var(--violet); box-shadow:0 0 0 4px rgba(124,58,237,.13); }
+#calculadora-oi-industrial .oi-select:focus { border-color:var(--violet); box-shadow:0 0 0 4px rgba(124,58,237,.13); }
+#calculadora-oi-industrial input, #calculadora-oi-industrial select { font:inherit; }
+#calculadora-oi-industrial .oi-input-row input { border:0; outline:0; padding:11px 13px; font-family:'Roboto Mono',monospace; font-size:15px; color:var(--ink); min-width:0; background:#fff; }
+#calculadora-oi-industrial input::placeholder { color:#AAB4C2; }
+#calculadora-oi-industrial .oi-input-row select, #calculadora-oi-industrial .oi-unit { border:0; border-left:1px solid var(--rule); background:var(--paper-soft); padding:11px 10px; color:var(--ink-soft); font-size:13px; font-weight:500; outline:0; }
+#calculadora-oi-industrial .oi-unit { display:flex; align-items:center; justify-content:center; font-family:'Roboto Mono',monospace; font-size:11px; color:var(--muted); }
+#calculadora-oi-industrial .oi-select { width:100%; border:1.5px solid var(--rule); border-radius:14px; padding:11px 13px; background:#fff; color:var(--ink); outline:0; transition:border-color .15s,box-shadow .15s; }
+#calculadora-oi-industrial .oi-hint { font-family:'Roboto Mono',monospace; font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin-top:6px; line-height:1.5; }
+#calculadora-oi-industrial .oi-range-wrap { display:grid; grid-template-columns:1fr 92px; gap:10px; align-items:center; }
+#calculadora-oi-industrial input[type="range"] { width:100%; accent-color:var(--violet); }
+#calculadora-oi-industrial .oi-rec-badge { display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px; background:var(--violet-soft); color:var(--violet-deep); font-family:'Roboto Mono',monospace; font-size:10px; font-weight:600; }
+#calculadora-oi-industrial .oi-actions { display:flex; gap:10px; margin-top:22px; }
+#calculadora-oi-industrial .oi-btn { flex:1; padding:13px 18px; border:1.5px solid transparent; font-size:13.5px; font-weight:600; border-radius:999px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s; }
+#calculadora-oi-industrial .oi-btn-primary { background:linear-gradient(135deg,var(--violet-deep),var(--violet)); color:#fff; border-color:var(--violet-deep); box-shadow:0 4px 12px rgba(76,29,149,.28); }
+#calculadora-oi-industrial .oi-btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(76,29,149,.36); }
+#calculadora-oi-industrial .oi-btn-ghost { background:#fff; color:var(--ink); border-color:var(--rule); }
+#calculadora-oi-industrial .oi-btn-ghost:hover { border-color:var(--violet); color:var(--violet); background:var(--violet-light); }
+
+/* Empty state */
+#calculadora-oi-industrial .oi-empty { min-height:440px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--muted); padding:40px 24px; }
+#calculadora-oi-industrial .oi-empty-icon { width:54px; height:54px; border-radius:16px; display:grid; place-items:center; margin-bottom:14px; background:var(--violet-soft); color:var(--violet-deep); font-family:'Roboto Mono',monospace; font-weight:700; font-size:15px; }
+
+/* KPIs */
+#calculadora-oi-industrial .oi-kpis { display:grid; gap:1px; background:var(--rule-soft); border:1px solid var(--rule); border-radius:18px; overflow:hidden; margin-bottom:20px; }
+#calculadora-oi-industrial .oi-kpis-3 { grid-template-columns:repeat(3,1fr); }
+#calculadora-oi-industrial .oi-kpis-4 { grid-template-columns:repeat(4,1fr); }
+#calculadora-oi-industrial .oi-kpi { background:#fff; padding:16px 18px; }
+#calculadora-oi-industrial .oi-kpi-label { font-family:'Roboto Mono',monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+#calculadora-oi-industrial .oi-kpi-value { font-family:'Roboto Mono',monospace; font-size:24px; font-weight:600; color:var(--ink); line-height:1; }
+#calculadora-oi-industrial .oi-kpi-value small { font-family:'DM Sans',sans-serif; font-size:12px; color:var(--muted); margin-left:5px; font-weight:500; }
+#calculadora-oi-industrial .oi-kpi-sub { font-family:'Roboto Mono',monospace; font-size:11px; color:var(--ink-mute); margin-top:6px; }
+
+/* Hero result */
+#calculadora-oi-industrial .oi-hero-result { background:linear-gradient(135deg,var(--violet-deep),var(--violet)); border-radius:20px; padding:20px 22px; color:#fff; box-shadow:var(--shadow-lg); margin-bottom:18px; }
+#calculadora-oi-industrial .oi-hero-tag { font-family:'Roboto Mono',monospace; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.68); margin-bottom:12px; }
+#calculadora-oi-industrial .oi-hero-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:center; }
+#calculadora-oi-industrial .oi-h-divider { width:1px; height:54px; background:rgba(255,255,255,.24); }
+#calculadora-oi-industrial .oi-hero-label { font-family:'Roboto Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.62); margin-bottom:4px; }
+#calculadora-oi-industrial .oi-hero-value { font-family:'Poppins',sans-serif; font-size:22px; font-weight:700; line-height:1.15; }
+#calculadora-oi-industrial .oi-hero-sub { font-size:11.5px; color:rgba(255,255,255,.72); margin-top:4px; }
+
+/* Section title */
+#calculadora-oi-industrial .oi-sec-title { font-family:'Poppins',sans-serif; font-weight:600; font-size:14.5px; color:var(--ink); margin:22px 0 12px; display:flex; align-items:center; gap:8px; }
+#calculadora-oi-industrial .oi-sec-title::before { content:''; width:6px; height:6px; background:var(--violet); border-radius:50%; flex-shrink:0; }
+
+/* Detail rows */
+#calculadora-oi-industrial .oi-rows { list-style:none; margin:0; padding:0; }
+#calculadora-oi-industrial .oi-rows li { display:grid; grid-template-columns:1fr auto; gap:14px; align-items:baseline; padding:11px 0; border-bottom:1px dashed var(--rule); }
+#calculadora-oi-industrial .oi-row-name { font-size:13px; color:var(--ink-mute); line-height:1.4; }
+#calculadora-oi-industrial .oi-row-name b { display:block; color:var(--ink); font-weight:600; font-size:13.5px; margin-bottom:2px; }
+#calculadora-oi-industrial .oi-row-val { text-align:right; font-family:'Roboto Mono',monospace; font-size:13.5px; font-weight:500; color:var(--ink); white-space:nowrap; }
+#calculadora-oi-industrial .oi-row-val em { display:block; font-style:normal; font-size:10.5px; color:var(--muted); font-weight:400; margin-top:3px; }
+
+/* Pills */
+#calculadora-oi-industrial .oi-pill { display:inline-block; font-family:'Roboto Mono',monospace; font-size:9px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:999px; margin-left:6px; }
+#calculadora-oi-industrial .oi-pill-ok   { background:var(--ok-soft);   color:var(--ok);   border:1px solid #6EE7B7; }
+#calculadora-oi-industrial .oi-pill-red  { background:var(--err-soft);  color:var(--err);  border:1px solid #FCA5A5; }
+#calculadora-oi-industrial .oi-pill-blue { background:var(--blue-soft); color:#1E40AF;     border:1px solid #BFDBFE; }
+#calculadora-oi-industrial .oi-pill-warn { background:var(--warn-soft); color:var(--warn); border:1px solid #FCD34D; }
+
+/* Notices */
+#calculadora-oi-industrial .oi-notice { margin-top:14px; padding:13px 15px; border-radius:16px; font-size:12.5px; line-height:1.6; }
+#calculadora-oi-industrial .oi-notice b { display:block; font-family:'Roboto Mono',monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:5px; }
+#calculadora-oi-industrial .oi-notice-red  { background:var(--err-soft);  border:1px solid #FCA5A5; color:var(--err); }
+#calculadora-oi-industrial .oi-notice-blue { background:var(--blue-light); border:1px solid #BFDBFE; color:#1E3A8A; }
+#calculadora-oi-industrial .oi-notice-gray { background:var(--paper-soft); border:1px solid var(--rule); color:var(--ink-mute); }
+#calculadora-oi-industrial .oi-notice-warn { background:var(--warn-soft); border:1px solid #FCD34D; color:var(--warn); }
 
 /* Format comparison cards */
-#calculadora-oi-industrial .oi-format-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
-#calculadora-oi-industrial .oi-format-card{border:1.5px solid var(--rule);border-radius:18px;padding:18px 16px 14px;background:#fff;position:relative;transition:border-color .15s;}
-#calculadora-oi-industrial .oi-format-card.rec{border-color:var(--violet);background:var(--violet-light);}
-#calculadora-oi-industrial .oi-format-card.na{opacity:.55;background:var(--paper-soft);}
-#calculadora-oi-industrial .oi-fmt-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--violet-deep),var(--violet));color:#fff;font-family:'Roboto Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:999px;white-space:nowrap;}
-#calculadora-oi-industrial .oi-fmt-size{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:var(--ink-mute);margin-bottom:4px;}
-#calculadora-oi-industrial .oi-fmt-count{font-family:'Roboto Mono',monospace;font-size:36px;font-weight:600;color:var(--violet-deep);line-height:1;}
-#calculadora-oi-industrial .oi-fmt-unit{font-family:'Roboto Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:1px;}
-#calculadora-oi-industrial .oi-fmt-arr{font-family:'Roboto Mono',monospace;font-size:11px;color:var(--ink-mute);margin-top:6px;line-height:1.5;}
-#calculadora-oi-industrial .oi-fmt-models{margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule);font-size:12px;color:var(--ink-mute);line-height:1.6;}
-#calculadora-oi-industrial .oi-fmt-models b{color:var(--ink);font-weight:600;}
+#calculadora-oi-industrial .oi-fmt-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+#calculadora-oi-industrial .oi-fmt-card { border:1.5px solid var(--rule); border-radius:18px; padding:20px 16px 14px; background:#fff; position:relative; }
+#calculadora-oi-industrial .oi-fmt-card.is-rec { border-color:var(--violet); background:var(--violet-light); }
+#calculadora-oi-industrial .oi-fmt-card.is-na { opacity:.55; background:var(--paper-soft); }
+#calculadora-oi-industrial .oi-fmt-rec-badge { position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,var(--violet-deep),var(--violet)); color:#fff; font-family:'Roboto Mono',monospace; font-size:8.5px; letter-spacing:.12em; text-transform:uppercase; padding:3px 10px; border-radius:999px; white-space:nowrap; }
+#calculadora-oi-industrial .oi-fmt-size-label { font-family:'Poppins',sans-serif; font-size:12px; font-weight:600; color:var(--ink-mute); margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em; }
+#calculadora-oi-industrial .oi-fmt-count { font-family:'Roboto Mono',monospace; font-size:42px; font-weight:600; color:var(--violet-deep); line-height:1; }
+#calculadora-oi-industrial .oi-fmt-count-label { font-family:'Roboto Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+#calculadora-oi-industrial .oi-fmt-arr { font-family:'Roboto Mono',monospace; font-size:11.5px; color:var(--ink-mute); margin-top:8px; padding:8px 10px; background:rgba(124,58,237,.06); border-radius:10px; line-height:1.6; }
+#calculadora-oi-industrial .oi-fmt-arr b { color:var(--violet-deep); }
+#calculadora-oi-industrial .oi-fmt-models { margin-top:10px; padding-top:10px; border-top:1px dashed var(--rule); font-size:12px; color:var(--ink-mute); line-height:1.7; }
+#calculadora-oi-industrial .oi-fmt-models strong { color:var(--ink); font-weight:600; }
 
-#calculadora-oi-industrial .oi-components{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
-#calculadora-oi-industrial .oi-component{background:#fff;border:1px solid var(--rule);border-radius:16px;padding:14px;}
-#calculadora-oi-industrial .oi-component b{display:block;font-family:'Poppins',sans-serif;font-size:13.5px;color:var(--ink);margin-bottom:5px;}
-#calculadora-oi-industrial .oi-component p{margin:0;font-size:12.5px;color:var(--ink-mute);line-height:1.5;}
-#calculadora-oi-industrial .oi-copy-row{margin-top:20px;padding-top:16px;border-top:1px solid var(--rule);display:flex;gap:10px;flex-wrap:wrap;}
-#calculadora-oi-industrial .oi-small-btn{padding:9px 14px;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--ink);border:1px solid var(--rule);}
-#calculadora-oi-industrial .oi-small-btn.copied{background:var(--ok-soft);color:var(--ok);border-color:#6EE7B7;}
-#calculadora-oi-industrial .oi-footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:'Roboto Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+/* Components */
+#calculadora-oi-industrial .oi-components { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+#calculadora-oi-industrial .oi-component { background:#fff; border:1px solid var(--rule); border-radius:16px; padding:14px; }
+#calculadora-oi-industrial .oi-component b { display:block; font-family:'Poppins',sans-serif; font-size:13.5px; color:var(--ink); margin-bottom:5px; }
+#calculadora-oi-industrial .oi-component p { margin:0; font-size:12.5px; color:var(--ink-mute); line-height:1.5; }
 
-@media(max-width:1050px){
-  #calculadora-oi-industrial .oi-grid,#calculadora-oi-industrial .oi-hero{grid-template-columns:1fr;}
-  #calculadora-oi-industrial .oi-standards{text-align:left;border-left:none;border-top:1px solid var(--rule);padding:14px 0 0;}
-  #calculadora-oi-industrial .oi-components{grid-template-columns:1fr;}
-  #calculadora-oi-industrial .oi-kpis-4{grid-template-columns:repeat(2,1fr);}
+/* Copy row */
+#calculadora-oi-industrial .oi-copy-row { margin-top:20px; padding-top:16px; border-top:1px solid var(--rule); display:flex; gap:10px; flex-wrap:wrap; }
+#calculadora-oi-industrial .oi-small-btn { padding:9px 14px; font-size:12.5px; font-weight:500; display:inline-flex; align-items:center; gap:6px; background:#fff; color:var(--ink); border:1px solid var(--rule); border-radius:999px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s; }
+#calculadora-oi-industrial .oi-small-btn:hover { border-color:var(--violet); color:var(--violet); background:var(--violet-light); }
+#calculadora-oi-industrial .oi-small-btn.copied { background:var(--ok-soft); color:var(--ok); border-color:#6EE7B7; }
+
+/* Footer */
+#calculadora-oi-industrial .oi-footer { margin-top:56px; padding-top:22px; border-top:1px solid var(--rule); display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-family:'Roboto Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+
+/* Responsive */
+@media (max-width:1050px) {
+  #calculadora-oi-industrial .oi-grid { grid-template-columns:1fr; }
+  #calculadora-oi-industrial .oi-hero { grid-template-columns:1fr; }
+  #calculadora-oi-industrial .oi-standards { text-align:left; border-left:none; border-top:1px solid var(--rule); padding:14px 0 0; }
+  #calculadora-oi-industrial .oi-components { grid-template-columns:1fr; }
+  #calculadora-oi-industrial .oi-kpis-4 { grid-template-columns:repeat(2,1fr); }
 }
-@media(max-width:720px){
-  #calculadora-oi-industrial .oi-wrap{padding:18px 12px 48px;}
-  #calculadora-oi-industrial .oi-body,#calculadora-oi-industrial .oi-results{padding:16px 14px 20px;}
-  #calculadora-oi-industrial .oi-card-title{padding:14px;}
-  #calculadora-oi-industrial .oi-kpis{grid-template-columns:1fr;}
-  #calculadora-oi-industrial .oi-kpis-4{grid-template-columns:1fr;}
-  #calculadora-oi-industrial .oi-hero-grid{grid-template-columns:1fr;}
-  #calculadora-oi-industrial .oi-divider{width:100%;height:1px;}
-  #calculadora-oi-industrial .oi-rows li{grid-template-columns:1fr;gap:3px;}
-  #calculadora-oi-industrial .oi-row-value{text-align:left;white-space:normal;}
-  #calculadora-oi-industrial .oi-actions{flex-direction:column;}
-  #calculadora-oi-industrial .oi-range-wrap{grid-template-columns:1fr;}
-  #calculadora-oi-industrial .oi-format-grid{grid-template-columns:1fr;}
+@media (max-width:720px) {
+  #calculadora-oi-industrial .oi-wrap { padding:18px 12px 48px; }
+  #calculadora-oi-industrial .oi-body, #calculadora-oi-industrial .oi-results { padding:16px 14px 20px; }
+  #calculadora-oi-industrial .oi-card-title { padding:14px; }
+  #calculadora-oi-industrial .oi-kpis-3, #calculadora-oi-industrial .oi-kpis-4 { grid-template-columns:1fr; }
+  #calculadora-oi-industrial .oi-hero-grid { grid-template-columns:1fr; }
+  #calculadora-oi-industrial .oi-h-divider { width:100%; height:1px; }
+  #calculadora-oi-industrial .oi-rows li { grid-template-columns:1fr; gap:3px; }
+  #calculadora-oi-industrial .oi-row-val { text-align:left; white-space:normal; }
+  #calculadora-oi-industrial .oi-actions { flex-direction:column; }
+  #calculadora-oi-industrial .oi-range-wrap { grid-template-columns:1fr; }
+  #calculadora-oi-industrial .oi-fmt-grid { grid-template-columns:1fr; }
 }
 </style>
 
@@ -149,13 +182,13 @@
       <div class="oi-mark">C</div>
       <div class="oi-name">Carbotecnia<span>Tratamiento de agua · México</span></div>
     </div>
-    <div class="oi-badge"><b>Ósmosis inversa</b> Dashboard de diseño · v2.0</div>
+    <div class="oi-badge"><b>Ósmosis inversa</b> Dashboard de diseño · v2.1</div>
   </header>
 
   <section class="oi-hero">
     <div>
       <h1>Dimensionamiento básico de <span>ósmosis inversa industrial</span></h1>
-      <p>Balance hidráulico, balance de sales, corrección por temperatura (TCF), índice de saturación de Langelier en el rechazo y recomendación de formato de membrana 4"×40" vs 8"×40" con arreglo de vasijas. Datos de fichas técnicas: LG BW 400 R Dura / BW 400 ES / SW 400 R · Hydranautics CPA5-LD / CPA7-LD / ESPA4-LD / SWC5-LD. ADVERTENCIA: Predimensionamiento preliminar; requiere análisis físico-químico completo para diseño final.</p>
+      <p>Balance hidráulico, balance de sales, corrección por temperatura (TCF) e índice de saturación de Langelier en el rechazo. Muestra opciones de módulos en formato 4"×40" y 8"×40" con arreglo de vasijas. Fichas técnicas: LG BW 400 R Dura / BW 400 ES / SW 400 R · Hydranautics CPA5-LD / ESPA4-LD / SWC5-LD. <strong>Predimensionamiento preliminar — requiere análisis físico-químico completo para diseño final.</strong></p>
     </div>
     <aside class="oi-standards">
       Membranas de referencia
@@ -164,18 +197,20 @@
   </section>
 
   <div class="oi-grid">
+    <!-- INPUTS -->
     <section class="oi-card">
       <div class="oi-card-title">
         <h2>Parámetros de diseño</h2>
         <span class="oi-step">01 · Entradas</span>
       </div>
       <div class="oi-body">
+
         <div class="oi-section-label">Hidráulica</div>
 
         <div class="oi-field">
           <label>Caudal base <span class="oi-req">*</span></label>
           <div class="oi-input-row">
-            <input type="number" id="oi-flow" min="0" step="any" placeholder="Ej. 10">
+            <input type="number" id="oi-flow" min="0" step="any" placeholder="Ej. 60">
             <select id="oi-flow-unit">
               <option value="gpm" selected>GPM</option>
               <option value="m3h">m³/h</option>
@@ -194,15 +229,15 @@
         </div>
 
         <div class="oi-field">
-          <label>Porcentaje de recuperación <span class="oi-recovery-badge" id="oi-recovery-badge">75%</span></label>
+          <label>Porcentaje de recuperación <span class="oi-rec-badge" id="oi-rec-badge">75%</span></label>
           <div class="oi-range-wrap">
-            <input type="range" id="oi-recovery-range" min="30" max="85" step="1" value="75">
+            <input type="range" id="oi-rec-range" min="30" max="85" step="1" value="75">
             <div class="oi-input-row" style="grid-template-columns:1fr 42px">
               <input type="number" id="oi-recovery" min="30" max="85" step="1" value="75">
               <span class="oi-unit">%</span>
             </div>
           </div>
-          <div class="oi-hint">Rango típico: 50–80% agua de pozo · 30–50% agua de mar.</div>
+          <div class="oi-hint">Típico: 50–80% agua subterránea · 30–50% agua de mar.</div>
         </div>
 
         <div class="oi-section-label">Fisicoquímica del agua</div>
@@ -213,15 +248,16 @@
             <input type="number" id="oi-temp" min="1" max="45" step="any" placeholder="25">
             <span class="oi-unit">°C</span>
           </div>
-          <div class="oi-hint">Afecta el flujo por membrana. Ref. fichas: 25 °C.</div>
+          <div class="oi-hint">Afecta el flujo por elemento. Ref. fichas: 25 °C.</div>
         </div>
 
         <div class="oi-field">
           <label>TDS de entrada <span class="oi-req">*</span></label>
           <div class="oi-input-row">
-            <input type="number" id="oi-tds" min="0" step="any" placeholder="Ej. 1000">
+            <input type="number" id="oi-tds" min="0" step="any" placeholder="Ej. 1 000">
             <span class="oi-unit">mg/L</span>
           </div>
+          <div class="oi-hint">Determina la familia de membrana recomendada.</div>
         </div>
 
         <div class="oi-field">
@@ -248,42 +284,26 @@
           </div>
         </div>
 
-        <div class="oi-section-label">Tipo de aplicación</div>
-
-        <div class="oi-field">
-          <label>Familia de membrana</label>
-          <select class="oi-select" id="oi-water-type">
-            <option value="auto" selected>Automática según TDS</option>
-            <option value="low">Baja energía · agua potable (&lt; 1,500 mg/L)</option>
-            <option value="brackish">Alto rechazo · agua salobre (1,500–15,000 mg/L)</option>
-            <option value="seawater">Agua de mar (&gt; 15,000 mg/L)</option>
-          </select>
-          <div class="oi-hint">LG BW 400 ES / BW 400 R Dura / SW 400 R · CPA5-LD / SWC5-LD</div>
-        </div>
-
-        <div class="oi-field">
-          <label>Formato de membrana</label>
-          <select class="oi-select" id="oi-format">
-            <option value="auto" selected>Automático según caudal</option>
-            <option value="4040">4" × 40" (4040) — compacto / piloto</option>
-            <option value="8040">8" × 40" (8040) — industrial estándar</option>
-          </select>
-          <div class="oi-hint">4040: hasta ~5 m³/h alim. · 8040: estándar industrial.</div>
-        </div>
-
         <div class="oi-actions">
           <button class="oi-btn oi-btn-primary" id="oi-calc">Calcular diseño</button>
           <button class="oi-btn oi-btn-ghost" id="oi-reset">Limpiar</button>
         </div>
+
       </div>
     </section>
 
+    <!-- RESULTS -->
     <section class="oi-card">
       <div class="oi-card-title">
         <h2>Resultados del dimensionamiento</h2>
         <span class="oi-step">02 · Dashboard</span>
       </div>
-      <div class="oi-results" id="oi-results"></div>
+      <div class="oi-results" id="oi-results">
+        <div class="oi-empty">
+          <div class="oi-empty-icon">OI</div>
+          <p>Ingrese caudal y TDS, luego presione <strong>Calcular diseño</strong>.</p>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -295,379 +315,530 @@
 
 <script>
 (function(){
-'use strict';
 
-/* ─── MEMBRANE DATABASE (from datasheets) ─── */
-var MEM = {
+/* ══════════════════════════════════════════════════════════
+   BASE DE DATOS DE MEMBRANAS — valores de fichas técnicas
+   ══════════════════════════════════════════════════════════ */
+var MEM_DB = {
   low: {
     label: 'Agua potable / baja energía',
     rejection: 0.992,
-    '8040': {
-      designM3d: 39.7,          /* conservative: LG BW 400 ES datasheet */
-      hydModel: 'ESPA4-LD',     hydM3d: 45.4, hydPPM:  500, hydPSI: 100,
-      lgModel:  'BW 400 ES',    lgM3d:  39.7, lgPPM:  2000, lgPSI: 150,
+    m8040: {
+      designM3d: 39.7,
+      hydModel: 'ESPA4-LD', hydM3d: 45.4, hydPPM: 500,  hydPSI: 100,
+      lgModel:  'BW 400 ES', lgM3d:  39.7, lgPPM: 2000, lgPSI: 150,
       maxFeedM3h: 19.3, elPerVessel: 6,
-      note: 'Baja presión de operación (7–15 bar). Para agua de pozo o red municipal.'
+      note: 'Baja presion de operacion (7-15 bar). Para agua de pozo o red municipal.'
     },
-    '4040': {
+    m4040: {
       designM3d: 8.90,
       hydModel: 'ESPA4-LD-4040', hydM3d: 8.90, hydPPM: 500, hydPSI: 100,
       lgModel:  null,
       maxFeedM3h: 3.6, elPerVessel: 4,
-      note: 'Formato compacto. Máx. alimentación 3.6 m³/h por vasija.'
+      note: 'Formato compacto. Max. alimentacion: 3.6 m3/h por vasija.'
     }
   },
   brackish: {
     label: 'Agua salobre / alto rechazo',
     rejection: 0.997,
-    '8040': {
+    m8040: {
       designM3d: 39.7,
-      hydModel: 'CPA5-LD',       hydM3d: 41.6, hydPPM: 1500, hydPSI: 225,
-      lgModel:  'BW 400 R Dura', lgM3d:  39.7, lgPPM: 2000,  lgPSI: 225,
+      hydModel: 'CPA5-LD',        hydM3d: 41.6, hydPPM: 1500, hydPSI: 225,
+      lgModel:  'BW 400 R Dura',  lgM3d:  39.7, lgPPM: 2000,  lgPSI: 225,
       maxFeedM3h: 19.3, elPerVessel: 6,
-      note: 'Rechazo ≥ 99.7%. Para agua de pozo profundo, salobre industrial y reúso.'
+      note: 'Rechazo >= 99.7%. Para agua de pozo profundo, salobre industrial y reuso.'
     },
-    '4040': {
+    m4040: {
       designM3d: 7.57,
       hydModel: 'ESPA2-LD-4040', hydM3d: 7.57, hydPPM: 1500, hydPSI: 150,
       lgModel:  null,
       maxFeedM3h: 3.6, elPerVessel: 4,
-      note: 'Formato compacto para agua salobre. Rechazo ≥ 99.6%.'
+      note: 'Formato compacto para agua salobre. Rechazo >= 99.6%.'
     }
   },
   seawater: {
-    label: 'Agua de mar / alta presión',
+    label: 'Agua de mar / alta presion',
     rejection: 0.998,
-    '8040': {
+    m8040: {
       designM3d: 34.0,
-      hydModel: 'SWC5-LD',  hydM3d: 34.1, hydPPM: 32000, hydPSI: 800,
-      lgModel:  'SW 400 R', lgM3d:  34.0, lgPPM: 32000,  lgPSI: 800,
+      hydModel: 'SWC5-LD',   hydM3d: 34.1, hydPPM: 32000, hydPSI: 800,
+      lgModel:  'SW 400 R',  lgM3d:  34.0, lgPPM: 32000,  lgPSI: 800,
       maxFeedM3h: 19.3, elPerVessel: 7,
-      note: 'Desalinización marina. Alta presión 55–80 bar. Rechazo ≥ 99.8%.'
+      note: 'Desalinizacion marina. Alta presion 55-80 bar. Rechazo >= 99.8%.'
     },
-    '4040': null  /* no SW 4040 in catalog */
+    m4040: null
   }
 };
 
-/* ─── HELPERS ─── */
-function el(id){ return document.getElementById(id); }
-function num(id, fb){ var v=parseFloat(el(id).value); return isFinite(v)?v:fb; }
-function fmt(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
-function clamp(n,a,b){ return Math.max(a,Math.min(b,n)); }
-function toM3h(v,u){ return u==='m3h'?v:u==='gpm'?v*0.2271247:v*0.06; }
+/* ══════════════════════════════════════════════════════════
+   UTILIDADES
+   ══════════════════════════════════════════════════════════ */
+function getel(id) { return document.getElementById(id); }
 
-/* TCF — Temperature Correction Factor for polyamide TFC membranes (ref. 25 °C) */
-function tcf(t){ var T=t+273.15; return Math.exp(2640*(1/298.15-1/T)); }
-
-function famKey(tds, sel){
-  if(sel!=='auto') return sel;
-  return tds>=15000?'seawater':tds>=1500?'brackish':'low';
+function getNum(id, fallback) {
+  var v = parseFloat(getel(id).value);
+  return isFinite(v) ? v : fallback;
 }
 
-function sizeFormat(qpM3d, qfM3h, fk, fmt4080, tempC){
-  var spec = MEM[fk][fmt4080];
-  if(!spec) return null;
-  var cf = (isFinite(tempC)&&tempC>0)?tcf(tempC):1.0;
-  var effFlow = spec.designM3d * cf;
+function fmtN(n, decimals) {
+  if (!isFinite(n)) return '—';
+  return n.toLocaleString('es-MX', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
+function toM3h(val, unit) {
+  if (unit === 'm3h') return val;
+  if (unit === 'gpm') return val * 0.2271247;
+  return val * 0.06; /* lpm */
+}
+
+/* TCF — Factor de Correccion de Temperatura para membranas TFC de poliamida (ref 25 degC) */
+function calcTCF(tempC) {
+  var T = tempC + 273.15;
+  return Math.exp(2640 * (1 / 298.15 - 1 / T));
+}
+
+function getFamilyKey(tds) {
+  if (tds >= 15000) return 'seawater';
+  if (tds >= 1500)  return 'brackish';
+  return 'low';
+}
+
+/* Calcular elementos y vasijas para un formato dado */
+function sizeMembranes(qpM3d, qfM3h, spec, tcf) {
+  var effFlow = spec.designM3d * tcf;
   var nEl = Math.max(1, Math.ceil(qpM3d / effFlow));
-  /* for 4040: minimum vessels constrained by max feed flow per vessel */
-  var minV = (fmt4080==='4040') ? Math.ceil(qfM3h / spec.maxFeedM3h) : 1;
-  var nV = Math.max(minV, Math.ceil(nEl / spec.elPerVessel));
-  /* recalc elements to fill vessels evenly if needed */
-  if(fmt4080==='4040' && nEl < nV) nEl = nV; /* at least 1 el per vessel */
-  var feedPerV = qfM3h / Math.max(1, nV);
-  return { fmt:fmt4080, nEl:nEl, nV:nV, elpv:spec.elPerVessel,
-           effFlow:effFlow, cf:cf, feedPerV:feedPerV,
-           overFeed: feedPerV > spec.maxFeedM3h*1.02, spec:spec };
+
+  /* Para 4040: el caudal de alimentacion limita el numero minimo de vasijas */
+  var minV = Math.ceil(qfM3h / spec.maxFeedM3h);
+  var nV   = Math.max(minV, Math.ceil(nEl / spec.elPerVessel));
+
+  /* Al menos 1 elemento por vasija */
+  if (nEl < nV) nEl = nV;
+
+  var feedPerV = qfM3h / nV;
+
+  return {
+    nEl:      nEl,
+    nV:       nV,
+    elpv:     spec.elPerVessel,
+    effFlow:  effFlow,
+    feedPerV: feedPerV,
+    overFeed: feedPerV > spec.maxFeedM3h * 1.02
+  };
 }
 
-function recFormat(fk, qfM3h){
-  if(fk==='seawater') return '8040';
-  return qfM3h < 5 ? '4040' : '8040';
-}
+/* ══════════════════════════════════════════════════════════
+   CALCULAR
+   ══════════════════════════════════════════════════════════ */
+function calculate() {
+  var baseFlow = Math.max(0, getNum('oi-flow', 0));
+  var unit     = getel('oi-flow-unit').value;
+  var basis    = getel('oi-flow-basis').value;
+  var recovery = clamp(getNum('oi-recovery', 75), 30, 85);
+  var tempC    = getNum('oi-temp', 25);
+  var tdsFeed  = Math.max(0, getNum('oi-tds', 0));
 
-function syncBadge(){ el('oi-recovery-badge').textContent=el('oi-recovery').value+'%'; }
-function showEmpty(){
-  el('oi-results').innerHTML='<div class="oi-empty"><div class="oi-empty-icon">OI</div>'+
-    '<p>Ingrese los parámetros de diseño y presione <strong>Calcular diseño</strong>.</p></div>';
-}
+  /* Sync slider / badge */
+  getel('oi-recovery').value   = recovery;
+  getel('oi-rec-range').value  = recovery;
+  getel('oi-rec-badge').textContent = recovery + '%';
 
-/* ─── MAIN CALCULATE ─── */
-function calculate(){
-  var baseFlow = Math.max(0, num('oi-flow',0));
-  var unit     = el('oi-flow-unit').value;
-  var basis    = el('oi-flow-basis').value;
-  var recovery = clamp(num('oi-recovery',75),30,85);
-  var tempC    = num('oi-temp',25);
-  var tdsFeed  = Math.max(0, num('oi-tds',0));
-  var selFmt   = el('oi-format').value;
-
-  el('oi-recovery').value=recovery; el('oi-recovery-range').value=recovery; syncBadge();
-  if(baseFlow<=0||tdsFeed<=0){ showEmpty(); return; }
-
-  var baseM3h = toM3h(baseFlow, unit);
-  var rf = recovery/100;
-  var qfM3h, qpM3h;
-  if(basis==='feed'){ qfM3h=baseM3h; qpM3h=qfM3h*rf; }
-  else             { qpM3h=baseM3h; qfM3h=qpM3h/rf; }
-  var qrM3h = qfM3h - qpM3h;
-  var qpM3d = qpM3h*24;
-
-  var fc = 1/(1-rf);
-  var tdsR = tdsFeed*fc;
-  var tK = (isFinite(tempC)&&tempC>0?tempC:25)+273.15;
-  var osmPsi = ((tdsFeed+tdsR)/2)*0.01*tK/298;
-
-  /* LSI */
-  var ph=num('oi-ph',NaN),hard=num('oi-hardness',NaN),alk=num('oi-alkalinity',NaN);
-  var lsi=NaN,phR=NaN;
-  var lsiOk = isFinite(ph)&&ph>0&&isFinite(hard)&&hard>0&&isFinite(alk)&&alk>0&&tdsR>0;
-  if(lsiOk){
-    var A=(Math.log10(tdsR)-1)/10;
-    var B=34.55-13.12*Math.log10(tK);
-    var C=Math.log10(hard*fc)-0.4;
-    var D=Math.log10(alk*fc);
-    phR=ph+0.5; lsi=phR-(9.3+A+B-C-D);
+  if (baseFlow <= 0 || tdsFeed <= 0) {
+    showEmpty('Ingrese caudal y TDS, luego presione Calcular diseno.');
+    return;
   }
 
-  var fk = famKey(tdsFeed, el('oi-water-type').value);
-  var fam = MEM[fk];
-  var tdsPerm = tdsFeed*(1-fam.rejection);
-  var cf = (isFinite(tempC)&&tempC>0)?tcf(tempC):1.0;
+  /* ── Balance hidraulico ── */
+  var baseM3h = toM3h(baseFlow, unit);
+  var rf      = recovery / 100;
+  var qfM3h, qpM3h;
 
-  var sz4 = (fk!=='seawater') ? sizeFormat(qpM3d,qfM3h,fk,'4040',tempC) : null;
-  var sz8 = sizeFormat(qpM3d,qfM3h,fk,'8040',tempC);
+  if (basis === 'feed') {
+    qfM3h = baseM3h;
+    qpM3h = qfM3h * rf;
+  } else {
+    qpM3h = baseM3h;
+    qfM3h = qpM3h / rf;
+  }
 
-  var rec = recFormat(fk, qfM3h);
-  var useF = selFmt==='auto' ? rec : (selFmt==='4040'&&fk==='seawater'?'8040':selFmt);
-  var szMain = useF==='4040'&&sz4 ? sz4 : sz8;
+  var qrM3h = qfM3h - qpM3h;
+  var qpM3d = qpM3h * 24;
+  var fc    = 1 / (1 - rf);
+  var tdsR  = tdsFeed * fc;
 
-  window._oiLast = {
-    qfM3h,qpM3h,qrM3h,qpM3d,
-    qfGPM:qfM3h/0.2271247, qpGPM:qpM3h/0.2271247, qrGPM:qrM3h/0.2271247,
-    recovery,fc,tempC:isFinite(tempC)&&tempC>0?tempC:25,
-    tdsFeed,tdsR,tdsPerm,osmPsi,
-    lsi,lsiOk,ph,phR,
-    fk,fam,cf,sz4,sz8,szMain,rec,useF,
-    selFmt,swForced: selFmt==='4040'&&fk==='seawater'
+  /* ── Presion osmotica estimada ── */
+  var tK     = (isFinite(tempC) && tempC > 0 ? tempC : 25) + 273.15;
+  var osmPsi = ((tdsFeed + tdsR) / 2) * 0.01 * tK / 298;
+
+  /* ── ISL de Langelier en el rechazo ── */
+  var ph   = getNum('oi-ph',        NaN);
+  var hard = getNum('oi-hardness',  NaN);
+  var alk  = getNum('oi-alkalinity',NaN);
+  var lsi  = NaN;
+  var phR  = NaN;
+  var lsiOk = isFinite(ph) && ph > 0 &&
+              isFinite(hard) && hard > 0 &&
+              isFinite(alk)  && alk  > 0 &&
+              tdsR > 0;
+
+  if (lsiOk) {
+    var A = (Math.log10(tdsR) - 1) / 10;
+    var B = 34.55 - 13.12 * Math.log10(tK);
+    var C = Math.log10(hard * fc) - 0.4;
+    var D = Math.log10(alk  * fc);
+    phR   = ph + 0.5;
+    lsi   = phR - (9.3 + A + B - C - D);
+  }
+
+  /* ── Familia y membranas ── */
+  var famKey = getFamilyKey(tdsFeed);
+  var fam    = MEM_DB[famKey];
+  var tdsPerm = tdsFeed * (1 - fam.rejection);
+  var tcf     = isFinite(tempC) && tempC > 0 ? calcTCF(tempC) : 1.0;
+  var tempUsed = isFinite(tempC) && tempC > 0 ? tempC : 25;
+
+  var res8040 = sizeMembranes(qpM3d, qfM3h, fam.m8040, tcf);
+  var res4040 = fam.m4040 ? sizeMembranes(qpM3d, qfM3h, fam.m4040, tcf) : null;
+
+  /* 8040 es recomendado cuando: agua de mar, o caudal alim >= 5 m3/h */
+  var rec8040 = (famKey === 'seawater' || qfM3h >= 5);
+
+  /* Guardar para copia */
+  window._oiR = {
+    qfM3h:   qfM3h,   qpM3h:   qpM3h,   qrM3h:   qrM3h,   qpM3d:   qpM3d,
+    qfGPM:   qfM3h / 0.2271247,
+    qpGPM:   qpM3h / 0.2271247,
+    qrGPM:   qrM3h / 0.2271247,
+    recovery: recovery,
+    fc: fc, tdsR: tdsR, tdsFeed: tdsFeed, tdsPerm: tdsPerm, osmPsi: osmPsi,
+    lsi: lsi, lsiOk: lsiOk, ph: ph, phR: phR,
+    famKey: famKey, fam: fam,
+    tcf: tcf, tempUsed: tempUsed,
+    res8040: res8040, res4040: res4040, rec8040: rec8040
   };
-  render(window._oiLast);
+
+  renderResults(window._oiR);
 }
 
-/* ─── RENDER ─── */
-function render(r){
+/* ══════════════════════════════════════════════════════════
+   RENDERIZAR RESULTADOS
+   ══════════════════════════════════════════════════════════ */
+function renderResults(r) {
+  var html = '';
+
+  /* ── KPIs hidraulicos ── */
+  html += kpis3(
+    kpi('Alimentacion', fmtN(r.qfM3h,2), 'm3/h', fmtN(r.qfGPM,1) + ' GPM'),
+    kpi('Permeado',     fmtN(r.qpM3h,2), 'm3/h', fmtN(r.qpGPM,1) + ' GPM · ' + fmtN(r.qpM3d,1) + ' m3/d'),
+    kpi('Rechazo',      fmtN(r.qrM3h,2), 'm3/h', fmtN(r.qrGPM,1) + ' GPM')
+  );
+
+  /* ── Hero: TDS permeado + LSI ── */
+  var lsiTxt  = r.lsiOk ? fmtN(r.lsi,2) : '—';
   var lsiBadge = !r.lsiOk
-    ? pill('blue','Sin datos LSI')
-    : r.lsi>0.3 ? pill('red','Incrustante')
-    : r.lsi<-0.5 ? pill('blue','Corrosivo')
-    : pill('ok','Controlado');
+    ? mkpill('blue','Sin datos LSI')
+    : (r.lsi > 0.3 ? mkpill('red','Incrustante') : (r.lsi < -0.5 ? mkpill('blue','Corrosivo') : mkpill('ok','Controlado')));
+  var lsiSub  = r.lsiOk ? 'pH rechazo est. ' + fmtN(r.phR,2) : 'Ingrese pH, dureza calcica y alcalinidad';
 
-  var swNote = r.swForced ? notice('warn','Agua de mar: formato 4"×40" no disponible','No existen membranas SW en formato 4040 en catálogo comercial actual. Se ha usado 8"×40".') : '';
+  html += '<div class="oi-hero-result">';
+  html +=   '<div class="oi-hero-tag">Balance de materia · recuperacion ' + fmtN(r.recovery,0) + '% · ' + r.fam.label + '</div>';
+  html +=   '<div class="oi-hero-grid">';
+  html +=     '<div><div class="oi-hero-label">TDS permeado estimado</div>';
+  html +=       '<div class="oi-hero-value">' + fmtN(r.tdsPerm,1) + ' mg/L</div>';
+  html +=       '<div class="oi-hero-sub">Rechazo nominal ' + fmtN(r.fam.rejection*100,1) + '%</div></div>';
+  html +=     '<div class="oi-h-divider"></div>';
+  html +=     '<div><div class="oi-hero-label">ISL en rechazo ' + lsiBadge + '</div>';
+  html +=       '<div class="oi-hero-value">' + lsiTxt + '</div>';
+  html +=       '<div class="oi-hero-sub">' + lsiSub + '</div></div>';
+  html +=   '</div>';
+  html += '</div>';
 
-  var lsiAlert='';
-  if(r.lsiOk&&r.lsi>0.3) lsiAlert=notice('red','Alta tendencia incrustante (ISL '+fmt(r.lsi,2)+')',
-    'ISL > +0.3 indica riesgo de precipitación de CaCO₃ en membranas y rechazo. Requiere dosificación de antiincrustante para OI Carbotecnia o suavizador/ablandador previo.');
-  if(r.lsiOk&&r.lsi<-0.5) lsiAlert+=notice('blue','Agua corrosiva / sub-saturada (ISL '+fmt(r.lsi,2)+')',
-    'ISL < −0.5 indica agua agresiva. Verificar materiales del sistema y vasijas de presión.');
+  /* ── Alertas ── */
+  if (r.lsiOk && r.lsi > 0.3) {
+    html += notice('red','Alta tendencia incrustante (ISL ' + fmtN(r.lsi,2) + ')',
+      'ISL &gt; +0.3: riesgo de precipitacion de CaCO3 en membranas y rechazo. Requiere dosificacion de antiincrustante para OI o suavizador/ablandador previo.');
+  }
+  if (r.lsiOk && r.lsi < -0.5) {
+    html += notice('blue','Agua corrosiva / sub-saturada (ISL ' + fmtN(r.lsi,2) + ')',
+      'ISL &lt; -0.5: agua agresiva. Verificar materiales del sistema y vasijas de presion.');
+  }
+  if (r.famKey === 'seawater' && r.recovery > 50) {
+    html += notice('warn','Recuperacion alta para agua de mar (' + fmtN(r.recovery,0) + '%)',
+      'En agua de mar se recomiendan recuperaciones de 30-50% por presion osmotica y concentracion de incrustantes.');
+  }
 
-  var tcfAlert='';
-  if(Math.abs(r.tempC-25)>4) tcfAlert=notice('gray',
-    'Corrección por temperatura: TCF = '+fmt(r.cf,3)+' ('+fmt(r.tempC,1)+' °C)',
-    'El flujo nominal de ficha técnica es a 25 °C. A '+fmt(r.tempC,1)+' °C el flujo efectivo por elemento es '+fmt(r.cf*100,1)+'% del valor de ficha — el conteo ya incluye esta corrección.');
+  /* ── KPIs secundarios ── */
+  html += kpis4(
+    kpi('Factor concentracion', fmtN(r.fc,2), 'FC', '1 / (1 - rec.)'),
+    kpi('TDS rechazo',   fmtN(r.tdsR,0),   'mg/L', 'Entrada x FC ' + fmtN(r.fc,2)),
+    kpi('Pres. osmotica',fmtN(r.osmPsi,1), 'psi',  fmtN(r.osmPsi*0.0689476,2) + ' bar'),
+    kpi('TCF',           fmtN(r.tcf,3),    '',     fmtN(r.tempUsed,0) + ' degC vs ref 25 degC')
+  );
 
-  var highRec='';
-  if(r.fk==='seawater'&&r.recovery>50) highRec=notice('warn','Recuperación alta para agua de mar ('+fmt(r.recovery,0)+'%)',
-    'En agua de mar se recomiendan recuperaciones de 30–50% por presión osmótica y concentración de incrustantes.');
+  /* ── Dimensionamiento: tarjetas 4040 vs 8040 ── */
+  html += '<div class="oi-sec-title">Modulos por formato de membrana</div>';
+  html += buildFormatCards(r);
 
-  el('oi-results').innerHTML =
-    kpis3(
-      kpi('Alimentación', fmt(r.qfM3h,2), 'm³/h', fmt(r.qfGPM,1)+' GPM · '+fmt(r.qfM3h*60,0)+' L/min'),
-      kpi('Permeado',     fmt(r.qpM3h,2), 'm³/h', fmt(r.qpGPM,1)+' GPM · '+fmt(r.qpM3d,1)+' m³/d'),
-      kpi('Rechazo/purga',fmt(r.qrM3h,2), 'm³/h', fmt(r.qrGPM,1)+' GPM')
-    )+
+  /* ── TCF nota ── */
+  if (Math.abs(r.tempUsed - 25) > 4) {
+    html += notice('gray',
+      'Correccion por temperatura: TCF = ' + fmtN(r.tcf,3) + ' (' + fmtN(r.tempUsed,1) + ' degC)',
+      'El flujo nominal de ficha tecnica es a 25 degC. A ' + fmtN(r.tempUsed,1) + ' degC el flujo efectivo por elemento es ' +
+      fmtN(r.tcf*100,1) + '% del nominal — el conteo de modulos ya incluye esta correccion.');
+  }
 
-    '<div class="oi-hero-result">'+
-      '<div class="oi-hero-tag">Balance de materia · recuperación '+fmt(r.recovery,0)+'% · '+r.fam.label+'</div>'+
-      '<div class="oi-hero-grid">'+
-        '<div><div class="oi-hero-label">TDS permeado estimado</div>'+
-          '<div class="oi-hero-value">'+fmt(r.tdsPerm,1)+' mg/L</div>'+
-          '<div class="oi-hero-sub">Rechazo nominal: '+fmt(r.fam.rejection*100,1)+'%</div></div>'+
-        '<div class="oi-divider"></div>'+
-        '<div><div class="oi-hero-label">ISL en rechazo '+lsiBadge+'</div>'+
-          '<div class="oi-hero-value">'+(r.lsiOk?fmt(r.lsi,2):'—')+'</div>'+
-          '<div class="oi-hero-sub">'+(r.lsiOk?'pH rechazo est. '+fmt(r.phR,2):'Ingrese pH, dureza cálcica y alcalinidad')+'</div>'+
-        '</div>'+
-      '</div>'+
-    '</div>'+
+  /* ── Balance detalle ── */
+  html += '<div class="oi-sec-title">Balance hidraulico y quimico</div>';
+  html += '<ul class="oi-rows">';
+  html += drow('Flujo de alimentacion','Total al tren de membranas.',      fmtN(r.qfM3h,2)+' m3/h', fmtN(r.qfGPM,1)+' GPM · '+fmtN(r.qfM3h*60,0)+' L/min');
+  html += drow('Flujo de permeado','Agua producto estimada.',              fmtN(r.qpM3h,2)+' m3/h', 'Rec. '+fmtN(r.recovery,0)+'% · '+fmtN(r.qpM3d,1)+' m3/d');
+  html += drow('Flujo de rechazo','Concentrado o purga del sistema.',      fmtN(r.qrM3h,2)+' m3/h', fmtN(r.qrGPM,1)+' GPM');
+  html += drow('Factor de concentracion','Concentracion de sales en rechazo vs alimentacion.', fmtN(r.fc,2)+' FC', '1 / (1 - '+fmtN(r.recovery,0)+'%)');
+  html += drow('TDS entrada','Salinidad del agua de alimentacion.',        fmtN(r.tdsFeed,0)+' mg/L', 'Dato de analisis');
+  html += drow('TDS permeado','Rechazo nominal '+fmtN(r.fam.rejection*100,1)+'%.', fmtN(r.tdsPerm,1)+' mg/L', '');
+  html += drow('TDS rechazo','Sales concentradas en el rechazo.',          fmtN(r.tdsR,0)+' mg/L', 'FC '+fmtN(r.fc,2));
+  html += drow('Presion osmotica media','Estimacion termodinamica.',       fmtN(r.osmPsi,1)+' psi', fmtN(r.osmPsi*0.0689476,2)+' bar');
+  html += drow('ISL del rechazo','Langelier en el concentrado.',           lsiTxt, r.lsiOk ? 'pH alim. '+fmtN(r.ph,2)+' -> pH rec. est. '+fmtN(r.phR,2) : 'Datos incompletos');
+  html += '</ul>';
 
-    lsiAlert + swNote + highRec +
+  /* ── Pretratamiento ── */
+  html += notice('blue','Limites de pretratamiento (MIP OI Carbotecnia)',
+    'Cloro libre &lt; 0.1 mg/L (filtro carbon activado) &nbsp;·&nbsp; Turbidez &lt; 1 NTU &nbsp;·&nbsp; SDI15 &lt; 3 (cartuchos 1-5 um) &nbsp;·&nbsp; Aluminio &lt; 0.05 mg/L &nbsp;·&nbsp; Silice &lt; 20 mg/L &nbsp;·&nbsp; Temperatura 10-45 degC');
 
-    kpis4(
-      kpi('Factor concentración', fmt(r.fc,2), 'FC', '1 / (1 − recuperación)'),
-      kpi('TDS rechazo', fmt(r.tdsR,0), 'mg/L', 'Entrada × FC '+fmt(r.fc,2)),
-      kpi('Presión osmótica', fmt(r.osmPsi,1), 'psi', fmt(r.osmPsi*0.0689476,2)+' bar · TDS promedio'),
-      kpi('TCF temperatura', fmt(r.cf,3), '', fmt(r.tempC,0)+'°C vs ref. 25°C')
-    )+
+  /* ── Componentes ── */
+  html += '<div class="oi-sec-title">Equipos complementarios</div>';
+  html += '<div class="oi-components">';
+  html += '<div class="oi-component"><b>Membranas de OI</b><p>LG BW/SW NanoH2O y Hydranautics CPA/ESPA/SWC para reposicion o proyectos nuevos.</p></div>';
+  html += '<div class="oi-component"><b>Prefiltros SDI</b><p>Cartuchos nominales y absolutos 1-5 um, portacartuchos 304/316 SS.</p></div>';
+  html += '<div class="oi-component"><b>Quimica OI</b><p>Antiincrustantes, neutralizadores de cloro y quimicos de limpieza CIP para membranas.</p></div>';
+  html += '</div>';
 
-    '<div class="oi-detail-title">Dimensionamiento de membranas · 4"×40" vs 8"×40"</div>'+
-    buildFormatCards(r)+
-    tcfAlert+
+  /* ── Nota ingenieria ── */
+  html += notice('gray','Nota de ingenieria',
+    'Predimensionamiento preliminar. Para diseno final se requiere analisis completo de agua (silice, hierro, dureza, boro), software del fabricante (IMSDesign/ROSA), balance ionico, revision de flujo por elemento y validacion del pretratamiento.');
 
-    '<div class="oi-detail-title">Balance hidráulico y químico</div>'+
-    '<ul class="oi-rows">'+
-      row('Flujo de alimentación','Total al tren de membranas.',fmt(r.qfM3h,2)+' m³/h',fmt(r.qfGPM,1)+' GPM')+
-      row('Flujo de permeado','Agua producto.',fmt(r.qpM3h,2)+' m³/h','Rec. '+fmt(r.recovery,0)+'% · '+fmt(r.qpM3d,1)+' m³/d')+
-      row('Flujo de rechazo','Concentrado o purga del sistema.',fmt(r.qrM3h,2)+' m³/h',fmt(r.qrGPM,1)+' GPM')+
-      row('TDS entrada','Salinidad del agua de alimentación.',fmt(r.tdsFeed,0)+' mg/L','Dato de análisis')+
-      row('TDS permeado','Rechazo nominal '+fmt(r.fam.rejection*100,1)+'%.',fmt(r.tdsPerm,1)+' mg/L','')+
-      row('TDS rechazo','Sales concentradas en el rechazo.',fmt(r.tdsR,0)+' mg/L','FC '+fmt(r.fc,2))+
-      row('Presión osmótica media','Estimación termodinámica.',fmt(r.osmPsi,1)+' psi',fmt(r.osmPsi*0.0689476,2)+' bar')+
-      row('ISL del rechazo','Langelier en el concentrado concentrado.',(r.lsiOk?fmt(r.lsi,2):'—'),(r.lsiOk?'pH alim. '+fmt(r.ph,2)+' → pH rec. est. '+fmt(r.phR,2):'Datos incompletos'))+
-    '</ul>'+
+  /* ── Boton copiar ── */
+  html += '<div class="oi-copy-row"><button class="oi-small-btn" id="oi-copy-btn">Copiar Resumen de Ingenieria</button></div>';
 
-    notice('blue','Límites de pretratamiento (MIP OI Carbotecnia)',
-      'Cloro libre &lt; 0.1 mg/L (filtro carbón activado) · Turbidez &lt; 1 NTU · SDI₁₅ &lt; 3 (cartuchos 1–5 µm) · Aluminio &lt; 0.05 mg/L · Sílice &lt; 20 mg/L · Temperatura 10–45 °C')+
-
-    '<div class="oi-detail-title">Equipos complementarios</div>'+
-    '<div class="oi-components">'+
-      '<div class="oi-component"><b>Membranas de OI</b><p>LG BW/SW NanoH₂O y Hydranautics CPA/ESPA/SWC para reposición o proyectos nuevos.</p></div>'+
-      '<div class="oi-component"><b>Prefiltración SDI</b><p>Cartuchos nominales y absolutos 1–5 µm y portacartuchos 304/316 SS para proteger membranas.</p></div>'+
-      '<div class="oi-component"><b>Química OI</b><p>Antiincrustantes especializados, neutralizadores de cloro y químicos de limpieza CIP para membranas.</p></div>'+
-    '</div>'+
-
-    notice('gray','Nota de ingeniería',
-      'Predimensionamiento preliminar. Para diseño final requiere análisis completo de agua (sílice, hierro, dureza, boro), software del fabricante (IMSDesign/ROSA), revisión de recuperación por arreglo, límites de flujo por elemento, balance iónico y temperatura mínima de operación.')+
-
-    '<div class="oi-copy-row"><button class="oi-small-btn" id="oi-copy">Copiar Resumen de Ingeniería</button></div>';
-
-  el('oi-copy').addEventListener('click', copySummary);
+  getel('oi-results').innerHTML = html;
+  getel('oi-copy-btn').addEventListener('click', copySummary);
 }
 
-/* ─── FORMAT CARDS ─── */
-function buildFormatCards(r){
-  function card(sz, isRec, naMsg){
-    if(naMsg){
-      return '<div class="oi-format-card na">'+
-        '<div class="oi-fmt-size">4" × 40"</div>'+
-        '<div style="color:var(--muted);font-size:13px;margin-top:8px">'+naMsg+'</div>'+
-        '</div>';
-    }
-    var s = sz.spec;
-    var arrStr = sz.nV===1
-      ? '1 vasija · '+sz.nEl+' elem. en serie'
-      : sz.nV+' vasijas × '+sz.elpv+' elem. (paralelo)';
-    var warnFeed = sz.overFeed
-      ? '<span class="oi-pill oi-pill-warn" style="display:inline-block;margin-top:6px">⚠ Verificar Q/vasija</span>' : '';
-    var lgLine = s.lgModel
-      ? '<div><b>LG Chem:</b> '+s.lgModel+' ('+fmt(s.lgM3d,1)+' m³/d @ '+s.lgPPM.toLocaleString('es-MX')+' ppm, '+s.lgPSI+' psi)</div>' : '';
-    return '<div class="oi-format-card'+(isRec?' rec':'')+'">'+
-      (isRec?'<div class="oi-fmt-badge">Recomendado</div>':'')+
-      '<div class="oi-fmt-size">'+(sz.fmt==='4040'?'4" × 40"':'8" × 40"')+'</div>'+
-      '<div class="oi-fmt-count">'+sz.nEl+'</div>'+
-      '<div class="oi-fmt-unit">elementos 8" × 40"'.replace('8"',sz.fmt==='4040'?'4"':'8"')+'</div>'+
-      '<div class="oi-fmt-arr">'+arrStr+'</div>'+
-      warnFeed+
-      '<div class="oi-fmt-models">'+
-        '<div><b>Hydranautics/Nitto:</b> '+s.hydModel+' ('+fmt(s.hydM3d,1)+' m³/d @ '+s.hydPPM.toLocaleString('es-MX')+' ppm, '+s.hydPSI+' psi)</div>'+
-        lgLine+
-        '<div style="margin-top:5px;font-size:11px;color:var(--muted)">Flujo efectivo/elem. a '+fmt(sz.cf===1?25:r.tempC,0)+'°C: <b>'+fmt(sz.effFlow,1)+' m³/d</b> (TCF '+fmt(sz.cf,3)+')</div>'+
-        '<div style="font-size:11px;color:var(--muted)">Q alim. por vasija: '+fmt(sz.feedPerV,2)+' m³/h · máx. '+fmt(s.maxFeedM3h,1)+' m³/h</div>'+
-        '<div style="font-size:11px;color:var(--muted);margin-top:3px">'+s.note+'</div>'+
-      '</div>'+
+/* ══════════════════════════════════════════════════════════
+   TARJETAS DE FORMATO
+   ══════════════════════════════════════════════════════════ */
+function buildFormatCards(r) {
+  var card4 = buildOneCard('4040', r.res4040, r.fam.m4040, !r.rec8040, r.famKey, r.tempUsed, r.tcf);
+  var card8 = buildOneCard('8040', r.res8040, r.fam.m8040, r.rec8040,  r.famKey, r.tempUsed, r.tcf);
+  return '<div class="oi-fmt-grid">' + card4 + card8 + '</div>';
+}
+
+function buildOneCard(format, res, spec, isRec, famKey, tempUsed, tcf) {
+  var sizeLabel = format === '4040' ? '4" x 40" (4040)' : '8" x 40" (8040)';
+
+  /* Agua de mar no tiene 4040 */
+  if (format === '4040' && famKey === 'seawater') {
+    return '<div class="oi-fmt-card is-na">' +
+      '<div class="oi-fmt-size-label">' + sizeLabel + '</div>' +
+      '<div style="color:var(--muted);font-size:13px;margin-top:12px">No disponible para agua de mar.<br>Sin modelos SW en formato 4040.</div>' +
     '</div>';
   }
 
-  var c4, c8;
-  var na4 = r.fk==='seawater';
-  c4 = na4 ? card(null,false,'No disponible para agua de mar') : card(r.sz4, r.rec==='4040');
-  c8 = card(r.sz8, r.rec==='8040');
-  return '<div class="oi-format-grid">'+c4+c8+'</div>';
+  var recClass = isRec ? ' is-rec' : '';
+  var recBadge = isRec ? '<div class="oi-fmt-rec-badge">Recomendado</div>' : '';
+
+  var arrStr;
+  if (res.nV === 1) {
+    arrStr = '1 vasija &nbsp;·&nbsp; ' + res.nEl + ' elementos en serie';
+  } else {
+    arrStr = res.nV + ' vasijas en paralelo &nbsp;·&nbsp; ' + res.elpv + ' elementos c/u';
+  }
+
+  var feedWarn = res.overFeed
+    ? '<div style="margin-top:6px">' + mkpill('warn','Verificar Q/vasija') + '</div>' : '';
+
+  var lgLine = spec.lgModel
+    ? '<div><strong>LG Chem:</strong> ' + spec.lgModel +
+      ' &nbsp;(' + fmtN(spec.lgM3d,1) + ' m3/d @ ' + spec.lgPPM.toLocaleString('es-MX') + ' ppm, ' + spec.lgPSI + ' psi)</div>'
+    : '<div style="color:var(--muted)">LG Chem: sin modelo 4040 en catalogo actual</div>';
+
+  var tcfNote = '';
+  if (Math.abs(tempUsed - 25) > 2) {
+    tcfNote = '<div style="color:var(--muted)">Flujo efectivo a ' + fmtN(tempUsed,0) + ' degC: <strong>' +
+      fmtN(res.effFlow,1) + ' m3/d</strong> (TCF ' + fmtN(tcf,3) + ' vs ficha a 25 degC)</div>';
+  }
+
+  var html = '<div class="oi-fmt-card' + recClass + '">';
+  html += recBadge;
+  html += '<div class="oi-fmt-size-label">' + sizeLabel + '</div>';
+  html += '<div class="oi-fmt-count">' + res.nEl + '</div>';
+  html += '<div class="oi-fmt-count-label">modulos necesarios</div>';
+  html += '<div class="oi-fmt-arr">';
+  html +=   '<b>' + arrStr + '</b><br>';
+  html +=   'Q alim. por vasija: ' + fmtN(res.feedPerV,2) + ' m3/h &nbsp;·&nbsp; max. ' + fmtN(spec.maxFeedM3h,1) + ' m3/h';
+  html += '</div>';
+  html += feedWarn;
+  html += '<div class="oi-fmt-models">';
+  html +=   '<div><strong>Hydranautics/Nitto:</strong> ' + spec.hydModel +
+            ' &nbsp;(' + fmtN(spec.hydM3d,1) + ' m3/d @ ' + spec.hydPPM.toLocaleString('es-MX') + ' ppm, ' + spec.hydPSI + ' psi)</div>';
+  html +=   lgLine;
+  html +=   tcfNote;
+  html +=   '<div style="margin-top:4px;color:var(--ink-mute)">' + spec.note + '</div>';
+  html += '</div>';
+  html += '</div>';
+  return html;
 }
 
-/* ─── SMALL BUILDERS ─── */
-function kpi(label,val,unit,sub){
-  return '<div class="oi-kpi"><div class="oi-kpi-label">'+label+'</div>'+
-    '<div class="oi-kpi-value">'+val+'<small>'+unit+'</small></div>'+
-    '<div class="oi-kpi-sub">'+sub+'</div></div>';
+/* ══════════════════════════════════════════════════════════
+   HELPERS DE HTML
+   ══════════════════════════════════════════════════════════ */
+function kpi(label, val, unit, sub) {
+  return '<div class="oi-kpi">' +
+    '<div class="oi-kpi-label">' + label + '</div>' +
+    '<div class="oi-kpi-value">' + val + '<small>' + unit + '</small></div>' +
+    '<div class="oi-kpi-sub">' + sub + '</div>' +
+  '</div>';
 }
-function kpis3(a,b,c){ return '<div class="oi-kpis">'+a+b+c+'</div>'; }
-function kpis4(a,b,c,d){ return '<div class="oi-kpis oi-kpis-4">'+a+b+c+d+'</div>'; }
-function row(n,d,v,s){
-  return '<li><div class="oi-row-name"><b>'+n+'</b>'+d+'</div>'+
-    '<div class="oi-row-value">'+v+(s?'<em>'+s+'</em>':'')+'</div></li>';
+function kpis3(a, b, c) {
+  return '<div class="oi-kpis oi-kpis-3">' + a + b + c + '</div>';
 }
-function pill(type,txt){ return '<span class="oi-pill oi-pill-'+type+'">'+txt+'</span>'; }
-function notice(type,title,body){
-  return '<div class="oi-notice oi-notice-'+type+'"><b>'+title+'</b>'+body+'</div>';
+function kpis4(a, b, c, d) {
+  return '<div class="oi-kpis oi-kpis-4">' + a + b + c + d + '</div>';
+}
+function drow(name, desc, val, sub) {
+  return '<li>' +
+    '<div class="oi-row-name"><b>' + name + '</b>' + desc + '</div>' +
+    '<div class="oi-row-val">' + val + (sub ? '<em>' + sub + '</em>' : '') + '</div>' +
+  '</li>';
+}
+function mkpill(type, txt) {
+  return '<span class="oi-pill oi-pill-' + type + '">' + txt + '</span>';
+}
+function notice(type, title, body) {
+  return '<div class="oi-notice oi-notice-' + type + '"><b>' + title + '</b>' + body + '</div>';
+}
+function showEmpty(msg) {
+  getel('oi-results').innerHTML =
+    '<div class="oi-empty"><div class="oi-empty-icon">OI</div><p>' + (msg || 'Ingrese los parametros y presione Calcular diseno.') + '</p></div>';
 }
 
-/* ─── COPY SUMMARY ─── */
-function copySummary(){
-  var r=window._oiLast; if(!r) return;
-  var sz4t = r.sz4 ? r.sz4.nEl+' elem. ('+r.sz4.nV+(r.sz4.nV===1?' vasija)':(r.sz4.nV===1?'':' vasijas)')+')'  : 'N/A';
-  // fix the string above
-  var s4 = r.sz4 ? r.sz4.nEl+' elem. · '+(r.sz4.nV===1?'1 vasija':r.sz4.nV+' vasijas') : 'No disponible';
-  var s8 = r.sz8 ? r.sz8.nEl+' elem. · '+(r.sz8.nV===1?'1 vasija':r.sz8.nV+' vasijas') : '—';
-  var lines=[
-    'DIMENSIONAMIENTO PRELIMINAR DE ÓSMOSIS INVERSA INDUSTRIAL',
-    'Carbotecnia · Ingeniería de tratamiento de agua',
+/* ══════════════════════════════════════════════════════════
+   COPIAR RESUMEN
+   ══════════════════════════════════════════════════════════ */
+function copySummary() {
+  var r = window._oiR;
+  if (!r) return;
+
+  var s4 = r.res4040
+    ? r.res4040.nEl + ' modulos, ' + r.res4040.nV + ' vasija(s) x ' + r.res4040.elpv + ' elem. · ' + r.fam.m4040.hydModel
+    : 'No disponible (agua de mar)';
+  var s8 = r.res8040.nEl + ' modulos, ' + r.res8040.nV + ' vasija(s) x ' + r.res8040.elpv + ' elem.';
+  s8 += ' · ' + r.fam.m8040.hydModel + (r.fam.m8040.lgModel ? ' / LG ' + r.fam.m8040.lgModel : '');
+
+  var lines = [
+    'DIMENSIONAMIENTO PRELIMINAR DE OSMOSIS INVERSA INDUSTRIAL',
+    'Carbotecnia · Ingenieria de tratamiento de agua',
     '',
-    'HIDRÁULICA',
-    'Alimentación : '+fmt(r.qfM3h,2)+' m³/h ('+fmt(r.qfGPM,1)+' GPM)',
-    'Permeado     : '+fmt(r.qpM3h,2)+' m³/h ('+fmt(r.qpGPM,1)+' GPM · '+fmt(r.qpM3d,1)+' m³/d)',
-    'Rechazo      : '+fmt(r.qrM3h,2)+' m³/h ('+fmt(r.qrGPM,1)+' GPM)',
-    'Recuperación : '+fmt(r.recovery,0)+' %',
+    'HIDRAULICA',
+    'Alimentacion : ' + fmtN(r.qfM3h,2) + ' m3/h  (' + fmtN(r.qfGPM,1) + ' GPM)',
+    'Permeado     : ' + fmtN(r.qpM3h,2) + ' m3/h  (' + fmtN(r.qpGPM,1) + ' GPM · ' + fmtN(r.qpM3d,1) + ' m3/d)',
+    'Rechazo      : ' + fmtN(r.qrM3h,2) + ' m3/h  (' + fmtN(r.qrGPM,1) + ' GPM)',
+    'Recuperacion : ' + fmtN(r.recovery,0) + ' %',
     '',
-    'CALIDAD Y SALES',
-    'TDS entrada   : '+fmt(r.tdsFeed,0)+' mg/L',
-    'TDS permeado  : '+fmt(r.tdsPerm,1)+' mg/L  (rechazo nominal '+fmt(r.fam.rejection*100,1)+'%)',
-    'TDS rechazo   : '+fmt(r.tdsR,0)+' mg/L  (FC '+fmt(r.fc,2)+')',
-    'Presión osmótica media: '+fmt(r.osmPsi,1)+' psi ('+fmt(r.osmPsi*0.0689476,2)+' bar)',
+    'CALIDAD Y SALES (' + r.fam.label + ')',
+    'TDS entrada  : ' + fmtN(r.tdsFeed,0) + ' mg/L',
+    'TDS permeado : ' + fmtN(r.tdsPerm,1) + ' mg/L  (rechazo nominal ' + fmtN(r.fam.rejection*100,1) + '%)',
+    'TDS rechazo  : ' + fmtN(r.tdsR,0) + ' mg/L  (FC ' + fmtN(r.fc,2) + ')',
+    'Pres. osmotica media: ' + fmtN(r.osmPsi,1) + ' psi  (' + fmtN(r.osmPsi*0.0689476,2) + ' bar)',
     '',
     'TEMPERATURA Y TCF',
-    'Temperatura de diseño: '+fmt(r.tempC,0)+' °C',
-    'TCF (corrección flujo): '+fmt(r.cf,3),
+    'Temperatura de diseno : ' + fmtN(r.tempUsed,0) + ' degC',
+    'TCF (correccion flujo): ' + fmtN(r.tcf,3),
     '',
     'LANGELIER EN RECHAZO',
-    'ISL rechazo: '+(r.lsiOk?fmt(r.lsi,2)+' — '+(r.lsi>0.3?'ALERTA: alta tendencia incrustante':r.lsi<-0.5?'Agua corrosiva':'Controlado'):'No calculado (datos incompletos)'),
-    r.lsiOk?'pH alim. '+fmt(r.ph,2)+' → pH rechazo est. '+fmt(r.phR,2):'',
+    'ISL rechazo: ' + (r.lsiOk
+      ? fmtN(r.lsi,2) + '  (' + (r.lsi > 0.3 ? 'ALERTA: alta tendencia incrustante' : r.lsi < -0.5 ? 'Agua corrosiva' : 'Controlado') + ')'
+      : 'No calculado — faltan pH, dureza calcica o alcalinidad'),
+    r.lsiOk ? 'pH alim. ' + fmtN(r.ph,2) + ' --> pH rechazo est. ' + fmtN(r.phR,2) : '',
     '',
-    'MEMBRANAS — '+r.fam.label,
-    '  Recomendado: '+r.rec.toUpperCase(),
-    '  4"×40" (4040): '+s4+(r.sz4?' · '+r.sz4.spec.hydModel+(r.sz4.spec.lgModel?' / LG '+r.sz4.spec.lgModel:''):''),
-    '  8"×40" (8040): '+s8+' · '+r.sz8.spec.hydModel+' / LG '+r.sz8.spec.lgModel,
+    'MODULOS DE MEMBRANA',
+    '  Recomendado: ' + (r.rec8040 ? '8" x 40" (8040)' : '4" x 40" (4040)'),
+    '  4" x 40" (4040): ' + s4,
+    '  8" x 40" (8040): ' + s8,
     '',
     'PRETRATAMIENTO MIP OI',
-    'Cloro libre < 0.1 mg/L · Turbidez < 1 NTU · SDI₁₅ < 3 · Aluminio < 0.05 mg/L · Sílice < 20 mg/L',
+    'Cloro libre < 0.1 mg/L  Turbidez < 1 NTU  SDI15 < 3  Al < 0.05 mg/L  SiO2 < 20 mg/L',
     '',
-    'Nota: predimensionamiento preliminar. Requiere análisis completo de agua, software del fabricante y validación del pretratamiento.'
-  ].filter(function(l){return l!==undefined;});
+    'Nota: predimensionamiento preliminar. Requiere analisis completo de agua y software del fabricante.'
+  ];
 
-  navigator.clipboard.writeText(lines.join('\n')).then(function(){
-    var btn=el('oi-copy'); btn.classList.add('copied'); btn.textContent='Resumen copiado';
-    setTimeout(function(){ btn.classList.remove('copied'); btn.textContent='Copiar Resumen de Ingeniería'; },2000);
-  });
+  var txt = lines.join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(function () { flashCopied(); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    flashCopied();
+  }
 }
 
-/* ─── RESET ─── */
-function reset(){
-  ['oi-flow','oi-temp','oi-tds','oi-ph','oi-hardness','oi-alkalinity'].forEach(function(id){ el(id).value=''; });
-  el('oi-flow-unit').value='gpm'; el('oi-flow-basis').value='permeate';
-  el('oi-recovery').value=75; el('oi-recovery-range').value=75;
-  el('oi-water-type').value='auto'; el('oi-format').value='auto';
-  window._oiLast=null; syncBadge(); showEmpty();
+function flashCopied() {
+  var btn = getel('oi-copy-btn');
+  if (!btn) return;
+  btn.classList.add('copied');
+  btn.textContent = 'Resumen copiado';
+  setTimeout(function () {
+    btn.classList.remove('copied');
+    btn.textContent = 'Copiar Resumen de Ingenieria';
+  }, 2200);
 }
 
-/* ─── EVENTS ─── */
-el('oi-calc').addEventListener('click', calculate);
-el('oi-reset').addEventListener('click', reset);
-el('oi-recovery-range').addEventListener('input', function(){ el('oi-recovery').value=this.value; syncBadge(); });
-el('oi-recovery').addEventListener('input', function(){ var v=clamp(num('oi-recovery',75),30,85); el('oi-recovery').value=v; el('oi-recovery-range').value=v; syncBadge(); });
-document.querySelectorAll('#calculadora-oi-industrial input, #calculadora-oi-industrial select').forEach(function(inp){
-  inp.addEventListener('keyup', function(e){ if(e.key==='Enter') calculate(); });
+/* ══════════════════════════════════════════════════════════
+   RESET
+   ══════════════════════════════════════════════════════════ */
+function resetForm() {
+  var campos = ['oi-flow','oi-temp','oi-tds','oi-ph','oi-hardness','oi-alkalinity'];
+  for (var i = 0; i < campos.length; i++) { getel(campos[i]).value = ''; }
+  getel('oi-flow-unit').value  = 'gpm';
+  getel('oi-flow-basis').value = 'permeate';
+  getel('oi-recovery').value   = 75;
+  getel('oi-rec-range').value  = 75;
+  getel('oi-rec-badge').textContent = '75%';
+  window._oiR = null;
+  showEmpty('Ingrese caudal y TDS, luego presione Calcular diseno.');
+}
+
+/* ══════════════════════════════════════════════════════════
+   EVENTOS
+   ══════════════════════════════════════════════════════════ */
+getel('oi-calc').addEventListener('click', calculate);
+getel('oi-reset').addEventListener('click', resetForm);
+
+getel('oi-rec-range').addEventListener('input', function () {
+  getel('oi-recovery').value = this.value;
+  getel('oi-rec-badge').textContent = this.value + '%';
+});
+getel('oi-recovery').addEventListener('input', function () {
+  var v = clamp(parseFloat(this.value) || 75, 30, 85);
+  this.value = v;
+  getel('oi-rec-range').value = v;
+  getel('oi-rec-badge').textContent = v + '%';
 });
 
-syncBadge(); showEmpty();
+/* Calcular con Enter */
+var inputIds = ['oi-flow','oi-temp','oi-tds','oi-ph','oi-hardness','oi-alkalinity'];
+for (var i = 0; i < inputIds.length; i++) {
+  (function(id){
+    getel(id).addEventListener('keyup', function(e){ if (e.key === 'Enter') calculate(); });
+  })(inputIds[i]);
+}
+
 })();
 </script>
 </div>
