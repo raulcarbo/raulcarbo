@@ -896,6 +896,26 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   updateMicronHint();
   showEmpty();
 })();
+
+/* Liberar selects de Select2 / Chosen que WordPress puede inyectar */
+(function(){
+  var IDS = ['inp-install','inp-micron','inp-quality','inp-win','inp-cext','inp-cint',
+             'inp-makeup-unit','inp-recirc-unit'];
+  function free(){
+    if(!window.jQuery) return;
+    IDS.forEach(function(id){
+      try{
+        var $s = jQuery('#' + id);
+        if(!$s.length) return;
+        if(jQuery.fn.select2)  $s.select2('destroy');
+        if(jQuery.fn.chosen){ $s.off('.chosen'); $s.removeClass('chosen-select chosen-processed'); }
+      }catch(e){}
+    });
+  }
+  free();
+  setTimeout(free, 400);
+  setTimeout(free, 1200);
+})();
 </script>
 </body>
 </html>
