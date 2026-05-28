@@ -220,6 +220,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
 .par-ref{color:var(--ink);font-family:var(--font-num);font-size:17px;font-weight:700;line-height:1.1;margin-bottom:8px;letter-spacing:-.02em}
 .par-chips{display:flex;flex-wrap:wrap;gap:5px}
 .par-chip{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:11.5px;color:var(--ink);font-weight:600;font-family:var(--font-num)}
+.par-badge-green{display:inline-block;background:var(--green-soft);color:var(--green-dark);border:1px solid var(--green-border);border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.05em;padding:3px 10px;margin-bottom:8px;text-transform:uppercase;font-family:var(--font-title)}
 
 /* ── Responsive ───────────────────── */
 @media(max-width:1060px){
@@ -496,6 +497,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
 
             <div id="parallel-wrap" style="display:none"></div>
 
+            <div id="alt-4dcl-wrap" style="display:none"></div>
+
           </div>
 
         </div>
@@ -564,8 +567,12 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   var DEFAULT_MICRON     = {kidney:50, side:100, full:100};
 
   /* Caudal máximo m³/h por elemento según micraje — fuente: tabla Azud Helix */
+  /* FT200 Ø2" (1,620 cm²) */
   var FLOW_PER_ELEM_STD  = {20:7,  50:13, 100:17, 130:19, 200:21};
   var FLOW_PER_ELEM_HARD = {20:6,  50:10, 100:16, 130:18, 200:20};
+  /* FT4DCL Ø4" (3,240 cm²) — doble área filtrante, caudales ×2 */
+  var FLOW_PER_ELEM_4DCL_STD  = {20:14, 50:26, 100:34, 130:38, 200:42};
+  var FLOW_PER_ELEM_4DCL_HARD = {20:12, 50:20, 100:32, 130:36, 200:40};
 
   /* Series Azud Helix — máx. filtros, retrolavado, tipo */
   var SERIES_TORRES = {
@@ -600,6 +607,27 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   function updateSerieHint(){
     var s = SERIES_TORRES[el('inp-serie').value] || SERIES_TORRES.ft200dlp;
     el('serie-hint').textContent = s.hint;
+  }
+
+  function calcFT4DCLAlt(r){
+    /* Only relevant when a FT200 series is selected */
+    if(r.serieKey === 's4dcl' || r.serieKey === 's4dclsw') return null;
+    var altKey = r.serieKey === 'ft200sw' ? 's4dclsw' : 's4dcl';
+    var altSerie = SERIES_TORRES[altKey];
+    var altFlowPerElem = (r.quality === 'difficult' ? FLOW_PER_ELEM_4DCL_HARD : FLOW_PER_ELEM_4DCL_STD)[r.micronDesign] || 26;
+    var altElements = Math.ceil(r.filterFlow / altFlowPerElem) + 1;
+    var altOverMax = altElements > altSerie.maxFilters;
+    var altParallelOpts = calcParallelOptions(altElements, r.filterFlow, altFlowPerElem, altSerie, altKey);
+    return {
+      serieKey: altKey,
+      serie: altSerie,
+      elements: altElements,
+      flowPerElem: altFlowPerElem,
+      refStr: makeRefTorres(altKey, altElements),
+      overMax: altOverMax,
+      parallelOpts: altParallelOpts,
+      washWater: altSerie.waterPerFilter + ' L por filtro por retrolavado'
+    };
   }
 
   function updateMicronHint(){
@@ -696,8 +724,10 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       recirc, install, sidePct, quality,
       filterFlow, micronDesign, micronText, micronRange, inRange, basis, diskType,
       cleaning, washWater, elements, flowPerElem,
-      serieKey, serie, overMax, refStr, parallelOpts
+      serieKey, serie, overMax, refStr, parallelOpts,
+      ft4dclAlt: null  /* filled after construction */
     };
+    lastR.ft4dclAlt = calcFT4DCLAlt(lastR);
 
     render(lastR);
   }
@@ -772,6 +802,45 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       pWrap.style.display = 'none';
     }
 
+    /* FT4DCL alternative section */
+    var aWrap = el('alt-4dcl-wrap');
+    var alt = r.ft4dclAlt;
+    if(alt){
+      var savings = r.elements - alt.elements;
+      var ah = '<div class="detail-title">Alternativa FT4DCL — Ø4" · doble área filtrante</div>';
+      ah += '<div class="notice info" style="margin-bottom:10px"><span class="notice-icon">🔄</span><div>' +
+        '<b>'+alt.serie.name+' · 3,240 cm²/filtro</b>' +
+        'Para el mismo caudal: <strong>'+alt.elements+' filtros '+alt.serie.name+'</strong>' +
+        (savings > 0 ? ' — <strong>'+savings+' filtros menos</strong> que con '+r.serie.name : '') +
+        '. Q máx/filtro: '+fmt(alt.flowPerElem,0)+' m³/h · Retrolavado: '+alt.washWater+'.</div></div>';
+      if(!alt.overMax){
+        ah += '<div class="notice" style="background:var(--green-soft);border-color:var(--green-border);color:var(--green-dark)">' +
+          '<span class="notice-icon">✓</span><div><b>Cabe en una sola batería</b>' +
+          'Referencia: <strong>'+alt.refStr+'</strong> · '+alt.elements+' filtros totales.</div></div>';
+      } else if(alt.parallelOpts.length > 0){
+        ah += '<div class="notice warn" style="margin-bottom:10px"><span class="notice-icon">⚠</span><div><b>También supera máx. '+alt.serie.maxFilters+'/batería — opciones paralelas</b></div></div>';
+        ah += '<div class="parallel-options-torres">';
+        alt.parallelOpts.forEach(function(opt,i){
+          ah += '<div class="par-card" style="border-color:var(--green-border)">' +
+            '<div class="par-badge-green">FT4DCL · Opción '+(i+1)+'</div>' +
+            '<div class="par-ref">'+opt.nb+' × '+opt.ref+'</div>' +
+            '<div class="par-chips">' +
+            '<span class="par-chip">'+opt.filtersPB+' filtros/bat.</span>' +
+            '<span class="par-chip">'+fmt(opt.flowPB,1)+' m³/h/bat.</span>' +
+            '<span class="par-chip">Ref: '+opt.ref+'</span>' +
+            '</div></div>';
+        });
+        ah += '</div>';
+      } else {
+        ah += '<div class="notice warn"><span class="notice-icon">⚠</span><div><b>Supera máx. de serie también</b>' +
+          alt.elements+' elementos FT4DCL supera máx. '+alt.serie.maxFilters+'/batería — consultar ingeniería.</div></div>';
+      }
+      aWrap.innerHTML = ah;
+      aWrap.style.display = 'block';
+    } else {
+      aWrap.style.display = 'none';
+    }
+
     /* notices */
     var notices = '';
     if(!r.inRange)
@@ -828,6 +897,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     el('results-content').style.display = 'none';
     el('copy-bar').style.display = 'none';
     el('parallel-wrap').style.display = 'none';
+    el('alt-4dcl-wrap').style.display = 'none';
   }
 
   function kpiCard(label, val, unit, sub, extra){
@@ -889,10 +959,20 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       'Autolimpieza:           ' + r.cleaning,
       'Consumo retrolavado:    ' + r.washWater,
       'ΔP máxima:              1.0 bar',
+      r.ft4dclAlt ? '' : '',
+      r.ft4dclAlt ? 'ALTERNATIVA FT4DCL (Ø4" · 3,240 cm²/filtro)' : '',
+      r.ft4dclAlt ? 'Serie:                  '+r.ft4dclAlt.serie.name+' · máx. '+r.ft4dclAlt.serie.maxFilters+'/batería' : '',
+      r.ft4dclAlt ? 'Elementos estimados:    '+r.ft4dclAlt.elements+' (Q_max/filtro '+fmt(r.ft4dclAlt.flowPerElem,0)+' m³/h)' : '',
+      r.ft4dclAlt && !r.ft4dclAlt.overMax ? 'Referencia:             '+r.ft4dclAlt.refStr+' · cabe en una sola batería' : '',
+      r.ft4dclAlt && r.ft4dclAlt.overMax && r.ft4dclAlt.parallelOpts.length > 0 ? 'Baterías FT4DCL:        ' +
+        r.ft4dclAlt.parallelOpts.map(function(opt,i){
+          return 'Opción '+(i+1)+': '+opt.nb+' × '+opt.ref+' ('+opt.filtersPB+' filtros/bat. · '+fmt(opt.flowPB,1)+' m³/h/bat.)';
+        }).join(' | ') : '',
+      r.ft4dclAlt ? 'Retrolavado FT4DCL:     '+r.ft4dclAlt.washWater : '',
       '',
       'NOTA',
       'Predimensionamiento preliminar. Validar hidráulica, presión disponible, química, sólidos reales y arreglo final del sistema.'
-    ].filter(function(l){ return l !== undefined; });
+    ].filter(function(l){ return l !== undefined && l !== ''; });
 
     navigator.clipboard.writeText(lines.join('\n')).then(function(){
       var btn = el('btn-copy');
