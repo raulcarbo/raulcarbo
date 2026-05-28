@@ -775,28 +775,16 @@ body {
           </div>
 
           <div class="field">
-            <label>Oxidante para regeneración</label>
+            <label>Oxidante de tratamiento</label>
             <div class="field-input">
               <select id="oxidant">
-                <option value="naocl">Hipoclorito de Sodio NaOCl al 13%</option>
-                <option value="kmno4">Permanganato de Potasio (KMnO₄)</option>
-                <option value="oxydes">OXYDES</option>
-              </select>
-            </div>
-          </div>
-
-          <p class="sec-label-blue">Preoxidación continua</p>
-
-          <div class="field">
-            <label>Oxidante continuo</label>
-            <div class="field-input">
-              <select id="oxCont">
                 <option value="naocl">Hipoclorito de Sodio (NaOCl)</option>
                 <option value="cl2">Gas Cloro (Cl₂)</option>
                 <option value="h2o2">Peróxido de Hidrógeno (H₂O₂)</option>
                 <option value="kmno4">Permanganato de Potasio (KMnO₄)</option>
               </select>
             </div>
+            <small>Aplica para regeneración del lecho y dosificación continua</small>
           </div>
 
           <div class="liq-cont" id="liqCont">
@@ -1056,27 +1044,42 @@ const BED_DEPTH_OPT_IN = 47;
 const FREEBOARD_FACTOR = 0.5;
 const CAPACITY = { fe: 85, mn: 42.5, s: 14 };
 
-const oxidantData = {
+const OXIDANTS = {
   naocl: {
-    label: 'Hipoclorito de Sodio NaOCl al 13%',
-    rateUnit: '90 g NaOCl 100%/ft³',
-    compute: ft3 => (ft3 * 90 / 0.13) / 1200,
-    format: v => `${fmt(v, 2)} Litros`,
-    detail: 'Equivale a 692 g de sol. al 13% por ft³ (dens. 1.2 kg/L → 577 mL/ft³)'
+    name: 'NaOCl',
+    label: 'Hipoclorito de Sodio (NaOCl)',
+    kFe: 0.67, kMn: 1.37, kH2S: 2.20,
+    isLiquid: true, defaultConc: 13.0, defaultDens: 1.20,
+    regenPureGft3: 90,
+    regenRateUnit: '90 g NaOCl 100%/ft³',
+    regenDetail: 'Equivale a ~692 mL de sol. al 13% (dens. 1.2 kg/L) por ft³ de medio'
+  },
+  cl2: {
+    name: 'Cl₂',
+    label: 'Gas Cloro (Cl₂)',
+    kFe: 0.64, kMn: 1.30, kH2S: 2.10,
+    isLiquid: false,
+    regenPureGft3: 65,
+    regenRateUnit: '~65 g Cl₂/ft³',
+    regenDetail: 'Dosis estimada de Cl₂ gaseoso por ft³ de medio. Requiere clorador y ventilación adecuada.'
+  },
+  h2o2: {
+    name: 'H₂O₂',
+    label: 'Peróxido de Hidrógeno (H₂O₂)',
+    kFe: 0.30, kMn: 0.62, kH2S: 1.00,
+    isLiquid: true, defaultConc: 30.0, defaultDens: 1.11,
+    regenPureGft3: 60,
+    regenRateUnit: '~60 g H₂O₂ 100%/ft³',
+    regenDetail: 'Dosis estimada de H₂O₂ puro por ft³. No deja residual persistente en el lecho.'
   },
   kmno4: {
+    name: 'KMnO₄',
     label: 'Permanganato de Potasio (KMnO₄)',
-    rateUnit: '60 g/ft³',
-    compute: ft3 => ft3 * 60,
-    format: v => v >= 1000 ? `${fmt(v/1000, 2)} kg` : `${fmt(v, 0)} gramos`,
-    detail: 'Dosis directa en gramos de KMnO₄ sólido por ft³ de medio'
-  },
-  oxydes: {
-    label: 'OXYDES',
-    rateUnit: '25 g/ft³',
-    compute: ft3 => ft3 * 25,
-    format: v => v >= 1000 ? `${fmt(v/1000, 2)} kg` : `${fmt(v, 0)} gramos`,
-    detail: 'Dosis directa en gramos de OXYDES por ft³ de medio'
+    kFe: 0.94, kMn: 1.92, kH2S: 6.19,
+    isLiquid: false,
+    regenPureGft3: 60,
+    regenRateUnit: '60 g KMnO₄/ft³',
+    regenDetail: 'Dosis directa en gramos de KMnO₄ sólido por ft³ de medio'
   }
 };
 
@@ -1198,15 +1201,8 @@ function calcCycles(mediaTotalFt3, iron, manganese, h2s, flowGpm, hoursPerDay=24
   return results;
 }
 
-const OXIDANTS_CONT = {
-  naocl: { name:'NaOCl',  label:'Hipoclorito de Sodio (NaOCl)',    kFe:0.67, kMn:1.37, kH2S:2.20, isLiquid:true,  defaultConc:13.0, defaultDens:1.20 },
-  cl2:   { name:'Cl₂',    label:'Gas Cloro (Cl₂)',                  kFe:0.64, kMn:1.30, kH2S:2.10, isLiquid:false },
-  h2o2:  { name:'H₂O₂',  label:'Peróxido de Hidrógeno (H₂O₂)',    kFe:0.30, kMn:0.62, kH2S:1.00, isLiquid:true,  defaultConc:30.0, defaultDens:1.11 },
-  kmno4: { name:'KMnO₄', label:'Permanganato de Potasio (KMnO₄)', kFe:0.94, kMn:1.92, kH2S:6.19, isLiquid:false }
-};
-
 function updateContOxidantUI() {
-  const ox = OXIDANTS_CONT[$('oxCont').value];
+  const ox = OXIDANTS[$('oxidant').value];
   const lc = $('liqCont');
   if (ox.isLiquid) {
     lc.classList.remove('hidden');
@@ -1218,8 +1214,8 @@ function updateContOxidantUI() {
 }
 
 function calcDosing(iron, manganese, h2s, flowGpm) {
-  const oxKey = $('oxCont').value;
-  const ox    = OXIDANTS_CONT[oxKey];
+  const oxKey = $('oxidant').value;
+  const ox    = OXIDANTS[oxKey];
   const resid = Math.max(0, Number($('contResidual').value) || 1.0);
   const hours = Math.max(1, Math.min(24, Number($('contHours').value) || 24));
   const flowM3h = flowGpm / GPM_PER_M3H;
@@ -1311,11 +1307,23 @@ function calculate() {
   const mediaPerTankFt3=tank.mediaPerVesselFt3||initialMedia;
   const mediaTotalFt3=mediaPerTankFt3*config.vessels*tank.trains;
   const realEbct=tank.flowPerTrainGpm>0?mediaPerTankFt3/tank.flowPerTrainGpm:0;
-  const oxidant=oxidantData[$('oxidant').value];
-  const chemicalRaw=oxidant.compute(mediaTotalFt3);
+  const ox = OXIDANTS[$('oxidant').value];
+  const contConc = ox.isLiquid ? Math.max(0.1, Number($('contConc').value) || ox.defaultConc) : 0;
+  const contDens = ox.isLiquid ? Math.max(0.8, Number($('contDens').value) || ox.defaultDens) : 1;
+  const regenPureG = ox.regenPureGft3 * mediaTotalFt3;
+  let regenNum, regenUnit, regenFull;
+  if (ox.isLiquid) {
+    const regenL = regenPureG / ((contConc / 100) * contDens * 1000);
+    regenNum = fmt(regenL, 2); regenUnit = 'Litros'; regenFull = `${regenNum} Litros`;
+  } else {
+    regenNum  = regenPureG >= 1000 ? fmt(regenPureG / 1000, 2) : fmt(regenPureG, 0);
+    regenUnit = regenPureG >= 1000 ? 'kg' : 'gramos';
+    regenFull = `${regenNum} ${regenUnit}`;
+  }
+  const regen = { ox, regenPureG, regenNum, regenUnit, regenFull, contConc, contDens };
   const cycles=calcCycles(mediaTotalFt3,iron,manganese,h2s,flowGpm);
   const dosing=calcDosing(iron,manganese,h2s,flowGpm);
-  lastResult={flowInput,flowUnit:$('flowUnit').options[$('flowUnit').selectedIndex].text,flowGpm,iron,manganese,h2s,ph,temp,loadC,config,mediaPerTankFt3,mediaTotalFt3,realEbct,tank,oxidant,chemicalRaw,bwRate,cycles,dosing};
+  lastResult={flowInput,flowUnit:$('flowUnit').options[$('flowUnit').selectedIndex].text,flowGpm,iron,manganese,h2s,ph,temp,loadC,config,mediaPerTankFt3,mediaTotalFt3,realEbct,tank,regen,bwRate,cycles,dosing};
   render(lastResult);
   $('copySummary').disabled=false;
   $('copyFeedback').textContent='';
@@ -1324,8 +1332,6 @@ function calculate() {
 function render(r) {
   const mediaPerTankL=r.mediaPerTankFt3*FT3_TO_L;
   const totalL=r.mediaTotalFt3*FT3_TO_L;
-  const chemDisplay=r.oxidant.format(r.chemicalRaw);
-  const chemNum=chemDisplay.split(' ')[0];
   const isParallel=r.tank.trains>1;
   $('formulaLoad').textContent=`${fmt(r.loadC,2)} mg/L`;
   $('formulaFlow').textContent=`${fmt(r.flowGpm,2)} GPM`;
@@ -1358,10 +1364,10 @@ function render(r) {
   $('bedDepth').textContent=`${fmt(r.tank.bedDepthIn,1)} in`;
   $('freeboardDepth').textContent=`${fmt(r.tank.freeboardIn,1)} in`;
   $('requiredHeight').textContent=`${fmt(r.tank.requiredHeightIn,1)} in`;
-  $('chemicalAmount').textContent=chemNum;
-  $('chemicalUnit').textContent=chemDisplay.replace(chemNum,'').trim();
-  $('chemicalText').textContent=`Utilizar ${chemDisplay} de ${r.oxidant.label} por ciclo de regeneración.`;
-  $('doseRate').textContent=r.oxidant.rateUnit;
+  $('chemicalAmount').textContent=r.regen.regenNum;
+  $('chemicalUnit').textContent=r.regen.regenUnit;
+  $('chemicalText').textContent=`Utilizar ${r.regen.regenFull} de ${r.regen.ox.label} por ciclo de regeneración.`;
+  $('doseRate').textContent=r.regen.ox.regenRateUnit;
   $('recipeBasis').textContent=`${fmt(r.mediaTotalFt3,1)} ft³ totales`;
   $('parallelOptions').innerHTML=renderParallelOptions(r);
   $('bwRate').textContent=fmt(r.bwRate.gpmFt2,0);
@@ -1407,7 +1413,6 @@ function renderAlerts(r) {
   $('alerts').innerHTML=alerts.map(a=>`<article class="alert ${a.type==='danger'?'danger':''}"><h3>${a.title}</h3><p>${a.body}</p></article>`).join('');
 }
 function buildSummary(r) {
-  const chemDisplay=r.oxidant.format(r.chemicalRaw);
   const mediaL=r.mediaPerTankFt3*FT3_TO_L;
   const totalL=r.mediaTotalFt3*FT3_TO_L;
   const cycleLines=r.cycles.map(c=>`  ${c.label}: ~${c.days!=null?fmt(c.days,1):'N/A'} días entre regeneraciones (carga ${fmt(c.load,2)} g/día vs. cap. ${fmt(c.cap,0)} g)`);
@@ -1442,10 +1447,10 @@ function buildSummary(r) {
     'Expansión mínima requerida: ≥ 30%',
     '',
     'REGENERACIÓN INTERMITENTE',
-    `Oxidante: ${r.oxidant.label}`,
-    `Dosis: ${r.oxidant.rateUnit}`,
-    `Cantidad por ciclo: ${chemDisplay}`,
-    `Nota: ${r.oxidant.detail}`,
+    `Oxidante: ${r.regen.ox.label}`,
+    `Dosis base: ${r.regen.ox.regenRateUnit}`,
+    `Cantidad por ciclo: ${r.regen.regenFull}`,
+    `Nota: ${r.regen.ox.regenDetail}`,
     '',
     cycleLines.length?'ESTIMADO DE CICLOS ENTRE REGENERACIONES':null,
     ...cycleLines,
@@ -1507,11 +1512,11 @@ function markClean() {
   $('calculateResults').style.boxShadow='';
 }
 ['flow','flowUnit','iron','manganese','h2s','ph','temp','oxidant',
- 'oxCont','contConc','contDens','contResidual','contHours'].forEach(id=>{
+ 'contConc','contDens','contResidual','contHours'].forEach(id=>{
   $(id).addEventListener('input', markDirty);
   $(id).addEventListener('change', markDirty);
 });
-$('oxCont').addEventListener('change', updateContOxidantUI);
+$('oxidant').addEventListener('change', updateContOxidantUI);
 $('calculateResults').addEventListener('click', calculate);
 $('copySummary').addEventListener('click', copySummary);
 updateContOxidantUI();
