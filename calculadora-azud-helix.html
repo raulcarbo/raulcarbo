@@ -260,14 +260,14 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
         <div class="field">
           <label for="az-micron">Grado de filtración</label>
           <select class="sel" id="az-micron">
-            <option value="5">5 µm — Discos WS (HDPE) · 1–3 m³/h/filtro</option>
+            <option value="5">5 µm — Discos WS (HDPE) · 2–5 m³/h/filtro</option>
             <option value="10">10 µm — Discos WS (HDPE) · 3–6 m³/h/filtro</option>
-            <option value="20">20 µm — Discos WS (HDPE) · 6–8 m³/h/filtro</option>
-            <option value="50" selected>50 µm — Discos WS (HDPE) · 10–14 m³/h/filtro</option>
-            <option value="100">100 µm — Discos WS (HDPE) · 16–18 m³/h/filtro</option>
-            <option value="130">130 µm — Discos MG (PP) · 18–20 m³/h/filtro</option>
-            <option value="200">200 µm — Discos MG (PP) · 20–22 m³/h/filtro</option>
-            <option value="400">400 µm — Discos MG (PP) · 20–24 m³/h/filtro</option>
+            <option value="20">20 µm — Discos WS (HDPE) · 5–8 m³/h/filtro</option>
+            <option value="50" selected>50 µm — Discos WS (HDPE) · 8–14 m³/h/filtro</option>
+            <option value="100">100 µm — Discos WS (HDPE) · 12–24 m³/h/filtro</option>
+            <option value="130">130 µm — Discos MG (PP) · 14–26 m³/h/filtro</option>
+            <option value="200">200 µm — Discos MG (PP) · 18–27 m³/h/filtro</option>
+            <option value="400">400 µm — Discos MG (PP) · 20–28 m³/h/filtro</option>
           </select>
           <div class="hint" id="disk-hint">WS = Polietileno Alta Densidad · MG = Polipropileno</div>
           <div id="tss-chip-wrap"></div>
@@ -460,27 +460,28 @@ var TSS_RANGES = {
 };
 
 /* Matriz FT200 Ø2" — caudal máximo m³/h/filtro según micraje y calidad de agua */
+/* Matriz FT200 Ø2" — caudal máximo m³/h/filtro · Fuente: Guía de selección Azud Helix */
 var MATRIX_FT200 = {
-  5:   {buena:3,   media:2,   mala:1.5, muy_mala:1},
+  5:   {buena:5,   media:4,   mala:3,   muy_mala:2},
   10:  {buena:6,   media:5,   mala:4,   muy_mala:3},
-  20:  {buena:8,   media:7,   mala:6.5, muy_mala:6},
-  50:  {buena:14,  media:13,  mala:11,  muy_mala:10},
-  100: {buena:18,  media:17,  mala:16,  muy_mala:16},
-  130: {buena:20,  media:19,  mala:19,  muy_mala:18},
-  200: {buena:22,  media:21,  mala:21,  muy_mala:20},
-  400: {buena:24,  media:23,  mala:21,  muy_mala:20}
+  20:  {buena:8,   media:7,   mala:6,   muy_mala:5},
+  50:  {buena:14,  media:12,  mala:10,  muy_mala:8},
+  100: {buena:24,  media:21,  mala:18,  muy_mala:12},
+  130: {buena:26,  media:23,  mala:19,  muy_mala:14},
+  200: {buena:27,  media:25,  mala:22,  muy_mala:18},
+  400: {buena:28,  media:26,  mala:24,  muy_mala:20}
 };
 
-/* Matriz FT4DCL Ø4" — doble de área filtrante, caudales ×2 respecto a FT200 */
+/* Matriz FT4DCL Ø4" — 3,240 cm² · caudales ×2 respecto a FT200 (misma guía) */
 var MATRIX_FT4DCL = {
-  5:   {buena:6,   media:4,   mala:3,   muy_mala:2},
+  5:   {buena:10,  media:8,   mala:6,   muy_mala:4},
   10:  {buena:12,  media:10,  mala:8,   muy_mala:6},
-  20:  {buena:16,  media:14,  mala:13,  muy_mala:12},
-  50:  {buena:28,  media:26,  mala:22,  muy_mala:20},
-  100: {buena:36,  media:34,  mala:32,  muy_mala:32},
-  130: {buena:40,  media:38,  mala:38,  muy_mala:36},
-  200: {buena:44,  media:42,  mala:42,  muy_mala:40},
-  400: {buena:48,  media:46,  mala:42,  muy_mala:40}
+  20:  {buena:16,  media:14,  mala:12,  muy_mala:10},
+  50:  {buena:28,  media:24,  mala:20,  muy_mala:16},
+  100: {buena:48,  media:42,  mala:36,  muy_mala:24},
+  130: {buena:52,  media:46,  mala:38,  muy_mala:28},
+  200: {buena:54,  media:50,  mala:44,  muy_mala:36},
+  400: {buena:56,  media:52,  mala:48,  muy_mala:40}
 };
 
 /* Caudales mínimos por filtro (m³/h) para correcta activación de autolimpieza */

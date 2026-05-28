@@ -432,11 +432,11 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           <div class="field">
             <label>Grado de filtración</label>
             <select class="full-sel" id="inp-micron" onchange="updateMicronHint()">
-              <option value="20">20 µm — Muy fino (Discos WS)</option>
-              <option value="50" selected>50 µm — Fino (Discos WS)</option>
-              <option value="100">100 µm — Estándar (Discos WS)</option>
-              <option value="130">130 µm — Medio (Discos MG)</option>
-              <option value="200">200 µm — Grueso (Discos MG)</option>
+              <option value="20">20 µm — Discos WS (HDPE) · 5–8 m³/h/filtro</option>
+              <option value="50" selected>50 µm — Discos WS (HDPE) · 8–14 m³/h/filtro</option>
+              <option value="100">100 µm — Discos WS (HDPE) · 12–24 m³/h/filtro</option>
+              <option value="130">130 µm — Discos MG (PP) · 14–26 m³/h/filtro</option>
+              <option value="200">200 µm — Discos MG (PP) · 18–27 m³/h/filtro</option>
             </select>
             <div class="hint" id="micron-hint">Rango sugerido para Flujo Total: 100 – 200 µm.</div>
           </div>
@@ -444,8 +444,10 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           <div class="field">
             <label>Calidad del agua y sólidos</label>
             <select class="full-sel" id="inp-quality">
-              <option value="standard" selected>Agua estándar</option>
-              <option value="difficult">Agua difícil, pegajosa o con alta carga de sólidos</option>
+              <option value="buena">Buena — agua limpia, baja turbidez</option>
+              <option value="media" selected>Media — agua con ciertos sólidos (estándar)</option>
+              <option value="mala">Mala — alta carga de sólidos o agua difícil</option>
+              <option value="muy_mala">Muy mala — agua muy sucia o pegajosa</option>
             </select>
           </div>
 
@@ -566,13 +568,20 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   var MICRON_RANGE_LABEL = {kidney:'20 – 50 µm', side:'50 – 130 µm', full:'100 – 200 µm'};
   var DEFAULT_MICRON     = {kidney:50, side:100, full:100};
 
-  /* Caudal máximo m³/h por elemento según micraje — fuente: tabla Azud Helix */
-  /* FT200 Ø2" (1,620 cm²) */
-  var FLOW_PER_ELEM_STD  = {20:7,  50:13, 100:17, 130:19, 200:21};
-  var FLOW_PER_ELEM_HARD = {20:6,  50:10, 100:16, 130:18, 200:20};
-  /* FT4DCL Ø4" (3,240 cm²) — doble área filtrante, caudales ×2 */
-  var FLOW_PER_ELEM_4DCL_STD  = {20:14, 50:26, 100:34, 130:38, 200:42};
-  var FLOW_PER_ELEM_4DCL_HARD = {20:12, 50:20, 100:32, 130:36, 200:40};
+  /* Caudal máximo m³/h por elemento — Guía rápida oficial Azud · FT200 Ø2" (1,620 cm²) */
+  var FLOW_PER_ELEM = {
+    buena:    {20:8,  50:14, 100:24, 130:26, 200:27},
+    media:    {20:7,  50:12, 100:21, 130:23, 200:25},
+    mala:     {20:6,  50:10, 100:18, 130:19, 200:22},
+    muy_mala: {20:5,  50:8,  100:12, 130:14, 200:18}
+  };
+  /* FT4DCL Ø4" (3,240 cm²) — doble área filtrante · caudales ×2 */
+  var FLOW_PER_ELEM_4DCL = {
+    buena:    {20:16, 50:28, 100:48, 130:52, 200:54},
+    media:    {20:14, 50:24, 100:42, 130:46, 200:50},
+    mala:     {20:12, 50:20, 100:36, 130:38, 200:44},
+    muy_mala: {20:10, 50:16, 100:24, 130:28, 200:36}
+  };
 
   /* Series Azud Helix — máx. filtros, retrolavado, tipo */
   var SERIES_TORRES = {
@@ -614,7 +623,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     if(r.serieKey === 's4dcl' || r.serieKey === 's4dclsw') return null;
     var altKey = r.serieKey === 'ft200sw' ? 's4dclsw' : 's4dcl';
     var altSerie = SERIES_TORRES[altKey];
-    var altFlowPerElem = (r.quality === 'difficult' ? FLOW_PER_ELEM_4DCL_HARD : FLOW_PER_ELEM_4DCL_STD)[r.micronDesign] || 26;
+    var altFlowPerElem = (FLOW_PER_ELEM_4DCL[r.quality] || FLOW_PER_ELEM_4DCL.media)[r.micronDesign] || 26;
     var altElements = Math.ceil(r.filterFlow / altFlowPerElem) + 1;
     var altOverMax = altElements > altSerie.maxFilters;
     var altParallelOpts = calcParallelOptions(altElements, r.filterFlow, altFlowPerElem, altSerie, altKey);
@@ -712,7 +721,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       ? 'Filtro Azud AA DLP (Asistido por Aire)'
       : 'Limpieza hidráulica DLP';
     var washWater = serie.waterPerFilter + ' L por filtro por retrolavado';
-    var flowPerElem = (quality === 'difficult' ? FLOW_PER_ELEM_HARD : FLOW_PER_ELEM_STD)[micronDesign] || 13;
+    var flowPerElem = (FLOW_PER_ELEM[quality] || FLOW_PER_ELEM.media)[micronDesign] || 13;
     var elements = Math.ceil(filterFlow / flowPerElem) + 1;
     var overMax = elements > serie.maxFilters;
     var refStr = makeRefTorres(serieKey, elements);
@@ -850,9 +859,9 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     if(r.install === 'full')
       notices += notice('warn','⚡','Flujo total vs flujo lateral',
         'Filtrar el 100% asegura máxima protección, pero tiene un CAPEX muy elevado. La industria sugiere que la filtración lateral (10-20%) remueve hasta el 94% de las partículas con una fracción de la inversión.');
-    if(r.quality === 'difficult')
-      notices += notice('info','💧','Autolimpieza asistida por aire',
-        'Reduce el consumo de agua a solo 10 litros por elemento por retrolavado y recupera el 100% de la presión diferencial con sólidos difíciles.');
+    if(r.quality === 'mala' || r.quality === 'muy_mala')
+      notices += notice('info','💧','Considere Autolimpieza Asistida por Aire (AA)',
+        'Con agua difícil o muy sucia, la serie FT200 AA DLP reduce el consumo de retrolavado a 10 L/filtro y recupera el 100% de la presión diferencial incluso con sólidos pegajosos.');
     if(r.lsiOk && r.lsi > 0.5)
       notices += notice('danger','⚠️','Alta tendencia incrustante (LSI > +0.5)',
         'Existe riesgo de incrustación de carbonato de calcio en intercambiadores, boquillas y superficies de transferencia de calor. Considere inhibidores de incrustación o ajuste de pH.');
@@ -993,7 +1002,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     el('inp-install').value      = 'kidney';
     el('inp-serie').value        = 'ft200dlp';
     el('inp-side-pct').value     = 10;
-    el('inp-quality').value      = 'standard';
+    el('inp-quality').value      = 'media';
     lastR = null;
     syncCycles();
     updateVisibility();
