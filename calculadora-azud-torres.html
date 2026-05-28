@@ -213,6 +213,14 @@ input[type="range"]{width:100%;accent-color:var(--brand)}
 .disclaimer svg{color:#B45309;margin-top:2px;flex-shrink:0}
 footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);font-family:var(--font-num);letter-spacing:.06em;text-transform:uppercase}
 
+/* ── Parallel battery section ─────── */
+.parallel-options-torres{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:10px}
+.par-card{background:var(--surface);border:1.5px solid var(--warn-border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow-sm)}
+.par-badge{display:inline-block;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-border);border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.05em;padding:3px 10px;margin-bottom:8px;text-transform:uppercase;font-family:var(--font-title)}
+.par-ref{color:var(--ink);font-family:var(--font-num);font-size:17px;font-weight:700;line-height:1.1;margin-bottom:8px;letter-spacing:-.02em}
+.par-chips{display:flex;flex-wrap:wrap;gap:5px}
+.par-chip{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:11.5px;color:var(--ink);font-weight:600;font-family:var(--font-num)}
+
 /* ── Responsive ───────────────────── */
 @media(max-width:1060px){
   .layout{grid-template-columns:1fr}
@@ -379,6 +387,18 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           <div class="sec-label">Configuración de filtración Azud</div>
 
           <div class="field">
+            <label>Serie Azud Helix</label>
+            <select class="full-sel" id="inp-serie" onchange="updateSerieHint()">
+              <option value="ft200dlp" selected>FT200 DLP — Ø2" · Hidráulico · máx. 12 filtros</option>
+              <option value="ft200aa">FT200 AA DLP — Ø2" · Asistido por Aire · máx. 10 filtros</option>
+              <option value="ft200sw">FT200 SW DLP — Ø2" · Alta salinidad · máx. 12 filtros</option>
+              <option value="s4dcl">FT4DCL DLP — Ø4" · Hidráulico · máx. 12 filtros</option>
+              <option value="s4dclsw">FT4DCL SW DLP — Ø4" · Alta salinidad · máx. 12 filtros</option>
+            </select>
+            <div class="hint" id="serie-hint">Agua dulce / baja salinidad · retrolavado hidráulico · válvulas Ø2".</div>
+          </div>
+
+          <div class="field">
             <label>Caudal de recirculación de la torre <span class="req">*</span></label>
             <div class="inline-wrap">
               <input type="number" id="inp-recirc" min="0" step="any" placeholder="Ej. 300">
@@ -474,6 +494,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             <div class="detail-title">Configuración del filtro Azud</div>
             <ul class="az-rows" id="filter-rows"></ul>
 
+            <div id="parallel-wrap" style="display:none"></div>
+
           </div>
 
         </div>
@@ -544,6 +566,41 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   /* Caudal máximo m³/h por elemento según micraje — fuente: tabla Azud Helix */
   var FLOW_PER_ELEM_STD  = {20:7,  50:13, 100:17, 130:19, 200:21};
   var FLOW_PER_ELEM_HARD = {20:6,  50:10, 100:16, 130:18, 200:20};
+
+  /* Series Azud Helix — máx. filtros, retrolavado, tipo */
+  var SERIES_TORRES = {
+    ft200dlp:  {name:'FT200 DLP',     maxFilters:12, waterPerFilter:55,  aa:false, hint:'Agua dulce · retrolavado hidráulico · válvulas Ø2".'},
+    ft200aa:   {name:'FT200 AA DLP',  maxFilters:10, waterPerFilter:10,  aa:true,  hint:'Asistido por Aire · 10 L/filtro · requiere compresor · mín. 1 m³/h/filtro.'},
+    ft200sw:   {name:'FT200 SW DLP',  maxFilters:12, waterPerFilter:55,  aa:false, hint:'Alta salinidad 6,000–55,000 mg/L · materiales HASTELLOY / AISI 316L.'},
+    s4dcl:     {name:'FT4DCL DLP',    maxFilters:12, waterPerFilter:120, aa:false, hint:'Ø4" · doble área filtrante 3,240 cm² · alta capacidad · agua dulce.'},
+    s4dclsw:   {name:'FT4DCL SW DLP', maxFilters:12, waterPerFilter:120, aa:false, hint:'Ø4" · alta salinidad · materiales HASTELLOY / AISI 316L.'}
+  };
+
+  function makeRefTorres(serieKey, n){
+    if(serieKey==='ft200aa')  return 'FT2'+String(n).padStart(2,'0')+' AA DLP';
+    if(serieKey==='ft200dlp') return 'FT2'+String(n).padStart(2,'0')+' DLP';
+    if(serieKey==='ft200sw')  return 'FT2'+String(n).padStart(2,'0')+' SW DLP';
+    if(serieKey==='s4dcl')    return 'FT4DCL'+n+' DLP';
+    return 'FT4DCL'+n+' SW DLP';
+  }
+
+  function calcParallelOptions(elements, filterFlow, flowPerElem, serie, serieKey){
+    if(elements <= serie.maxFilters) return [];
+    var options = [];
+    var minBatteries = Math.ceil(elements / serie.maxFilters);
+    for(var nb = minBatteries; nb <= minBatteries + 1; nb++){
+      var flowPB = filterFlow / nb;
+      var filtersPB = Math.ceil(flowPB / flowPerElem) + 1;
+      if(filtersPB > serie.maxFilters) continue;
+      options.push({nb:nb, flowPB:flowPB, filtersPB:filtersPB, ref:makeRefTorres(serieKey, filtersPB)});
+    }
+    return options;
+  }
+
+  function updateSerieHint(){
+    var s = SERIES_TORRES[el('inp-serie').value] || SERIES_TORRES.ft200dlp;
+    el('serie-hint').textContent = s.hint;
+  }
 
   function updateMicronHint(){
     var install = el('inp-install').value;
@@ -621,20 +678,25 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     var diskType = micronDesign <= 100
       ? 'Discos WS (Polietileno HDPE · 5 a 100 µm)'
       : 'Discos MG (Polipropileno PP · 130 a 400 µm)';
-    var cleaning = quality === 'difficult'
-      ? 'Filtro Azud Asistido por Aire (AA)'
-      : 'Limpieza hidráulica convencional';
-    var washWater = quality === 'difficult'
-      ? '10 L por elemento por retrolavado'
-      : '55 L por elemento por retrolavado';
+    var serieKey = el('inp-serie').value || 'ft200dlp';
+    var serie = SERIES_TORRES[serieKey] || SERIES_TORRES.ft200dlp;
+    var cleaning = serie.aa
+      ? 'Filtro Azud AA DLP (Asistido por Aire)'
+      : 'Limpieza hidráulica DLP';
+    var washWater = serie.waterPerFilter + ' L por filtro por retrolavado';
     var flowPerElem = (quality === 'difficult' ? FLOW_PER_ELEM_HARD : FLOW_PER_ELEM_STD)[micronDesign] || 13;
     var elements = Math.ceil(filterFlow / flowPerElem) + 1;
+    var overMax = elements > serie.maxFilters;
+    var refStr = makeRefTorres(serieKey, elements);
+    var parallelOpts = calcParallelOptions(elements, filterFlow, flowPerElem, serie, serieKey);
 
     lastR = {
       basin, makeup, cycles, tdsMk, blowdown, evap, towerTds,
       tempC, ph, hardness, alkalin, hardT, alkalinT, lsi, lsiOk,
       recirc, install, sidePct, quality,
-      filterFlow, micronDesign, micronText, micronRange, inRange, basis, diskType, cleaning, washWater, elements, flowPerElem
+      filterFlow, micronDesign, micronText, micronRange, inRange, basis, diskType,
+      cleaning, washWater, elements, flowPerElem,
+      serieKey, serie, overMax, refStr, parallelOpts
     };
 
     render(lastR);
@@ -654,9 +716,12 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       kpiCard('TDS en torre', fmt(r.towerTds,0), 'mg/L', 'TDS reposición × ciclos', '');
 
     /* hero dark card */
+    var refDisplay = r.overMax
+      ? '<span style="color:#FCA5A5">⚠ ' + fmt(r.elements,0) + ' supera máx. ' + r.serie.maxFilters + ' — ver baterías paralelas</span>'
+      : '<strong style="color:#93C5FD">' + r.refStr + '</strong>';
     el('hero-result-wrap').innerHTML =
       '<div class="hero-result">' +
-        '<div class="hero-result-tag">Selección preliminar Azud · ' + installLabel(r.install) + '</div>' +
+        '<div class="hero-result-tag">Selección preliminar Azud · ' + installLabel(r.install) + ' · ' + r.serie.name + '</div>' +
         '<div class="hero-result-grid">' +
           '<div>' +
             '<div class="hr-label">Caudal de filtración requerido</div>' +
@@ -671,11 +736,41 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             '<div class="hr-sub" style="margin-top:5px;color:rgba(255,255,255,.50)">Rango ' + installLabel(r.install) + ': ' + r.micronRange + '</div>' +
             '<div class="hr-sub" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.14)">' +
               '<strong style="color:#93C5FD">' + fmt(r.elements,0) + ' elementos</strong>' +
-              '  ·  ceil(' + fmt(r.filterFlow,1) + '/' + fmt(r.flowPerElem,0) + ') + 1 · ' + r.cleaning +
+              '  ·  ceil(' + fmt(r.filterFlow,1) + '/' + fmt(r.flowPerElem,0) + ') + 1 · ' + r.cleaning + '<br>' +
+              'Ref: ' + refDisplay +
             '</div>' +
           '</div>' +
         '</div>' +
       '</div>';
+
+    /* Parallel battery section */
+    var pWrap = el('parallel-wrap');
+    if(r.parallelOpts.length > 0){
+      var ph = '<div class="notice warn" style="margin-bottom:10px"><span class="notice-icon">⚠</span><div>' +
+        '<b>Máximo de filtros por batería superado</b>' +
+        fmt(r.elements,0) + ' elementos calculados supera el máximo de ' + r.serie.maxFilters + ' de la serie ' + r.serie.name + '. ' +
+        'Opciones de distribución en baterías paralelas:</div></div>';
+      ph += '<div class="parallel-options-torres">';
+      r.parallelOpts.forEach(function(opt,i){
+        ph += '<div class="par-card">' +
+          '<div class="par-badge">Opción '+(i+1)+' — '+opt.nb+' baterías</div>' +
+          '<div class="par-ref">'+opt.nb+' × '+opt.ref+'</div>' +
+          '<div class="par-chips">' +
+          '<span class="par-chip">'+opt.filtersPB+' filtros/batería</span>' +
+          '<span class="par-chip">'+fmt(opt.flowPB,1)+' m³/h/bat.</span>' +
+          '<span class="par-chip">Ref: '+opt.ref+'</span>' +
+          '</div></div>';
+      });
+      ph += '</div>';
+      pWrap.innerHTML = ph;
+      pWrap.style.display = 'block';
+    } else if(r.overMax){
+      pWrap.innerHTML = '<div class="notice warn"><span class="notice-icon">⚠</span><div><b>Máximo de serie superado</b>' +
+        fmt(r.elements,0)+' elementos supera el máximo de '+r.serie.maxFilters+'/batería — consultar ingeniería Azud para configuración especial.</div></div>';
+      pWrap.style.display = 'block';
+    } else {
+      pWrap.style.display = 'none';
+    }
 
     /* notices */
     var notices = '';
@@ -709,11 +804,13 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     /* filter rows */
     el('filter-rows').innerHTML =
       row('Tipo de instalación','Configuración seleccionada.', installLabel(r.install), '') +
+      row('Serie Azud Helix','Modelo de batería seleccionado.', r.serie.name, 'Máx. '+r.serie.maxFilters+' filtros por batería') +
       row('Caudal de filtración','Caudal requerido para el tren de discos.', fmt(r.filterFlow,2)+' m³/h', fmt(m3hToGpm(r.filterFlow),1)+' GPM') +
-      row('Elementos filtrantes estimados','ceil(caudal / Q_max_elem) + 1 (reserva en retrolavado).', fmt(r.elements,0)+' elementos', 'Q_max/elem ' + fmt(r.flowPerElem,0) + ' m³/h · base tabla Azud Helix · +1 permite filtrar en retrolavado') +
+      row('Elementos filtrantes estimados','ceil(caudal / Q_max_elem) + 1 (reserva en retrolavado).', fmt(r.elements,0)+' elementos'+(r.overMax?' ⚠':''), 'Q_max/elem ' + fmt(r.flowPerElem,0) + ' m³/h · tabla Azud Helix · +1 permite filtrar en retrolavado') +
+      row('Referencia de equipo Azud', r.overMax?'Supera máx. serie — ver baterías paralelas.':'Código para cotización y pedido.', r.overMax?'— ver baterías':r.refStr, r.overMax?'':r.serie.name+' · '+r.elements+' filtros') +
       row('Grado de filtración','Micraje seleccionado para la aplicación.', r.micronText, 'Rango ' + installLabel(r.install) + ': ' + r.micronRange + (r.inRange ? '' : ' · ⚠ fuera de rango típico')) +
       row('Tipo de discos','Selección según micraje.', r.diskType, r.micronDesign <= 100 ? 'WS: HDPE · 5 a 100 µm' : 'MG: PP · 130 a 400 µm') +
-      row('Método de autolimpieza','Según tipo de agua y sólidos.', r.cleaning, r.washWater) +
+      row('Método de autolimpieza','Según serie y tipo de agua.', r.cleaning, r.washWater) +
       row('Presión mínima de suministro','Presión requerida aguas arriba del filtro para activación correcta de la autolimpieza (DOE/FEMP 2012).', '1.4 – 2.1 bar', '20 – 30 psi') +
       row('Caída de presión máxima','Límite operativo por presostatos del sistema.', '1.0 bar', 'No exceder antes de retrolavado');
 
@@ -730,6 +827,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     el('empty-state').style.display = '';
     el('results-content').style.display = 'none';
     el('copy-bar').style.display = 'none';
+    el('parallel-wrap').style.display = 'none';
   }
 
   function kpiCard(label, val, unit, sub, extra){
@@ -774,10 +872,18 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       '',
       'FILTRACIÓN AZUD',
       'Instalación:            ' + installLabel(r.install),
+      'Serie Azud:             ' + r.serie.name + ' · máx. ' + r.serie.maxFilters + ' filtros/batería',
       'Recirculación torre:    ' + fmt(r.recirc,1) + ' m³/h (' + fmt(m3hToGpm(r.recirc),0) + ' GPM)',
       'Caudal a filtrar:       ' + fmt(r.filterFlow,2) + ' m³/h (' + fmt(m3hToGpm(r.filterFlow),1) + ' GPM)',
       'Base de cálculo:        ' + r.basis,
       'Elementos estimados:    ' + fmt(r.elements,0) + ' (ceil(' + fmt(r.filterFlow,2) + '/' + fmt(r.flowPerElem,0) + ') + 1 · Q_max tabla Azud Helix)',
+      r.overMax
+        ? '⚠ Referencia:          ' + fmt(r.elements,0) + ' filtros supera máx. ' + r.serie.maxFilters + '/batería — ver baterías en paralelo'
+        : 'Referencia de equipo:   ' + r.refStr,
+      r.parallelOpts.length > 0 ? 'BATERÍAS EN PARALELO (máx. '+r.serie.maxFilters+'/batería superado):' : '',
+      r.parallelOpts.length > 0 ? r.parallelOpts.map(function(opt,i){
+        return '  Opción '+(i+1)+': '+opt.nb+' baterías × '+opt.ref+' — '+opt.filtersPB+' filtros/bat. · '+fmt(opt.flowPB,1)+' m³/h/bat.';
+      }).join('\n') : '',
       'Grado de filtración:    ' + r.micronText + ' (rango típico: ' + r.micronRange + ')',
       'Tipo de discos:         ' + r.diskType,
       'Autolimpieza:           ' + r.cleaning,
@@ -805,11 +911,13 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     el('inp-temp').value         = 30;
     el('inp-recirc-unit').value  = 'm3h';
     el('inp-install').value      = 'kidney';
+    el('inp-serie').value        = 'ft200dlp';
     el('inp-side-pct').value     = 10;
     el('inp-quality').value      = 'standard';
     lastR = null;
     syncCycles();
     updateVisibility();
+    updateSerieHint();
     showEmpty();
   }
 
@@ -830,6 +938,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   });
 
   el('inp-install').addEventListener('change', updateVisibility);
+  el('inp-serie').addEventListener('change', updateSerieHint);
 
   document.querySelectorAll('.shell input, .shell select').forEach(function(inp){
     inp.addEventListener('keyup', function(e){ if(e.key === 'Enter') calculate(); });
@@ -838,12 +947,13 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   syncCycles();
   updateVisibility();
   updateMicronHint();
+  updateSerieHint();
   showEmpty();
 })();
 
 /* Liberar selects de Select2 / Chosen que WordPress puede inyectar */
 (function(){
-  var IDS = ['inp-install','inp-micron','inp-quality','inp-makeup-unit','inp-recirc-unit'];
+  var IDS = ['inp-install','inp-micron','inp-quality','inp-makeup-unit','inp-recirc-unit','inp-serie'];
   function free(){
     if(!window.jQuery) return;
     IDS.forEach(function(id){
