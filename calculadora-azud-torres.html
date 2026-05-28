@@ -430,6 +430,12 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
 
           <div class="sec-label">Caracterización de carga de sólidos <span class="opt">opcional</span></div>
 
+          <div class="hint" style="background:var(--sky-soft);border:1px solid var(--sky-border);border-radius:10px;padding:10px 13px;margin-bottom:12px;line-height:1.75;color:var(--sky-dark);font-size:11.5px">
+            <strong style="display:block;margin-bottom:3px;font-size:10px;letter-spacing:.07em;text-transform:uppercase">Tamaños de partícula en torres · DOE/FEMP 2012</strong>
+            Arena 100–2,000 µm · Polen 10–1,000 µm · Esporas de moho 10–30 µm · Bacterias ~3 µm.<br>
+            El 90% de las partículas son &lt;10 µm — los sub-micrón se controlan con biocidas, no con filtración mecánica de discos.
+          </div>
+
           <div class="field">
             <label>Fuente del agua de reposición <span class="opt">W_IN</span></label>
             <select class="full-sel" id="inp-win" size="1" onchange="updateMicronHint()">
@@ -745,8 +751,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     if(r.lsiOk && r.lsi > 0.5)
       notices += notice('danger','⚠️','Alta tendencia incrustante (LSI > +0.5)',
         'Existe riesgo de incrustación de carbonato de calcio en intercambiadores, boquillas y superficies de transferencia de calor. Considere inhibidores de incrustación o ajuste de pH.');
-    notices += notice('info','🦠','Nota microbiológica',
-      'Las torres actúan como lavadoras de aire. La filtración de discos Azud previene la acumulación de lodos, protege los intercambiadores contra ensuciamiento y reduce el hábitat de bacterias como la Legionella, disminuyendo el consumo de biocidas.');
+    notices += notice('info','🦠','Nota microbiológica · ASHRAE Guideline 12-2000',
+      'Las torres actúan como lavadoras de aire. La filtración de discos Azud previene la acumulación de lodos, protege los intercambiadores contra ensuciamiento y reduce el hábitat de <em>Legionella</em>, disminuyendo el consumo de biocidas. La clave del control microbiológico es la limpieza continua del sistema — ASHRAE Guideline 12-2000: <em>Minimizing the Risk of Legionellosis Associated with Building Water Systems</em>.');
     el('notices-wrap').innerHTML = notices;
 
     /* balance rows */
@@ -767,6 +773,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       row('Grado de filtración','Micraje seleccionado para la aplicación.', r.micronText, 'Rango ' + installLabel(r.install) + ': ' + r.micronRange + (r.inRange ? '' : ' · ⚠ fuera de rango típico')) +
       row('Tipo de discos','Selección según micraje.', r.diskType, r.micronDesign <= 100 ? 'WS: HDPE · 5 a 100 µm' : 'MG: PP · 130 a 400 µm') +
       row('Método de autolimpieza','Según tipo de agua y sólidos.', r.cleaning, r.washWater) +
+      row('Presión mínima de suministro','Presión requerida aguas arriba del filtro para activación correcta de la autolimpieza (DOE/FEMP 2012).', '1.4 – 2.1 bar', '20 – 30 psi') +
       row('Caída de presión máxima','Límite operativo por presostatos del sistema.', '1.0 bar', 'No exceder antes de retrolavado');
 
     el('empty-state').style.display = 'none';
