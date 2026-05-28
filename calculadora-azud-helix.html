@@ -263,9 +263,9 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
             <option value="5">5 µm — Discos WS (HDPE) · 2–5 m³/h/filtro</option>
             <option value="10">10 µm — Discos WS (HDPE) · 3–6 m³/h/filtro</option>
             <option value="20">20 µm — Discos WS (HDPE) · 5–8 m³/h/filtro</option>
-            <option value="50" selected>50 µm — Discos WS (HDPE) · 8–14 m³/h/filtro</option>
+            <option value="50">50 µm — Discos WS (HDPE) · 8–14 m³/h/filtro</option>
             <option value="100">100 µm — Discos WS (HDPE) · 12–24 m³/h/filtro</option>
-            <option value="130">130 µm — Discos MG (PP) · 14–26 m³/h/filtro</option>
+            <option value="130" selected>130 µm — Discos MG (PP) · 14–26 m³/h/filtro</option>
             <option value="200">200 µm — Discos MG (PP) · 18–27 m³/h/filtro</option>
             <option value="400">400 µm — Discos MG (PP) · 20–28 m³/h/filtro</option>
           </select>
@@ -1007,7 +1007,7 @@ function copied(){
 
 el('az-reset').addEventListener('click',function(){
   el('az-flow').value='';el('az-unit').value='m3h';
-  el('az-micron').value='50';el('az-quality').value='media';
+  el('az-micron').value='130';el('az-quality').value='media';
   el('az-solids').value='standard';el('az-mode').value='aa';
   el('az-apptype').value='standard';el('az-redundancy').value='no';
   render();markClean();
