@@ -414,7 +414,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
               <option value="20">20 µm — Muy fino (Discos WS)</option>
               <option value="50">50 µm — Fino (Discos WS)</option>
               <option value="100" selected>100 µm — Estándar (Discos WS)</option>
-              <option value="130">130 µm — Medio (Discos WS)</option>
+              <option value="130">130 µm — Medio (Discos MG)</option>
               <option value="200">200 µm — Grueso (Discos MG)</option>
             </select>
             <div class="hint" id="micron-hint">Rango sugerido para Flujo Total: 100 – 200 µm.</div>
@@ -531,7 +531,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <div>
       <strong>Predimensionamiento preliminar — requiere validación hidráulica, química y de sólidos.</strong>
-      El número de elementos, el micraje y la configuración de autolimpieza son estimaciones de ingeniería. La selección final debe validar presión disponible, pérdida de carga, número de válvulas de retrolavado, calidad real de sólidos, estrategia de purga de la torre y espacio físico disponible. Los datos de LSI son orientativos; para control de incrustación consulte a un ingeniero de aguas.
+      El número de elementos (calculado con la tabla de caudales por micraje Azud Helix), el micraje y la configuración de autolimpieza son estimaciones de ingeniería. La selección final debe validar presión disponible, pérdida de carga, número de válvulas de retrolavado, calidad real de sólidos, estrategia de purga de la torre y espacio físico disponible. Los datos de LSI son orientativos; para control de incrustación consulte a un ingeniero de aguas.
     </div>
   </div>
 
@@ -579,6 +579,10 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   var MICRONS_BY_INSTALL = {kidney:[20,50], side:[50,100,130], full:[100,130,200]};
   var MICRON_RANGE_LABEL = {kidney:'20 – 50 µm', side:'50 – 130 µm', full:'100 – 200 µm'};
   var DEFAULT_MICRON     = {kidney:50, side:100, full:100};
+
+  /* Caudal máximo m³/h por elemento según micraje — fuente: tabla Azud Helix */
+  var FLOW_PER_ELEM_STD  = {20:7,  50:13, 100:17, 130:19, 200:21};
+  var FLOW_PER_ELEM_HARD = {20:6,  50:10, 100:16, 130:18, 200:20};
 
   function suggestMicron(install, win, cext, cint){
     var score = (WIN_SCORE[win]||1) + (CEXT_SCORE[cext]||0) + (CINT_SCORE[cint]||0);
@@ -666,23 +670,24 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
 
     if(filterFlow <= 0){ showEmpty(); return; }
 
-    var diskType = micronDesign <= 130
-      ? 'Discos WS (Polietileno · 5 a 130 µm)'
-      : 'Discos MG (Polipropileno · 130 a 400 µm)';
+    var diskType = micronDesign <= 100
+      ? 'Discos WS (Polietileno HDPE · 5 a 100 µm)'
+      : 'Discos MG (Polipropileno PP · 130 a 400 µm)';
     var cleaning = quality === 'difficult'
       ? 'Filtro Azud Asistido por Aire (AA)'
       : 'Limpieza hidráulica convencional';
     var washWater = quality === 'difficult'
       ? '10 L por elemento por retrolavado'
-      : '60 L por lavado';
-    var elements = Math.ceil(filterFlow / 10) + 1;
+      : '55 L por elemento por retrolavado';
+    var flowPerElem = (quality === 'difficult' ? FLOW_PER_ELEM_HARD : FLOW_PER_ELEM_STD)[micronDesign] || 13;
+    var elements = Math.ceil(filterFlow / flowPerElem) + 1;
 
     lastR = {
       basin, makeup, cycles, tdsMk, blowdown, evap, towerTds,
       tempC, ph, hardness, alkalin, hardT, alkalinT, lsi, lsiOk,
       recirc, install, sidePct, quality,
       win, cext, cint, suggested,
-      filterFlow, micronDesign, micronText, micronRange, inRange, basis, diskType, cleaning, washWater, elements
+      filterFlow, micronDesign, micronText, micronRange, inRange, basis, diskType, cleaning, washWater, elements, flowPerElem
     };
 
     render(lastR);
@@ -719,7 +724,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             '<div class="hr-sub" style="margin-top:5px;color:rgba(255,255,255,.50)">Rango ' + installLabel(r.install) + ': ' + r.micronRange + '</div>' +
             '<div class="hr-sub" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.14)">' +
               '<strong style="color:#93C5FD">' + fmt(r.elements,0) + ' elementos</strong>' +
-              '  ·  ceil(' + fmt(r.filterFlow,1) + '/10) + 1 · ' + r.cleaning +
+              '  ·  ceil(' + fmt(r.filterFlow,1) + '/' + fmt(r.flowPerElem,0) + ') + 1 · ' + r.cleaning +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -758,9 +763,9 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     el('filter-rows').innerHTML =
       row('Tipo de instalación','Configuración seleccionada.', installLabel(r.install), '') +
       row('Caudal de filtración','Caudal requerido para el tren de discos.', fmt(r.filterFlow,2)+' m³/h', fmt(m3hToGpm(r.filterFlow),1)+' GPM') +
-      row('Elementos filtrantes estimados','ceil(caudal / 10) + 1 (reserva en retrolavado).', fmt(r.elements,0)+' elementos', 'El +1 permite filtrar mientras una estación entra en retrolavado') +
+      row('Elementos filtrantes estimados','ceil(caudal / Q_max_elem) + 1 (reserva en retrolavado).', fmt(r.elements,0)+' elementos', 'Q_max/elem ' + fmt(r.flowPerElem,0) + ' m³/h · base tabla Azud Helix · +1 permite filtrar en retrolavado') +
       row('Grado de filtración','Micraje seleccionado para la aplicación.', r.micronText, 'Rango ' + installLabel(r.install) + ': ' + r.micronRange + (r.inRange ? '' : ' · ⚠ fuera de rango típico')) +
-      row('Tipo de discos','Selección según micraje.', r.diskType, r.micronDesign <= 130 ? 'WS: 5 a 130 µm' : 'MG: 130 a 400 µm') +
+      row('Tipo de discos','Selección según micraje.', r.diskType, r.micronDesign <= 100 ? 'WS: HDPE · 5 a 100 µm' : 'MG: PP · 130 a 400 µm') +
       row('Método de autolimpieza','Según tipo de agua y sólidos.', r.cleaning, r.washWater) +
       row('Caída de presión máxima','Límite operativo por presostatos del sistema.', '1.0 bar', 'No exceder antes de retrolavado');
 
@@ -824,7 +829,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       'Recirculación torre:    ' + fmt(r.recirc,1) + ' m³/h (' + fmt(m3hToGpm(r.recirc),0) + ' GPM)',
       'Caudal a filtrar:       ' + fmt(r.filterFlow,2) + ' m³/h (' + fmt(m3hToGpm(r.filterFlow),1) + ' GPM)',
       'Base de cálculo:        ' + r.basis,
-      'Elementos estimados:    ' + fmt(r.elements,0) + ' (ceil(flujo/10) + 1)',
+      'Elementos estimados:    ' + fmt(r.elements,0) + ' (ceil(' + fmt(r.filterFlow,2) + '/' + fmt(r.flowPerElem,0) + ') + 1 · Q_max tabla Azud Helix)',
       'Grado de filtración:    ' + r.micronText + ' (rango típico: ' + r.micronRange + ')',
       'Tipo de discos:         ' + r.diskType,
       'Autolimpieza:           ' + r.cleaning,
