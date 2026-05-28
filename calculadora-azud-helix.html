@@ -162,6 +162,14 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 footer{margin-top:20px;color:var(--steel);font-size:11px;
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
+.parallel-wrap-inner{display:grid;gap:10px}
+.parallel-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:6px}
+.parallel-card{background:var(--white);border:1.5px solid #F8D188;border-radius:18px;padding:16px;box-shadow:0 4px 12px rgba(180,83,9,.08)}
+.par-badge{display:inline-block;background:#FFF3D8;color:var(--warn);border:1px solid #F8D188;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.05em;padding:3px 10px;margin-bottom:9px;text-transform:uppercase;font-family:'Poppins',sans-serif}
+.par-main{color:var(--navy);font-size:19px;font-weight:800;letter-spacing:-.02em;font-family:'JetBrains Mono',monospace;line-height:1.1;margin-bottom:8px}
+.par-details{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.par-details span{background:#F4F8FB;border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:11.5px;color:var(--navy);font-weight:700}
+
 @media(max-width:1060px){.layout{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){
   .shell{width:calc(100% - 20px);padding-top:16px}
@@ -369,6 +377,14 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
         </div>
       </div>
 
+      <div id="r-parallel-wrap" style="display:none">
+        <div class="alert warn">
+          <b>⚠ Baterías en paralelo — máximo de serie superado</b>
+          <span id="r-parallel-intro">—</span>
+        </div>
+        <div class="parallel-options" id="r-parallel-cards"></div>
+      </div>
+
       <div class="alert info" id="r-redundancy-note" style="display:none">
         <b>Redundancia operativa (+1 elemento)</b>
         <span id="r-redundancy-text">—</span>
@@ -534,6 +550,31 @@ var SLABELS={standard:'Estándar: arenas y polvos inorgánicos',difficult:'Difí
 var currentSerie='ft200aa';
 
 function el(id){return document.getElementById(id)}
+
+function makeRef(serieKey,n,aa){
+  if(serieKey==='ft200aa'){return'FT2'+String(n).padStart(2,'0')+(aa?' AA':'')+' DLP';}
+  if(serieKey==='ft200dlp'){return'FT2'+String(n).padStart(2,'0')+' DLP';}
+  if(serieKey==='ft200sw'){return'FT2'+String(n).padStart(2,'0')+' SW DLP';}
+  if(serieKey==='s4dcl'){return'FT4DCL'+n+' DLP';}
+  return'FT4DCL'+n+' SW DLP';
+}
+
+function calcParallelOptions(r){
+  if(!r.overMax)return[];
+  var s=r.serie;
+  var options=[];
+  var minBatteries=Math.ceil(r.totalFilters/s.maxFilters);
+  for(var nb=minBatteries;nb<=minBatteries+1;nb++){
+    var flowPB=r.flowM3h/nb;
+    var minF=s.minFilters||1;
+    var baseFiltersPB=Math.max(minF,Math.ceil(flowPB/r.effectiveFlow));
+    var filtersPB=r.redundancy?baseFiltersPB+1:baseFiltersPB;
+    if(filtersPB>s.maxFilters)continue;
+    var ref=makeRef(currentSerie,filtersPB,r.aa);
+    options.push({nb:nb,flowPB:flowPB,baseFiltersPB:baseFiltersPB,filtersPB:filtersPB,ref:ref});
+  }
+  return options;
+}
 function fmt(n,d){return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'}
 function fmtI(n){return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'}
 function toM3h(v,u){if(u==='gpm')return v*0.227124;if(u==='lpm')return v*0.06;return v}
@@ -637,16 +678,44 @@ function render(){
   el('r-tech').textContent=r.diskFull+'. Asignación: ≤100 µm → WS; >100 µm → MG.';
 
   /* Referencia */
-  var refStr='';
-  if(currentSerie==='ft200aa'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+(r.aa?' AA':'')+' DLP';}
-  else if(currentSerie==='ft200dlp'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+' DLP';}
-  else if(currentSerie==='ft200sw'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+' SW DLP';}
-  else if(currentSerie==='s4dcl'){refStr='FT4DCL'+r.totalFilters+' DLP';}
-  else{refStr='FT4DCL'+r.totalFilters+' SW DLP';}
-  el('r-ref').textContent=refStr;
+  var refStr=makeRef(currentSerie,r.totalFilters,r.aa);
+  el('r-ref').textContent=r.overMax?'— ver baterías paralelas':refStr;
   el('r-ref-note').textContent=r.overMax
-    ?'⚠ '+fmtI(r.totalFilters)+' filtros supera el máximo ('+s.maxFilters+'). Considerar dos baterías en paralelo.'
+    ?'⚠ '+fmtI(r.totalFilters)+' filtros supera el máximo de '+s.maxFilters+' por batería. Ver opciones de baterías en paralelo abajo.'
     :'Referencia preliminar — confirmar con ingeniería de detalle.';
+
+  /* Baterías en paralelo */
+  var parallelOpts=calcParallelOptions(r);
+  var pWrap=el('r-parallel-wrap');
+  if(parallelOpts.length>0){
+    pWrap.style.display='block';
+    el('r-parallel-intro').textContent=
+      fmtI(r.totalFilters)+' filtros calculados supera el máximo de '+s.maxFilters+' por batería de la serie '+s.name+
+      '. Distribución en baterías paralelas:';
+    var cards='';
+    parallelOpts.forEach(function(opt,i){
+      cards+=
+        '<div class="parallel-card">'+
+        '<div class="par-badge">Opción '+(i+1)+' — '+opt.nb+' baterías</div>'+
+        '<div class="par-main">'+opt.nb+' × '+opt.ref+'</div>'+
+        '<div class="par-details">'+
+        '<span>'+fmtI(opt.filtersPB)+' filtros / batería</span>'+
+        '<span>'+fmt(opt.flowPB,1)+' m³/h / batería</span>'+
+        '<span>Ref: '+opt.ref+'</span>'+
+        (r.redundancy?'<span>+1 redund. incluida</span>':'')+
+        '</div>'+
+        '</div>';
+    });
+    el('r-parallel-cards').innerHTML=cards;
+  }else if(r.overMax){
+    pWrap.style.display='block';
+    el('r-parallel-intro').textContent=
+      fmtI(r.totalFilters)+' filtros supera el máximo de '+s.maxFilters+' por batería. '+
+      'El caudal es demasiado alto incluso con varias baterías dentro del rango de serie — consultar a ingeniería Azud.';
+    el('r-parallel-cards').innerHTML='';
+  }else{
+    pWrap.style.display='none';
+  }
 
   /* Nota redundancia */
   if(r.redundancy){
@@ -683,7 +752,7 @@ function render(){
     +(r.belowMin?'⚠ Por debajo del mínimo de '+r.minFlow+' m³/h.':'Verificación correcta. ')
     +'Q normal: '+fmt(r.normFlow,2)+' m³/h/filtro.';
 
-  var overStr=r.overMax?'<tr><td><strong>⚠ Aviso</strong></td><td>'+fmtI(r.totalFilters)+' filtros supera el máximo de la serie ('+s.maxFilters+'). Evaluar 2 baterías en paralelo.</td></tr>':'';
+  var overStr=r.overMax?'<tr><td><strong>⚠ Aviso</strong></td><td>'+fmtI(r.totalFilters)+' filtros supera el máximo de '+s.maxFilters+' por batería. Ver opciones de baterías en paralelo arriba.</td></tr>':'';
   var minStr=(s.minFilters&&r.totalFilters<s.minFilters)?'<tr><td><strong>⚠ Mínimo</strong></td><td>Esta serie requiere mínimo '+s.minFilters+' filtros.</td></tr>':'';
   var salStr=s.salinityNote?'<tr><td>Salinidad</td><td>'+s.salinityNote+'</td></tr>':'';
   var bioStr=r.apptype==='biofilm'?'<tr><td>Factor ART/Biofilm</td><td>×1.5 → caudal efectivo '+fmt(r.effectiveFlow,2)+' m³/h/filtro</td></tr>':'';
@@ -737,6 +806,7 @@ function renderEmpty(){
   el('r-safe').textContent='El caudal por filtro se verificará contra la ficha técnica seleccionada.';
   el('r-minflow-alert').style.display='none';
   el('r-biofilm-alert').style.display='none';
+  el('r-parallel-wrap').style.display='none';
   el('r-table').innerHTML=
     '<tr><th>Parámetro</th><th>Resultado</th></tr>'+
     '<tr><td>Serie</td><td>'+s.name+'</td></tr>'+
@@ -774,12 +844,20 @@ function buildSpec(){
   var r=calc();
   if(!r.ready)return'Ingrese un flujo de diseño válido para generar la especificación.';
   var s=r.serie;
-  var refStr='';
-  if(currentSerie==='ft200aa'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+(r.aa?' AA':'')+' DLP';}
-  else if(currentSerie==='ft200dlp'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+' DLP';}
-  else if(currentSerie==='ft200sw'){refStr='FT2'+String(r.totalFilters).padStart(2,'0')+' SW DLP';}
-  else if(currentSerie==='s4dcl'){refStr='FT4DCL'+r.totalFilters+' DLP';}
-  else{refStr='FT4DCL'+r.totalFilters+' SW DLP';}
+  var refStr=makeRef(currentSerie,r.totalFilters,r.aa);
+  var parallelOpts=calcParallelOptions(r);
+  var parallelLines=[];
+  if(r.overMax&&parallelOpts.length>0){
+    parallelLines.push('');
+    parallelLines.push('BATERÍAS EN PARALELO (máximo '+s.maxFilters+' filtros/batería superado)');
+    parallelOpts.forEach(function(opt,i){
+      parallelLines.push(
+        'Opción '+(i+1)+': '+opt.nb+' baterías × '+opt.ref+
+        ' — '+fmtI(opt.filtersPB)+' filtros/batería · '+fmt(opt.flowPB,1)+' m³/h/batería'+
+        (r.redundancy?' (incl. +1 redundancia/batería)':'')
+      );
+    });
+  }
   return[
     'ESPECIFICACIÓN PRELIMINAR — FILTROS DE DISCOS AZUD HELIX AUTOMATIC',
     '────────────────────────────────────────────────────────────────────',
@@ -795,15 +873,17 @@ function buildSpec(){
     'CONFIGURACIÓN RECOMENDADA',
     'Continuidad de caudal: '+(r.redundancy?'Con redundancia (+1 elemento) — caudal continuo':'Sin redundancia — pausa ~20 s durante retrolavado aceptable'),
     'Elementos base (por caudal): '+fmtI(r.baseFilters)+(r.redundancy?' | Elemento redundante: +1 | Total: '+fmtI(r.totalFilters):''),
-    r.overMax?'⚠ '+fmtI(r.totalFilters)+' filtros supera el máximo de la serie ('+s.maxFilters+'). Evaluar 2 baterías en paralelo.':'',
+    r.overMax?'⚠ '+fmtI(r.totalFilters)+' filtros supera el máximo de la serie ('+s.maxFilters+'). Ver opciones de baterías en paralelo.':'',
     'Q máx. por filtro (ficha · '+r.micron+' µm · '+r.quality+'): '+fmt(r.matrixFlow,1)+' m³/h'+(r.capped?' [topado 20 m³/h — regla válvulas 3-vías]':''),
     r.apptype==='biofilm'?'Q efectivo por filtro (÷1.5 ART): '+fmt(r.effectiveFlow,2)+' m³/h':'',
-    'Q mínimo por filtro ('+( r.aa?'AA DLP':'Hidráulico')+'): '+r.minFlow+' m³/h'+(r.belowMin?' ⚠ No cumple — revisar selección':''),
+    'Q mínimo por filtro ('+(r.aa?'AA DLP':'Hidráulico')+'): '+r.minFlow+' m³/h'+(r.belowMin?' ⚠ No cumple — revisar selección':''),
     r.redundancy?'Q pico por filtro (1 en retrolavado): '+fmt(r.critFlow,2)+' m³/h ('+fmt(r.critFlow*4.40287,1)+' GPM)':'',
     'Q de servicio por filtro: '+fmt(r.normFlow,2)+' m³/h ('+fmt(r.normFlow*4.40287,1)+' GPM)',
     'Disco: '+r.diskShort+' — '+r.diskFull,
+    r.overMax?'':'Referencia equipo: '+refStr,
     'Agua estimada por ciclo de retrolavado: '+fmtI(r.backwashL)+' L ('+fmtI(r.waterPerFilter)+' L/filtro)',
-    'Superficie filtrante total: '+fmtI(r.totalFilters*s.area)+' cm²',
+    'Superficie filtrante total: '+fmtI(r.totalFilters*s.area)+' cm²'
+  ].concat(parallelLines).concat([
     '',
     'REQUERIMIENTO DE INSTALACIÓN',
     r.aa
@@ -814,7 +894,7 @@ function buildSpec(){
     '',
     'Nota: Selección preliminar. Validar con análisis fisicoquímico del agua, presión disponible,',
     'configuración de colectores y arreglo hidráulico. Consultar ficha técnica '+s.name+'.'
-  ].filter(function(l){return l!==undefined&&l!==''}).join('\n');
+  ]).filter(function(l){return l!==undefined&&l!==''}).join('\n');
 }
 
 el('az-calc').addEventListener('click',function(){
