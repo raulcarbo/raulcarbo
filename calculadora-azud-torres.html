@@ -428,47 +428,6 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             </select>
           </div>
 
-          <div class="sec-label">Caracterización de carga de sólidos <span class="opt">opcional</span></div>
-
-          <div class="hint" style="background:var(--sky-soft);border:1px solid var(--sky-border);border-radius:10px;padding:10px 13px;margin-bottom:12px;line-height:1.75;color:var(--sky-dark);font-size:11.5px">
-            <strong style="display:block;margin-bottom:3px;font-size:10px;letter-spacing:.07em;text-transform:uppercase">Tamaños de partícula en torres · DOE/FEMP 2012</strong>
-            Arena 100–2,000 µm · Polen 10–1,000 µm · Esporas de moho 10–30 µm · Bacterias ~3 µm.<br>
-            El 90% de las partículas son &lt;10 µm — los sub-micrón se controlan con biocidas, no con filtración mecánica de discos.
-          </div>
-
-          <div class="field">
-            <label>Fuente del agua de reposición <span class="opt">W_IN</span></label>
-            <select class="full-sel" id="inp-win" size="1" onchange="updateMicronHint()">
-              <option value="municipal" selected>Red municipal · 0-20 ppm TSS</option>
-              <option value="osmotized">Osmotizada / desmineralizada · 0-10 ppm TSS</option>
-              <option value="well_deep">Pozo profundo · 10-50 ppm TSS</option>
-              <option value="well_surface">Pozo superficial · 50-100 ppm TSS</option>
-              <option value="intake_bad">Toma abierta, mala calidad · 100-150 ppm TSS</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Carga ambiental exterior <span class="opt">C_EXT</span></label>
-            <select class="full-sel" id="inp-cext" size="1" onchange="updateMicronHint()">
-              <option value="urban_clean" selected>Urbano limpio</option>
-              <option value="urban_contam">Urbano contaminado / smog</option>
-              <option value="rural">Rural</option>
-              <option value="desert">Desértico / polvoriento</option>
-              <option value="industrial">Industrial contaminado</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Partículas de proceso <span class="opt">C_INT</span></label>
-            <select class="full-sel" id="inp-cint" size="1" onchange="updateMicronHint()">
-              <option value="none" selected>Sin partículas adicionales</option>
-              <option value="oxides">Óxidos metálicos / corrosión</option>
-              <option value="plastics">Plásticos / polímeros</option>
-              <option value="shavings">Virutas metálicas</option>
-              <option value="fibers">Fibras / materiales orgánicos</option>
-            </select>
-          </div>
-
           <div class="actions">
             <button class="btn btn-primary" id="btn-calc" type="button">Calcular selección</button>
             <button class="btn btn-ghost" id="btn-reset" type="button">Limpiar</button>
@@ -578,10 +537,6 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
          : 'Limpieza del vaso / Riñón';
   }
 
-  var WIN_SCORE  = {osmotized:0, municipal:1, well_deep:2, well_surface:3, intake_bad:4};
-  var CEXT_SCORE = {urban_clean:0, urban_contam:1, rural:1, desert:2, industrial:3};
-  var CINT_SCORE = {none:0, oxides:1, plastics:1, shavings:2, fibers:2};
-
   var MICRONS_BY_INSTALL = {kidney:[20,50], side:[50,100,130], full:[100,130,200]};
   var MICRON_RANGE_LABEL = {kidney:'20 – 50 µm', side:'50 – 130 µm', full:'100 – 200 µm'};
   var DEFAULT_MICRON     = {kidney:50, side:100, full:100};
@@ -590,20 +545,10 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   var FLOW_PER_ELEM_STD  = {20:7,  50:13, 100:17, 130:19, 200:21};
   var FLOW_PER_ELEM_HARD = {20:6,  50:10, 100:16, 130:18, 200:20};
 
-  function suggestMicron(install, win, cext, cint){
-    var score = (WIN_SCORE[win]||1) + (CEXT_SCORE[cext]||0) + (CINT_SCORE[cint]||0);
-    var range = MICRONS_BY_INSTALL[install] || [100];
-    var idx   = Math.round((score / 9) * (range.length - 1));
-    return range[Math.max(0, Math.min(range.length - 1, idx))];
-  }
-
   function updateMicronHint(){
-    var install   = el('inp-install').value;
-    var suggested = suggestMicron(install, el('inp-win').value, el('inp-cext').value, el('inp-cint').value);
-    var label     = MICRON_RANGE_LABEL[install] || '100 µm';
+    var install = el('inp-install').value;
     el('micron-hint').textContent =
-      'Rango para ' + installLabel(install) + ': ' + label +
-      '. Sugerido según carga: ' + suggested + ' µm.';
+      'Rango sugerido para ' + installLabel(install) + ': ' + (MICRON_RANGE_LABEL[install] || '100 µm') + '.';
   }
 
   function calculate(){
@@ -615,9 +560,6 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     var install = el('inp-install').value;
     var sidePct = clamp(num('inp-side-pct', 10), 5, 20);
     var quality = el('inp-quality').value;
-    var win     = el('inp-win').value;
-    var cext    = el('inp-cext').value;
-    var cint    = el('inp-cint').value;
 
     el('inp-cycles').value = cycles;
     el('inp-cycles-range').value = cycles;
@@ -672,7 +614,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       var r = MICRONS_BY_INSTALL[install] || [micronDesign];
       return micronDesign >= r[0] && micronDesign <= r[r.length-1];
     }());
-    var suggested    = suggestMicron(install, win, cext, cint);
+
 
     if(filterFlow <= 0){ showEmpty(); return; }
 
@@ -692,7 +634,6 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       basin, makeup, cycles, tdsMk, blowdown, evap, towerTds,
       tempC, ph, hardness, alkalin, hardT, alkalinT, lsi, lsiOk,
       recirc, install, sidePct, quality,
-      win, cext, cint, suggested,
       filterFlow, micronDesign, micronText, micronRange, inRange, basis, diskType, cleaning, washWater, elements, flowPerElem
     };
 
@@ -866,9 +807,6 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     el('inp-install').value      = 'kidney';
     el('inp-side-pct').value     = 10;
     el('inp-quality').value      = 'standard';
-    el('inp-win').value          = 'municipal';
-    el('inp-cext').value         = 'urban_clean';
-    el('inp-cint').value         = 'none';
     lastR = null;
     syncCycles();
     updateVisibility();
@@ -892,7 +830,6 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   });
 
   el('inp-install').addEventListener('change', updateVisibility);
-  el('inp-install').addEventListener('change', updateMicronHint);
 
   document.querySelectorAll('.shell input, .shell select').forEach(function(inp){
     inp.addEventListener('keyup', function(e){ if(e.key === 'Enter') calculate(); });
@@ -906,8 +843,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
 
 /* Liberar selects de Select2 / Chosen que WordPress puede inyectar */
 (function(){
-  var IDS = ['inp-install','inp-micron','inp-quality','inp-win','inp-cext','inp-cint',
-             'inp-makeup-unit','inp-recirc-unit'];
+  var IDS = ['inp-install','inp-micron','inp-quality','inp-makeup-unit','inp-recirc-unit'];
   function free(){
     if(!window.jQuery) return;
     IDS.forEach(function(id){
