@@ -412,8 +412,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             <label>Grado de filtración</label>
             <select class="full-sel" id="inp-micron" onchange="updateMicronHint()">
               <option value="20">20 µm — Muy fino (Discos WS)</option>
-              <option value="50">50 µm — Fino (Discos WS)</option>
-              <option value="100" selected>100 µm — Estándar (Discos WS)</option>
+              <option value="50" selected>50 µm — Fino (Discos WS)</option>
+              <option value="100">100 µm — Estándar (Discos WS)</option>
               <option value="130">130 µm — Medio (Discos MG)</option>
               <option value="200">200 µm — Grueso (Discos MG)</option>
             </select>
@@ -578,7 +578,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
 
   var MICRONS_BY_INSTALL = {kidney:[20,50], side:[50,100,130], full:[100,130,200]};
   var MICRON_RANGE_LABEL = {kidney:'20 – 50 µm', side:'50 – 130 µm', full:'100 – 200 µm'};
-  var DEFAULT_MICRON     = {kidney:100, side:100, full:100};
+  var DEFAULT_MICRON     = {kidney:50, side:100, full:100};
 
   /* Caudal máximo m³/h por elemento según micraje — fuente: tabla Azud Helix */
   var FLOW_PER_ELEM_STD  = {20:7,  50:13, 100:17, 130:19, 200:21};
