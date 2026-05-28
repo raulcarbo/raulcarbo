@@ -250,7 +250,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
         <span>Tratamiento de agua · México</span>
       </div>
     </div>
-    <div class="brand-tag">Torres de enfriamiento · <b>Filtración Azud</b> · v 1.1</div>
+    <div class="brand-tag">Torres de enfriamiento · <b>Filtración Azud</b> · v 1.2</div>
   </div>
 
   <!-- Hero -->
@@ -409,10 +409,57 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           </div>
 
           <div class="field">
+            <label>Grado de filtración</label>
+            <select class="full-sel" id="inp-micron" onchange="updateMicronHint()">
+              <option value="20">20 µm — Muy fino (Discos WS)</option>
+              <option value="50">50 µm — Fino (Discos WS)</option>
+              <option value="100" selected>100 µm — Estándar (Discos WS)</option>
+              <option value="130">130 µm — Medio (Discos WS)</option>
+              <option value="200">200 µm — Grueso (Discos MG)</option>
+            </select>
+            <div class="hint" id="micron-hint">Rango sugerido para Flujo Total: 100 – 200 µm.</div>
+          </div>
+
+          <div class="field">
             <label>Calidad del agua y sólidos</label>
             <select class="full-sel" id="inp-quality">
               <option value="standard" selected>Agua estándar</option>
               <option value="difficult">Agua difícil, pegajosa o con alta carga de sólidos</option>
+            </select>
+          </div>
+
+          <div class="sec-label">Caracterización de carga de sólidos <span class="opt">opcional</span></div>
+
+          <div class="field">
+            <label>Fuente del agua de reposición <span class="opt">W_IN</span></label>
+            <select class="full-sel" id="inp-win" onchange="updateMicronHint()">
+              <option value="municipal" selected>Red municipal · 0-20 ppm TSS</option>
+              <option value="osmotized">Osmotizada / desmineralizada · 0-10 ppm TSS</option>
+              <option value="well_deep">Pozo profundo · 10-50 ppm TSS</option>
+              <option value="well_surface">Pozo superficial · 50-100 ppm TSS</option>
+              <option value="intake_bad">Toma abierta, mala calidad · 100-150 ppm TSS</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Carga ambiental exterior <span class="opt">C_EXT</span></label>
+            <select class="full-sel" id="inp-cext" onchange="updateMicronHint()">
+              <option value="urban_clean" selected>Urbano limpio</option>
+              <option value="urban_contam">Urbano contaminado / smog</option>
+              <option value="rural">Rural</option>
+              <option value="desert">Desértico / polvoriento</option>
+              <option value="industrial">Industrial contaminado</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Partículas de proceso <span class="opt">C_INT</span></label>
+            <select class="full-sel" id="inp-cint" onchange="updateMicronHint()">
+              <option value="none" selected>Sin partículas adicionales</option>
+              <option value="oxides">Óxidos metálicos / corrosión</option>
+              <option value="plastics">Plásticos / polímeros</option>
+              <option value="shavings">Virutas metálicas</option>
+              <option value="fibers">Fibras / materiales orgánicos</option>
             </select>
           </div>
 
@@ -513,13 +560,40 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   }
 
   function updateVisibility(){
-    el('side-wrap').style.display = el('inp-install').value === 'side' ? '' : 'none';
+    var install = el('inp-install').value;
+    el('side-wrap').style.display = install === 'side' ? '' : 'none';
+    el('inp-micron').value = DEFAULT_MICRON[install] || 100;
+    updateMicronHint();
   }
 
   function installLabel(k){
     return k === 'side' ? 'Flujo lateral / Side Stream'
          : k === 'full' ? 'Flujo total'
          : 'Limpieza del vaso / Riñón';
+  }
+
+  var WIN_SCORE  = {osmotized:0, municipal:1, well_deep:2, well_surface:3, intake_bad:4};
+  var CEXT_SCORE = {urban_clean:0, urban_contam:1, rural:1, desert:2, industrial:3};
+  var CINT_SCORE = {none:0, oxides:1, plastics:1, shavings:2, fibers:2};
+
+  var MICRONS_BY_INSTALL = {kidney:[20,50], side:[50,100,130], full:[100,130,200]};
+  var MICRON_RANGE_LABEL = {kidney:'20 – 50 µm', side:'50 – 130 µm', full:'100 – 200 µm'};
+  var DEFAULT_MICRON     = {kidney:50, side:100, full:100};
+
+  function suggestMicron(install, win, cext, cint){
+    var score = (WIN_SCORE[win]||1) + (CEXT_SCORE[cext]||0) + (CINT_SCORE[cint]||0);
+    var range = MICRONS_BY_INSTALL[install] || [100];
+    var idx   = Math.round((score / 9) * (range.length - 1));
+    return range[Math.max(0, Math.min(range.length - 1, idx))];
+  }
+
+  function updateMicronHint(){
+    var install   = el('inp-install').value;
+    var suggested = suggestMicron(install, el('inp-win').value, el('inp-cext').value, el('inp-cint').value);
+    var label     = MICRON_RANGE_LABEL[install] || '100 µm';
+    el('micron-hint').textContent =
+      'Rango para ' + installLabel(install) + ': ' + label +
+      '. Sugerido según carga: ' + suggested + ' µm.';
   }
 
   function calculate(){
@@ -531,6 +605,9 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     var install = el('inp-install').value;
     var sidePct = clamp(num('inp-side-pct', 10), 5, 20);
     var quality = el('inp-quality').value;
+    var win     = el('inp-win').value;
+    var cext    = el('inp-cext').value;
+    var cint    = el('inp-cint').value;
 
     el('inp-cycles').value = cycles;
     el('inp-cycles-range').value = cycles;
@@ -567,23 +644,25 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     }
 
     /* Filter flow */
-    var filterFlow, micronText, micronDesign, basis;
+    var filterFlow, basis;
     if(install === 'kidney'){
-      filterFlow  = (basin * 4) / 24;
-      micronText  = '50 µm';
-      micronDesign = 50;
+      filterFlow = (basin * 4) / 24;
       basis = '(Basín × 4) / 24 h';
     } else if(install === 'side'){
-      filterFlow  = recirc * (sidePct / 100);
-      micronText  = '50 a 100 µm';
-      micronDesign = 100;
+      filterFlow = recirc * (sidePct / 100);
       basis = 'Recirculación × ' + fmt(sidePct,0) + '%';
     } else {
-      filterFlow  = recirc;
-      micronText  = '100 a 200 µm';
-      micronDesign = 200;
+      filterFlow = recirc;
       basis = '100% del caudal de recirculación';
     }
+    var micronDesign = parseInt(el('inp-micron').value) || 100;
+    var micronText   = micronDesign + ' µm';
+    var micronRange  = MICRON_RANGE_LABEL[install] || '';
+    var inRange      = (function(){
+      var r = MICRONS_BY_INSTALL[install] || [micronDesign];
+      return micronDesign >= r[0] && micronDesign <= r[r.length-1];
+    }());
+    var suggested    = suggestMicron(install, win, cext, cint);
 
     if(filterFlow <= 0){ showEmpty(); return; }
 
@@ -602,7 +681,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       basin, makeup, cycles, tdsMk, blowdown, evap, towerTds,
       tempC, ph, hardness, alkalin, hardT, alkalinT, lsi, lsiOk,
       recirc, install, sidePct, quality,
-      filterFlow, micronText, micronDesign, basis, diskType, cleaning, washWater, elements
+      win, cext, cint, suggested,
+      filterFlow, micronDesign, micronText, micronRange, inRange, basis, diskType, cleaning, washWater, elements
     };
 
     render(lastR);
@@ -634,8 +714,9 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           '<div class="hr-divider"></div>' +
           '<div>' +
             '<div class="hr-label">Grado y tecnología</div>' +
-            '<div class="hr-value">' + r.micronText + '</div>' +
+            '<div class="hr-value">' + r.micronText + (r.inRange ? '' : ' <span style="font-size:13px;color:#FCA5A5">⚠ fuera de rango</span>') + '</div>' +
             '<div class="hr-sub">' + r.diskType + '</div>' +
+            '<div class="hr-sub" style="margin-top:5px;color:rgba(255,255,255,.50)">Rango ' + installLabel(r.install) + ': ' + r.micronRange + '</div>' +
             '<div class="hr-sub" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.14)">' +
               '<strong style="color:#93C5FD">' + fmt(r.elements,0) + ' elementos</strong>' +
               '  ·  ceil(' + fmt(r.filterFlow,1) + '/10) + 1 · ' + r.cleaning +
@@ -646,6 +727,10 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
 
     /* notices */
     var notices = '';
+    if(!r.inRange)
+      notices += notice('warn','🔬','Micraje fuera del rango típico para este tipo de instalación',
+        'El grado seleccionado (' + r.micronText + ') está fuera del rango habitual para ' + installLabel(r.install) +
+        ' (' + r.micronRange + '). Verifique que la presión disponible y la frecuencia de retrolavado sean adecuadas para la carga de sólidos real.');
     if(r.install === 'full')
       notices += notice('warn','⚡','Flujo total vs flujo lateral',
         'Filtrar el 100% asegura máxima protección, pero tiene un CAPEX muy elevado. La industria sugiere que la filtración lateral (10-20%) remueve hasta el 94% de las partículas con una fracción de la inversión.');
@@ -674,7 +759,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       row('Tipo de instalación','Configuración seleccionada.', installLabel(r.install), '') +
       row('Caudal de filtración','Caudal requerido para el tren de discos.', fmt(r.filterFlow,2)+' m³/h', fmt(m3hToGpm(r.filterFlow),1)+' GPM') +
       row('Elementos filtrantes estimados','ceil(caudal / 10) + 1 (reserva en retrolavado).', fmt(r.elements,0)+' elementos', 'El +1 permite filtrar mientras una estación entra en retrolavado') +
-      row('Micraje sugerido','Grado de filtración para la aplicación.', r.micronText, '') +
+      row('Grado de filtración','Micraje seleccionado para la aplicación.', r.micronText, 'Rango ' + installLabel(r.install) + ': ' + r.micronRange + (r.inRange ? '' : ' · ⚠ fuera de rango típico')) +
       row('Tipo de discos','Selección según micraje.', r.diskType, r.micronDesign <= 130 ? 'WS: 5 a 130 µm' : 'MG: 130 a 400 µm') +
       row('Método de autolimpieza','Según tipo de agua y sólidos.', r.cleaning, r.washWater) +
       row('Caída de presión máxima','Límite operativo por presostatos del sistema.', '1.0 bar', 'No exceder antes de retrolavado');
@@ -740,7 +825,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
       'Caudal a filtrar:       ' + fmt(r.filterFlow,2) + ' m³/h (' + fmt(m3hToGpm(r.filterFlow),1) + ' GPM)',
       'Base de cálculo:        ' + r.basis,
       'Elementos estimados:    ' + fmt(r.elements,0) + ' (ceil(flujo/10) + 1)',
-      'Micraje sugerido:       ' + r.micronText,
+      'Grado de filtración:    ' + r.micronText + ' (rango típico: ' + r.micronRange + ')',
       'Tipo de discos:         ' + r.diskType,
       'Autolimpieza:           ' + r.cleaning,
       'Consumo retrolavado:    ' + r.washWater,
@@ -769,6 +854,9 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
     el('inp-install').value      = 'kidney';
     el('inp-side-pct').value     = 10;
     el('inp-quality').value      = 'standard';
+    el('inp-win').value          = 'municipal';
+    el('inp-cext').value         = 'urban_clean';
+    el('inp-cint').value         = 'none';
     lastR = null;
     syncCycles();
     updateVisibility();
@@ -792,6 +880,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   });
 
   el('inp-install').addEventListener('change', updateVisibility);
+  el('inp-install').addEventListener('change', updateMicronHint);
 
   document.querySelectorAll('.shell input, .shell select').forEach(function(inp){
     inp.addEventListener('keyup', function(e){ if(e.key === 'Enter') calculate(); });
@@ -799,6 +888,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
 
   syncCycles();
   updateVisibility();
+  updateMicronHint();
   showEmpty();
 })();
 </script>
