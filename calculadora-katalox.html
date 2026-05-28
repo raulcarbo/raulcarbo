@@ -779,7 +779,7 @@ body {
             <div class="field-input">
               <select id="oxidant">
                 <option value="naocl">Hipoclorito de Sodio (NaOCl)</option>
-                <option value="cl2">Gas Cloro (Cl₂)</option>
+                <option value="caocl2">Hipoclorito de Calcio (Ca(OCl)₂)</option>
                 <option value="h2o2">Peróxido de Hidrógeno (H₂O₂)</option>
                 <option value="kmno4">Permanganato de Potasio (KMnO₄)</option>
               </select>
@@ -1052,16 +1052,16 @@ const OXIDANTS = {
     isLiquid: true, defaultConc: 13.0, defaultDens: 1.20,
     regenPureGft3: 90,
     regenRateUnit: '90 g NaOCl 100%/ft³',
-    regenDetail: 'Equivale a ~692 mL de sol. al 13% (dens. 1.2 kg/L) por ft³ de medio'
+    regenDetail: 'Equivale a ~692 mL de sol. al 13% (dens. 1.2 kg/L) por ft³ de medio. Fuente: MIP 260302.'
   },
-  cl2: {
-    name: 'Cl₂',
-    label: 'Gas Cloro (Cl₂)',
-    kFe: 0.64, kMn: 1.30, kH2S: 2.10,
-    isLiquid: false,
-    regenPureGft3: 65,
-    regenRateUnit: '~65 g Cl₂/ft³',
-    regenDetail: 'Dosis estimada de Cl₂ gaseoso por ft³ de medio. Requiere clorador y ventilación adecuada.'
+  caocl2: {
+    name: 'Ca(OCl)₂',
+    label: 'Hipoclorito de Calcio (Ca(OCl)₂)',
+    kFe: 0.645, kMn: 1.31, kH2S: 2.11,
+    isLiquid: true, defaultConc: 65.0, defaultDens: 1.20,
+    regenPureGft3: 86,
+    regenRateUnit: '~86 g Ca(OCl)₂ 100%/ft³',
+    regenDetail: 'Dosis en base 100% activo. Con producto comercial al 65%: usar ~132 g/ft³ (≈ 110 mL/ft³ a 1.2 kg/L).'
   },
   h2o2: {
     name: 'H₂O₂',
@@ -1070,7 +1070,7 @@ const OXIDANTS = {
     isLiquid: true, defaultConc: 30.0, defaultDens: 1.11,
     regenPureGft3: 60,
     regenRateUnit: '~60 g H₂O₂ 100%/ft³',
-    regenDetail: 'Dosis estimada de H₂O₂ puro por ft³. No deja residual persistente en el lecho.'
+    regenDetail: 'Dosis estimada de H₂O₂ puro por ft³. No deja residual persistente en el lecho. Fuente: MIP 260302.'
   },
   kmno4: {
     name: 'KMnO₄',
@@ -1079,7 +1079,7 @@ const OXIDANTS = {
     isLiquid: false,
     regenPureGft3: 60,
     regenRateUnit: '60 g KMnO₄/ft³',
-    regenDetail: 'Dosis directa en gramos de KMnO₄ sólido por ft³ de medio'
+    regenDetail: 'Dosis directa en gramos de KMnO₄ sólido por ft³ de medio. Fuente: MIP 260302.'
   }
 };
 
@@ -1284,10 +1284,10 @@ function renderDosing(d) {
   }
 
   const NOTES = {
-    naocl: 'NaOCl: Verificar cloro libre residual ≥ 0.5 mg/L a la entrada al lecho. pH óptimo 6.5–8.5.',
-    cl2:   'Cl₂ gas: Requiere clorador con dosificador de presión. Verificar seguridad de manejo y ventilación adecuada.',
-    h2o2:  'H₂O₂: No deja residual persistente; ideal donde el cloro no es deseable. Verificar ORP > 300 mV a la salida.',
-    kmno4: 'KMnO₄: Alta demanda para H₂S. Controlar dosis — exceso puede teñir el agua de rosa. Residual ≤ 0.05 mg/L.'
+    naocl:  'NaOCl: Verificar cloro libre residual ≥ 0.5 mg/L a la entrada al lecho. pH óptimo 6.5–8.5. Fuente: MIP 260302.',
+    caocl2: 'Ca(OCl)₂: Factores estequiométricos MIP (kFe 0.645 · kMn 1.31 · kH₂S 2.11). Producto comercial ~65% activo; la concentración y densidad configuradas determinan el volumen de solución a dosificar. Verificar cloro libre residual ≥ 0.5 mg/L.',
+    h2o2:   'H₂O₂: No deja residual persistente; ideal donde el cloro no es deseable. Verificar ORP > 300 mV a la salida. Fuente: MIP 260302.',
+    kmno4:  'KMnO₄: Alta demanda para H₂S. Controlar dosis — exceso puede teñir el agua de rosa. Residual ≤ 0.05 mg/L. Fuente: MIP 260302.'
   };
   $('dosNoteText').textContent = NOTES[d.oxKey] || '';
   $('dosDesc').textContent = `Demanda estequiométrica de ${d.ox.name} para pretratar ${fmt(d.flowM3h, 2)} m³/h antes del lecho catalítico. Factores: MIP 260302.`;
