@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora Operativa de Suavizadores Industriales | Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Variables ──────────────────────────────── */
+:root{
+  --navy:#071B33;
+  --brand:#1A56C4;
+  --brand-mid:#2563EB;
+  --brand-light:#EFF6FF;
+  --brand-border:#BFDBFE;
+  --steel:#4D6177;
+  --muted:#6B7A8A;
+  --line:#D9E3EB;
+  --surface:#FFFFFF;
+  --paper:#F7FAFC;
+  --ink:#0A1628;
+  --ok:#0F766E; --ok-soft:#ECFDF5; --ok-border:#A7F3D0;
+  --warn:#B45309; --warn-soft:#FFFBEB; --warn-border:#FCD34D;
+  --danger:#991B1B; --danger-soft:#FEF2F2; --danger-border:#FECACA;
+  --salt:#0369A1; --salt-soft:#EFF6FF; --salt-border:#BAE6FD;
+  --shadow:0 1px 3px rgba(7,27,51,.07),0 8px 28px rgba(7,27,51,.10);
+  --shadow-sm:0 1px 3px rgba(7,27,51,.06);
+  --radius:16px; --radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:linear-gradient(180deg,#F0F6FF,#E8F2FA);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+/* ── Shell ──────────────────────────────────── */
+.shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* ── Topbar ─────────────────────────────────── */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:14px 22px;margin-bottom:16px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(135deg,var(--brand),var(--navy));
+  box-shadow:0 8px 20px rgba(26,86,196,.26);
+  font-weight:900;font-family:var(--font-title);font-size:11px;text-align:center;line-height:1.1}
+.brand h1{font-size:16px;font-weight:800;color:var(--navy);line-height:1.15}
+.brand span{display:block;margin-top:2px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.pill{background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  padding:7px 14px;font-size:12px;font-weight:800;box-shadow:var(--shadow-sm);
+  color:var(--navy);white-space:nowrap}
+
+/* ── Hero ───────────────────────────────────── */
+.hero{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--navy) 0%,#0F2A44 46%,var(--brand) 100%);
+  color:#fff;border-radius:var(--radius-lg);padding:28px;
+  box-shadow:var(--shadow);margin-bottom:16px}
+.hero::after{content:"";position:absolute;inset:auto -80px -120px auto;
+  width:340px;height:340px;border-radius:50%;
+  border:52px solid rgba(255,255,255,.09);pointer-events:none}
+.hero-grid{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 310px;gap:28px;align-items:end}
+.hero h2{font-size:clamp(20px,2.6vw,38px);line-height:1.05;
+  letter-spacing:-.04em;color:#fff !important;font-weight:800;margin-bottom:10px}
+.hero h2 em{font-style:normal;color:rgba(96,165,250,.90)}
+.hero p{color:rgba(255,255,255,.72);font-size:13.5px;line-height:1.6}
+.hero-note{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);
+  border-radius:16px;padding:18px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:7px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:13px;line-height:1.6}
+
+/* ── Layout ─────────────────────────────────── */
+.layout{display:grid;grid-template-columns:370px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px}
+.results-col{display:grid;gap:14px}
+
+/* ── Panel ──────────────────────────────────── */
+.panel{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.panel-head h3{font-size:15px;color:var(--navy);font-weight:700}
+.step-tag{color:var(--brand);font-size:11px;font-weight:900;letter-spacing:.04em}
+.panel-body{padding:20px;display:grid;gap:15px}
+
+/* ── Fields ─────────────────────────────────── */
+.field label{display:block;color:var(--navy);font-weight:700;font-size:13px;margin-bottom:6px}
+.inline-wrap{display:grid;grid-template-columns:1fr auto;
+  border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface)}
+.inline-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 4px rgba(26,86,196,.13)}
+.inline-wrap input,.inline-wrap select{min-width:0;border:0;outline:0;padding:11px 12px;
+  color:var(--ink);background:transparent;font-weight:700}
+.inline-wrap input{font-family:var(--font-num)}
+.inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;font-family:var(--font-body)}
+.inline-wrap select{border-left:1px solid var(--line);background:#F4F8FB;
+  color:var(--navy);cursor:pointer;font-size:13px;white-space:nowrap;padding-right:8px}
+.sel-full{width:100%;border:1px solid var(--line);border-radius:13px;
+  background:var(--surface);color:var(--ink);padding:11px 12px;
+  outline:0;font-weight:700;cursor:pointer}
+.sel-full:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(26,86,196,.13)}
+.hint{margin-top:5px;color:var(--muted);font-size:11.5px;line-height:1.45}
+
+.section-label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:2px}
+
+/* ── Buttons ────────────────────────────────── */
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:999px;padding:11px 22px;
+  background:linear-gradient(135deg,var(--brand),var(--navy));
+  color:#fff;font-weight:800;cursor:pointer;font-family:var(--font-title);font-size:13px;
+  box-shadow:0 8px 20px rgba(26,86,196,.22);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(26,86,196,.30)}
+.btn.sec{background:var(--surface);color:var(--navy);border:1.5px solid var(--line);
+  box-shadow:none}
+.btn.sec:hover{background:var(--paper)}
+.btn.copy-btn{background:linear-gradient(135deg,var(--ok),#065F46);
+  box-shadow:0 8px 20px rgba(15,118,110,.22)}
+.btn.copy-btn:hover{box-shadow:0 12px 26px rgba(15,118,110,.32)}
+
+/* ── KPI cards ──────────────────────────────── */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi{border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(160deg,#fff,var(--paper));padding:15px;min-height:110px}
+.kpi.kpi-ok{border-color:var(--ok-border);background:linear-gradient(160deg,#fff,var(--ok-soft))}
+.kpi.kpi-warn{border-color:var(--warn-border);background:linear-gradient(160deg,#FFFDF5,var(--warn-soft))}
+.kpi.kpi-danger{border-color:var(--danger-border);background:linear-gradient(160deg,#FFF5F5,var(--danger-soft))}
+.kpi.kpi-salt{border-color:var(--salt-border);background:linear-gradient(160deg,#fff,var(--salt-soft))}
+.kpi .lbl{color:var(--muted);font-size:10.5px;font-weight:900;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:6px}
+.kpi .val{color:var(--navy);font-size:26px;font-weight:900;letter-spacing:-.04em;
+  line-height:1;font-family:var(--font-num)}
+.kpi .val small{font-size:12px;color:var(--muted);letter-spacing:0;
+  margin-left:3px;font-family:var(--font-body);font-weight:600}
+.kpi .sub{margin-top:7px;color:var(--muted);font-size:11.5px;line-height:1.4}
+
+/* ── Main card ──────────────────────────────── */
+.main-card{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px}
+.card-title{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.card-title h3{color:var(--navy);font-size:16px;line-height:1.2}
+.badge{background:var(--navy);color:#fff;border-radius:999px;padding:5px 12px;
+  font-size:11px;font-weight:900;letter-spacing:.04em;
+  white-space:nowrap;font-family:var(--font-title)}
+.badge.ok{background:linear-gradient(135deg,var(--ok),#065F46)}
+.badge.warn{background:linear-gradient(135deg,var(--warn),#92400E)}
+.badge.danger{background:linear-gradient(135deg,var(--danger),#7F1D1D)}
+.badge.salt{background:linear-gradient(135deg,var(--salt),var(--navy))}
+
+/* ── Progress bar ───────────────────────────── */
+.exhaust-wrap{margin-bottom:20px}
+.exhaust-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:8px;flex-wrap:wrap}
+.exhaust-pct{font-family:var(--font-num);font-size:36px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.exhaust-label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.exhaust-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.bar-track{height:22px;background:#E8F0F8;border-radius:999px;overflow:hidden;
+  border:1px solid var(--line);box-shadow:inset 0 2px 4px rgba(0,0,0,.06)}
+.bar-fill{height:100%;border-radius:999px;transition:width .5s cubic-bezier(.4,0,.2,1);
+  background:linear-gradient(90deg,#22C55E,#84CC16)}
+.bar-fill.warn{background:linear-gradient(90deg,#F59E0B,#EF4444)}
+.bar-fill.danger{background:linear-gradient(90deg,#EF4444,#991B1B)}
+.bar-milestones{display:flex;justify-content:space-between;margin-top:5px;
+  padding:0 2px;font-size:10px;color:var(--muted);font-family:var(--font-num)}
+
+.alert-exhaust{border-radius:var(--radius);padding:14px 16px;border:1px solid;
+  font-size:13px;line-height:1.5;margin-top:12px;display:none}
+.alert-exhaust.show{display:block}
+.alert-exhaust b{display:block;margin-bottom:3px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.alert-exhaust.ok{background:var(--ok-soft);border-color:var(--ok-border);color:var(--ok)}
+.alert-exhaust.warn{background:var(--warn-soft);border-color:var(--warn-border);color:var(--warn)}
+.alert-exhaust.danger{background:var(--danger-soft);border-color:var(--danger-border);color:var(--danger)}
+
+/* ── Spec grid ──────────────────────────────── */
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.spec-card{background:var(--surface);border:1px solid var(--line);
+  border-radius:18px;box-shadow:var(--shadow-sm);padding:16px}
+.spec-card.salt-card{border-color:var(--salt-border);background:linear-gradient(160deg,#fff,var(--salt-soft))}
+.spec-card h4{color:var(--navy);font-size:12px;font-weight:900;letter-spacing:.04em;
+  text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.spec-row{display:flex;justify-content:space-between;align-items:baseline;
+  padding:7px 0;border-bottom:1px solid var(--line);gap:8px;flex-wrap:wrap}
+.spec-row:last-child{border-bottom:0;padding-bottom:0}
+.spec-key{color:var(--muted);font-size:12px;line-height:1.3}
+.spec-val{color:var(--navy);font-size:13px;font-weight:800;
+  font-family:var(--font-num);text-align:right}
+.spec-val.highlight{color:var(--ok);font-size:15px}
+.spec-val.highlight-salt{color:var(--salt);font-size:15px}
+
+/* ── Salinómetro visual ─────────────────────── */
+.salin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.salin-chip{border-radius:14px;padding:11px 13px;border:1.5px solid;text-align:center}
+.salin-chip.saturado{background:linear-gradient(160deg,#fff,var(--salt-soft));border-color:var(--salt-border)}
+.salin-chip.diluido{background:linear-gradient(160deg,#fff,var(--ok-soft));border-color:var(--ok-border)}
+.salin-chip .sc-deg{font-family:var(--font-num);font-size:28px;font-weight:700;
+  letter-spacing:-.04em;line-height:1}
+.salin-chip.saturado .sc-deg{color:var(--salt)}
+.salin-chip.diluido .sc-deg{color:var(--ok)}
+.salin-chip .sc-lbl{font-size:10px;font-weight:900;letter-spacing:.06em;
+  text-transform:uppercase;margin-top:4px}
+.salin-chip.saturado .sc-lbl{color:var(--salt)}
+.salin-chip.diluido .sc-lbl{color:var(--ok)}
+.salin-chip .sc-sub{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.3}
+
+/* ── Table ──────────────────────────────────── */
+.az-table{width:100%;border-collapse:separate;border-spacing:0;
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.az-table th,.az-table td{padding:9px 12px;border-bottom:1px solid var(--line);
+  text-align:left;font-size:12.5px}
+.az-table th{background:#F3F8FC;color:var(--navy);font-weight:900;font-family:var(--font-title)}
+.az-table tr:last-child td{border-bottom:0}
+.az-table td:last-child{text-align:right;font-weight:800;color:var(--navy);
+  font-family:var(--font-num);font-size:12px}
+.az-table td:first-child{color:var(--muted)}
+
+/* ── Alert ──────────────────────────────────── */
+.alert{border-radius:14px;padding:13px 16px;border:1px solid;font-size:13px;line-height:1.5}
+.alert b{display:block;margin-bottom:4px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.alert.info{background:var(--salt-soft);border-color:var(--salt-border);color:var(--salt)}
+.alert.ok{background:var(--ok-soft);border-color:var(--ok-border);color:var(--ok)}
+.alert.warn{background:var(--warn-soft);border-color:var(--warn-border);color:var(--warn)}
+.alert.danger{background:var(--danger-soft);border-color:var(--danger-border);color:var(--danger)}
+
+/* ── Copy bar ───────────────────────────────── */
+.copy-bar{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:16px 20px;box-shadow:var(--shadow-sm);display:flex;
+  align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  display:none}
+.copy-bar-text{color:var(--muted);font-size:13px}
+.copy-bar-text b{color:var(--navy)}
+
+/* ── Empty state ────────────────────────────── */
+.empty-state{text-align:center;padding:60px 30px;color:var(--muted)}
+.empty-state svg{opacity:.25;margin-bottom:16px}
+.empty-state h3{font-size:16px;color:var(--navy);margin-bottom:6px}
+.empty-state p{font-size:13.5px}
+
+/* ── Footer ─────────────────────────────────── */
+footer{margin-top:20px;color:var(--muted);font-size:11px;
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ── Responsive ─────────────────────────────── */
+@media(max-width:1060px){
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .shell{width:calc(100% - 20px);padding-top:16px}
+  .hero-grid{grid-template-columns:1fr}
+  .spec-grid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr}
+  .salin-grid{grid-template-columns:1fr}
+  .topbar{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <!-- ── TOPBAR ──────────────────────────────── -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">SW</div>
+      <div>
+        <h1>Calculadora Operativa · Suavizadores Industriales</h1>
+        <span>Agotamiento en tiempo real · Capacidad de resina · Receta de salmuera</span>
+      </div>
+    </div>
+    <div class="pill">Carbotecnia · Ing. de Proceso</div>
+  </header>
+
+  <!-- ── HERO ────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <h2>Evalúe el estado de su suavizador <em>en tiempo real.</em></h2>
+        <p>Ingrese el volumen de resina, la dureza del agua cruda, el flujo de operación y la dosis de regeneración programada. La calculadora determina el rendimiento del ciclo, el porcentaje de agotamiento actual y la receta exacta de preparación de salmuera con lectura de salinómetro.</p>
+      </div>
+      <div class="hero-note">
+        <b>Resinas catiónicas fuertes · Ciclo sodio</b>
+        <span>Basado en Purolite C-100 / resinas catiónicas equivalentes 8% DVB.
+          Capacidades estándar Carbotecnia: <strong>20,000 · 25,000 · 30,000 gr/ft³</strong> según dosis.
+          Salmuera saturada: <strong>26.4% NaCl · 100° Salinómetro</strong>.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MAIN LAYOUT ──────────────────────────── -->
+  <div class="layout">
+
+    <!-- ═══════════════════════════════════════
+         PANEL DE ENTRADAS
+    ═══════════════════════════════════════ -->
+    <aside class="input-panel">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Datos del sistema</h3>
+          <span class="step-tag">01 · Inputs</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="section-label">Diseño del suavizador</div>
+
+          <!-- Volumen de resina -->
+          <div class="field">
+            <label for="inp-resin">Volumen de resina instalada</label>
+            <div class="inline-wrap">
+              <input id="inp-resin" type="number" min="0.1" step="0.1" placeholder="Ej. 10">
+              <select id="inp-resin-unit">
+                <option value="ft3">ft³</option>
+                <option value="L">Litros</option>
+              </select>
+            </div>
+            <div class="hint">1 ft³ = 28.317 L · Resina catiónica fuerte estándar (Purolite C-100 o equivalente 8% DVB)</div>
+          </div>
+
+          <!-- Dureza -->
+          <div class="field">
+            <label for="inp-hardness">Dureza del agua cruda</label>
+            <div class="inline-wrap">
+              <input id="inp-hardness" type="number" min="0" step="0.1" placeholder="Ej. 35">
+              <select id="inp-hardness-unit">
+                <option value="gpg">gpg</option>
+                <option value="mgl">mg/L</option>
+                <option value="ppm">ppm CaCO₃</option>
+              </select>
+            </div>
+            <div class="hint" id="hardness-hint">1 gpg = 17.118 mg/L como CaCO₃</div>
+          </div>
+
+          <!-- Flujo -->
+          <div class="field">
+            <label for="inp-flow">Flujo de operación real</label>
+            <div class="inline-wrap">
+              <input id="inp-flow" type="number" min="0" step="0.1" placeholder="Ej. 30">
+              <select id="inp-flow-unit">
+                <option value="gpm">GPM</option>
+                <option value="m3h">m³/h</option>
+                <option value="lpm">L/min</option>
+              </select>
+            </div>
+            <div class="hint">Flujo nominal de servicio. Rango recomendado: 2–5 GPM/ft³ de resina.</div>
+          </div>
+
+          <!-- Dosis de regeneración -->
+          <div class="field">
+            <label for="inp-dose">Dosis de regeneración programada</label>
+            <select class="sel-full" id="inp-dose">
+              <option value="6">Económica — 6 lb NaCl/ft³ · Capacidad: 20,000 gr/ft³</option>
+              <option value="10" selected>Estándar — 10 lb NaCl/ft³ · Capacidad: 25,000 gr/ft³</option>
+              <option value="15">Alta — 15 lb NaCl/ft³ · Capacidad: 30,000 gr/ft³</option>
+            </select>
+            <div class="hint">Estándar = equilibrio óptimo eficiencia/sal. Alta = mayor capacidad, menor regeneración.</div>
+          </div>
+
+          <div class="section-label" style="margin-top:4px">Estado operativo actual</div>
+
+          <!-- Horas operadas -->
+          <div class="field">
+            <label for="inp-hours">Horas operadas desde última regeneración <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+            <div class="inline-wrap">
+              <input id="inp-hours" type="number" min="0" step="0.1" placeholder="Ej. 8.5">
+              <select style="pointer-events:none;color:var(--muted)">
+                <option>horas</option>
+              </select>
+            </div>
+            <div class="hint">Active el indicador de agotamiento en tiempo real. Deje vacío para calcular solo el ciclo teórico.</div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="btn-calc" type="button">Calcular</button>
+            <button class="btn sec" id="btn-reset" type="button">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════
+         COLUMNA DE RESULTADOS
+    ═══════════════════════════════════════ -->
+    <div class="results-col">
+
+      <!-- ESTADO VACÍO -->
+      <div id="empty-state" class="main-card">
+        <div class="empty-state">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+            <path d="M12 8v4l3 3"/>
+          </svg>
+          <h3>Ingrese los datos del sistema</h3>
+          <p>Complete el volumen de resina, dureza del agua y flujo de operación,<br>luego presione <strong>Calcular</strong> para obtener el análisis completo.</p>
+        </div>
+      </div>
+
+      <!-- CONTENIDO DE RESULTADOS (oculto hasta calcular) -->
+      <div id="results-content" style="display:none">
+
+        <!-- ── TARJETA AGOTAMIENTO ─────────────── -->
+        <div class="main-card">
+          <div class="card-title">
+            <h3>Estado de Agotamiento de la Resina</h3>
+            <span class="badge" id="badge-exhaust">—</span>
+          </div>
+
+          <!-- Barra de progreso principal -->
+          <div class="exhaust-wrap">
+            <div class="exhaust-header">
+              <div>
+                <div class="exhaust-pct" id="exhaust-pct-text">—</div>
+                <div class="exhaust-sub" id="exhaust-sub-text">—</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-family:var(--font-num);font-size:15px;font-weight:700;color:var(--navy)" id="exhaust-grains-text">—</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px">granos removidos / capacidad total</div>
+              </div>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="bar-fill" style="width:0%"></div>
+            </div>
+            <div class="bar-milestones">
+              <span>0%</span><span>25%</span><span>50%</span>
+              <span>75%</span><span>⚠ 90%</span><span>100%</span>
+            </div>
+          </div>
+
+          <!-- Alerta dinámica -->
+          <div class="alert-exhaust ok" id="alert-exhaust">
+            <b>Estado operativo</b>
+            <span id="alert-exhaust-text">—</span>
+          </div>
+
+          <!-- KPIs de ciclo -->
+          <div class="kpis" style="margin-top:16px">
+            <div class="kpi">
+              <div class="lbl">Capacidad total ciclo</div>
+              <div class="val" id="kpi-capacity">—<small>Mgr</small></div>
+              <div class="sub" id="kpi-capacity-sub">—</div>
+            </div>
+            <div class="kpi kpi-ok">
+              <div class="lbl">Agua tratada / ciclo</div>
+              <div class="val" id="kpi-water">—<small>m³</small></div>
+              <div class="sub" id="kpi-water-sub">—</div>
+            </div>
+            <div class="kpi">
+              <div class="lbl">Duración del ciclo</div>
+              <div class="val" id="kpi-time">—<small>h</small></div>
+              <div class="sub" id="kpi-time-sub">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TARJETA RECETA DE SALMUERA ─────── -->
+        <div class="main-card">
+          <div class="card-title">
+            <h3>Receta de Preparación de Salmuera</h3>
+            <span class="badge salt" id="badge-salt">—</span>
+          </div>
+
+          <div class="alert info" style="margin-bottom:16px">
+            <b>Protocolo de preparación de salmuera — Resinas catiónicas fuertes</b>
+            La salmuera saturada en el tanque salmuerero corresponde a <strong>26.4% NaCl en peso</strong> (densidad ~1.20 kg/L) y marca <strong>100° en el salinómetro</strong>. El eductor de la válvula diluye esta salmuera al inyectarla: la solución que entra a la resina debe registrar <strong>38–40° en el salinómetro</strong> (~10% NaCl, densidad ~1.07 kg/L) para evitar choque osmótico severo.
+          </div>
+
+          <div class="spec-grid">
+
+            <!-- Consumo de sal -->
+            <div class="spec-card salt-card">
+              <h4>🧂 Consumo de sal por regeneración</h4>
+              <div class="spec-row">
+                <span class="spec-key">Masa de sal (100% NaCl)</span>
+                <span class="spec-val highlight-salt" id="spec-salt-kg">—</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Equivalente en sacos 25 kg</span>
+                <span class="spec-val" id="spec-salt-bags">—</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Dosis aplicada</span>
+                <span class="spec-val" id="spec-dose-used">—</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Resina instalada</span>
+                <span class="spec-val" id="spec-resin-ft3">—</span>
+              </div>
+            </div>
+
+            <!-- Volumen a succionar -->
+            <div class="spec-card salt-card">
+              <h4>🪣 Salmuera a succionar del tanque</h4>
+              <div class="spec-row">
+                <span class="spec-key">Volumen de salmuera saturada</span>
+                <span class="spec-val highlight-salt" id="spec-brine-vol">—</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Concentración salmuera tanque</span>
+                <span class="spec-val">26.4% NaCl</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Densidad salmuera tanque</span>
+                <span class="spec-val">~1.204 kg/L</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Rendimiento por litro</span>
+                <span class="spec-val">317 g NaCl/L</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lecturas del salinómetro -->
+          <div style="margin-top:14px">
+            <div style="font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Calibración del salinómetro</div>
+            <div class="salin-grid">
+              <div class="salin-chip saturado">
+                <div class="sc-deg">100°</div>
+                <div class="sc-lbl">Tanque salmuerero</div>
+                <div class="sc-sub">Salmuera saturada · 26.4% NaCl<br>Verificar antes de cada regeneración</div>
+              </div>
+              <div class="salin-chip diluido">
+                <div class="sc-deg">38–40°</div>
+                <div class="sc-lbl">Inyección a la resina</div>
+                <div class="sc-sub">Salmuera diluida por eductor · ~10% NaCl<br>Verificar a la salida del eductor</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert ok" style="margin-top:14px">
+            <b>Nota operativa — Tiempo de formación de salmuera</b>
+            La formación de salmuera saturada a 20°C toma aproximadamente <strong>1.5 horas</strong> desde que se inyecta el agua al tanque. Siempre mantenga el nivel de sal <strong>por encima del nivel del líquido</strong>. Si el fondo del tanque acumula lodo gris-marrón (insolubles de la sal), limpie el tanque antes de la siguiente regeneración.
+          </div>
+        </div>
+
+        <!-- ── TARJETA RENDIMIENTO DEL CICLO ──── -->
+        <div class="main-card">
+          <div class="card-title">
+            <h3>Rendimiento del Ciclo — Resumen Técnico</h3>
+            <span class="badge ok">Diseño de resina</span>
+          </div>
+          <table class="az-table">
+            <tbody id="r-table"></tbody>
+          </table>
+        </div>
+
+        <!-- ── ALERTA FLUJO FUERA DE RANGO ──── -->
+        <div id="flow-alert" class="alert warn" style="display:none">
+          <b>⚠ Flujo de operación fuera del rango recomendado</b>
+          <span id="flow-alert-text">—</span>
+        </div>
+
+      </div><!-- /results-content -->
+
+      <!-- ── BARRA DE COPIA ──────────────────── -->
+      <div class="copy-bar" id="copy-bar">
+        <div class="copy-bar-text">
+          <b>Bitácora operativa lista</b> · Copie los resultados para reportar al supervisor o registrar en la bitácora del equipo.
+        </div>
+        <button class="btn copy-btn" id="btn-copy" type="button">📋 Copiar Bitácora Operativa</button>
+      </div>
+
+    </div><!-- /results-col -->
+  </div><!-- /layout -->
+
+  <footer>
+    <span>Calculadora Operativa · Suavizadores Industriales · Carbotecnia</span>
+    <span>Motor basado en MIP Carbotecnia · Resinas Purolite C-100 equivalente · Solo para preselección y referencia operativa</span>
+  </footer>
+
+</main>
+
+<script>
+/* ================================================================
+   CALCULADORA OPERATIVA DE SUAVIZADORES INDUSTRIALES
+   Carbotecnia · Motor matemático basado en MIP interno
+   ================================================================ */
+
+/* ── Constantes de conversión ──────────────────────────────────── */
+var GPG_TO_MGL  = 17.118;   // 1 gpg = 17.118 mg/L como CaCO₃
+var GAL_TO_L    = 3.785411; // 1 galón US = 3.785 L
+var L_TO_GAL    = 0.264172; // 1 L = 0.264172 galones
+var FT3_TO_L    = 28.3168;  // 1 ft³ = 28.317 L
+var GPM_TO_M3H  = 0.227125; // 1 GPM = 0.2271 m³/h
+var LPM_TO_M3H  = 0.06;     // 1 L/min = 0.06 m³/h
+
+/* ── Capacidades de resina por dosis (granos/ft³) ───────────────
+   Fuente: MIP Carbotecnia · Diseño industrial estándar
+   6  lb/ft³ → Económica  → 20,000 gr/ft³
+   10 lb/ft³ → Estándar   → 25,000 gr/ft³ (valor de diseño industrial)
+   15 lb/ft³ → Alta       → 30,000 gr/ft³
+   ─────────────────────────────────────────────────────────────── */
+var CAPACITY_TABLE = { '6': 20000, '10': 25000, '15': 30000 };
+
+/* ── Densidad de salmuera saturada (26.4% NaCl, 15°C) ──────────
+   ~317 g de NaCl por litro de salmuera saturada
+   Fuente: ficha técnica regeneración Carbotecnia
+   ─────────────────────────────────────────────────────────────── */
+var BRINE_SAT_G_PER_L = 317; // g NaCl por litro de salmuera saturada
+
+/* ── Utilidades DOM ─────────────────────────────────────────────── */
+function el(id){ return document.getElementById(id); }
+function num(id, def){ var v = parseFloat(el(id).value); return isNaN(v) ? (def||0) : v; }
+function fmt(n, d){ return n.toLocaleString('es-MX', {minimumFractionDigits:d, maximumFractionDigits:d}); }
+function fmtInt(n){ return Math.round(n).toLocaleString('es-MX'); }
+
+/* ── Conversiones de entrada ────────────────────────────────────── */
+
+/** Convierte dureza a gpg (granos por galón) — unidad de trabajo interna */
+function toGpg(val, unit){
+  if(unit === 'gpg') return val;
+  // mg/L y ppm como CaCO₃ son equivalentes; dividir entre 17.118
+  return val / GPG_TO_MGL;
+}
+
+/** Convierte flujo a GPM — unidad de trabajo interna */
+function toGpm(val, unit){
+  if(unit === 'gpm') return val;
+  if(unit === 'm3h') return val / GPM_TO_M3H;
+  if(unit === 'lpm') return val / GPM_TO_M3H * LPM_TO_M3H * (1/LPM_TO_M3H) * GPM_TO_M3H; // L/min → GPM
+  return val;
+}
+
+/** Convierte flujo de L/min a GPM directamente */
+function lpmToGpm(lpm){ return lpm * L_TO_GAL; }
+
+/** Convierte volumen de resina a ft³ */
+function toFt3(val, unit){
+  if(unit === 'ft3') return val;
+  return val / FT3_TO_L;
+}
+
+/* ── Motor de cálculo principal ─────────────────────────────────── */
+function calculate(){
+
+  /* 1. Leer entradas */
+  var resinRaw   = num('inp-resin', 0);
+  var resinUnit  = el('inp-resin-unit').value;
+  var hardRaw    = num('inp-hardness', 0);
+  var hardUnit   = el('inp-hardness-unit').value;
+  var flowRaw    = num('inp-flow', 0);
+  var flowUnit   = el('inp-flow-unit').value;
+  var dose       = el('inp-dose').value;        // '6', '10' o '15'
+  var hoursRaw   = el('inp-hours').value.trim(); // puede estar vacío
+  var hasHours   = hoursRaw !== '';
+  var hours      = hasHours ? parseFloat(hoursRaw) : 0;
+
+  /* 2. Validar entradas mínimas */
+  if(resinRaw <= 0 || hardRaw <= 0 || flowRaw <= 0){
+    showEmpty(); return;
+  }
+
+  /* 3. Normalizar unidades a ft³, gpg y GPM */
+  var resinFt3 = toFt3(resinRaw, resinUnit);
+  var resinL   = resinFt3 * FT3_TO_L;
+
+  var hardGpg  = toGpg(hardRaw, hardUnit);
+  var hardMgl  = hardGpg * GPG_TO_MGL;       // para mostrar en tabla
+
+  /* Conversión de flujo: primero a GPM */
+  var flowGpm;
+  if(flowUnit === 'gpm')      flowGpm = flowRaw;
+  else if(flowUnit === 'm3h') flowGpm = flowRaw / GPM_TO_M3H;
+  else                        flowGpm = lpmToGpm(flowRaw);      // L/min → GPM
+
+  var flowM3h  = flowGpm * GPM_TO_M3H;
+  var flowLpm  = flowM3h / LPM_TO_M3H;
+
+  /* 4. Capacidad asignada según dosis */
+  var capPerFt3 = CAPACITY_TABLE[dose];     // granos / ft³
+  var saltLbFt3 = parseFloat(dose);         // lb NaCl / ft³
+
+  /* 5. Balance del ciclo
+     ─────────────────────────────────────────────────────────────
+     Capacidad Total (granos) = Volumen ft³ × granos/ft³
+     Agua tratada (galones)   = Capacidad Total / Dureza (gpg)
+     Ciclo (horas)            = Agua tratada / Flujo (GPM) / 60
+     ─────────────────────────────────────────────────────────────  */
+  var totalCapGr  = resinFt3 * capPerFt3;          // granos
+  var waterGal    = totalCapGr / hardGpg;           // galones por ciclo
+  var waterM3     = waterGal * GAL_TO_L / 1000;    // m³ por ciclo
+  var waterL      = waterGal * GAL_TO_L;            // litros por ciclo
+  var cycleHours  = waterGal / flowGpm / 60;        // horas de ciclo continuo
+  var cycleMin    = cycleHours * 60;                // minutos
+
+  /* 6. Agotamiento en tiempo real (solo si se ingresaron horas) */
+  var exhaustPct  = 0;
+  var grainsRemoved = 0;
+  var gallonsProcessed = 0;
+
+  if(hasHours && hours > 0){
+    /* Galones procesados = Horas × 60 min/h × Flujo (GPM) */
+    gallonsProcessed = hours * 60 * flowGpm;
+    /* Granos removidos = Galones procesados × Dureza (gpg) */
+    grainsRemoved    = gallonsProcessed * hardGpg;
+    /* % de agotamiento */
+    exhaustPct       = (grainsRemoved / totalCapGr) * 100;
+  }
+
+  /* 7. Receta de salmuera
+     ─────────────────────────────────────────────────────────────
+     Masa de sal (kg) = Volumen (ft³) × Dosis (lb/ft³) × 0.45359 kg/lb
+     Volumen de salmuera saturada (L) = Masa sal (kg) × 1000 / 317 g/L
+     (317 g NaCl por litro de salmuera al 26.4%)
+     ─────────────────────────────────────────────────────────────  */
+  var saltKg      = resinFt3 * saltLbFt3 * 0.45359;   // kg de NaCl por regeneración
+  var saltLb      = resinFt3 * saltLbFt3;              // lb (para referencia)
+  var brineVolL   = (saltKg * 1000) / BRINE_SAT_G_PER_L; // litros de salmuera saturada
+  var saltBags25  = saltKg / 25;                        // sacos de 25 kg
+
+  /* 8. Verificación del flujo específico (GPM por ft³ de resina) */
+  var flowPerFt3  = flowGpm / resinFt3;                // GPM/ft³ — debe estar entre 2 y 5
+  var flowLow     = flowPerFt3 < 1.5;
+  var flowHigh    = flowPerFt3 > 5;
+
+  /* Empacar todos los resultados para el render */
+  var r = {
+    resinFt3, resinL, resinRaw, resinUnit,
+    hardGpg, hardMgl, hardRaw, hardUnit,
+    flowGpm, flowM3h, flowLpm, flowRaw, flowUnit,
+    dose, saltLbFt3, capPerFt3,
+    totalCapGr, waterGal, waterM3, waterL, cycleHours, cycleMin,
+    hasHours, hours, gallonsProcessed, grainsRemoved, exhaustPct,
+    saltKg, saltLb, brineVolL, saltBags25,
+    flowPerFt3, flowLow, flowHigh
+  };
+
+  render(r);
+}
+
+/* ── Render visual ──────────────────────────────────────────────── */
+function render(r){
+
+  /* 1. Barra de agotamiento ───────────────────────────────────── */
+  var pct = r.hasHours ? Math.min(r.exhaustPct, 110) : 0;
+  var barFill = el('bar-fill');
+  barFill.style.width = Math.min(pct, 100) + '%';
+  barFill.className = 'bar-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
+
+  if(r.hasHours){
+    el('exhaust-pct-text').textContent = fmt(r.exhaustPct, 1) + '%';
+    el('exhaust-pct-text').style.color = r.exhaustPct >= 90 ? 'var(--danger)' : r.exhaustPct >= 70 ? 'var(--warn)' : 'var(--ok)';
+    el('exhaust-sub-text').textContent = fmt(r.hours, 1) + ' h operadas · ' + fmtInt(r.gallonsProcessed) + ' gal procesados (' + fmt(r.gallonsProcessed * GAL_TO_L / 1000, 2) + ' m³)';
+    el('exhaust-grains-text').textContent = fmtInt(r.grainsRemoved) + ' / ' + fmtInt(r.totalCapGr) + ' granos';
+  } else {
+    el('exhaust-pct-text').textContent = '—';
+    el('exhaust-pct-text').style.color = 'var(--muted)';
+    el('exhaust-sub-text').textContent = 'Ingrese horas operadas para ver el agotamiento en tiempo real';
+    el('exhaust-grains-text').textContent = 'Capacidad total: ' + fmtInt(r.totalCapGr) + ' granos';
+  }
+
+  /* 2. Badge y alerta de estado ──────────────────────────────── */
+  var badgeEl = el('badge-exhaust');
+  var alertEl = el('alert-exhaust');
+  if(!r.hasHours){
+    badgeEl.textContent = 'Sin tiempo operado';
+    badgeEl.className = 'badge';
+    alertEl.className = 'alert-exhaust info show';
+    el('alert-exhaust-text').textContent =
+      'Ingrese las horas operadas desde la última regeneración para calcular el agotamiento en tiempo real. El ciclo teórico completo es de ' + fmt(r.cycleHours, 1) + ' horas a ' + fmt(r.flowGpm, 1) + ' GPM.';
+    alertEl.style.background='var(--salt-soft)';alertEl.style.borderColor='var(--salt-border)';alertEl.style.color='var(--salt)';
+  } else if(r.exhaustPct >= 100){
+    badgeEl.textContent = '🚨 REGENERAR AHORA';
+    badgeEl.className = 'badge danger';
+    alertEl.className = 'alert-exhaust danger show';
+    alertEl.style.background='';alertEl.style.borderColor='';alertEl.style.color='';
+    el('alert-exhaust-text').innerHTML =
+      '<strong>ALERTA: Fuga de dureza inminente. La resina ha agotado su capacidad de intercambio.</strong> ' +
+      'Granos removidos: ' + fmtInt(r.grainsRemoved) + ' de ' + fmtInt(r.totalCapGr) + ' (' + fmt(r.exhaustPct,1) + '%). ' +
+      'El agua de salida puede contener dureza sin tratar. <strong>Inicie la regeneración de inmediato.</strong>';
+  } else if(r.exhaustPct >= 90){
+    badgeEl.textContent = '⚠ Regenerar pronto';
+    badgeEl.className = 'badge warn';
+    alertEl.className = 'alert-exhaust warn show';
+    alertEl.style.background='';alertEl.style.borderColor='';alertEl.style.color='';
+    el('alert-exhaust-text').textContent =
+      'La resina ha removido ' + fmt(r.exhaustPct,1) + '% de su capacidad. Quedan ' +
+      fmtInt(r.totalCapGr - r.grainsRemoved) + ' granos disponibles (~' +
+      fmt((r.totalCapGr - r.grainsRemoved) / r.hardGpg * GAL_TO_L / 1000, 2) + ' m³ más). ' +
+      'Programe la regeneración a la brevedad para evitar fuga de dureza.';
+  } else if(r.exhaustPct >= 70){
+    badgeEl.textContent = 'Agotamiento moderado';
+    badgeEl.className = 'badge warn';
+    alertEl.className = 'alert-exhaust warn show';
+    alertEl.style.background='';alertEl.style.borderColor='';alertEl.style.color='';
+    el('alert-exhaust-text').textContent =
+      'Resina al ' + fmt(r.exhaustPct,1) + '% de agotamiento. Capacidad remanente: ' +
+      fmtInt(r.totalCapGr - r.grainsRemoved) + ' granos (' +
+      fmt((r.totalCapGr - r.grainsRemoved) / r.hardGpg * GAL_TO_L / 1000, 2) + ' m³ adicionales). ' +
+      'Monitoree con mayor frecuencia y prepare la salmuera para la próxima regeneración.';
+  } else {
+    badgeEl.textContent = 'Operación normal';
+    badgeEl.className = 'badge ok';
+    alertEl.className = 'alert-exhaust ok show';
+    alertEl.style.background='';alertEl.style.borderColor='';alertEl.style.color='';
+    el('alert-exhaust-text').textContent =
+      'Resina en operación normal al ' + fmt(r.exhaustPct,1) + '% de agotamiento. ' +
+      'Capacidad remanente: ' + fmtInt(r.totalCapGr - r.grainsRemoved) + ' granos — equivalente a ' +
+      fmt((r.totalCapGr - r.grainsRemoved) / r.hardGpg * GAL_TO_L / 1000, 2) + ' m³ adicionales de agua suavizada.';
+  }
+
+  /* 3. KPI cards ─────────────────────────────────────────────── */
+  el('kpi-capacity').innerHTML = fmt(r.totalCapGr/1000, 1) + '<small>Mgr</small>';
+  el('kpi-capacity-sub').textContent = fmtInt(r.totalCapGr) + ' granos totales · ' + fmtInt(r.capPerFt3/1000) + ' kgr/ft³';
+
+  el('kpi-water').innerHTML = fmt(r.waterM3, 2) + '<small>m³</small>';
+  el('kpi-water-sub').textContent = fmtInt(r.waterGal) + ' galones · ' + fmtInt(r.waterL) + ' litros';
+
+  el('kpi-time').innerHTML = fmt(r.cycleHours, 1) + '<small>h</small>';
+  el('kpi-time-sub').textContent = fmtInt(r.cycleMin) + ' min a ' + fmt(r.flowGpm, 1) + ' GPM (' + fmt(r.flowM3h, 2) + ' m³/h)';
+
+  /* Colorear KPI de agua tratada si > 1 día de operación */
+  var kpiWater = document.querySelector('#kpi-water').parentElement;
+  kpiWater.className = 'kpi ' + (r.waterM3 >= 100 ? 'kpi-ok' : '');
+
+  /* 4. Receta de salmuera ─────────────────────────────────────── */
+  el('badge-salt').textContent = fmt(r.saltKg, 1) + ' kg NaCl por regen.';
+  el('spec-salt-kg').textContent = fmt(r.saltKg, 2) + ' kg';
+  el('spec-salt-bags').textContent = fmt(r.saltBags25, 1) + ' sacos × 25 kg';
+  el('spec-dose-used').textContent = r.saltLbFt3 + ' lb/ft³ — ' + ({6:'Económica',10:'Estándar',15:'Alta'}[r.dose]);
+  el('spec-resin-ft3').textContent = fmt(r.resinFt3, 2) + ' ft³ (' + fmt(r.resinL, 0) + ' L)';
+
+  el('spec-brine-vol').textContent = fmt(r.brineVolL, 1) + ' L';
+
+  /* 5. Tabla resumen técnico ──────────────────────────────────── */
+  var flowRange   = fmt(r.resinFt3 * 2, 0) + ' – ' + fmt(r.resinFt3 * 5, 0) + ' GPM';
+  var flowStatus  = r.flowLow ? '⚠ Bajo (< 1.5 GPM/ft³)' : r.flowHigh ? '⚠ Alto (> 5 GPM/ft³)' : '✓ Dentro de rango';
+
+  function row(k, v){ return '<tr><td>' + k + '</td><td>' + v + '</td></tr>'; }
+  el('r-table').innerHTML =
+    '<tr><th>Parámetro</th><th>Valor</th></tr>' +
+    row('Resina instalada', fmt(r.resinFt3, 2) + ' ft³  ·  ' + fmt(r.resinL, 0) + ' L') +
+    row('Dureza agua cruda',
+        fmt(r.hardGpg, 2) + ' gpg  ·  ' + fmt(r.hardMgl, 1) + ' mg/L como CaCO₃') +
+    row('Flujo de servicio',
+        fmt(r.flowGpm, 2) + ' GPM  ·  ' + fmt(r.flowM3h, 3) + ' m³/h  ·  ' + fmt(r.flowLpm, 1) + ' L/min') +
+    row('Caudal específico (GPM/ft³)',
+        fmt(r.flowPerFt3, 2) + ' GPM/ft³  ·  Rango rec.: 2–5 GPM/ft³  ·  ' + flowStatus) +
+    row('Dosis de sal',
+        r.saltLbFt3 + ' lb NaCl/ft³  →  Capacidad asignada: ' + fmtInt(r.capPerFt3) + ' gr/ft³') +
+    row('Capacidad total del ciclo',
+        fmtInt(r.totalCapGr) + ' granos  (' + fmt(r.totalCapGr/1000, 2) + ' Mgr)') +
+    row('Agua tratada por ciclo',
+        fmtInt(r.waterGal) + ' gal  ·  ' + fmt(r.waterM3, 2) + ' m³  ·  ' + fmtInt(r.waterL) + ' L') +
+    row('Duración del ciclo (flujo nominal)',
+        fmt(r.cycleHours, 2) + ' horas  (' + fmtInt(r.cycleMin) + ' min)') +
+    row('Sal por regeneración',
+        fmt(r.saltKg, 2) + ' kg  (' + fmt(r.saltLb, 2) + ' lb)  ·  ≈ ' + fmt(r.saltBags25, 1) + ' sacos × 25 kg') +
+    row('Salmuera saturada a succionar',
+        fmt(r.brineVolL, 1) + ' L  (al 26.4% NaCl · 100° salinómetro)') +
+    row('Inyección al lecho (dilución eductor)',
+        '~' + fmt(r.brineVolL * 3, 0) + '–' + fmt(r.brineVolL * 4, 0) + ' L solución al 10% NaCl · 38–40° salinómetro') +
+    (r.hasHours ? row('Estado actual — granos removidos',
+        fmtInt(r.grainsRemoved) + ' de ' + fmtInt(r.totalCapGr) + ' (' + fmt(r.exhaustPct, 1) + '% agotamiento)') : '');
+
+  /* 6. Alerta de flujo fuera de rango ─────────────────────────── */
+  var fa = el('flow-alert');
+  if(r.flowLow || r.flowHigh){
+    fa.style.display = 'block';
+    el('flow-alert-text').textContent = r.flowLow
+      ? 'El flujo de ' + fmt(r.flowPerFt3, 2) + ' GPM/ft³ está por debajo del mínimo recomendado (2 GPM/ft³). La resina puede compactarse y el tiempo de ciclo será excesivo. Rango recomendado: ' + flowRange + ' GPM para ' + fmt(r.resinFt3, 2) + ' ft³.'
+      : 'El flujo de ' + fmt(r.flowPerFt3, 2) + ' GPM/ft³ supera el máximo recomendado (5 GPM/ft³). El contacto resina-ion es insuficiente, la capacidad se degrada y la fuga de dureza aumenta. Rango recomendado: ' + flowRange + ' GPM para ' + fmt(r.resinFt3, 2) + ' ft³.';
+  } else { fa.style.display = 'none'; }
+
+  /* 7. Mostrar resultados ──────────────────────────────────────── */
+  el('empty-state').style.display = 'none';
+  el('results-content').style.display = '';
+  el('copy-bar').style.display = 'flex';
+
+  /* Guardar para copia */
+  window._lastR = r;
+}
+
+/* ── Copy bitácora ──────────────────────────────────────────────── */
+function buildLogText(r){
+  var lines = [
+    'BITÁCORA OPERATIVA · SUAVIZADOR INDUSTRIAL · ' + new Date().toLocaleString('es-MX'),
+    '═══════════════════════════════════════════════════════════════',
+    '',
+    'DATOS DEL SISTEMA',
+    'Resina instalada     : ' + fmt(r.resinFt3, 2) + ' ft³  (' + fmt(r.resinL, 0) + ' L)',
+    'Dureza agua cruda    : ' + fmt(r.hardGpg, 2) + ' gpg  (' + fmt(r.hardMgl, 1) + ' mg/L CaCO₃)',
+    'Flujo de servicio    : ' + fmt(r.flowGpm, 2) + ' GPM  (' + fmt(r.flowM3h, 3) + ' m³/h  ·  ' + fmt(r.flowLpm, 1) + ' L/min)',
+    'Flujo específico     : ' + fmt(r.flowPerFt3, 2) + ' GPM/ft³' + (r.flowLow ? '  ⚠ BAJO' : r.flowHigh ? '  ⚠ ALTO' : '  ✓ OK'),
+    'Dosis regeneración   : ' + r.saltLbFt3 + ' lb NaCl/ft³  (' + {6:'Económica',10:'Estándar',15:'Alta'}[r.dose] + ')',
+    'Capacidad asignada   : ' + fmtInt(r.capPerFt3) + ' granos/ft³',
+    '',
+    'BALANCE DEL CICLO',
+    'Capacidad total      : ' + fmtInt(r.totalCapGr) + ' granos  (' + fmt(r.totalCapGr/1000, 2) + ' Mgr)',
+    'Agua tratada / ciclo : ' + fmtInt(r.waterGal) + ' gal  ·  ' + fmt(r.waterM3, 2) + ' m³',
+    'Duración del ciclo   : ' + fmt(r.cycleHours, 2) + ' h  (' + fmtInt(r.cycleMin) + ' min a ' + fmt(r.flowGpm, 1) + ' GPM)',
+    '',
+    'ESTADO OPERATIVO ACTUAL'
+  ];
+
+  if(r.hasHours){
+    lines.push('Horas operadas       : ' + fmt(r.hours, 1) + ' h');
+    lines.push('Volumen procesado    : ' + fmtInt(r.gallonsProcessed) + ' gal  (' + fmt(r.gallonsProcessed * GAL_TO_L / 1000, 2) + ' m³)');
+    lines.push('Granos removidos     : ' + fmtInt(r.grainsRemoved) + ' de ' + fmtInt(r.totalCapGr));
+    lines.push('% Agotamiento        : ' + fmt(r.exhaustPct, 1) + '%' + (r.exhaustPct >= 100 ? '  🚨 REGENERAR INMEDIATAMENTE' : r.exhaustPct >= 90 ? '  ⚠ REGENERAR PRONTO' : '  ✓ Normal'));
+    lines.push('Granos remanentes    : ' + fmtInt(r.totalCapGr - r.grainsRemoved) + ' (' + fmt((r.totalCapGr - r.grainsRemoved) / r.hardGpg * GAL_TO_L / 1000, 2) + ' m³ más)');
+  } else {
+    lines.push('Horas operadas       : No ingresado');
+    lines.push('Estado               : Calcule con horas operadas para agotamiento real');
+  }
+
+  lines = lines.concat([
+    '',
+    'RECETA DE SALMUERA — REGENERACIÓN',
+    'Sal NaCl por regen.  : ' + fmt(r.saltKg, 2) + ' kg  (' + fmt(r.saltLb, 2) + ' lb  ·  ' + fmt(r.saltBags25, 1) + ' sacos × 25 kg)',
+    'Salmuera a succionar : ' + fmt(r.brineVolL, 1) + ' L  al 26.4% NaCl',
+    'Salinómetro tanque   : 100° (salmuera saturada · densidad ~1.204 kg/L)',
+    'Salinómetro eductor  : 38–40° (dilución ~10% NaCl · densidad ~1.07 kg/L)',
+    '',
+    'NOTA: Selección preliminar. Validar con análisis fisicoquímico completo del agua.',
+    'Motor basado en MIP Carbotecnia · Resina catiónica fuerte ciclo sodio (Purolite C-100 equiv.).',
+    'Carbotecnia · carbotecnia.com.mx',
+    '═══════════════════════════════════════════════════════════════'
+  ]);
+
+  return lines.join('\n');
+}
+
+/* ── Reset ──────────────────────────────────────────────────────── */
+function resetForm(){
+  el('inp-resin').value   = '';
+  el('inp-hardness').value = '';
+  el('inp-flow').value    = '';
+  el('inp-hours').value   = '';
+  el('inp-resin-unit').value    = 'ft3';
+  el('inp-hardness-unit').value = 'gpg';
+  el('inp-flow-unit').value     = 'gpm';
+  el('inp-dose').value          = '10';
+  showEmpty();
+}
+
+function showEmpty(){
+  el('empty-state').style.display = '';
+  el('results-content').style.display = 'none';
+  el('copy-bar').style.display = 'none';
+  window._lastR = null;
+}
+
+/* ── Actualizar hint de dureza ──────────────────────────────────── */
+function updateHardnessHint(){
+  var unit = el('inp-hardness-unit').value;
+  var hints = {
+    gpg: '1 gpg = 17.118 mg/L como CaCO₃ · Agua dura típica: 15–40 gpg',
+    mgl: '1 mg/L CaCO₃ = 0.0584 gpg · Agua dura típica: 250–700 mg/L',
+    ppm: 'ppm como CaCO₃ ≡ mg/L · 1 ppm CaCO₃ = 0.0584 gpg'
+  };
+  el('hardness-hint').textContent = hints[unit] || hints.gpg;
+}
+
+/* ── Event listeners ────────────────────────────────────────────── */
+el('btn-calc').addEventListener('click', calculate);
+el('btn-reset').addEventListener('click', resetForm);
+el('inp-hardness-unit').addEventListener('change', updateHardnessHint);
+
+el('btn-copy').addEventListener('click', function(){
+  if(!window._lastR){ return; }
+  var txt = buildLogText(window._lastR);
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(function(){
+      el('btn-copy').textContent = '✓ Copiado';
+      setTimeout(function(){ el('btn-copy').textContent = '📋 Copiar Bitácora Operativa'; }, 2000);
+    });
+  } else {
+    /* Fallback para entornos sin clipboard API */
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    el('btn-copy').textContent = '✓ Copiado';
+    setTimeout(function(){ el('btn-copy').textContent = '📋 Copiar Bitácora Operativa'; }, 2000);
+  }
+});
+
+/* Calcular al presionar Enter en cualquier input numérico */
+document.querySelectorAll('input[type=number]').forEach(function(inp){
+  inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') calculate(); });
+});
+
+/* Constante expuesta globalmente para el log builder */
+var GAL_TO_L = 3.785411;
+</script>
+</body>
+</html>
