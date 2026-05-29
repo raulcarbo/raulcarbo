@@ -743,13 +743,13 @@ var GAC_VESSELS = [
 ];
 
 var GAC_CARBON_TYPES = {
-  coco:        { label:'GAC Cáscara de coco 12×40 (Micro 4)', density:0.62, color:'#0069b8',
+  coco:        { label:'GAC Cáscara de coco 12×40 (Micro 4)', density:0.62, color:'#1a1a1a',
     hint:'Micro 4: alta dureza (97%), microporos 0.78 nm. Ideal para cloro, THM, agua potable. No recomendado para PFAS. Densidad aparente 0.58–0.66 g/cm³, valor de cálculo: 0.62 kg/L.' },
-  bituminoso:  { label:'GAC Bituminoso 8×30', density:0.48, color:'#374151',
+  bituminoso:  { label:'GAC Bituminoso 8×30', density:0.48, color:'#1a1a1a',
     hint:'Mayor macroporosidad. Ideal para COV, pesticidas, PFAS y orgánicos de alto peso molecular. Densidad bulk 0.48 kg/L.' },
-  bituminoso12:{ label:'GAC Bituminoso 12×40', density:0.50, color:'#1F2937',
+  bituminoso12:{ label:'GAC Bituminoso 12×40', density:0.50, color:'#1a1a1a',
     hint:'Equilibrio micro/macroporos. Recomendado para PFAS (junto con GAC Bituminoso 8×30). Densidad bulk 0.50 kg/L.' },
-  catalitico:  { label:'GAC Catalítico 12×40', density:0.52, color:'#065f3a',
+  catalitico:  { label:'GAC Catalítico 12×40', density:0.52, color:'#1a1a1a',
     hint:'Superficie catalítica activa. Ideal para cloraminas, H₂S y ozono. Densidad bulk 0.52 kg/L.' }
 };
 
@@ -821,7 +821,7 @@ function gacRenderBed(vsl,carbon){
   var gravelKg=gravelFt3*GAC_GRAVEL_DENS;
   var carbonKg=carbonFt3*GAC_FT3_TO_L*carbon.density;
   var totalVol=carbonFt3+gravelFt3, totalKg=carbonKg+gravelKg;
-  var bedH=TANK_H_PX*0.65, freeboardH=TANK_H_PX-bedH;
+  var bedH=TANK_H_PX*0.50, freeboardH=TANK_H_PX-bedH;
   var carbonH=(carbonFt3/totalVol)*bedH, gravelH=(gravelFt3/totalVol)*bedH;
   gacEl('gac-bed-tank').innerHTML=
     '<div class="bed-freeboard" style="height:'+freeboardH+'px">Espacio<br>libre 50%<br>(retrolav.)</div>'+
