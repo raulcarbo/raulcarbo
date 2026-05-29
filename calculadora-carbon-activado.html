@@ -3,939 +3,1152 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dimensionamiento de Carbón Activado para Aire y Gases | Carbotecnia</title>
+<title>Calculadora GAC – Carbotecnia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ── Variables ────────────────────── */
-:root {
-  --brand:#0d9488;--brand-dark:#052e16;--brand-mid:#0f766e;
-  --brand-light:#f0fdf9;--brand-border:#99f6e4;
-  --ok:#047857;--ok-soft:#d1fae5;--ok-border:#6ee7b7;--ok-dark:#065f46;
-  --warn:#b45309;--warn-soft:#fffbeb;--warn-border:#fcd34d;
-  --danger:#991b1b;--danger-soft:#fef2f2;--danger-border:#fecaca;
-  --accent:#0284c7;--accent-soft:#e0f2fe;--accent-border:#bae6fd;
-  --ink:#0b1424;--steel:#1e3a5f;--muted:#64748b;
-  --line:#d6dde7;--surface:#ffffff;--paper:#f4f6fa;--paper-soft:#eef2f7;
-  --shadow:0 1px 3px rgba(11,20,36,.06),0 8px 24px rgba(11,20,36,.08);
-  --shadow-sm:0 1px 3px rgba(11,20,36,.05);
-  --radius:16px;--radius-lg:22px;
+:root{
+  --navy:#003d82; --accent:#0084db; --accent-mid:#38bdf8;
+  --peach:#C05621; --peach-soft:#FEF0E8; --peach-mid:#fac1a5;
+  --surface:#fff; --paper:#F4F7FB; --paper-soft:#EEF3FA;
+  --line:#D6DDE7; --ink:#0B1424; --muted:#64748B;
+  --ok:#047857; --ok-soft:#D1FAE5; --ok-border:#6EE7B7;
+  --warn:#B45309; --warn-soft:#FEF3C7; --warn-border:#FCD34D;
+  --err:#B91C1C; --err-soft:#FEE2E2; --err-border:#FCA5A5;
+  --info-bg:#E0F2FE; --info-border:#BAE6FD; --info-text:#0C4A6E;
+  --shadow:0 1px 3px rgba(11,20,36,.05),0 8px 28px rgba(11,20,36,.09);
+  --shadow-sm:0 1px 3px rgba(11,20,36,.04),0 4px 12px rgba(11,20,36,.07);
+  --radius:16px; --radius-lg:22px;
   --font-title:'Poppins',sans-serif;
   --font-body:'DM Sans',sans-serif;
-  --font-num:'Roboto Mono',monospace;
+  --font-num:'JetBrains Mono',monospace;
 }
-
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#fff;color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:linear-gradient(180deg,#EEF3FA,#E4EBF5);color:var(--ink);
+  font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit}
 h1,h2,h3,h4{font-family:var(--font-title)}
 
-/* ── Shell ────────────────────────── */
 .shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
 
-/* ── Brand bar ────────────────────── */
-.brand-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 22px;background:var(--surface);
-  border:1px solid var(--line);border-radius:18px;
-  margin-bottom:16px;flex-wrap:wrap;gap:12px;
-  box-shadow:var(--shadow-sm);
-}
-.brand-mark{display:flex;align-items:center;gap:12px}
-.brand-icon{
-  width:40px;height:40px;border-radius:10px;
-  background:linear-gradient(135deg,#0d9488,#052e16);
-  color:#fff;display:grid;place-items:center;
-  font-family:var(--font-title);font-weight:800;font-size:13px;
-  box-shadow:0 4px 12px rgba(13,148,136,.28);letter-spacing:-.01em;text-align:center;line-height:1.1;padding:3px;
-}
-.brand-name{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--ink)}
-.brand-name span{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:400}
-.brand-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.brand-tag b{color:var(--brand-mid);font-weight:600}
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:14px 22px;margin-bottom:16px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(135deg,var(--accent-mid),var(--navy));
+  box-shadow:0 8px 20px rgba(0,132,219,.28);font-weight:900;
+  font-family:var(--font-title);font-size:12px;letter-spacing:-.01em}
+.brand h1{font-size:16px;font-weight:800;color:var(--navy);line-height:1.15}
+.brand span{display:block;margin-top:2px;color:var(--muted);font-size:11px;
+  font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.pill{background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  padding:7px 14px;font-size:12px;font-weight:800;box-shadow:var(--shadow-sm);
+  color:var(--navy);white-space:nowrap}
 
-/* ── Hero ─────────────────────────── */
-.calc-header{
-  background:linear-gradient(135deg,#052e16 0%,#065f46 50%,#0d9488 100%);
-  border-radius:var(--radius-lg);padding:28px;color:#fff;
-  margin-bottom:16px;position:relative;overflow:hidden;
-}
-.calc-header::after{
-  content:"";position:absolute;inset:auto -80px -120px auto;
+/* Hero */
+.hero{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#003d82 0%,#0069b8 50%,#0084db 100%);
+  color:#fff;border-radius:var(--radius-lg);padding:28px;
+  box-shadow:var(--shadow);margin-bottom:16px}
+.hero::after{content:"";position:absolute;inset:auto -80px -120px auto;
   width:340px;height:340px;border-radius:50%;
-  border:52px solid rgba(255,255,255,.06);pointer-events:none;
-}
-.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:end}
-.calc-header h1{
-  font-size:clamp(20px,2.6vw,36px);line-height:1.05;letter-spacing:-.04em;
-  color:#fff !important;font-weight:800;margin-bottom:10px;
-}
-.calc-header h1 em{font-style:normal;color:rgba(167,243,208,.92)}
-.calc-header p{color:rgba(255,255,255,.72);font-size:13.5px;line-height:1.6;margin:0}
-.hero-note{
-  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);
-  border-radius:16px;padding:18px;backdrop-filter:blur(16px);
-}
-.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
-.hero-note span{color:rgba(255,255,255,.73);font-size:13px;line-height:1.6}
+  border:52px solid rgba(165,226,250,.08);pointer-events:none}
+.hero-inner{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:end}
+.hero h2{font-size:clamp(18px,2.4vw,30px);line-height:1.1;
+  letter-spacing:-.04em;color:#fff !important;font-weight:800;margin-bottom:8px}
+.hero h2 em{font-style:normal;color:rgba(165,226,250,.95)}
+.hero p{color:rgba(255,255,255,.72);font-size:13px;line-height:1.6}
+.hero-note{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);
+  border-radius:14px;padding:16px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:6px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:12.5px;line-height:1.6}
 
-/* ── Formula bar ──────────────────── */
-.formula-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.formula-chip{
-  background:var(--surface);border:1px solid var(--line);border-radius:14px;
-  padding:11px 18px;flex:1;min-width:130px;box-shadow:var(--shadow-sm);
-}
-.fc-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.fc-value{font-family:var(--font-num);font-weight:700;font-size:15px;color:var(--brand-mid)}
+/* Formula strip */
+.formula-strip{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:10px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;
+  gap:5px 16px;justify-content:center;font-size:12.5px;color:var(--navy)}
+.formula-strip code{font-family:var(--font-num);font-size:11.5px;background:var(--info-bg);
+  padding:2px 7px;border-radius:5px;font-weight:700;color:#003d82;white-space:nowrap}
 
-/* ── Layout ───────────────────────── */
-.layout{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
-.input-panel{position:sticky;top:20px;min-width:0}
-.results-col{min-width:0;display:grid;gap:14px}
+/* Layout */
+.layout{display:grid;grid-template-columns:380px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px}
+.results-col{display:grid;gap:14px}
 
-/* ── Panel ────────────────────────── */
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
-.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-.panel-head h2{font-size:15px;color:var(--ink);font-weight:700}
-.step-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.panel-body{padding:20px}
+/* Panel */
+.panel{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.panel-head h3{font-size:15px;color:var(--navy);font-weight:700}
+.step-tag{color:var(--accent);font-size:11px;font-weight:900;letter-spacing:.04em}
+.panel-body{padding:20px;display:grid;gap:14px}
 
-/* ── Section label ────────────────── */
-.sec-label{font-family:var(--font-num);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-mid);margin:18px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--brand-border)}
-.sec-label:first-child{margin-top:0}
+/* Unit tabs */
+.unit-tabs{display:flex;gap:4px;background:var(--paper-soft);border-radius:10px;padding:3px}
+.unit-tab{flex:1;padding:8px 0;border:none;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;background:transparent;color:var(--muted);transition:all .15s}
+.unit-tab.active{background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm)}
 
-/* ── Fields ───────────────────────── */
-.field{margin-bottom:14px}
-.field:last-child{margin-bottom:0}
-.field label{display:block;color:var(--ink);font-weight:700;font-size:13px;margin-bottom:6px;font-family:var(--font-title)}
-.req{color:var(--brand);font-weight:700}
-.opt{font-family:var(--font-num);font-size:9px;font-weight:400;color:var(--muted);background:var(--paper-soft);border:1px solid var(--line);padding:1px 6px;border-radius:999px;margin-left:5px;letter-spacing:.06em;text-transform:uppercase}
-.inline-wrap{display:grid;grid-template-columns:1fr auto;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
-.inline-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,148,136,.13)}
-.inline-wrap input{min-width:0;border:0;outline:0;padding:11px 12px;color:var(--ink);background:transparent;font-weight:600;font-family:var(--font-num);font-size:15px}
-.inline-wrap input::placeholder{color:#B0BEC5;font-weight:400;font-family:var(--font-body);font-size:13px}
-.inline-wrap .unit-badge{border-left:1px solid var(--line);background:var(--paper-soft);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--font-body);padding:0 10px;white-space:nowrap;min-width:54px}
-.inline-wrap select.unit-sel{border:0;border-left:1px solid var(--line);background:var(--paper-soft);color:var(--muted);font-size:11px;font-weight:700;font-family:var(--font-body);padding:0 8px;outline:0;cursor:pointer;min-width:80px;-webkit-appearance:auto;appearance:auto}
-select.full-sel{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:var(--surface);color:var(--ink);font-size:13px;font-weight:600;font-family:var(--font-body);outline:0;cursor:pointer}
-select.full-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,148,136,.13)}
-.hint{margin-top:5px;color:var(--muted);font-size:11.5px;line-height:1.4}
+.gac-panel{display:none}.gac-panel.active{display:contents}
 
-/* ── Family selector ──────────────── */
-.family-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px}
-.family-btn{
-  display:flex;flex-direction:column;align-items:flex-start;gap:2px;
-  padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;
-  background:var(--surface);cursor:pointer;text-align:left;transition:all .15s;
-}
-.family-btn:hover{border-color:var(--brand);background:var(--brand-light)}
-.family-btn.active{border-color:var(--brand);background:var(--brand-light);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
-.family-icon{font-size:16px;line-height:1}
-.family-name{font-family:var(--font-body);font-weight:700;font-size:12px;color:var(--ink);line-height:1.2}
-.family-btn.active .family-name{color:var(--brand-mid)}
-.family-sub{font-family:var(--font-num);font-size:9.5px;color:var(--muted);line-height:1.3}
+/* Section label */
+.section-lbl{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);padding-bottom:5px;border-bottom:1px solid var(--line)}
 
-.product-pill{
-  margin-top:10px;padding:8px 12px;
-  background:var(--brand-light);border:1px solid var(--brand-border);border-radius:12px;
-  font-family:var(--font-body);font-size:12.5px;color:#134e4a;
-  display:flex;align-items:center;gap:8px;
-}
-.product-pill strong{font-weight:700;color:var(--brand-mid)}
+/* Fields */
+.field{display:grid;gap:5px}
+.field label{color:var(--navy);font-weight:700;font-size:13px}
+.field .hint{color:var(--muted);font-size:11.5px;line-height:1.4}
 
-/* ── Action buttons ───────────────── */
-.actions{display:flex;gap:10px;margin-top:16px}
-.btn{border:0;border-radius:999px;padding:12px 20px;font-weight:800;cursor:pointer;font-family:var(--font-title);font-size:13px;transition:transform .12s,box-shadow .12s;flex:1;text-align:center}
-.btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 8px 20px rgba(13,148,136,.22)}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(13,148,136,.30)}
-.btn-ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line)}
-.btn-ghost:hover{background:var(--paper-soft)}
+.inline-wrap{display:grid;grid-template-columns:1fr auto;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.inline-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,132,219,.13)}
+.inline-wrap input,.inline-wrap select{min-width:0;border:0;outline:0;
+  padding:11px 12px;color:var(--ink);background:transparent;font-weight:700}
+.inline-wrap input{font-family:var(--font-num)}
+.inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;font-family:var(--font-body)}
+.inline-wrap select{border-left:1px solid var(--line);background:var(--paper-soft);
+  font-size:12.5px;color:var(--navy);cursor:pointer;appearance:none;padding-right:32px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%238A9BB0' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center}
 
-/* ── Empty state ──────────────────── */
-.results-empty{text-align:center;padding:60px 24px;color:var(--muted);font-size:14px;line-height:1.6}
-.results-empty svg{margin:0 auto 16px;display:block;opacity:.3;stroke:var(--brand)}
+.select-wrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.select-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,132,219,.13)}
+.select-wrap select{width:100%;border:0;outline:0;padding:11px 36px 11px 12px;
+  color:var(--ink);background:transparent;font-weight:600;font-size:13px;cursor:pointer;
+  appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%238A9BB0' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center}
 
-/* ── Validation ───────────────────── */
-.inline-wrap.error{border-color:var(--danger)}
-.field .err-msg{display:none;margin-top:4px;font-size:11px;color:var(--danger);font-family:var(--font-num)}
-.field.has-error .err-msg{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:11.5px;font-weight:600;padding:4px 10px;border:1px solid var(--line);
+  border-radius:20px;background:var(--paper-soft);color:var(--muted);cursor:pointer;
+  transition:all .12s;white-space:nowrap}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-/* ── Results: summary row ─────────── */
-.summary-row{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
-  background:var(--line);border:1px solid var(--line);border-radius:18px;
-  overflow:hidden;margin-bottom:18px;
-}
-.summary-cell{background:var(--surface);padding:16px 18px}
-.summary-cell .lbl{font-family:var(--font-num);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
-.summary-cell .val{font-family:var(--font-num);font-weight:600;font-size:22px;color:var(--ink);line-height:1;letter-spacing:-.02em}
-.summary-cell .val small{font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--muted);margin-left:4px;letter-spacing:0}
-.summary-cell .alt{font-family:var(--font-num);font-size:11px;color:var(--muted);margin-top:5px}
+.qf{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.qf-lbl{font-size:11px;color:var(--muted);font-weight:500}
+.qf-chip{font-size:11px;font-weight:600;padding:3px 9px;border:1px solid var(--line);
+  border-radius:20px;background:var(--paper-soft);color:var(--muted);cursor:pointer;transition:all .12s}
+.qf-chip:hover{border-color:var(--accent);color:var(--accent);background:var(--info-bg)}
 
-/* ── Results: hero product ────────── */
-.hero-product{
-  background:linear-gradient(135deg,var(--brand-light),#e0f2fe);
-  border:1px solid var(--brand-border);border-left:3px solid var(--brand);
-  border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;
-}
-.hero-product-tag{font-family:var(--font-num);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-mid);font-weight:600;margin-bottom:8px}
-.hero-product-name{font-family:var(--font-title);font-weight:700;font-size:18px;color:var(--ink);letter-spacing:-.01em;margin-bottom:6px}
-.hero-product-desc{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:6px}
-.hero-product-specs{font-family:var(--font-num);font-size:10.5px;color:var(--brand-mid);letter-spacing:.04em;margin-bottom:6px}
-.hero-product-url{font-family:var(--font-num);font-size:10.5px}
-.hero-product-url a{color:var(--accent);text-decoration:none;border-bottom:1px dashed}
+.num-wrap{position:relative}
+.num-wrap input{width:100%;border:1px solid var(--line);border-radius:12px;
+  padding:11px 60px 11px 14px;font-family:var(--font-num);font-weight:700;
+  font-size:14px;color:var(--ink);background:var(--surface);outline:none;
+  transition:border-color .15s,box-shadow .15s}
+.num-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,132,219,.13)}
+.num-badge{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  font-size:10px;font-weight:700;color:var(--muted);background:var(--info-bg);
+  padding:2px 7px;border-radius:5px;white-space:nowrap;pointer-events:none}
 
-/* ── Results: section titles ──────── */
-.section-title{
-  font-family:var(--font-title);font-weight:600;font-size:14.5px;color:var(--ink);
-  margin:20px 0 4px;display:flex;align-items:center;gap:8px;
-}
-.section-title::before{content:'';width:6px;height:6px;background:var(--brand);border-radius:50%}
-.section-sub{font-family:var(--font-num);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;margin-left:14px}
+/* Buttons */
+.btn-row{display:flex;gap:10px}
+.btn-calc{flex:1;padding:13px 18px;border:none;border-radius:12px;font-size:14px;
+  font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--navy));
+  color:#fff;box-shadow:0 6px 18px rgba(0,132,219,.28);transition:all .15s}
+.btn-calc:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,132,219,.38)}
+.btn-clear{padding:13px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;
+  font-weight:600;cursor:pointer;background:var(--surface);color:var(--muted);transition:all .15s}
+.btn-clear:hover{border-color:var(--accent);color:var(--accent)}
 
-/* ── Results: result list ─────────── */
-.result-list{list-style:none;margin:0;padding:0}
-.result-list li{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line)}
-.result-list li:last-child{border-bottom:none}
-.result-list .name{font-size:13px;color:var(--muted);line-height:1.4}
-.result-list .name b{display:block;font-weight:600;color:var(--ink);font-size:13.5px;margin-bottom:2px}
-.result-list .value{text-align:right;font-family:var(--font-num);font-size:13.5px;font-weight:500;color:var(--ink);white-space:nowrap}
-.result-list .value em{font-style:normal;display:block;font-size:10.5px;font-weight:400;color:var(--muted);margin-top:3px}
+/* Empty state */
+.empty-state{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:52px 32px;text-align:center;box-shadow:var(--shadow-sm)}
+.empty-icon{font-size:44px;margin-bottom:14px}
+.empty-state h3{font-size:17px;color:var(--navy);font-weight:700;margin-bottom:6px}
+.empty-state p{font-size:13px;color:var(--muted);line-height:1.6}
 
-/* ── Tags ─────────────────────────── */
-.tag{display:inline-block;font-family:var(--font-num);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
-.tag-ok{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok-border)}
-.tag-warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-border)}
-.tag-err{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border)}
-.tag-teal{background:var(--brand-light);color:var(--brand-mid);border:1px solid var(--brand-border)}
-.tag-blue{background:var(--accent-soft);color:#1d4ed8;border:1px solid var(--accent-border)}
+/* Results visibility */
+.results-panel{display:none}.results-panel.visible{display:contents}
 
-/* ── Notices ──────────────────────── */
-.notice{border-radius:14px;padding:14px 16px;border:1px solid;font-size:13px;line-height:1.55;margin-top:14px}
-.notice b{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
-.notice ul{margin:4px 0 0;padding-left:18px}
-.notice li{margin-bottom:3px}
-.notice.info{background:var(--accent-soft);border-color:var(--accent-border);color:#1e3a5f}
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi{border-radius:13px;padding:14px 16px}
+.kpi-icon{font-size:18px;margin-bottom:4px}
+.kpi-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kpi-val{font-family:var(--font-num);font-size:19px;font-weight:700;letter-spacing:-.03em}
+.kpi-val small{font-family:var(--font-body);font-size:.4em;font-weight:600;margin-left:3px}
+.kpi-sub{font-size:10.5px;margin-top:4px;font-family:var(--font-num);line-height:1.4}
+.kpi-blue{background:var(--info-bg)}
+.kpi-blue .kpi-lbl{color:var(--accent)}.kpi-blue .kpi-val{color:var(--navy)}.kpi-blue .kpi-sub{color:var(--accent)}
+.kpi-green{background:var(--ok-soft)}
+.kpi-green .kpi-lbl{color:var(--ok)}.kpi-green .kpi-val{color:#065f3a}.kpi-green .kpi-sub{color:var(--ok)}
+.kpi-teal{background:#E6F5F0}
+.kpi-teal .kpi-lbl{color:#0E7C6B}.kpi-teal .kpi-val{color:#065C4F}.kpi-teal .kpi-sub{color:#0E7C6B}
+.kpi-purple{background:#EDE9FE}
+.kpi-purple .kpi-lbl{color:#7C3AED}.kpi-purple .kpi-val{color:#4C1D95}.kpi-purple .kpi-sub{color:#7C3AED}
+
+/* Generic card */
+.card{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.card-head{padding:12px 18px;background:var(--paper-soft);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-head h3{font-size:13px;font-weight:800;color:var(--navy)}
+.card-head .tag{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--info-bg);color:var(--accent);border:1px solid var(--info-border);
+  padding:3px 9px;border-radius:20px}
+.card-body{padding:18px}
+
+/* Bed visual */
+.bed-visual{display:flex;gap:22px;align-items:stretch}
+.bed-tank{position:relative;width:80px;flex-shrink:0;background:var(--surface);
+  border:2.5px solid var(--ink);border-radius:8px 8px 4px 4px;overflow:hidden;
+  display:flex;flex-direction:column}
+.bed-layer{width:100%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-num);font-size:7.5px;font-weight:700;color:rgba(255,255,255,.85);
+  text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(0,0,0,.1)}
+.bed-freeboard{width:100%;
+  background:repeating-linear-gradient(45deg,var(--surface),var(--surface) 5px,var(--paper-soft) 5px,var(--paper-soft) 10px);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-num);font-size:7px;font-weight:500;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;border-bottom:1px dashed var(--line);
+  text-align:center;line-height:1.3;padding:0 4px}
+.bed-info{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.bed-item{display:flex;align-items:center;gap:10px}
+.bed-swatch{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.bed-texts{display:flex;flex-direction:column}
+.bed-texts b{font-weight:800;color:var(--navy);font-size:13px}
+.bed-texts span{font-family:var(--font-num);font-size:11px;color:var(--muted)}
+.bed-total-row{border-top:1px solid var(--line);padding-top:10px;margin-top:4px;
+  display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px}
+.bed-total-row b{font-weight:800;color:var(--navy)}
+.bed-total-row span{font-family:var(--font-num);font-weight:700;color:var(--accent)}
+
+/* Backwash / lead-lag */
+.bw-card{background:var(--surface);border:1px solid var(--line);
+  border-left:4px solid var(--accent-mid);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:15px 18px}
+.bw-title{font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:12px}
+.bw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.bw-lbl{font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:3px}
+.bw-val{font-family:var(--font-num);font-size:17px;font-weight:700;color:var(--ink)}
+.bw-val small{font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--muted);margin-left:2px}
+.bw-sub{font-family:var(--font-num);font-size:10.5px;color:var(--muted);margin-top:2px}
+
+.ll-card{background:var(--peach-soft);border:1px solid rgba(192,86,33,.2);
+  border-left:4px solid var(--peach-mid);border-radius:var(--radius);
+  padding:15px 18px;display:none}
+.ll-card.visible{display:block}
+.ll-title{font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--peach);font-weight:700;margin-bottom:12px}
+.ll-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:12px}
+.ll-note{margin-top:10px;font-size:12px;color:var(--peach);line-height:1.55}
+
+/* Detail az-table */
+.az-table{width:100%;border-collapse:separate;border-spacing:0;
+  border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface)}
+.az-table th,.az-table td{padding:9px 13px;border-bottom:1px solid var(--line);
+  text-align:left;font-size:12.5px}
+.az-table th{background:var(--paper-soft);color:var(--navy);font-weight:900;
+  font-family:var(--font-title);font-size:11.5px}
+.az-table th:last-child,.az-table td:last-child{text-align:right}
+.az-table tr:last-child td{border-bottom:0}
+.az-table td:last-child{font-weight:700;color:var(--navy);font-family:var(--font-num);font-size:12px}
+.az-table .hl td:last-child{color:var(--accent)}
+.az-table td:first-child{color:var(--muted)}
+
+/* Alerts */
+.alert{border-radius:12px;padding:11px 15px;font-size:12.5px;line-height:1.55;display:none}
+.alert.show{display:block}
+.alert.ok{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok-border)}
+.alert.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-border)}
+.alert.err{background:var(--err-soft);color:var(--err);border:1px solid var(--err-border)}
+.alert.info{background:var(--info-bg);color:var(--info-text);border:1px solid var(--info-border)}
+.alert.water{background:#FFF7ED;color:#9A3412;border:1px solid rgba(154,52,18,.2)}
+
+/* Parallel section */
+.par-section{display:none}
+.par-section.visible{display:block}
+.par-head h3{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:2px}
+.par-head p{font-size:12px;color:var(--muted);margin-bottom:10px}
+.par-grid{display:grid;gap:8px}
+.par-option{background:var(--surface);border:1.5px solid var(--line);
+  border-radius:var(--radius);padding:14px 16px;transition:border-color .15s}
+.par-option:hover{border-color:var(--accent-mid)}
+.par-option.best{border-color:var(--accent);background:var(--info-bg)}
+.par-top{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.par-title{font-family:var(--font-num);font-size:14px;font-weight:700;color:var(--ink)}
+.par-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 9px;border-radius:20px;white-space:nowrap}
+.par-badge.best{background:var(--accent);color:#fff}
+.par-badge.ok{background:var(--ok-soft);color:var(--ok)}
+.par-badge.wrn{background:var(--warn-soft);color:var(--warn)}
+.par-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:2px 12px}
+.par-detail{display:flex;justify-content:space-between;align-items:baseline;gap:6px;
+  padding:3px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.04)}
+.par-detail:last-child{border-bottom:none}
+.pdl{color:var(--muted)}.pdv{font-family:var(--font-num);font-weight:700;color:var(--ink);font-size:12px;text-align:right}
+
+/* Notices */
+.notice{padding:12px 16px;border-radius:12px;font-size:12px;line-height:1.65}
+.notice b{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:800;margin-bottom:5px}
+.notice.info{background:var(--info-bg);border:1px solid var(--info-border);color:var(--info-text)}
 .notice.info b{color:var(--accent)}
-.notice.warn{background:var(--warn-soft);border-color:var(--warn-border);color:#7c4a08}
-.notice.warn b{color:var(--warn)}
-.notice.tech{background:var(--paper-soft);border-color:var(--line);color:var(--muted)}
-.notice.tech b{color:var(--ink)}
-.notice.teal{background:var(--brand-light);border-color:var(--brand-border);color:#134e4a}
-.notice.teal b{color:var(--brand-mid)}
+.notice.tech{background:var(--paper-soft);border:1px solid var(--line);color:var(--muted)}
+.notice.tech b{color:var(--navy)}
 
-/* ── Disclaimer ───────────────────── */
-.disclaimer{display:flex;gap:12px;align-items:flex-start;background:#fffbeb;border:1px solid #fcd34d;border-radius:14px;padding:16px 18px;margin-top:24px;font-size:12.5px;line-height:1.65;color:#78350f}
-.disclaimer strong{display:block;margin-bottom:4px;font-family:var(--font-title);font-size:12px;letter-spacing:.04em}
-.disclaimer svg{color:#b45309;margin-top:2px;flex-shrink:0}
-footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);font-family:var(--font-num);letter-spacing:.06em;text-transform:uppercase}
+/* Action buttons */
+.btn-sm{padding:8px 14px;font-size:12.5px;font-weight:600;display:inline-flex;
+  align-items:center;gap:6px;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);background:var(--info-bg)}
+.btn-sm svg{width:13px;height:13px}
+.btn-sm.copied{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
 
-/* ── Responsive ───────────────────── */
-@media(max-width:1060px){
+/* Reference tables */
+.ref-section{margin-top:28px}
+.ref-section h2{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:10px}
+.ref-wrap{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow-x:auto;
+  -webkit-overflow-scrolling:touch}
+.ref-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.ref-table thead th{padding:11px 13px;font-weight:800;font-size:11px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted);background:var(--paper-soft);
+  border-bottom:1.5px solid var(--line);text-align:left;white-space:nowrap}
+.ref-table tbody td{padding:10px 13px;border-bottom:1px solid var(--line);
+  color:var(--ink);font-family:var(--font-num);font-size:12px}
+.ref-table tbody td:first-child{font-family:var(--font-body);font-weight:600}
+.ref-table tbody tr:last-child td{border-bottom:none}
+.ref-table tbody tr:hover td{background:var(--info-bg)}
+.ref-table tbody tr.row-hl{background:#DBEAFE;outline:2px solid var(--accent);outline-offset:-2px}
+.ref-table tbody tr.row-hl td{font-weight:700;color:var(--navy)}
+.ebct-badge{display:inline-block;font-family:var(--font-num);font-weight:700;
+  font-size:11.5px;padding:2px 8px;border-radius:5px;white-space:nowrap}
+.ebct-badge.fast{background:var(--ok-soft);color:var(--ok)}
+.ebct-badge.mid{background:var(--warn-soft);color:var(--warn)}
+.ebct-badge.long{background:var(--info-bg);color:var(--accent)}
+
+/* Footer */
+.footer{margin-top:24px;background:var(--info-bg);border:1px solid var(--info-border);
+  border-radius:12px;padding:14px 18px;font-size:12px;color:var(--muted);line-height:1.65}
+.footer strong{color:var(--navy);font-weight:700}
+.bottom-bar{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}.input-panel{position:static}
+  .hero-inner{grid-template-columns:1fr}.hero-note{display:none}
+  .kpi-row{grid-template-columns:1fr 1fr}
+}
+@media (max-width:540px){
+  .bw-grid,.ll-grid{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#fff}.shell{padding:16px}
+  .input-panel,.formula-strip,.btn-row,.unit-tabs{display:none !important}
   .layout{grid-template-columns:1fr}
-  .input-panel{position:static}
-  .hero-grid{grid-template-columns:1fr}
-  .hero-note{display:none}
-  .summary-row{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:700px){
-  .family-grid{grid-template-columns:repeat(2,1fr)}
-  .summary-row{grid-template-columns:1fr}
-  .result-list li{grid-template-columns:1fr}
-  .result-list .value{text-align:left;white-space:normal}
-}
-@media(max-width:640px){
-  .shell{width:calc(100% - 20px);padding-top:16px}
-  .formula-bar{display:grid;grid-template-columns:1fr 1fr}
-  .actions{flex-direction:column}
-}
-@media(max-width:380px){
-  .formula-bar{grid-template-columns:1fr}
-  .family-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
-
 <div class="shell">
 
-  <!-- Brand bar -->
-  <div class="brand-bar">
-    <div class="brand-mark">
-      <div class="brand-icon">CA</div>
-      <div class="brand-name">
-        Carbotecnia
-        <span>Tratamiento de aire y gases · México</span>
-      </div>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">GAC</div>
+      <h1>Carbotecnia
+        <span>Tratamiento de agua · México</span>
+      </h1>
     </div>
-    <div class="brand-tag">Carbón Activado para gases · <b>v 2.0</b></div>
+    <div class="pill">Herramienta de ingeniería · v4.0</div>
   </div>
 
   <!-- Hero -->
-  <div class="calc-header">
-    <div class="hero-grid">
+  <div class="hero">
+    <div class="hero-inner">
       <div>
-        <h1>Dimensionamiento de carbón activado para <em>tratamiento de aire y gases</em></h1>
-        <p>Control de olores, VOC, H₂S, gases ácidos y vapores de mercurio mediante adsorción en lecho fijo. Datos de diseño basados en fichas técnicas oficiales Carbotecnia y MIP de ingeniería. El dimensionamiento final requiere análisis completo de la corriente de gas.</p>
+        <h2><em>Dimensionamiento de equipos</em><br>Carbón activado granular (GAC)</h2>
+        <p>Obtenga el TCCV real instalado, el peso total del carbón y la grava de soporte, la configuración lead-lag y el flujo de retrolavado. Para una recomendación final se requiere análisis físico-químico del agua revisado por nuestro personal de ingeniería.</p>
       </div>
       <div class="hero-note">
-        <b>Carbones Carbotecnia</b>
-        <span>Carvapur · Carvapur Pélet · Carvapox · Carvacid · Carvacid Pélet · Vapacid · Vapacid Pélet · Vapomer · Vapomer Pélet</span>
+        <b>Parámetros clave</b>
+        <span>Velocidad óptima de adsorción: 2–6 GPM/ft². Retrolavado: 9 GPM/ft² @ 20 °C. Grava de soporte: 20% del volumen de carbón. Expansión de cama: 30–50%.</span>
       </div>
     </div>
   </div>
 
-  <!-- Formula bar -->
-  <div class="formula-bar">
-    <div class="formula-chip">
-      <div class="fc-label">Masa de carbón</div>
-      <div class="fc-value" id="chip-mass">— kg</div>
-    </div>
-    <div class="formula-chip">
-      <div class="fc-label">Vida útil (ruptura)</div>
-      <div class="fc-value" id="chip-life">—</div>
-    </div>
-    <div class="formula-chip">
-      <div class="fc-label">Área transversal</div>
-      <div class="fc-value" id="chip-area">— m²</div>
-    </div>
-    <div class="formula-chip">
-      <div class="fc-label">Caída de presión</div>
-      <div class="fc-value" id="chip-dp">— mbar</div>
-    </div>
+  <!-- Formula strip -->
+  <div class="formula-strip">
+    <code>Vol = Flujo × TCCV</code>
+    <code>TCCV real = Vol instalado ÷ Flujo</code>
+    <code>Peso carbón = Vol × Densidad bulk</code>
+    <code>Grava soporte = 20% Vol carbón</code>
+    <code>Q RLV = 9 GPM/ft² × Área</code>
   </div>
 
-  <!-- Two-column layout -->
+  <!-- Layout -->
   <div class="layout">
 
-    <!-- Input panel -->
+    <!-- Left: sticky input panel -->
     <div class="input-panel">
       <div class="panel">
         <div class="panel-head">
-          <h2>Parámetros del proceso</h2>
-          <span class="step-tag">01 · Entradas</span>
+          <h3>Datos de entrada</h3>
+          <span class="step-tag">01 · ENTRADAS</span>
         </div>
         <div class="panel-body">
 
-          <div class="sec-label">Caudal de aire a tratar</div>
+          <div class="unit-tabs">
+            <button class="unit-tab active" type="button" onclick="gacSetUnits('imperial')">Imperial (US)</button>
+            <button class="unit-tab" type="button" onclick="gacSetUnits('metric')">Métrico (SI)</button>
+          </div>
 
-          <div class="field" id="f-flow">
-            <label>Flujo de aire <span class="req">*</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="flow" placeholder="Ej. 1000" min="0" step="any">
-              <select class="unit-sel" id="flow-unit">
-                <option value="m3h" selected>m³/h</option>
-                <option value="m3min">m³/min</option>
-                <option value="cfm">CFM</option>
-                <option value="lps">L/s</option>
+          <!-- Imperial inputs -->
+          <div class="gac-panel active" id="gac-panel-imperial">
+            <div class="field">
+              <label>Flujo volumétrico</label>
+              <div class="inline-wrap">
+                <input type="number" id="gac-i-flow" placeholder="ej. 30" min="0" step="any">
+                <select style="min-width:70px;pointer-events:none"><option>GPM</option></select>
+              </div>
+            </div>
+            <div class="field">
+              <label>TCCV solicitado</label>
+              <div class="num-wrap">
+                <input type="number" id="gac-i-tccv" placeholder="ej. 7" min="0" step="any">
+                <span class="num-badge">min</span>
+              </div>
+              <div class="qf">
+                <span class="qf-lbl">Rápido:</span>
+                <button class="qf-chip" type="button" onclick="gacFill('gac-i-tccv',2)">Cloro 2′</button>
+                <button class="qf-chip" type="button" onclick="gacFill('gac-i-tccv',4)">Clor·cat 4′</button>
+                <button class="qf-chip" type="button" onclick="gacFill('gac-i-tccv',7)">COV/THM 7′</button>
+                <button class="qf-chip" type="button" onclick="gacFill('gac-i-tccv',10)">PFAS 10′</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric inputs -->
+          <div class="gac-panel" id="gac-panel-metric">
+            <div class="field">
+              <label>Flujo volumétrico</label>
+              <div class="inline-wrap">
+                <input type="number" id="gac-m-flow" placeholder="ej. 5" min="0" step="any">
+                <select style="min-width:70px;pointer-events:none"><option>m³/h</option></select>
+              </div>
+            </div>
+            <div class="field">
+              <label>TCCV solicitado</label>
+              <div class="num-wrap">
+                <input type="number" id="gac-m-tccv" placeholder="ej. 7" min="0" step="any">
+                <span class="num-badge">min</span>
+              </div>
+              <div class="qf">
+                <span class="qf-lbl">Rápido:</span>
+                <button class="qf-chip" type="button" onclick="gacFill('gac-m-tccv',2)">Cloro 2′</button>
+                <button class="qf-chip" type="button" onclick="gacFill('gac-m-tccv',4)">Clor·cat 4′</button>
+                <button class="qf-chip" type="button" onclick="gacFill('gac-m-tccv',7)">COV/THM 7′</button>
+                <button class="qf-chip" type="button" onclick="gacFill('gac-m-tccv',10)">PFAS 10′</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carbon type -->
+          <div class="section-lbl">Tipo de carbón activado</div>
+          <div class="field">
+            <label>Seleccionar carbón</label>
+            <div class="select-wrap">
+              <select id="gac-carbon-type" onchange="gacOnCarbonChange()">
+                <option value="coco">GAC Cáscara de coco 12×40 (Micro 4) — 0.62 kg/L</option>
+                <option value="bituminoso">GAC Bituminoso 8×30 — 0.48 kg/L</option>
+                <option value="bituminoso12">GAC Bituminoso 12×40 — 0.50 kg/L</option>
+                <option value="catalitico">GAC Catalítico 12×40 — 0.52 kg/L</option>
               </select>
             </div>
-            <div class="hint">Caudal volumétrico en condiciones normales de operación.</div>
-            <div class="err-msg">Ingrese un caudal válido mayor a cero.</div>
+            <div class="chips">
+              <button class="chip active" type="button" onclick="gacSetCarbon('coco',this)">Cloro · THM · Orgánicos</button>
+              <button class="chip" type="button" onclick="gacSetCarbon('bituminoso',this)">COV · Pesticidas · PFAS</button>
+              <button class="chip" type="button" onclick="gacSetCarbon('catalitico',this)">Cloraminas</button>
+            </div>
+            <div class="hint" id="gac-carbon-hint">Micro 4 (coco 12×40): alta dureza (97%), microporos 0.78 nm. Ideal para cloro, THM, agua potable. No recomendado para PFAS. Densidad 0.58–0.66 g/cm³ → cálculo: 0.62 kg/L.</div>
           </div>
 
-          <div class="sec-label">Tipo de contaminante</div>
-
+          <!-- Backwash time -->
           <div class="field">
-            <label>Familia del contaminante <span class="req">*</span></label>
-            <div class="family-grid" id="family-grid">
-              <button class="family-btn" data-app="voc"      type="button" onclick="selectFamily('voc')">
-                <span class="family-icon">🏭</span>
-                <span class="family-name">VOC / Solventes</span>
-                <span class="family-sub">Tolueno, acetatos, cetonas…</span>
-              </button>
-              <button class="family-btn" data-app="oxidable" type="button" onclick="selectFamily('oxidable')">
-                <span class="family-icon">⚗️</span>
-                <span class="family-name">Aldehídos / Alcoholes</span>
-                <span class="family-sub">Formaldehído, IPA, etileno…</span>
-              </button>
-              <button class="family-btn" data-app="h2s"      type="button" onclick="selectFamily('h2s')">
-                <span class="family-icon">💨</span>
-                <span class="family-name">H₂S / Gases ácidos</span>
-                <span class="family-sub">H₂S, HCl, SO₂, mercaptanos…</span>
-              </button>
-              <button class="family-btn" data-app="olor"     type="button" onclick="selectFamily('olor')">
-                <span class="family-icon">🌿</span>
-                <span class="family-name">Control de olores</span>
-                <span class="family-sub">PTAR, compostaje, aminas…</span>
-              </button>
-              <button class="family-btn" data-app="mixto"    type="button" onclick="selectFamily('mixto')">
-                <span class="family-icon">🔀</span>
-                <span class="family-name">VOC + H₂S (mixto)</span>
-                <span class="family-sub">Ácidos y orgánicos</span>
-              </button>
-              <button class="family-btn" data-app="mercurio" type="button" onclick="selectFamily('mercurio')">
-                <span class="family-icon">⚠️</span>
-                <span class="family-name">Vapor de mercurio</span>
-                <span class="family-sub">Hg elemental en fase gas</span>
-              </button>
+            <label>Tiempo de retrolavado</label>
+            <div class="num-wrap">
+              <input type="number" id="gac-bw-time" value="10" min="3" max="20" step="1">
+              <span class="num-badge">min</span>
             </div>
-            <div class="product-pill" id="product-pill" style="display:none"></div>
+            <div class="hint">Default 10 min conservador para dimensionar drenaje y válvulas. Rango: 3–20 min.</div>
           </div>
 
-          <div class="field" id="compound-field" style="display:none">
-            <label>Compuesto específico <span class="opt">opcional</span></label>
-            <select class="full-sel" id="compound" onchange="onCompoundChange()">
-              <option value="">— Seleccionar para mayor precisión —</option>
-            </select>
-            <div class="hint" id="compound-hint">Ajusta el PM molecular y la capacidad de adsorción exacta del carbón.</div>
-          </div>
-
-          <div class="sec-label">Concentración del contaminante</div>
-
-          <div class="field" id="f-conc-in">
-            <label>Concentración de entrada <span class="req">*</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="conc-in" placeholder="Ej. 50" min="0" step="any">
-              <select class="unit-sel" id="conc-unit">
-                <option value="ppmv" selected>ppmv</option>
-                <option value="mgm3">mg/m³</option>
-                <option value="ugm3">µg/m³</option>
-              </select>
-            </div>
-            <div class="hint">Concentración del contaminante a la entrada del adsorbedor.</div>
-            <div class="err-msg">Ingrese una concentración válida mayor a cero.</div>
-          </div>
-
-          <div class="field">
-            <label>Concentración de salida objetivo <span class="opt">opcional</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="conc-out" placeholder="Ej. 1" min="0" step="any">
-              <select class="unit-sel" id="conc-out-unit">
-                <option value="ppmv" selected>ppmv</option>
-                <option value="mgm3">mg/m³</option>
-              </select>
-            </div>
-            <div class="hint">Vacío = asume ≤ 1 ppmv (umbral control de olor).</div>
-          </div>
-
-          <div class="sec-label">Condiciones de operación</div>
-
-          <div class="field">
-            <label>Temperatura del gas <span class="opt">opcional</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="temp" value="25" min="-200" max="300" step="1">
-              <select class="unit-sel" id="temp-unit">
-                <option value="c" selected>°C</option>
-                <option value="f">°F</option>
-              </select>
-            </div>
-            <div class="hint">Hg: rango óptimo 30–60°C · General: máx 40°C para buena capacidad.</div>
-          </div>
-
-          <div class="field">
-            <label>Humedad relativa <span class="opt">opcional</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="humidity" value="50" min="0" max="100" step="5">
-              <span class="unit-badge">% HR</span>
-            </div>
-            <div class="hint">HR &gt; 60% puede requerir secado previo (MIP Carbotecnia).</div>
-          </div>
-
-          <div class="field">
-            <label>Horas de operación por día <span class="opt">opcional</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="op-hours" value="24" min="1" max="24" step="1">
-              <span class="unit-badge">h/día</span>
-            </div>
-            <div class="hint">Para proyectar vida útil en días y meses reales.</div>
-          </div>
-
-          <div class="sec-label">Parámetros del lecho</div>
-
-          <div class="field">
-            <label>Velocidad superficial <span class="opt">opcional</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="vsup" value="15" min="1" max="40" step="1">
-              <span class="unit-badge">m/min</span>
-            </div>
-            <div class="hint" id="vsup-hint">Carvapur: 10–30 m/min · Vapacid/Vapomer: 6–15 m/min</div>
-          </div>
-
-          <div class="field">
-            <label>TCCV — Tiempo de Contacto en Cama Vacía <span class="opt">opcional</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="ebct" value="2" min="0.1" max="60" step="0.5">
-              <span class="unit-badge">seg</span>
-            </div>
-            <div class="hint" id="ebct-hint">Carvapur: &gt; 0.1 s · Olor/H₂S: 2–5 s · Hg: 8–20 s</div>
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-primary" id="btn-calc" type="button">Calcular dimensionamiento</button>
-            <button class="btn btn-ghost"   id="btn-reset" type="button">Limpiar</button>
+          <div class="btn-row">
+            <button class="btn-calc" type="button" onclick="gacCalculate()">Dimensionar equipo</button>
+            <button class="btn-clear" type="button" onclick="gacClear()">Limpiar</button>
           </div>
 
         </div>
       </div>
     </div><!-- /input-panel -->
 
-    <!-- Results column -->
+    <!-- Right: results column -->
     <div class="results-col">
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Resultados del dimensionamiento</h2>
-          <span class="step-tag">02 · Salidas</span>
-        </div>
-        <div class="panel-body" id="results">
-          <div class="results-empty" id="empty-state">
-            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <div>Seleccione la familia de contaminante y capture los parámetros<br>para obtener el dimensionamiento del lecho de carbón.</div>
+
+      <div class="empty-state" id="gac-empty">
+        <div class="empty-icon">⬡</div>
+        <h3>Ingrese los parámetros de diseño</h3>
+        <p>Complete el flujo y el TCCV requerido en el panel izquierdo y presione <strong>Dimensionar equipo</strong> para obtener el resultado.</p>
+      </div>
+
+      <div class="results-panel" id="gac-results">
+
+        <!-- KPI row -->
+        <div class="card">
+          <div class="card-head">
+            <h3>Dimensionamiento principal</h3>
+            <span class="tag">02 · RESULTADO</span>
+          </div>
+          <div class="card-body">
+            <div class="kpi-row">
+              <div class="kpi kpi-blue">
+                <div class="kpi-icon">⬡</div>
+                <div class="kpi-lbl">Volumen requerido</div>
+                <div class="kpi-val" id="gac-r-vol">—</div>
+                <div class="kpi-sub" id="gac-r-vol-alt"></div>
+              </div>
+              <div class="kpi kpi-green">
+                <div class="kpi-icon">⊚</div>
+                <div class="kpi-lbl">Recipiente recomendado</div>
+                <div class="kpi-val" id="gac-r-vessel">—</div>
+                <div class="kpi-sub" id="gac-r-vessel-sub"></div>
+              </div>
+              <div class="kpi kpi-teal">
+                <div class="kpi-icon">↕</div>
+                <div class="kpi-lbl">Velocidad de servicio</div>
+                <div class="kpi-val" id="gac-r-sv">—</div>
+                <div class="kpi-sub" id="gac-r-sv-alt"></div>
+              </div>
+              <div class="kpi kpi-purple">
+                <div class="kpi-icon">⚖</div>
+                <div class="kpi-lbl">Peso total carbón</div>
+                <div class="kpi-val" id="gac-r-kg">—</div>
+                <div class="kpi-sub" id="gac-r-kg-alt"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
+        <div class="alert" id="gac-alert-vel"></div>
+        <div class="alert" id="gac-alert-over"></div>
+
+        <!-- Bed visual -->
+        <div class="card" id="gac-bed-card" style="display:none">
+          <div class="card-head">
+            <h3>Perfil de medios — Carbón activado + Grava de soporte</h3>
+            <span class="tag">Por equipo</span>
+          </div>
+          <div class="card-body">
+            <div class="bed-visual">
+              <div class="bed-tank" id="gac-bed-tank"></div>
+              <div class="bed-info">
+                <div class="bed-item">
+                  <div class="bed-swatch" id="gac-bed-carbon-swatch" style="background:#0069b8"></div>
+                  <div class="bed-texts">
+                    <b id="gac-bed-carbon-name">Carbón activado</b>
+                    <span id="gac-bed-carbon-vals">—</span>
+                  </div>
+                </div>
+                <div class="bed-item">
+                  <div class="bed-swatch" style="background:#6B7280"></div>
+                  <div class="bed-texts">
+                    <b>Grava de soporte</b>
+                    <span id="gac-bed-gravel-vals">—</span>
+                  </div>
+                </div>
+                <div class="bed-total-row">
+                  <b>Total por equipo</b>
+                  <span id="gac-bed-total">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backwash -->
+        <div class="bw-card" id="gac-bw-card" style="display:none">
+          <div class="bw-title" id="gac-bw-title">Retrolavado estimado · 9 GPM/ft² @ 20 °C</div>
+          <div class="bw-grid">
+            <div>
+              <div class="bw-lbl">Flujo de retrolavado</div>
+              <div class="bw-val" id="gac-bw-flow">—</div>
+              <div class="bw-sub" id="gac-bw-flow-alt"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Agua por ciclo</div>
+              <div class="bw-val" id="gac-bw-water">—</div>
+              <div class="bw-sub" id="gac-bw-water-alt"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Expansión esperada</div>
+              <div class="bw-val">30–50<small>%</small></div>
+              <div class="bw-sub">Validar según T° y malla</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert" id="gac-alert-water"></div>
+
+        <!-- Lead-lag -->
+        <div class="ll-card" id="gac-series-card">
+          <div class="ll-title">⧉ Configuración en serie lead-lag · Recomendada para TCCV ≥ 10 min (PFAS / pesticidas)</div>
+          <div class="ll-grid">
+            <div>
+              <div class="bw-lbl">Equipo Lead (primario)</div>
+              <div class="bw-val" id="gac-ll-lead">—</div>
+              <div class="bw-sub" id="gac-ll-lead-sub"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Equipo Lag (secundario)</div>
+              <div class="bw-val" id="gac-ll-lag">—</div>
+              <div class="bw-sub" id="gac-ll-lag-sub"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">TCCV total instalado</div>
+              <div class="bw-val" id="gac-ll-tccv">—</div>
+              <div class="bw-sub">2× el TCCV individual</div>
+            </div>
+          </div>
+          <div class="ll-note"><strong>Lead-lag:</strong> el equipo Lead recibe el flujo primero y se agota antes. Cuando sus efluentes superan el límite de contaminante se pone fuera de servicio para reactivación y el Lag pasa a ser el nuevo Lead. Garantiza servicio continuo ininterrumpido.</div>
+        </div>
+
+        <!-- Detail summary -->
+        <div class="card">
+          <div class="card-head"><h3>Resumen completo del dimensionamiento</h3></div>
+          <div class="card-body" style="padding:0">
+            <table class="az-table">
+              <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
+              <tbody>
+                <tr><td>Flujo de diseño</td><td id="gac-d-flow">—</td></tr>
+                <tr><td>TCCV solicitado</td><td id="gac-d-tccv">—</td></tr>
+                <tr class="hl"><td>TCCV real instalado</td><td id="gac-d-tccv-real">—</td></tr>
+                <tr><td>Volumen mínimo requerido</td><td id="gac-d-vol-req">—</td></tr>
+                <tr><td>Recipiente recomendado</td><td id="gac-d-vessel">—</td></tr>
+                <tr><td>Volumen comercial del recipiente</td><td id="gac-d-vessel-vol">—</td></tr>
+                <tr><td>Diámetro del recipiente</td><td id="gac-d-diam">—</td></tr>
+                <tr><td>Área transversal</td><td id="gac-d-area">—</td></tr>
+                <tr><td>Margen disponible</td><td id="gac-d-margin">—</td></tr>
+                <tr><td>Tipo de carbón seleccionado</td><td id="gac-d-carbon">—</td></tr>
+                <tr><td>Densidad bulk</td><td id="gac-d-density">—</td></tr>
+                <tr class="hl"><td>Peso total del carbón</td><td id="gac-d-kg">—</td></tr>
+                <tr class="hl"><td>Grava de soporte (20% vol.)</td><td id="gac-d-gravel">—</td></tr>
+                <tr><td>Velocidad de servicio</td><td id="gac-d-sv">—</td></tr>
+                <tr id="gac-d-bw-row" style="display:none"><td>Flujo de retrolavado</td><td id="gac-d-bw">—</td></tr>
+              </tbody>
+            </table>
+            <div style="display:flex;gap:8px;padding:14px 18px;border-top:1px solid var(--line)">
+              <button class="btn-sm" id="gac-btn-print" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+                Imprimir / PDF
+              </button>
+              <button class="btn-sm" id="gac-btn-copy" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                Copiar resumen
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parallel section -->
+        <div class="par-section" id="gac-parallel-section">
+          <div class="par-head">
+            <h3>⧉ Configuraciones en paralelo</h3>
+            <p>Alternativas con múltiples equipos en paralelo para el mismo flujo total. Retrolavado secuencial.</p>
+          </div>
+          <div class="par-grid" id="gac-parallel-grid"></div>
+        </div>
+
+        <!-- Notices -->
+        <div class="notice info">
+          <b>Parámetros de referencia</b>
+          Velocidad de servicio recomendada para adsorción: 2–6 GPM/ft² (5–15 m/h). Caudal de retrolavado típico para GAC: 8–10 GPM/ft² a 20 °C, con expansión de cama aproximada de 30–50%. El valor mostrado usa 9 GPM/ft² como criterio de predimensionamiento para GAC estándar 12×40 o similar.
+        </div>
+        <div class="notice tech">
+          <b>Notas de ingeniería — Retrolavado</b>
+          El volumen de agua por ciclo se calcula con el tiempo configurado (default 10 min) como criterio conservador para dimensionar infraestructura: drenaje, tuberías de desagüe y tanque de agua clara. En campo, el retrolavado en GAC puede finalizar en menos tiempo dependiendo de la carga de sólidos, temperatura, granulometría y densidad aparente. AWWA B604 y EPA GAC Design Manual reportan 8–15 min para ciclos completos de purga + enjuague.
+        </div>
+        <div class="notice tech">
+          <b>Grava de soporte</b>
+          La grava de soporte (20% del volumen de carbón) es la capa inferior que soporta el lecho de carbón activado, distribuye el flujo uniformemente y evita que el medio filtrante salga por los distribuidores durante el retrolavado. Densidad aparente ≈ 45 kg/ft³. Granulometría típica: ½" × ¼" en la base, ¼" × 1/8" en la capa superior.
+        </div>
+
+      </div><!-- /results-panel -->
+    </div><!-- /results-col -->
   </div><!-- /layout -->
 
-  <div class="disclaimer">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <div>
-      <strong>Predimensionamiento referencial — requiere validación de ingeniería.</strong>
-      Los resultados son estimaciones basadas en fichas técnicas y curvas de capacidad del Boletín Técnico 002 Carbotecnia. El diseño final requiere isoterma experimental del compuesto específico, análisis completo de la corriente de gas (temperatura, humedad, mezcla, presión), prueba piloto y revisión de ingeniería. Vida útil estimada con incertidumbre ±40%.
+  <!-- Reference: vessel table -->
+  <div class="ref-section">
+    <h2>Tabla de recipientes comerciales Carbotecnia</h2>
+    <div class="ref-wrap">
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th>Tamaño de recipiente</th>
+            <th>Volumen carbón (ft³)</th>
+            <th>Grava soporte (ft³)</th>
+            <th>Área transversal (ft²)</th>
+            <th>Diámetro (in)</th>
+            <th>Q retrolavado (GPM)</th>
+          </tr>
+        </thead>
+        <tbody id="gac-vessel-tbody"></tbody>
+      </table>
     </div>
   </div>
 
-  <footer>
-    <span>© Carbotecnia · Zapopan, Jalisco · carbotecnia.info</span>
-    <span>Datos: Boletín Técnico 002 · Fichas técnicas oficiales Carbotecnia · v2.0</span>
-  </footer>
+  <!-- Reference: TCCV table -->
+  <div class="ref-section">
+    <h2>TCCV recomendado según contaminante</h2>
+    <div class="ref-wrap">
+      <table class="ref-table">
+        <thead>
+          <tr><th>Contaminante</th><th>TCCV mínimo</th><th>Configuración sugerida</th><th>Carbón recomendado</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cloro libre</td><td><span class="ebct-badge fast">2 min</span></td><td>Un solo equipo</td><td>Cualquier GAC</td></tr>
+          <tr><td>Cloraminas</td><td><span class="ebct-badge long">10 min</span></td><td>Un equipo grande</td><td>GAC estándar</td></tr>
+          <tr><td>Cloraminas (carbón catalítico)</td><td><span class="ebct-badge fast">4 min</span></td><td>Un solo equipo</td><td>GAC catalítico</td></tr>
+          <tr><td>THM / Subproductos desinfección</td><td><span class="ebct-badge mid">7 min</span></td><td>Un solo equipo</td><td>GAC coco 12×40</td></tr>
+          <tr><td>COV (Compuestos Orgánicos Volátiles)</td><td><span class="ebct-badge mid">7 min</span></td><td>Un solo equipo</td><td>GAC mineral o coco</td></tr>
+          <tr><td>PFAS / PFOA / PFOS</td><td><span class="ebct-badge long">10 min</span></td><td>Lead-lag en serie</td><td>GAC Bituminoso 8×30 o 12×40</td></tr>
+          <tr><td>Pesticidas</td><td><span class="ebct-badge long">≥ 10 min</span></td><td>Lead-lag en serie</td><td>Consultar tipo específico</td></tr>
+          <tr><td>Orgánicos naturales (taninos)</td><td><span class="ebct-badge mid">5–7 min</span></td><td>Un solo equipo</td><td>GAC como post-tratamiento</td></tr>
+          <tr><td>H₂S (Ácido sulfhídrico)</td><td><span class="ebct-badge fast">4 min</span></td><td>Un solo equipo</td><td>GAC catalítico o impregnado KOH</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Reference: carbon densities -->
+  <div class="ref-section">
+    <h2>Densidades bulk de carbón activado granular</h2>
+    <div class="ref-wrap">
+      <table class="ref-table">
+        <thead>
+          <tr><th>Tipo de carbón</th><th>Malla típica</th><th>Densidad bulk (kg/L)</th><th>Aplicaciones principales</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>GAC Cáscara de coco · Micro 4</td><td>12×40</td><td>0.58–0.66 → cálculo: <strong>0.62</strong></td><td>Cloro, THM, agua potable · NSF/ANSI 61</td></tr>
+          <tr><td>GAC Bituminoso · Gama B</td><td>8×30</td><td>0.45–0.57 → cálculo: <strong>0.48</strong></td><td>COV, pesticidas, PFAS, orgánicos industriales</td></tr>
+          <tr><td>GAC Bituminoso · Gama B</td><td>12×40</td><td>0.45–0.57 → cálculo: <strong>0.50</strong></td><td>PFAS, orgánicos de bajo y medio peso molecular</td></tr>
+          <tr><td>GAC Catalítico</td><td>12×40</td><td>cálculo: <strong>0.52</strong></td><td>Cloraminas, H₂S, ozono</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p><strong>ADVERTENCIA:</strong> Esta calculadora entrega un dimensionamiento preliminar. El diseño final debe considerar contaminante, concentración, granulometría del carbón, densidad aparente, caída de presión, expansión durante retrolavado, temperatura del agua, configuración en serie o paralelo y condiciones reales de operación.</p>
+  </div>
+  <div class="bottom-bar">
+    <span>© Carbotecnia · Calle B No. 2105 Int. A, Zapopan, Jalisco</span>
+    <span>Pre-dimensionamiento referencial · Validar con análisis del agua</span>
+  </div>
 
 </div><!-- /shell -->
-
 <script>
-/* ══════════════════════════════════════════════════════════════════
-   MOTOR DE CÁLCULO — Carbón Activado para Gases
-   Datos: Fichas técnicas oficiales Carbotecnia + Boletín Técnico 002
-   ══════════════════════════════════════════════════════════════════ */
+var GAC_VESSELS = [
+  { vessel:'9 x 48',  carbonFt3:1,   areaFt2:0.44,  diameterIn:9  },
+  { vessel:'10 x 54', carbonFt3:1.5, areaFt2:0.55,  diameterIn:10 },
+  { vessel:'12 x 52', carbonFt3:2,   areaFt2:0.79,  diameterIn:12 },
+  { vessel:'13 x 54', carbonFt3:2.5, areaFt2:0.92,  diameterIn:13 },
+  { vessel:'14 x 65', carbonFt3:3,   areaFt2:1.07,  diameterIn:14 },
+  { vessel:'16 x 65', carbonFt3:4,   areaFt2:1.40,  diameterIn:16 },
+  { vessel:'18 x 65', carbonFt3:5,   areaFt2:1.77,  diameterIn:18 },
+  { vessel:'21 x 62', carbonFt3:7,   areaFt2:2.41,  diameterIn:21 },
+  { vessel:'24 x 72', carbonFt3:10,  areaFt2:3.14,  diameterIn:24 },
+  { vessel:'30 x 72', carbonFt3:15,  areaFt2:4.91,  diameterIn:30 },
+  { vessel:'36 x 72', carbonFt3:20,  areaFt2:7.07,  diameterIn:36 },
+  { vessel:'42 x 72', carbonFt3:30,  areaFt2:9.62,  diameterIn:42 },
+  { vessel:'48 x 72', carbonFt3:40,  areaFt2:12.57, diameterIn:48 },
+  { vessel:'63 x 67', carbonFt3:60,  areaFt2:21.65, diameterIn:63 }
+];
 
-let currentApp = 'voc';
+var GAC_CARBON_TYPES = {
+  coco:        { label:'GAC Cáscara de coco 12×40 (Micro 4)', density:0.62, color:'#0069b8',
+    hint:'Micro 4: alta dureza (97%), microporos 0.78 nm. Ideal para cloro, THM, agua potable. No recomendado para PFAS. Densidad aparente 0.58–0.66 g/cm³, valor de cálculo: 0.62 kg/L.' },
+  bituminoso:  { label:'GAC Bituminoso 8×30', density:0.48, color:'#374151',
+    hint:'Mayor macroporosidad. Ideal para COV, pesticidas, PFAS y orgánicos de alto peso molecular. Densidad bulk 0.48 kg/L.' },
+  bituminoso12:{ label:'GAC Bituminoso 12×40', density:0.50, color:'#1F2937',
+    hint:'Equilibrio micro/macroporos. Recomendado para PFAS (junto con GAC Bituminoso 8×30). Densidad bulk 0.50 kg/L.' },
+  catalitico:  { label:'GAC Catalítico 12×40', density:0.52, color:'#065f3a',
+    hint:'Superficie catalítica activa. Ideal para cloraminas, H₂S y ozono. Densidad bulk 0.52 kg/L.' }
+};
 
-/* ── Catálogo de productos ────────────────────────────────────── */
-const PRODUCTS = {
-  carvapur: {
-    nombre:'Carvapur / Carvapur LF',subtitulo:'Carbón activado granular para retención de gases orgánicos',
-    desc:'Carbón activado altamente microporoso de concha de coco. Adsorbe de manera preferencial moléculas orgánicas con PM entre 55 y 250 g/mol. Capacidad típica: 0.2–0.8 kg de contaminante / kg de carbón (nivel A). Granulometría: 4×10, 8×14, 14×30. Certificado NSF.',
-    specs:'BET ≥ 600 m²/g · ρ bulk 0.55–0.70 g/cm³ · Dureza ≥ 96% · Cenizas ≤ 5% · Radio poro 0.78 nm · v_sup 10–30 m/min · TCCV > 0.1 s',
-    capacidad_A:0.35,capacidad_B:0.175,densidad_bulk:620,vsup_min:10,vsup_max:30,ebct_min:0.1,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-gases-carvapur/',
-    regenerable:true,notas_regen:'Regenerable por vapor de agua. Ciclo adsorción-desorción (ver MIP Recuperación de Solventes).'
-  },
-  carvapur_pelet: {
-    nombre:'Carvapur Pélet',subtitulo:'Carbón activado en pelet para retención de gases orgánicos',
-    desc:'Versión peletizada de Carvapur (4 mm de diámetro). Menor caída de presión que el granular para la misma velocidad superficial. Ideal cuando el caudal es alto o la caída de presión es una restricción operativa.',
-    specs:'PELET 4mm · ρ bulk ~600 kg/m³ · Menor ΔP que granular · v_sup 10–30 m/min',
-    capacidad_A:0.35,capacidad_B:0.175,densidad_bulk:600,vsup_min:10,vsup_max:30,ebct_min:0.1,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-aire-pelet-organicos-carvapur/',
-    regenerable:true
-  },
-  carvapox: {
-    nombre:'Carvapox / Carvapox LF',subtitulo:'Carbón activado impregnado para vapores volátiles oxidables',
-    desc:'Carbón de concha de coco impregnado con agente oxidante. Diseñado para oxidar compuestos orgánicos de alta volatilidad no adsorbibles en carbón estándar: aldehídos (formaldehído, acetaldehído), alcoholes ligeros (metanol, IPA), alquenos (etileno, propileno) y alquinos. Capacidad de retención de formaldehído: ≥ 16% p/p.',
-    specs:'BET ≥ 600 m²/g · ρ bulk 0.55–0.66 g/cm³ · Dureza ≥ 96% · Retención HCHO ≥ 16% p/p · Granulometría: 8×14, 14×30',
-    capacidad_A:0.16,capacidad_B:0.10,densidad_bulk:605,vsup_min:5,vsup_max:24,ebct_min:1.0,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-vapores-carvapox/',
-    regenerable:false,notas_regen:'No regenerable por vapor. Los compuestos oxidados quedan fijos en la superficie.'
-  },
-  vapacid: {
-    nombre:'Vapacid / Vapacid LF',subtitulo:'Carbón activado granular para gases y vapores ácidos',
-    desc:'Carbón de concha de coco impregnado con grupos hidroxilo. Gran afinidad por gases ácidos minerales (H₂S, HCl, HF, H₂SO₄, HNO₃) y ácidos orgánicos de bajo PM. Retiene > doble de mercaptanos que carbón no impregnado oxidándolos a disulfuros (2R-SH → R₂S₂). Regenerable con solución de potasa al 40%.',
-    specs:'ρ bulk 0.55–0.70 g/cm³ · Dureza ≥ 96% · Cenizas ≤ 3% · Granulometría: 8×14, 14×30 · pH > 10 · Regenerable: KOH 40% por 24 h (3–5 ciclos)',
-    capacidad_h2s_gg:0.11,capacidad_A:0.11,capacidad_B:0.06,densidad_bulk:625,vsup_min:6,vsup_max:15,ebct_min:3.0,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-gases-acidos-vapacid/',
-    regenerable:true,notas_regen:'Regenerable con KOH 40% · 24 h → KOH 12% · 6 h → agua · 30 min. Reutilizable 3–5 ciclos.'
-  },
-  vapacid_pelet: {
-    nombre:'Vapacid Pélet',subtitulo:'Carbón activado mineral peletizado para gases y vapores ácidos',
-    desc:'Versión peletizada de Vapacid (4 mm). Base: carbón mineral de alta capacidad. Grupos hidroxilo dispersos en la estructura porosa para quimisorción de compuestos ácidos. Retención certificada de H₂S: 0.11 g H₂S/cm³ de carbón. Pélet-8: BET 800 m²/g · Pélet-10: BET 1000 m²/g.',
-    specs:'PELET 4mm · Pélet-8 ρ 0.45–0.55 g/cm³ · Pélet-10 ρ 0.37–0.47 g/cm³ · Retención H₂S = 0.11 g/cm³ · pH 8–10 · Cenizas ≤ 14%',
-    capacidad_h2s_gcm3:0.11,capacidad_A:0.11,capacidad_B:0.06,densidad_bulk:500,vsup_min:6,vsup_max:15,ebct_min:3.0,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-gases-acidos-vapacid/',
-    regenerable:false,notas_regen:'Pélet mineral: la regeneración química es menos eficiente que en la versión granular de concha de coco.'
-  },
-  carvacid: {
-    nombre:'Carvacid / Carvacid LF',subtitulo:'Carbón activado granular para VOC + gases ácidos (dual)',
-    desc:'Carbón de concha de coco con impregnación parcial alcalina. 60% del área superficial actúa como catalizador/reactivo para gases ácidos; 40% retiene compuestos orgánicos (PM > 60 g/mol). Retención H₂S: 11.0 g H₂S/g carbón. Oxida mercaptanos a disulfuros (menos olorosos y más adsorbibles).',
-    specs:'BET ≥ 600 m²/g · ρ bulk 0.55–0.66 g/cm³ · Dureza ≥ 96% · Cenizas ≤ 5% · pH > 10 · Retención H₂S = 11.0 g/g · 60% área ácidos / 40% orgánicos · Granulometría: 4×10, 8×14, 14×30',
-    capacidad_h2s_gg:11.0,capacidad_A:0.15,capacidad_B:0.08,densidad_bulk:605,vsup_min:6,vsup_max:20,ebct_min:2.5,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-gases-aire-acidos-organicos-carvacid/',
-    regenerable:false
-  },
-  carvacid_pelet: {
-    nombre:'Carvacid Pélet',subtitulo:'Carbón activado peletizado para VOC + gases ácidos (dual)',
-    desc:'Versión peletizada del Carvacid (4 mm). Menor caída de presión. Ideal para adsorbedores de alto caudal o con restricción de ΔP. Misma capacidad dual: 60% área para ácidos / 40% para orgánicos. Retención H₂S: 11.0 g H₂S/g carbón.',
-    specs:'PELET 4mm · Pélet-8 BET 800 m²/g · Pélet-10 BET 1000 m²/g · Pélet-8 ρ 0.45–0.55 g/cm³ · Pélet-10 ρ 0.37–0.47 g/cm³ · Retención H₂S = 11.0 g/g · pH 8–10',
-    capacidad_h2s_gg:11.0,capacidad_A:0.15,capacidad_B:0.08,densidad_bulk:500,vsup_min:6,vsup_max:20,ebct_min:2.5,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-gases-acidos-vapacid/',
-    regenerable:false
-  },
-  vapomer: {
-    nombre:'Vapomer / Vapomer LF',subtitulo:'Carbón activado granular para vapores de mercurio',
-    desc:'Carbón de concha de coco impregnado con azufre. Retiene vapores de mercurio elemental por reacción química: Hg + S → HgS (sulfuro mercúrico), sólido que queda fijo en la superficie. Capacidad: 0.3 kg Hg/kg carbón. Funciona con alta humedad relativa. Temperatura máxima: 100°C.',
-    specs:'ρ bulk 0.55–0.66 g/cm³ · Dureza ≥ 95% · Cenizas ≤ 5% · Impregnado con S · v_sup 6–15 m/min · TCCV 8–20 s · T máx 100°C · T óptima 30–60°C · Capacidad 0.30 kg Hg/kg carbón · Granulometría: 4×10, 8×14, 14×30',
-    capacidad_hg_kgkg:0.30,capacidad_A:0.30,capacidad_B:0.20,densidad_bulk:605,vsup_min:6,vsup_max:15,ebct_min:8.0,ebct_max:20.0,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-gases-carvapur/',
-    regenerable:true,notas_regen:'Hg recuperable por destilación al agotar la capacidad (85–95% de recuperación).'
-  },
-  vapomer_pelet: {
-    nombre:'Vapomer Pélet',subtitulo:'Carbón activado peletizado para vapores de mercurio',
-    desc:'Versión peletizada de Vapomer (4 mm). Rango óptimo de operación 30–60°C; más eficiente a temperaturas altas (dentro del rango). Capacidad certificada: 0.3 kg Hg/kg carbón. La recuperación del mercurio por destilación restituye 85–95% de la capacidad original del carbón.',
-    specs:'PELET 4mm · Pélet-8 BET 800 m²/g · Pélet-10 BET 1000 m²/g · Pélet-8 ρ 0.45–0.55 g/cm³ · Pélet-10 ρ 0.37–0.47 g/cm³ · Capacidad Hg = 30% p/p · T óptima 30–60°C',
-    capacidad_hg_kgkg:0.30,capacidad_A:0.30,capacidad_B:0.20,densidad_bulk:500,vsup_min:6,vsup_max:12,ebct_min:8.0,ebct_max:20.0,
-    url:'https://www.carbotecnia.info/producto/carbon-activado-para-gases-carvapur/',
-    regenerable:true
+var GAC_BW_RATE     = 9;
+var GAC_GRAVEL_DENS = 45.31;
+var GAC_GAL_TO_L    = 3.78541;
+var GAC_FT3_TO_L    = 28.3168;
+var TANK_H_PX       = 160;
+
+var gacCurrentUnits  = 'imperial';
+var gacCurrentCarbon = 'coco';
+var gacLastResult    = null;
+
+function gacEl(id){ return document.getElementById(id); }
+function gacFmt(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
+function gacFmtInt(n){ return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'; }
+function gacGetVal(id){ var v=parseFloat(gacEl(id).value); return (isNaN(v)||v<=0)?null:v; }
+function gacFill(id,val){ gacEl(id).value=val; gacEl(id).focus(); }
+
+function gacSetUnits(u){
+  gacCurrentUnits=u;
+  document.querySelectorAll('.unit-tab').forEach(function(t,i){
+    t.classList.toggle('active',(i===0&&u==='imperial')||(i===1&&u==='metric'));
+  });
+  document.querySelectorAll('.gac-panel').forEach(function(p){ p.classList.remove('active'); });
+  gacEl('gac-panel-'+u).classList.add('active');
+  gacHideResults();
+}
+
+function gacSetCarbon(key,btn){
+  gacCurrentCarbon=key;
+  gacEl('gac-carbon-type').value=key;
+  document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  gacEl('gac-carbon-hint').textContent=GAC_CARBON_TYPES[key].hint;
+}
+
+function gacOnCarbonChange(){
+  var key=gacEl('gac-carbon-type').value;
+  gacCurrentCarbon=key;
+  var chips=document.querySelectorAll('.chip');
+  chips.forEach(function(c){ c.classList.remove('active'); });
+  var chipMap={coco:0,bituminoso:1,bituminoso12:1,catalitico:2};
+  if(chipMap[key]!==undefined) chips[chipMap[key]].classList.add('active');
+  gacEl('gac-carbon-hint').textContent=GAC_CARBON_TYPES[key].hint;
+}
+
+function gacBuildVesselTable(){
+  var tbody=gacEl('gac-vessel-tbody');
+  tbody.innerHTML='';
+  GAC_VESSELS.forEach(function(v,i){
+    var bw=(GAC_BW_RATE*v.areaFt2).toFixed(1);
+    var gravel=(v.carbonFt3*0.20).toFixed(2);
+    var tr=document.createElement('tr');
+    tr.setAttribute('data-idx',i);
+    tr.innerHTML='<td>'+v.vessel+'"</td><td>'+v.carbonFt3+'</td><td>'+gravel+'</td><td>'+v.areaFt2+'</td><td>'+v.diameterIn+'</td><td>'+bw+'</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function gacClearHighlight(){
+  document.querySelectorAll('#gac-vessel-tbody tr').forEach(function(r){ r.classList.remove('row-hl'); });
+}
+
+function gacHideResults(){
+  gacEl('gac-empty').style.display='';
+  gacEl('gac-results').classList.remove('visible');
+  ['gac-alert-vel','gac-alert-over','gac-alert-water'].forEach(function(id){ gacEl(id).className='alert'; });
+  gacEl('gac-parallel-section').classList.remove('visible');
+  gacEl('gac-parallel-grid').innerHTML='';
+  gacEl('gac-bw-card').style.display='none';
+  gacEl('gac-bed-card').style.display='none';
+  gacEl('gac-series-card').classList.remove('visible');
+  gacEl('gac-d-bw-row').style.display='none';
+  gacClearHighlight();
+}
+
+function gacRenderBed(vsl,carbon){
+  var carbonFt3=vsl.carbonFt3, gravelFt3=carbonFt3*0.20;
+  var gravelKg=gravelFt3*GAC_GRAVEL_DENS;
+  var carbonKg=carbonFt3*GAC_FT3_TO_L*carbon.density;
+  var totalVol=carbonFt3+gravelFt3, totalKg=carbonKg+gravelKg;
+  var bedH=TANK_H_PX*0.65, freeboardH=TANK_H_PX-bedH;
+  var carbonH=(carbonFt3/totalVol)*bedH, gravelH=(gravelFt3/totalVol)*bedH;
+  gacEl('gac-bed-tank').innerHTML=
+    '<div class="bed-freeboard" style="height:'+freeboardH+'px">Espacio<br>libre 50%<br>(retrolav.)</div>'+
+    '<div class="bed-layer" style="background:'+carbon.color+';height:'+carbonH+'px">GAC</div>'+
+    '<div class="bed-layer" style="background:#6B7280;height:'+gravelH+'px">Grava</div>';
+  gacEl('gac-bed-carbon-swatch').style.background=carbon.color;
+  gacEl('gac-bed-carbon-name').textContent=carbon.label;
+  gacEl('gac-bed-carbon-vals').textContent=gacFmt(carbonFt3,1)+' ft³ · '+gacFmtInt(carbonKg)+' kg · '+carbon.density+' kg/L bulk';
+  gacEl('gac-bed-gravel-vals').textContent=gacFmt(gravelFt3,2)+' ft³ · '+gacFmtInt(gravelKg)+' kg · soporte inferior';
+  gacEl('gac-bed-total').textContent=gacFmt(totalVol,2)+' ft³ · '+gacFmtInt(totalKg)+' kg total';
+  return {gravelFt3:gravelFt3,gravelKg:gravelKg};
+}
+
+function gacBuildParallel(volFt3,flowGPM,carbonKey,bwTime){
+  var grid=gacEl('gac-parallel-grid'), section=gacEl('gac-parallel-section');
+  grid.innerHTML='';
+  var carbon=GAC_CARBON_TYPES[carbonKey], options=[];
+  GAC_VESSELS.filter(function(v){ return v.diameterIn>=24; }).forEach(function(v){
+    var count=Math.ceil(volFt3/v.carbonFt3);
+    if(count<2||count>8) return;
+    var totalVol=v.carbonFt3*count, flowPerUnit=flowGPM/count;
+    var sv=flowPerUnit/v.areaFt2, svMh=sv*2.44483;
+    var bwPerUnit=GAC_BW_RATE*v.areaFt2, bwWaterL=bwPerUnit*bwTime*GAC_GAL_TO_L;
+    var marginPct=(totalVol-volFt3)/totalVol*100;
+    var tccvReal=(totalVol*7.48052)/flowGPM;
+    var totalKg=totalVol*GAC_FT3_TO_L*carbon.density;
+    var gravelFt3=v.carbonFt3*0.20*count, gravelKg=gravelFt3*GAC_GRAVEL_DENS;
+    options.push({v:v,count:count,totalVol:totalVol,flowPerUnit:flowPerUnit,
+      sv:sv,svMh:svMh,bwPerUnit:bwPerUnit,bwWaterL:bwWaterL,
+      marginPct:marginPct,tccvReal:tccvReal,totalKg:totalKg,
+      gravelFt3:gravelFt3,gravelKg:gravelKg});
+  });
+  if(!options.length){ section.classList.remove('visible'); return; }
+  options.sort(function(a,b){
+    var aOk=(a.sv>=2&&a.sv<=6)?0:1, bOk=(b.sv>=2&&b.sv<=6)?0:1;
+    if(aOk!==bOk) return aOk-bOk;
+    return a.count-b.count;
+  });
+  options.forEach(function(o,i){
+    var isBest=i===0;
+    var tag=isBest?'<span class="par-badge best">Recomendado</span>'
+      :(o.sv>=2&&o.sv<=6?'<span class="par-badge ok">Vel. óptima</span>':'<span class="par-badge wrn">Vel. alta</span>');
+    var div=document.createElement('div');
+    div.className='par-option'+(isBest?' best':'');
+    div.innerHTML=
+      '<div class="par-top"><span class="par-title">'+o.count+'× '+o.v.vessel+'"</span>'+tag+'</div>'+
+      '<div class="par-details">'+
+        '<div class="par-detail"><span class="pdl">Flujo por equipo</span><span class="pdv">'+gacFmt(o.flowPerUnit,1)+' GPM</span></div>'+
+        '<div class="par-detail"><span class="pdl">Vol. carbón por equipo</span><span class="pdv">'+o.v.carbonFt3+' ft³</span></div>'+
+        '<div class="par-detail"><span class="pdl">Vol. total instalado</span><span class="pdv">'+o.totalVol+' ft³</span></div>'+
+        '<div class="par-detail"><span class="pdl">TCCV real instalado</span><span class="pdv">'+gacFmt(o.tccvReal,1)+' min</span></div>'+
+        '<div class="par-detail"><span class="pdl">Margen</span><span class="pdv">'+gacFmt(o.marginPct,0)+'%</span></div>'+
+        '<div class="par-detail"><span class="pdl">Vel. servicio</span><span class="pdv">'+gacFmt(o.sv,2)+' GPM/ft²</span></div>'+
+        '<div class="par-detail"><span class="pdl">Vel. servicio (m/h)</span><span class="pdv">'+gacFmt(o.svMh,1)+' m/h</span></div>'+
+        '<div class="par-detail"><span class="pdl">Q RLV / equipo</span><span class="pdv">'+gacFmt(o.bwPerUnit,1)+' GPM</span></div>'+
+        '<div class="par-detail"><span class="pdl">Agua RLV / ciclo</span><span class="pdv">'+gacFmtInt(o.bwWaterL)+' L</span></div>'+
+        '<div class="par-detail"><span class="pdl">Peso carbón total</span><span class="pdv">'+gacFmtInt(o.totalKg)+' kg</span></div>'+
+        '<div class="par-detail"><span class="pdl">Grava soporte total</span><span class="pdv">'+gacFmt(o.gravelFt3,2)+' ft³ · '+gacFmtInt(o.gravelKg)+' kg</span></div>'+
+      '</div>';
+    grid.appendChild(div);
+  });
+  section.classList.add('visible');
+}
+
+function gacCalculate(){
+  var flow,tccv,flowGPM,volFt3;
+  var bwTime=parseFloat(gacEl('gac-bw-time').value)||10;
+  if(gacCurrentUnits==='imperial'){
+    flow=gacGetVal('gac-i-flow'); tccv=gacGetVal('gac-i-tccv');
+    if(!flow||!tccv){ alert('Por favor ingrese valores válidos mayores a cero.'); return; }
+    flowGPM=flow; volFt3=(flowGPM*tccv)/7.48052;
+  } else {
+    flow=gacGetVal('gac-m-flow'); tccv=gacGetVal('gac-m-tccv');
+    if(!flow||!tccv){ alert('Por favor ingrese valores válidos mayores a cero.'); return; }
+    flowGPM=flow*4.40287; volFt3=(flow*tccv/60)*35.3147;
   }
-};
+  var carbon=GAC_CARBON_TYPES[gacCurrentCarbon];
+  var volM3=volFt3/35.3147, volL=volM3*1000;
+  var totalKgReq=volFt3*GAC_FT3_TO_L*carbon.density;
+  var vesselIdx=-1;
+  for(var i=0;i<GAC_VESSELS.length;i++){ if(GAC_VESSELS[i].carbonFt3>=volFt3){ vesselIdx=i; break; } }
+  var oversize=vesselIdx===-1, vsl=oversize?null:GAC_VESSELS[vesselIdx];
+  var svGPM=0,svMh=0,bwGPM=0,bwLpm=0,bwM3h=0,bwWaterL=0,bwWaterM3=0,tccvReal=0;
+  var totalKgInstalled=0,gravelFt3=0,gravelKg=0;
+  if(!oversize){
+    svGPM=flowGPM/vsl.areaFt2; svMh=svGPM*2.44483;
+    bwGPM=GAC_BW_RATE*vsl.areaFt2; bwLpm=bwGPM*GAC_GAL_TO_L;
+    bwM3h=bwLpm*60/1000; bwWaterL=bwGPM*bwTime*GAC_GAL_TO_L; bwWaterM3=bwWaterL/1000;
+    tccvReal=(vsl.carbonFt3*7.48052)/flowGPM;
+    totalKgInstalled=vsl.carbonFt3*GAC_FT3_TO_L*carbon.density;
+    gravelFt3=vsl.carbonFt3*0.20; gravelKg=gravelFt3*GAC_GRAVEL_DENS;
+  }
 
-/* ── Configuración por aplicación ─────────────────────────────── */
-const APP_CONFIG = {
-  voc:{label:'VOC / Solventes orgánicos',producto_pref:'carvapur',producto_alt:'carvapur_pelet',ebct_default:2.0,vsup_default:15,vsup_hint:'Carvapur: 10–30 m/min (ficha técnica oficial)',ebct_hint:'Carvapur: TCCV > 0.1 s · Recomendado 2–5 s para VOC industriales',humedad_alerta:60,temp_max:40,notas:'Capacidad A (20–50% p/p): tolueno, xileno, estireno, acetatos, hexano, cloroformo, percloroetileno, MIBK. Capacidad B (10–25% p/p): acetona, MEK, cloruro de metileno, cloruro de vinilo. Cetonas pueden oxidarse en la superficie del carbón; vigilar temperatura de cama. Solventes clorados pueden generar calor adicional por hidrólisis (MIP Carbotecnia).'},
-  oxidable:{label:'Aldehídos / Alcoholes / Alquenos oxidables',producto_pref:'carvapox',producto_alt:null,ebct_default:2.5,vsup_default:12,vsup_hint:'Carvapox: 5–24 m/min (misma base que Carvapur con impregnación oxidante)',ebct_hint:'Carvapox: recomendado 2–5 s para aldehídos y alcoholes ligeros',humedad_alerta:60,temp_max:35,notas:'Carvapox combina el área superficial del carbón activado con la capacidad oxidante de su impregnación. Retiene formaldehído (≥ 16% p/p), acetaldehído, IPA, metanol, etileno, propileno y alquinos. Útil para control de maduración de frutas (etileno) y purificación de aire en farmacéutica. No regenerable por vapor.'},
-  h2s:{label:'H₂S / Gases ácidos / Mercaptanos',producto_pref:'vapacid',producto_alt:'vapacid_pelet',ebct_default:4.0,vsup_default:10,vsup_hint:'Vapacid: 6–15 m/min · Vapacid Pélet: ≤ 12 m/min (ficha técnica)',ebct_hint:'Vapacid: TCCV mín 3 s · Recomendado 4–8 s para H₂S concentrado',humedad_alerta:85,temp_max:50,notas:'Vapacid retiene todos los gases y vapores ácidos mediante quimisorción. La reacción con mercaptanos produce disulfuros menos olorosos y más adsorbibles. Regenerable con KOH 40% (3–5 ciclos). Capacidad de referencia H₂S: 0.11 g H₂S/cm³ de carbón (Vapacid Pélet, ficha técnica). Vapacid granular: misma base impregnada.'},
-  olor:{label:'Control de olores — PTAR, compostaje, industria',producto_pref:'vapacid',producto_alt:'carvapur',ebct_default:3.0,vsup_default:10,vsup_hint:'Vapacid: 6–15 m/min · Si solo orgánicos sin H₂S/mercaptanos: Carvapur 10–30 m/min',ebct_hint:'Vapacid olores: 3–5 s · Si concentración baja (< 2 ppmv H₂S): mínimo 2 s',humedad_alerta:85,temp_max:40,notas:'Los olores en PTAR y compostaje son mezclas de H₂S, mercaptanos, aminas y VOC. Los mercaptanos son gases ácidos (grupo –SH) y Vapacid los retiene con > doble de capacidad que un carbón no impregnado, oxidándolos a disulfuros (2R-SH → R₂S₂), menos olorosos y más adsorbibles. Si la corriente no contiene H₂S ni mercaptanos (solo aminas o VOC), evaluar Carvapur como alternativa de menor costo. Vapacid granular es regenerable con KOH 40% (3–5 ciclos).'},
-  mixto:{label:'Mezcla VOC + H₂S (corriente mixta)',producto_pref:'carvacid',producto_alt:'carvacid_pelet',ebct_default:3.5,vsup_default:12,vsup_hint:'Carvacid: 6–20 m/min · Carvacid Pélet: hasta 20 m/min con menor ΔP',ebct_hint:'Carvacid: 3–6 s para mezcla VOC+ácidos · Aumentar a 5–8 s si H₂S es dominante',humedad_alerta:65,temp_max:40,notas:'Carvacid / Carvacid Pélet: 60% del área superficial para gases ácidos (quimisorción), 40% para orgánicos con PM > 60 g/mol (adsorción física). Capacidad certificada de H₂S: 11.0 g H₂S/g carbón. Retiene todo tipo de vapores y gases ácidos + orgánicos PM > 60. Alternativa: primera cama Vapacid (H₂S) + segunda cama Carvapur (VOC).'},
-  mercurio:{label:'Vapores de mercurio elemental (Hg)',producto_pref:'vapomer',producto_alt:'vapomer_pelet',ebct_default:12.0,vsup_default:10,vsup_hint:'Vapomer: 6–15 m/min · Vapomer Pélet: 6–12 m/min (ficha técnica)',ebct_hint:'Vapomer: TCCV 8–20 s · Mayor TCCV → mayor tiempo hasta ruptura',humedad_alerta:100,temp_max:100,notas:'Vapomer retiene Hg elemental por reacción: Hg + S → HgS (sólido). Funciona incluso con alta humedad relativa. T óptima 30–60°C; más eficiente al subir T. No usar si T > 100°C. Capacidad: 0.3 kg Hg/kg carbón (ficha técnica). Mercurio recuperable por destilación (85–95% del Hg). Aplicaciones: fundiciones, plantas de cloro, gas natural, sub-productos de hidrógeno.'}
-};
+  // KPI
+  gacEl('gac-r-vol').innerHTML=gacFmt(volFt3,2)+'<small>ft³</small>';
+  gacEl('gac-r-vol-alt').textContent=gacFmt(volM3,3)+' m³ · '+gacFmtInt(volL)+' L';
+  if(!oversize){
+    gacEl('gac-r-vessel').innerHTML=vsl.vessel+'<small>"</small>';
+    gacEl('gac-r-vessel-sub').textContent=vsl.carbonFt3+' ft³ · TCCV real '+gacFmt(tccvReal,1)+' min';
+    gacEl('gac-r-sv').innerHTML=gacFmt(svGPM,2)+'<small>GPM/ft²</small>';
+    gacEl('gac-r-sv-alt').textContent=gacFmt(svMh,1)+' m/h';
+    gacEl('gac-r-kg').innerHTML=gacFmtInt(totalKgInstalled)+'<small>kg</small>';
+    gacEl('gac-r-kg-alt').textContent=carbon.density+' kg/L bulk';
+    gacEl('gac-bw-title').textContent='Retrolavado estimado · '+GAC_BW_RATE+' GPM/ft² @ 20 °C · '+bwTime+' min criterio diseño';
+    gacEl('gac-bw-flow').innerHTML=gacFmt(bwGPM,1)+'<small>GPM</small>';
+    gacEl('gac-bw-flow-alt').textContent=gacFmtInt(bwLpm)+' L/min · '+gacFmt(bwM3h,1)+' m³/h';
+    gacEl('gac-bw-water').innerHTML=gacFmtInt(bwWaterL)+'<small>L</small>';
+    gacEl('gac-bw-water-alt').textContent=gacFmtInt(bwGPM*bwTime)+' gal · '+gacFmt(bwWaterM3,2)+' m³';
+    gacEl('gac-bw-card').style.display='block';
+    gacEl('gac-d-bw-row').style.display='flex';
+    gacEl('gac-d-bw').textContent=gacFmt(bwGPM,1)+' GPM ('+gacFmtInt(bwLpm)+' L/min)';
+    gacEl('gac-bed-card').style.display='block';
+    gacRenderBed(vsl,carbon);
+  } else {
+    gacEl('gac-r-vessel').innerHTML='Paralelo';
+    gacEl('gac-r-vessel-sub').textContent='Ver configuraciones abajo';
+    gacEl('gac-r-sv').innerHTML='—';
+    gacEl('gac-r-sv-alt').textContent='Depende de la configuración';
+    gacEl('gac-r-kg').innerHTML=gacFmtInt(totalKgReq)+'<small>kg</small>';
+    gacEl('gac-r-kg-alt').textContent='Mínimo requerido · '+carbon.density+' kg/L';
+    gacEl('gac-bw-card').style.display='none';
+    gacEl('gac-bed-card').style.display='none';
+  }
 
-/* ── Capacidad por compuesto (Boletín Técnico 002) ────────────── */
-const COMPOUND_CAPACITY = {
-  h2s:[0.22,34.1,'H₂S','Vapacid Pélet: 0.11 g/cm³ ÷ ρ 0.50 g/cm³ = 0.22 g/g · Vapacid granular: 0.11 g/g'],
-  so2:[0.175,64.1,'B*','Vapacid/Carvacid recomendado para ácidos minerales'],
-  hcl:[0.175,36.5,'B*','Vapacid/Carvacid recomendado'],hno3:[0.175,63.0,'B*','Vapacid/Carvacid recomendado'],
-  h2so4:[0.175,98.1,'B*','Vapacid/Carvacid recomendado'],hf:[0.175,20.0,'B*','Vapacid/Carvacid recomendado'],
-  cl2:[0.175,70.9,'B','Carvapur: cap. B · Carvacid mejora la retención'],clo2:[0.175,67.5,'B*','Vapacid/Carvacid recomendado'],
-  hbr:[0.175,80.9,'B*','Bromuro de hidrógeno — Vapacid/Carvacid'],hi:[0.175,127.9,'B','Yoduro de hidrógeno'],
-  fenol:[0.35,94.1,'A','Ácido carbólico — alta capacidad'],acido_acetico:[0.35,60.1,'A',null],
-  acido_acrilico:[0.35,72.1,'A',null],acido_butirico:[0.35,88.1,'A','Olor característico rancio'],
-  acido_propionico:[0.35,74.1,'A',null],acido_valerico:[0.35,102.1,'A',null],
-  acido_formico:[0.175,46.0,'B*','PM bajo — Vapacid/Carvacid recomendado'],
-  etilmercaptan:[0.11,62.1,'D*→Vap','Carvapur: baja cap. (D*) · Vapacid oxida a disulfuros > 2× cap.'],
-  metilmercaptan:[0.11,48.1,'D*→Vap','Carvapur: baja cap. (D*) · Vapacid/Carvacid recomendado'],
-  propilmercaptan:[0.35,76.2,'A','Propil mercaptano'],mercaptanos_gen:[0.11,62.1,'Vapacid','Mezcla — Vapacid oxida a disulfuros'],
-  disulfuro_carbono:[0.35,76.1,'A',null],
-  tolueno:[0.35,92.1,'A',null],xileno:[0.35,106.2,'A',null],estireno:[0.35,104.2,'A',null],benceno:[0.35,78.1,'A',null],
-  etilbenceno:[0.35,106.2,'A',null],naftaleno:[0.35,128.2,'A',null],anilina:[0.35,93.1,'A',null],
-  piridina:[0.35,79.1,'A',null],cresol:[0.35,108.1,'A',null],nitrobenceno:[0.35,123.1,'A',null],
-  hexano:[0.35,86.2,'A',null],heptano:[0.35,100.2,'A',null],octano:[0.35,114.2,'A',null],
-  nonano:[0.35,128.3,'A',null],decano:[0.35,142.3,'A',null],gasolina:[0.35,100.0,'A','PM promedio estimado'],
-  querosina:[0.35,170.0,'A',null],diesel:[0.35,198.0,'A',null],nafta_petroleo:[0.35,110.0,'A',null],
-  pentano:[0.175,72.2,'B',null],butano:[0.08,58.1,'C','Capacidad baja; analizar condiciones'],
-  propano:[0.08,44.1,'C','Capacidad baja; evaluar alternativa'],butadieno:[0.175,54.1,'B',null],
-  ciclohexano:[0.35,84.2,'A',null],ciclohexanona:[0.35,98.1,'A',null],ciclohexeno:[0.35,82.1,'A',null],
-  ciclohexanol:[0.35,100.2,'A',null],metilciclohexano:[0.35,98.2,'A',null],isoforona:[0.35,98.1,'A',null],
-  acetona:[0.175,58.1,'B',null],mek:[0.35,72.1,'A','MEK / Butanona'],mibk:[0.35,100.2,'A',null],
-  mbc:[0.35,114.2,'A',null],dietilcetona:[0.35,86.1,'A',null],dipropilcetona:[0.35,114.2,'A',null],
-  acetato_etilo:[0.35,88.1,'A',null],acetato_butilo:[0.35,116.2,'A',null],acetato_amilo:[0.35,130.2,'A',null],
-  acetato_propilo:[0.35,102.1,'A',null],acetato_isopropilo:[0.35,102.1,'A',null],
-  acrilato_etilo:[0.35,100.1,'A',null],acrilato_metilo:[0.35,86.1,'A',null],acetato_metilo:[0.175,74.1,'B',null],
-  eter_isopropilico:[0.35,102.2,'A',null],eter_butilico:[0.35,130.2,'A',null],eter_amilico:[0.35,158.3,'A',null],
-  eter_propilico:[0.35,102.2,'A',null],dioxano:[0.35,88.1,'A',null],eter_etilico:[0.175,74.1,'B',null],
-  eter_metilico:[0.175,46.1,'B',null],alcohol_amilico:[0.35,88.1,'A',null],alcohol_butilico:[0.35,74.1,'A',null],
-  cloroformo:[0.35,119.4,'A',null],percloroetileno:[0.35,165.8,'A','Tetracloroetileno'],
-  tricloroetileno:[0.35,131.4,'A',null],tetracloruro:[0.35,153.8,'A','Tetracloruro de carbono'],
-  dicloroetano:[0.35,99.0,'A',null],dicloroetileno:[0.35,97.0,'A',null],tetracloroetano:[0.35,167.8,'A',null],
-  tricloroetano:[0.35,133.4,'A',null],clorobenceno:[0.35,112.6,'A',null],clorobutadieno:[0.35,88.5,'A',null],
-  cloruro_metileno:[0.175,84.9,'B',null],cloruro_vinilo:[0.175,62.5,'B',null],
-  cloruro_etilo:[0.175,64.5,'B',null],cloruro_metilo:[0.175,50.5,'B',null],
-  cloruro_propilo:[0.35,78.5,'A',null],cloruro_butilo:[0.35,92.6,'A',null],
-  dibromoetano:[0.35,187.9,'A',null],bromuro_etilo:[0.35,109.0,'A',null],bromuro_metilo:[0.175,94.9,'B',null],
-  nitroetano:[0.08,75.1,'C','Caso a caso'],nitrometano:[0.08,61.1,'C','Caso a caso'],
-  etano:[0.02,30.1,'D','⚠ Carbón activado NO adecuado'],hidrogeno:[0.02,2.0,'D','⚠ NO adecuado para hidrógeno'],
-  metano:[0.02,16.0,'D','⚠ NO adecuado para metano'],co:[0.02,28.0,'D','⚠ NO adecuado para monóxido de carbono'],
-  formaldehido:[0.16,30.0,'Carvapox','Capacidad oficial ficha técnica ≥ 16% p/p'],
-  acetaldehido:[0.12,44.1,'Carvapox',null],butiraldehido:[0.14,72.1,'Carvapox',null],
-  propionaldehido:[0.14,58.1,'Carvapox',null],acrolenia:[0.12,56.1,'Carvapox',null],
-  etileno:[0.10,28.1,'Carvapox','PM bajo; requiere impregnación oxidante'],propileno:[0.10,42.1,'Carvapox',null],
-  butileno:[0.12,56.1,'Carvapox',null],isopreno:[0.12,68.1,'Carvapox',null],acetileno:[0.10,26.0,'Carvapox',null],
-  isopropanol:[0.16,60.1,'Carvapox','IPA — ficha técnica Carvapox'],hexileno:[0.12,84.2,'Carvapox',null],
-  pentileno:[0.10,70.1,'Carvapox',null],pentino:[0.10,68.1,'Carvapox',null],
-  butino:[0.10,54.1,'Carvapox',null],propino:[0.10,40.1,'Carvapox',null],
-  acrilonitrilo:[0.35,53.1,'A',null],anhidrido_acetico:[0.35,102.1,'A',null],
-  sulfato_dimetilo:[0.35,126.1,'A',null],oxido_etileno:[0.175,44.1,'B',null],
-  cloropicrina:[0.35,164.4,'A',null],fosgeno:[0.175,98.9,'B','Verificar normativa de seguridad'],
-  aminas:[0.35,45.1,'A','Aminas / Diaminas'],vfa:[0.35,60.1,'A','Ácidos grasos volátiles'],
-  indol:[0.35,117.1,'A',null],putrescina:[0.35,88.2,'A',null],acido_butirico_ol:[0.35,88.1,'A',null],
-  acido_grasos:[0.35,144.2,'A',null],aceites_esenciales:[0.35,136.0,'A',null],
-  ozono:[0.35,48.0,'A',null],smog:[0.20,60.0,'A','Mezcla fotoquímica; capacidad estimada'],
-  nicotina:[0.35,162.2,'A',null],general_olor:[0.20,60.0,'A/mix','Mezcla compleja; capacidad estimada conservadora'],
-  mercurio:[0.30,200.6,'Vapomer','0.30 kg Hg/kg carbón — ficha técnica Vapomer']
-};
+  // Detail
+  gacEl('gac-d-flow').textContent=gacCurrentUnits==='imperial'
+    ?flow+' GPM ('+gacFmtInt(flow*GAC_GAL_TO_L)+' L/min)'
+    :flow+' m³/h ('+gacFmt(flowGPM,1)+' GPM)';
+  gacEl('gac-d-tccv').textContent=tccv+' min';
+  gacEl('gac-d-vol-req').textContent=gacFmt(volFt3,2)+' ft³ ('+gacFmt(volM3,3)+' m³ · '+gacFmtInt(volL)+' L)';
+  gacEl('gac-d-carbon').textContent=carbon.label;
+  gacEl('gac-d-density').textContent=carbon.density+' kg/L ('+gacFmtInt(carbon.density*1000)+' kg/m³)';
+  if(!oversize){
+    var marginFt3=vsl.carbonFt3-volFt3, marginPct=(marginFt3/vsl.carbonFt3)*100;
+    gacEl('gac-d-tccv-real').textContent=gacFmt(tccvReal,1)+' min (instalado)';
+    gacEl('gac-d-vessel').textContent=vsl.vessel+'"';
+    gacEl('gac-d-vessel-vol').textContent=vsl.carbonFt3+' ft³';
+    gacEl('gac-d-diam').textContent=vsl.diameterIn+' in ('+gacFmt(vsl.diameterIn*2.54,1)+' cm)';
+    gacEl('gac-d-area').textContent=vsl.areaFt2+' ft² ('+gacFmt(vsl.areaFt2*0.0929,3)+' m²)';
+    gacEl('gac-d-margin').textContent=gacFmt(marginFt3,2)+' ft³ ('+gacFmt(marginPct,0)+'% margen)';
+    gacEl('gac-d-kg').textContent=gacFmtInt(totalKgInstalled)+' kg';
+    gacEl('gac-d-gravel').textContent=gacFmt(gravelFt3,2)+' ft³ · '+gacFmtInt(gravelKg)+' kg';
+    gacEl('gac-d-sv').textContent=gacFmt(svGPM,2)+' GPM/ft² ('+gacFmt(svMh,1)+' m/h)';
+  } else {
+    ['gac-d-tccv-real','gac-d-vessel','gac-d-vessel-vol','gac-d-diam','gac-d-area','gac-d-margin','gac-d-sv'].forEach(function(id){
+      gacEl(id).textContent='Ver configuraciones en paralelo';
+    });
+    gacEl('gac-d-kg').textContent=gacFmtInt(totalKgReq)+' kg (mínimo requerido)';
+    gacEl('gac-d-gravel').textContent='— (ver configuraciones en paralelo)';
+  }
 
-/* ── Compuestos por familia ───────────────────────────────────── */
-const FAMILY_COMPOUNDS = {
-  voc:[['tolueno','Tolueno (PM 92) — A'],['xileno','Xileno (PM 106) — A'],['estireno','Estireno (PM 104) — A'],['benceno','Benceno (PM 78) — A'],['etilbenceno','Etilbenceno (PM 106) — A'],['naftaleno','Naftaleno (PM 128) — A'],['anilina','Anilina (PM 93) — A'],['piridina','Piridina (PM 79) — A'],['cresol','Cresol (PM 108) — A'],['nitrobenceno','Nitrobenceno (PM 123) — A'],['hexano','Hexano (PM 86) — A'],['heptano','Heptano (PM 100) — A'],['octano','Octano (PM 114) — A'],['gasolina','Gasolina (PM ~100) — A'],['querosina','Querosina (PM ~170) — A'],['diesel','Diesel / vapores (PM ~198) — A'],['pentano','Pentano (PM 72) — B'],['butadieno','Butadieno (PM 54) — B'],['butano','Butano (PM 58) — C ⚠'],['propano','Propano (PM 44) — C ⚠'],['ciclohexano','Ciclohexano (PM 84) — A'],['ciclohexanona','Ciclohexanona (PM 98) — A'],['mek','MEK / Butanona (PM 72) — A'],['mibk','MIBK (PM 100) — A'],['acetona','Acetona (PM 58) — B'],['acetato_etilo','Acetato de etilo (PM 88) — A'],['acetato_butilo','Acetato de butilo (PM 116) — A'],['acetato_propilo','Acetato de propilo (PM 102) — A'],['eter_butilico','Éter butílico (PM 130) — A'],['eter_etilico','Éter etílico (PM 74) — B'],['alcohol_amilico','Alcohol amílico (PM 88) — A'],['alcohol_butilico','Alcohol butílico (PM 74) — A'],['cloroformo','Cloroformo (PM 119) — A'],['percloroetileno','Percloroetileno (PM 166) — A'],['tricloroetileno','Tricloroetileno (PM 131) — A'],['tetracloruro','Tetracloruro de carbono (PM 154) — A'],['cloruro_metileno','Cloruro de metileno (PM 85) — B'],['cloruro_vinilo','Cloruro de vinilo (PM 63) — B'],['disulfuro_carbono','Disulfuro de carbono (PM 76) — A'],['acrilonitrilo','Acrilonitrilo (PM 53) — A'],['oxido_etileno','Óxido de etileno (PM 44) — B'],['fosgeno','Fosgeno (PM 99) — B'],['nitroetano','Nitroetano (PM 75) — C ⚠'],['etano','Etano (PM 30) — D ⛔'],['metano','Metano (PM 16) — D ⛔'],['hidrogeno','Hidrógeno (PM 2) — D ⛔'],['co','Monóxido de carbono (PM 28) — D ⛔']],
-  oxidable:[['formaldehido','Formaldehído (PM 30) — Carvapox ≥ 16% p/p'],['acetaldehido','Acetaldehído (PM 44) — Carvapox'],['butiraldehido','Butiraldehído (PM 72) — Carvapox'],['propionaldehido','Propionaldehído (PM 58) — Carvapox'],['acrolenia','Acroleína (PM 56) — Carvapox'],['etileno','Etileno (PM 28) — Carvapox'],['propileno','Propileno (PM 42) — Carvapox'],['butileno','Butileno (PM 56) — Carvapox'],['isopreno','Isopreno (PM 68) — Carvapox'],['acetileno','Acetileno (PM 26) — Carvapox'],['isopropanol','Isopropanol / IPA (PM 60) — Carvapox'],['hexileno','Hexileno (PM 84) — Carvapox'],['pentileno','Pentileno (PM 70) — Carvapox']],
-  h2s:[['h2s','H₂S — Sulfuro de hidrógeno (PM 34)'],['so2','SO₂ — Dióxido de azufre (PM 64)'],['hcl','HCl — Ácido clorhídrico (PM 36.5)'],['hno3','HNO₃ — Ácido nítrico (PM 63)'],['h2so4','H₂SO₄ — Ácido sulfúrico (PM 98)'],['hf','HF — Ácido fluorhídrico (PM 20)'],['cl2','Cl₂ — Cloro (PM 71)'],['clo2','ClO₂ — Dióxido de cloro (PM 67.5)'],['hbr','HBr — Ácido bromhídrico (PM 80.9)'],['fenol','Fenol / Ácido carbólico (PM 94) — A'],['acido_acetico','Ácido acético (PM 60) — A'],['acido_butirico','Ácido butírico (PM 88) — A'],['acido_propionico','Ácido propiónico (PM 74) — A'],['acido_formico','Ácido fórmico (PM 46) — B*'],['etilmercaptan','Etil mercaptano (PM 62) → Vapacid'],['metilmercaptan','Metil mercaptano (PM 48) → Vapacid'],['propilmercaptan','Propil mercaptano (PM 76) — A']],
-  olor:[['mercaptanos_gen','Mercaptanos — mezcla general'],['etilmercaptan','Etil mercaptano (PM 62)'],['metilmercaptan','Metil mercaptano (PM 48)'],['h2s','H₂S — Sulfuro de hidrógeno (PM 34)'],['aminas','Aminas / Diaminas (PM 45) — A'],['vfa','Ácidos grasos volátiles VFA (PM 60) — A'],['acido_butirico_ol','Ácido butírico — olor rancio (PM 88) — A'],['indol','Indol / Escatol (PM 117) — A'],['putrescina','Putrescina / Cadaverina (PM 88) — A'],['ozono','Ozono (PM 48) — A'],['nicotina','Nicotina (PM 162) — A'],['general_olor','Mezcla general — PTAR / compostaje']],
-  mixto:[['h2s','H₂S + VOC'],['etilmercaptan','Etil mercaptano + VOC'],['metilmercaptan','Metil mercaptano + VOC'],['mercaptanos_gen','Mercaptanos varios + VOC'],['so2','SO₂ + VOC orgánicos'],['general_olor','Mezcla ácidos + orgánicos']],
-  mercurio:[['mercurio','Hg — Vapor de mercurio elemental (PM 201)']]
-};
+  gacEl('gac-empty').style.display='none';
+  gacEl('gac-results').classList.add('visible');
 
-/* ── Constantes ───────────────────────────────────────────────── */
-const CONST = {
-  FLOW_TO_M3S:{m3h:1/3600,m3min:1/60,cfm:0.000471947,lps:0.001},
-  PM_DEFAULT:78,DAYS_MONTH:30,FACTOR_EFECTIVO:0.35
-};
+  // Alerts
+  var alertVel=gacEl('gac-alert-vel'), alertOver=gacEl('gac-alert-over'), alertWater=gacEl('gac-alert-water');
+  alertVel.className=alertOver.className=alertWater.className='alert';
+  if(oversize){
+    alertOver.className='alert info show';
+    alertOver.innerHTML='⧉ <strong>El volumen requerido ('+gacFmt(volFt3,1)+' ft³) supera el recipiente más grande del catálogo.</strong> A continuación se muestran configuraciones en paralelo.';
+  } else if(svGPM<2){
+    alertVel.className='alert warn show';
+    alertVel.innerHTML='⚠ <strong>Velocidad de servicio baja ('+gacFmt(svGPM,2)+' GPM/ft²).</strong> Riesgo de flujo laminar y baja eficiencia de adsorción.';
+  } else if(svGPM<=6){
+    alertVel.className='alert ok show';
+    alertVel.innerHTML='✓ <strong>Velocidad dentro del rango recomendado para adsorción</strong> ('+gacFmt(svGPM,2)+' GPM/ft² · '+gacFmt(svMh,1)+' m/h).';
+  } else if(svGPM<=8){
+    alertVel.className='alert warn show';
+    alertVel.innerHTML='⚠ <strong>Velocidad alta ('+gacFmt(svGPM,2)+' GPM/ft²).</strong> Aceptable para decloración simple; no ideal para adsorción de orgánicos.';
+  } else {
+    alertVel.className='alert err show';
+    alertVel.innerHTML='⚠ <strong>Velocidad muy alta ('+gacFmt(svGPM,2)+' GPM/ft²).</strong> Riesgo de baja eficiencia y caída de presión excesiva.';
+  }
+  if(!oversize&&bwGPM>60){
+    alertWater.className='alert water show';
+    alertWater.innerHTML='🚰 <strong>Flujo de retrolavado elevado ('+gacFmt(bwGPM,1)+' GPM · '+gacFmtInt(bwLpm)+' L/min).</strong> Se recomienda diseñar un tanque de agua clara dedicado para retrolavado.';
+  }
 
-/* ── Utilidades ───────────────────────────────────────────────── */
-function fmt(n,d){if(!isFinite(n)||n===null)return'—';return n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d});}
-function rangeTag(v,okMin,okMax){
-  if(v>=okMin&&v<=okMax)return'<span class="tag tag-ok">En rango</span>';
-  return'<span class="tag tag-err">Fuera de rango</span>';
+  // Lead-lag
+  if(!oversize&&tccv>=10){
+    gacEl('gac-ll-lead').innerHTML=vsl.vessel+'<small>"</small>';
+    gacEl('gac-ll-lead-sub').textContent=vsl.carbonFt3+' ft³ · '+gacFmtInt(totalKgInstalled)+' kg · recibe flujo primero';
+    gacEl('gac-ll-lag').innerHTML=vsl.vessel+'<small>"</small>';
+    gacEl('gac-ll-lag-sub').textContent=vsl.carbonFt3+' ft³ · '+gacFmtInt(totalKgInstalled)+' kg · respaldo / polishing';
+    gacEl('gac-ll-tccv').innerHTML=gacFmt(tccvReal*2,1)+'<small>min</small>';
+    gacEl('gac-series-card').classList.add('visible');
+  } else { gacEl('gac-series-card').classList.remove('visible'); }
+
+  // Highlight table
+  gacClearHighlight();
+  if(!oversize){
+    var row=document.querySelector('#gac-vessel-tbody tr[data-idx="'+vesselIdx+'"]');
+    if(row) row.classList.add('row-hl');
+  }
+
+  // Parallel
+  var showParallel=oversize||(!oversize&&vsl&&vsl.diameterIn>=30);
+  if(showParallel){ gacBuildParallel(volFt3,flowGPM,gacCurrentCarbon,bwTime); }
+  else { gacEl('gac-parallel-section').classList.remove('visible'); gacEl('gac-parallel-grid').innerHTML=''; }
+
+  gacLastResult={flow:flow,flowGPM:flowGPM,tccv:tccv,tccvReal:tccvReal,
+    volFt3:volFt3,volM3:volM3,volL:volL,oversize:oversize,vsl:vsl,
+    svGPM:svGPM,svMh:svMh,bwGPM:bwGPM,bwLpm:bwLpm,bwWaterL:bwWaterL,
+    bwTime:bwTime,carbon:carbon,carbonKey:gacCurrentCarbon,
+    totalKgInstalled:totalKgInstalled,totalKgReq:totalKgReq,
+    gravelFt3:gravelFt3,gravelKg:gravelKg,units:gacCurrentUnits};
 }
 
-/* ── UI helpers ───────────────────────────────────────────────── */
-function selectFamily(app){
-  currentApp=app;
-  document.querySelectorAll('.family-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelector('[data-app="'+app+'"]').classList.add('active');
-  var cfg=APP_CONFIG[app], prod=PRODUCTS[cfg.producto_pref];
-  document.getElementById('ebct').value=cfg.ebct_default;
-  document.getElementById('vsup').value=cfg.vsup_default;
-  document.getElementById('vsup-hint').textContent=cfg.vsup_hint;
-  document.getElementById('ebct-hint').textContent=cfg.ebct_hint;
-  var pill=document.getElementById('product-pill');
-  pill.style.display='flex';
-  pill.innerHTML='<span>🧪</span> Carbón recomendado: <strong>'+prod.nombre+'</strong> — '+prod.subtitulo;
-  var sel=document.getElementById('compound');
-  var compounds=FAMILY_COMPOUNDS[app]||[];
-  sel.innerHTML='<option value="">— Seleccionar compuesto específico (opcional) —</option>';
-  compounds.forEach(function(c){var o=document.createElement('option');o.value=c[0];o.textContent=c[1];sel.appendChild(o);});
-  document.getElementById('compound-field').style.display='block';
-  if(app==='mercurio'){sel.value='mercurio';document.getElementById('compound-field').style.display='none';}
-}
-
-function onCompoundChange(){}
-function selectApp(app){selectFamily(app);}
-
-/* ── Normalización ────────────────────────────────────────────── */
-function normalizeInputs(){
-  var flowRaw=parseFloat(document.getElementById('flow').value);
-  var flowUnit=document.getElementById('flow-unit').value;
-  var flowM3s=flowRaw*CONST.FLOW_TO_M3S[flowUnit];
-  var flowM3h=flowM3s*3600;
-  var compound=document.getElementById('compound').value;
-  var compData=COMPOUND_CAPACITY[compound]||null;
-  var PM=compData?compData[1]:CONST.PM_DEFAULT;
-  var tempRaw=parseFloat(document.getElementById('temp').value);
-  var tempUnit=document.getElementById('temp-unit').value;
-  var temp=(!isNaN(tempRaw))?(tempUnit==='f'?(tempRaw-32)*5/9:tempRaw):25;
-  var concInRaw=parseFloat(document.getElementById('conc-in').value);
-  var concUnit=document.getElementById('conc-unit').value;
-  var molarVol=0.08205*(temp+273.15);
-  var concInPpmv;
-  if(concUnit==='ppmv')concInPpmv=concInRaw;
-  else if(concUnit==='mgm3')concInPpmv=(concInRaw*molarVol)/PM;
-  else concInPpmv=(concInRaw/1000*molarVol)/PM;
-  var concOutRaw=parseFloat(document.getElementById('conc-out').value);
-  var concOutUnit=document.getElementById('conc-out-unit').value;
-  var concOutPpmv=1.0;
-  if(!isNaN(concOutRaw)&&concOutRaw>0)concOutPpmv=concOutUnit==='ppmv'?concOutRaw:(concOutRaw*molarVol)/PM;
-  var humidity=parseFloat(document.getElementById('humidity').value)||50;
-  var opHours=parseFloat(document.getElementById('op-hours').value)||24;
-  var vsup=parseFloat(document.getElementById('vsup').value)||15;
-  var ebctS=parseFloat(document.getElementById('ebct').value)||2;
-  return{flowM3s,flowM3h,concInPpmv,concOutPpmv,PM,compound,compData,temp,humidity,opHours,vsup,ebctS};
-}
-
-/* ── Validación ───────────────────────────────────────────────── */
-function validate(){
-  var ok=true;
-  if(!currentApp){alert('Por favor selecciona el tipo de contaminante antes de calcular.');return false;}
-  [['f-flow','flow'],['f-conc-in','conc-in']].forEach(function(p){
-    var wrap=document.getElementById(p[0]);
-    var val=parseFloat(document.getElementById(p[1]).value);
-    if(!val||val<=0||isNaN(val)){wrap.classList.add('has-error');wrap.querySelector('.inline-wrap').classList.add('error');ok=false;}
-    else{wrap.classList.remove('has-error');wrap.querySelector('.inline-wrap').classList.remove('error');}
+function gacClear(){
+  document.querySelectorAll('.shell input[type="number"]').forEach(function(i){
+    if(i.id!=='gac-bw-time') i.value='';
   });
-  return ok;
+  gacHideResults();
+  gacEl('gac-empty').style.display='';
+  gacLastResult=null;
 }
 
-/* ── Motor de cálculo ─────────────────────────────────────────── */
-function calculate(){
-  if(!validate())return;
-  var I=normalizeInputs();
-  var cfg=APP_CONFIG[currentApp];
-  var prod=PRODUCTS[cfg.producto_pref];
-  var capacidadEq,nivelCap,notaCompuesto;
-  if(I.compData){capacidadEq=I.compData[0];nivelCap=I.compData[2];notaCompuesto=I.compData[3];}
-  else{capacidadEq=prod.capacidad_A;nivelCap='A (estimado)';notaCompuesto='Seleccione el compuesto específico para mayor precisión.';}
-  var productosAdsorcionFisica=['carvapur','carvapur_pelet'];
-  var esAdsorcionFisica=productosAdsorcionFisica.includes(cfg.producto_pref);
-  var factorEfectivo=esAdsorcionFisica?CONST.FACTOR_EFECTIVO:1.0;
-  var capacidadEf=capacidadEq*factorEfectivo;
-  var vsupMs=I.vsup/60;
-  var areaM2=I.flowM3s/vsupMs;
-  var diamM=Math.sqrt(4*areaM2/Math.PI);
-  var diamCm=diamM*100;
-  var bedVolM3=I.flowM3s*I.ebctS;
-  var bedVolL=bedVolM3*1000;
-  var bedHeightM=bedVolM3/areaM2;
-  var bedHeightCm=bedHeightM*100;
-  var rhoCA=prod.densidad_bulk;
-  var massCA=bedVolM3*rhoCA;
-  var concInMgM3=I.concInPpmv*I.PM/24.04;
-  var concOutMgM3=I.concOutPpmv*I.PM/24.04;
-  var loadKgH=I.flowM3h*Math.max(0,concInMgM3-concOutMgM3)/1e6;
-  var loadKgDay=loadKgH*I.opHours;
-  var loadKgMonth=loadKgDay*CONST.DAYS_MONTH;
-  var massAdsorbEq=massCA*capacidadEq;
-  var massAdsorbEf=massCA*capacidadEf;
-  var vidaHEq=loadKgH>0?massAdsorbEq/loadKgH:Infinity;
-  var vidaHEf=loadKgH>0?massAdsorbEf/loadKgH:Infinity;
-  var vidaDiasEq=vidaHEq/I.opHours;
-  var vidaDiasEf=vidaHEf/I.opHours;
-  var vidaMesesEf=vidaDiasEf/CONST.DAYS_MONTH;
-  var vsupFtMin=I.vsup*3.28084;
-  var kDp=prod.nombre.includes('Pélet')?0.0004:0.0008;
-  var dpInH2OPerFt=kDp*Math.pow(vsupFtMin,2);
-  var dpInH2OTotal=dpInH2OPerFt*(bedHeightM*3.28084);
-  var dpPa=dpInH2OTotal*249.09;
-  var dpMbar=dpPa/100;
-  var alerts=[];
-  if(I.humidity>cfg.humedad_alerta&&cfg.humedad_alerta<100)alerts.push('Humedad relativa ('+I.humidity+'% HR) supera el umbral de '+cfg.humedad_alerta+'%. Se recomienda preenfriamiento del gas para reducir la humedad. El exceso de agua compite con el contaminante en los poros del carbón (MIP Carbotecnia).');
-  if(I.temp>cfg.temp_max&&currentApp!=='mercurio')alerts.push('Temperatura de operación ('+I.temp+'°C) supera '+cfg.temp_max+'°C. La capacidad de adsorción disminuye significativamente. Considerar enfriamiento del gas antes del adsorbedor.');
-  if(I.vsup>prod.vsup_max)alerts.push('Velocidad superficial ('+I.vsup+' m/min) excede el máximo de '+prod.vsup_max+' m/min para '+prod.nombre+'. Aumentar el diámetro del adsorbedor.');
-  if(I.vsup<prod.vsup_min)alerts.push('Velocidad superficial ('+I.vsup+' m/min) es inferior al mínimo de '+prod.vsup_min+' m/min. Puede haber distribución no uniforme y canalización del flujo.');
-  if(bedHeightM<0.3)alerts.push('Altura de cama calculada ('+fmt(bedHeightCm,0)+' cm) es inferior a 30 cm. Se recomienda una altura mínima de 30–60 cm para garantizar contacto adecuado (MIP Carbotecnia).');
-  if(bedHeightM>1.2&&currentApp!=='mercurio')alerts.push('Altura de cama ('+fmt(bedHeightM,2)+' m) supera 1.2 m. Verificar la caída de presión total y la resistencia del soporte. Considerar dos camas en serie o aumentar el diámetro.');
-  if(currentApp==='mercurio'&&I.temp>100)alerts.push('Temperatura > 100°C: Vapomer no funciona a temperaturas superiores. Es imperativo enfriar la corriente gaseosa antes del adsorbedor.');
-  if(currentApp==='mercurio'&&I.temp<20)alerts.push('Temperatura < 20°C está fuera del rango óptimo de Vapomer (30–60°C). La eficiencia de adsorción del mercurio disminuye a bajas temperaturas.');
-  if(vidaMesesEf<1&&isFinite(vidaMesesEf))alerts.push('Vida útil estimada hasta ruptura ('+fmt(vidaDiasEf,0)+' días) es menor a un mes. Considerar aumentar la masa de carbón (mayor TCCV o menor velocidad), o instalar dos lechos alternados.');
-  if(notaCompuesto)alerts.push('<b>Nota sobre el compuesto seleccionado:</b> '+notaCompuesto);
-
-  renderResults({I,cfg,prod,vsupMs,areaM2,diamM,diamCm,bedVolM3,bedVolL,bedHeightM,bedHeightCm,massCA,rhoCA,concInMgM3,concOutMgM3,loadKgH,loadKgDay,loadKgMonth,capacidadEq,capacidadEf,nivelCap,massAdsorbEq,massAdsorbEf,vidaHEq,vidaHEf,vidaDiasEq,vidaDiasEf,vidaMesesEf,dpInH2OPerFt,dpInH2OTotal,dpPa,dpMbar,alerts});
-}
-
-/* ── Render ───────────────────────────────────────────────────── */
-function renderResults(r){
-  var prod=r.prod, cfg=r.cfg;
-  var vsupTag=rangeTag(r.I.vsup,prod.vsup_min,prod.vsup_max);
-  var alturaTag=r.bedHeightM<0.25?'<span class="tag tag-err">Muy baja</span>':r.bedHeightM>1.3?'<span class="tag tag-warn">Alta</span>':'<span class="tag tag-ok">Adecuada</span>';
-  var vidaTag=r.vidaMesesEf<1?'<span class="tag tag-err">< 1 mes</span>':r.vidaMesesEf<3?'<span class="tag tag-warn">Corta</span>':'<span class="tag tag-ok">Aceptable</span>';
-  var capLabel=r.nivelCap==='A'?'Alta (A) · 20–50% p/p':r.nivelCap==='B'?'Satisfactoria (B) · 10–25% p/p':r.nivelCap;
-  var vidaStr=!isFinite(r.vidaDiasEf)?'—':r.vidaDiasEf<1?fmt(r.vidaDiasEf*24,1)+' h':r.vidaDiasEf<60?fmt(r.vidaDiasEf,0)+' días':fmt(r.vidaDiasEf/365,1)+' años';
-  var vidaAltStr=!isFinite(r.vidaDiasEf)?'':fmt(r.vidaHEf,0)+' h · '+fmt(r.vidaMesesEf,1)+' meses';
-
-  /* formula chips */
-  document.getElementById('chip-mass').textContent = fmt(r.massCA,0)+' kg';
-  document.getElementById('chip-life').textContent = vidaStr;
-  document.getElementById('chip-area').textContent = fmt(r.areaM2,4)+' m²';
-  document.getElementById('chip-dp').textContent   = fmt(r.dpMbar,1)+' mbar';
-
-  document.getElementById('results').innerHTML=
-    '<div class="summary-row">'+
-      '<div class="summary-cell"><div class="lbl">Masa de carbón activado</div><div class="val">'+fmt(r.massCA,0)+'<small>kg</small></div><div class="alt">'+fmt(r.bedVolM3,4)+' m³ · ρ '+r.rhoCA+' kg/m³</div></div>'+
-      '<div class="summary-cell"><div class="lbl">Vida útil hasta ruptura</div><div class="val">'+vidaStr+'</div><div class="alt">'+vidaAltStr+'</div></div>'+
-      '<div class="summary-cell"><div class="lbl">Sección transversal</div><div class="val">'+fmt(r.areaM2,3)+'<small>m²</small></div><div class="alt">Ø equiv. '+fmt(r.diamCm,1)+' cm · Alt. '+fmt(r.bedHeightCm,1)+' cm</div></div>'+
-    '</div>'+
-
-    '<div class="hero-product">'+
-      '<div class="hero-product-tag">Carbón activado recomendado · Carbotecnia</div>'+
-      '<div class="hero-product-name">'+prod.nombre+'</div>'+
-      '<div class="hero-product-desc">'+prod.desc+'</div>'+
-      '<div class="hero-product-specs">'+prod.specs+'</div>'+
-      '<div class="hero-product-url"><a href="'+prod.url+'" target="_blank">↗ Ficha de producto en carbotecnia.info</a></div>'+
-    '</div>'+
-
-    '<div class="section-title">Geometría del lecho de carbón</div>'+
-    '<div class="section-sub">Lecho fijo · flujo descendente · empacado</div>'+
-    '<ul class="result-list">'+
-      row('Sección transversal del adsorbedor','Área perpendicular al flujo de gas.',fmt(r.areaM2,4)+' m²',fmt(r.areaM2*1e4,0)+' cm² · Ø equiv. '+fmt(r.diamCm,1)+' cm')+
-      row('Altura efectiva de la cama de carbón','Altura del lecho activo.',fmt(r.bedHeightCm,1)+' cm '+alturaTag,fmt(r.bedHeightM,3)+' m · mínimo recomendado 30 cm')+
-      row('Volumen de lecho vacío','Volumen geométrico de la cama.',fmt(r.bedVolM3,4)+' m³',fmt(r.bedVolL,2)+' L')+
-      row('Velocidad superficial del gas','Velocidad a través de la sección transversal.',fmt(r.I.vsup,1)+' m/min '+vsupTag,fmt(r.vsupMs,3)+' m/s · rango '+prod.vsup_min+'–'+prod.vsup_max+' m/min')+
-      row('TCCV — Tiempo de Contacto en Cama Vacía','Tiempo de residencia del gas en el lecho.',fmt(r.I.ebctS,2)+' s',cfg.ebct_hint.split('·')[0].trim())+
-      row('Caída de presión estimada','Pérdida de carga total a través del lecho (modelo interpolado de fichas técnicas).',fmt(r.dpInH2OTotal,2)+' in H₂O',fmt(r.dpMbar,1)+' mbar · '+fmt(r.dpPa,0)+' Pa')+
-    '</ul>'+
-
-    '<div class="section-title">Masa y capacidad del carbón activado</div>'+
-    '<div class="section-sub">'+prod.nombre+' · datos de ficha técnica oficial Carbotecnia</div>'+
-    '<ul class="result-list">'+
-      row('Masa de carbón activado','Peso del carbón necesario para llenar el lecho calculado.',fmt(r.massCA,1)+' kg',fmt(r.massCA/25,1)+' sacos de 25 kg · '+fmt(r.massCA/20,1)+' sacos de 20 kg')+
-      row('Nivel de capacidad de adsorción','Clasificación del Boletín Técnico 002 Carbotecnia / ficha técnica oficial.','<span class="tag tag-teal">'+r.nivelCap+'</span>',capLabel)+
-      row('Capacidad de equilibrio (saturación)','Masa de contaminante retenida hasta saturación total del carbón.',fmt(r.capacidadEq*100,1)+'% p/p',fmt(r.massAdsorbEq,3)+' kg contaminante adsorbido')+
-      row('Capacidad efectiva hasta punto de ruptura','35% de la capacidad de equilibrio — MIP Recuperación de Solventes Carbotecnia.',fmt(r.capacidadEf*100,1)+'% p/p',fmt(r.massAdsorbEf,3)+' kg hasta ruptura · factor 0.35 aplicado')+
-      (prod.regenerable?row('Régimen de regeneración',prod.notas_regen||'Producto regenerable.','<span class="tag tag-teal">Regenerable</span>','Consultar MIP o ficha técnica'):row('Régimen de operación',prod.notas_regen||'Reemplazar al agotar la capacidad.','<span class="tag tag-warn">No regen.</span>','Reemplazar al llegar al punto de ruptura'))+
-    '</ul>'+
-
-    '<div class="section-title">Carga másica del contaminante y vida útil</div>'+
-    '<div class="section-sub">Basado en '+r.I.opHours+' h/día · concentración entrada: '+fmt(r.I.concInPpmv,2)+' ppmv</div>'+
-    '<ul class="result-list">'+
-      row('Concentración de entrada (normalizada)','Valor de entrada convertido a mg/m³.',fmt(r.I.concInPpmv,2)+' ppmv',fmt(r.concInMgM3,2)+' mg/m³ · PM = '+r.I.PM+' g/mol')+
-      row('Concentración de salida objetivo','Límite de efluente tratado.',fmt(r.I.concOutPpmv,3)+' ppmv',fmt(r.concOutMgM3,3)+' mg/m³')+
-      row('Carga másica del contaminante','Masa de contaminante que ingresa al adsorbedor por hora de operación.',fmt(r.loadKgH*1000,2)+' g/h',fmt(r.loadKgDay*1000,0)+' g/día · '+fmt(r.loadKgMonth,4)+' kg/mes')+
-      row('Vida útil hasta saturación (equilibrio)','Tiempo hasta alcanzar el 100% de la capacidad de equilibrio.',fmt(r.vidaDiasEq,0)+' días',fmt(r.vidaHEq,0)+' h · '+fmt(r.vidaDiasEq/30,1)+' meses')+
-      row('Vida útil hasta punto de ruptura','Factor efectivo 0.35 del equilibrio — MIP Solventes Carbotecnia.',vidaStr+' '+vidaTag,vidaAltStr)+
-    '</ul>'+
-
-    (r.alerts.length>0?'<div class="notice warn"><b>⚠ Alertas técnicas</b><ul>'+r.alerts.map(function(a){return'<li>'+a+'</li>';}).join('')+'</ul></div>':'')+
-
-    '<div class="notice teal"><b>Notas de proceso — '+cfg.label+'</b>'+cfg.notas+'</div>'+
-
-    '<div class="notice info"><b>Parámetros de referencia · Fichas técnicas Carbotecnia</b>'+
-    prod.nombre+': v_sup '+prod.vsup_min+'–'+prod.vsup_max+' m/min · TCCV mín '+prod.ebct_min+' s · ρ bulk ~'+prod.densidad_bulk+' kg/m³ · HR alerta: '+(cfg.humedad_alerta<100?cfg.humedad_alerta+'%':'alta HR aceptable')+' · Capacidad efectiva: 35% del equilibrio (MIP Solventes Carbotecnia).'+
-    '</div>'+
-
-    '<div class="notice tech"><b>Notas de ingeniería</b>'+
-    'Pre-dimensionamiento para <b>'+prod.nombre+'</b> de Carbotecnia. '+
-    'TCCV '+fmt(r.I.ebctS,1)+' s · v_sup '+fmt(r.I.vsup,0)+' m/min · ρ bulk '+r.rhoCA+' kg/m³. '+
-    'La capacidad real varía con temperatura, humedad, composición de la mezcla y tiempo de operación. '+
-    'Para diseño definitivo se requiere isoterma experimental del compuesto específico y prueba piloto. '+
-    'Vida útil estimada con incertidumbre ±40%.'+
-    '</div>';
-}
-
-function row(name,desc,val,sub){
-  return '<li><div class="name"><b>'+name+'</b>'+desc+'</div><div class="value">'+val+(sub?'<em>'+sub+'</em>':'')+'</div></li>';
-}
-
-/* ── Reset ────────────────────────────────────────────────────── */
-function resetAll(){
-  currentApp=null;
-  ['flow','conc-in','conc-out'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('temp').value='25';
-  document.getElementById('humidity').value='50';
-  document.getElementById('op-hours').value='24';
-  document.getElementById('vsup').value='15';
-  document.getElementById('ebct').value='2';
-  document.querySelectorAll('.family-btn').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('product-pill').style.display='none';
-  document.getElementById('compound-field').style.display='none';
-  document.getElementById('compound').innerHTML='<option value="">— Seleccionar compuesto específico (opcional) —</option>';
-  document.getElementById('vsup-hint').textContent='Carvapur: 10–30 m/min · Vapacid/Vapomer: 6–15 m/min';
-  document.getElementById('ebct-hint').textContent='Carvapur: > 0.1 s · Olor/H₂S: 2–5 s · Hg: 8–20 s';
-  document.querySelectorAll('.has-error').forEach(function(e){e.classList.remove('has-error');});
-  document.querySelectorAll('.inline-wrap.error').forEach(function(e){e.classList.remove('error');});
-  ['chip-mass','chip-life','chip-area','chip-dp'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(id==='chip-mass')el.textContent='— kg';
-    else if(id==='chip-area')el.textContent='— m²';
-    else if(id==='chip-dp')el.textContent='— mbar';
-    else el.textContent='—';
-  });
-  document.getElementById('results').innerHTML='<div class="results-empty" id="empty-state"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><div>Seleccione el tipo de contaminante y los parámetros<br>para obtener el dimensionamiento del lecho de carbón.</div></div>';
-}
-
-/* ── Event wiring ─────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('btn-calc').addEventListener('click',calculate);
-  document.getElementById('btn-reset').addEventListener('click',resetAll);
-  document.querySelectorAll('input[type="number"]').forEach(function(inp){
-    inp.addEventListener('keydown',function(e){if(e.key==='Enter')calculate();});
-  });
-  document.getElementById('compound').addEventListener('change',function(){
-    var v=this.value;
-    if(v==='mercurio'){selectApp('mercurio');return;}
-    if(['formaldehido','acetaldehido','acrolenia','propionaldehido','etileno','isopropanol'].includes(v)){selectApp('oxidable');return;}
-    if(['h2s','so2','hcl','hno3','h2so4','hf','cl2','clo2','etilmercaptan','metilmercaptan'].includes(v)){
-      if(!['h2s','mixto'].includes(currentApp))selectApp('h2s');
+function gacCopySummary(btn){
+  if(!gacLastResult) return;
+  var r=gacLastResult;
+  var lines=[];
+  lines.push('═══════════════════════════════════════════════════════');
+  lines.push('  DIMENSIONAMIENTO DE EQUIPO DE CARBÓN ACTIVADO');
+  lines.push('  Carbotecnia · Calculadora técnica v4.0');
+  lines.push('═══════════════════════════════════════════════════════');
+  lines.push('');
+  lines.push('DATOS DEL PROYECTO');
+  lines.push(r.units==='imperial'
+    ?'  Flujo de diseño:         '+r.flow+' GPM ('+gacFmtInt(r.flow*GAC_GAL_TO_L)+' L/min)'
+    :'  Flujo de diseño:         '+r.flow+' m³/h ('+gacFmt(r.flowGPM,1)+' GPM)');
+  lines.push('  TCCV solicitado:         '+r.tccv+' min');
+  if(!r.oversize) lines.push('  TCCV real instalado:     '+gacFmt(r.tccvReal,1)+' min');
+  lines.push('  Tipo de carbón:          '+r.carbon.label);
+  lines.push('  Densidad bulk:           '+r.carbon.density+' kg/L');
+  lines.push('');
+  lines.push('EQUIPO RECOMENDADO');
+  lines.push('  Volumen requerido:       '+gacFmt(r.volFt3,2)+' ft³ ('+gacFmt(r.volM3,3)+' m³ · '+gacFmtInt(r.volL)+' L)');
+  if(!r.oversize){
+    lines.push('  Recipiente:              '+r.vsl.vessel+'" (composite FRP)');
+    lines.push('  Volumen comercial:       '+r.vsl.carbonFt3+' ft³');
+    lines.push('  Diámetro:                '+r.vsl.diameterIn+' in ('+gacFmt(r.vsl.diameterIn*2.54,1)+' cm)');
+    lines.push('  Área transversal:        '+r.vsl.areaFt2+' ft²');
+    lines.push('  Velocidad servicio:      '+gacFmt(r.svGPM,2)+' GPM/ft² ('+gacFmt(r.svMh,1)+' m/h)');
+    lines.push('  Peso total del carbón:   '+gacFmtInt(r.totalKgInstalled)+' kg');
+    lines.push('  Grava de soporte (20%):  '+gacFmt(r.gravelFt3,2)+' ft³ · '+gacFmtInt(r.gravelKg)+' kg');
+    lines.push('');
+    lines.push('RETROLAVADO');
+    lines.push('  Velocidad estimada:      '+GAC_BW_RATE+' GPM/ft² @ 20 °C');
+    lines.push('  Flujo:                   '+gacFmt(r.bwGPM,1)+' GPM ('+gacFmtInt(r.bwLpm)+' L/min)');
+    lines.push('  Agua por ciclo:          '+gacFmtInt(r.bwWaterL)+' L ('+r.bwTime+' min criterio diseño)');
+    lines.push('  Expansión esperada:      30–50%');
+    if(r.tccv>=10){
+      lines.push('');
+      lines.push('CONFIGURACIÓN LEAD-LAG (recomendada para TCCV ≥ 10 min)');
+      lines.push('  2× '+r.vsl.vessel+'" en serie');
+      lines.push('  TCCV total instalado:    '+gacFmt(r.tccvReal*2,1)+' min');
     }
-  });
-  selectApp('voc');
+  } else {
+    lines.push('  Recipiente:              Configuración en paralelo (ver pantalla)');
+    lines.push('  Peso mínimo requerido:   '+gacFmtInt(r.totalKgReq)+' kg');
+  }
+  lines.push('');
+  lines.push('───────────────────────────────────────────────────────');
+  lines.push('Carbotecnia · carbotecnia.info');
+  lines.push('Pre-dimensionamiento referencial · Validar con análisis de agua');
+  lines.push('───────────────────────────────────────────────────────');
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
+    var orig=btn.innerHTML;
+    btn.classList.add('copied');
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Copiado al portapapeles';
+    setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML=orig; },2200);
+  }).catch(function(){ alert('No se pudo copiar al portapapeles.'); });
+}
+
+gacBuildVesselTable();
+gacEl('gac-btn-print').addEventListener('click',function(){ window.print(); });
+gacEl('gac-btn-copy').addEventListener('click',function(){ gacCopySummary(this); });
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target&&e.target.tagName==='INPUT'&&e.target.closest('.shell')){
+    e.preventDefault(); gacCalculate();
+  }
 });
 </script>
 </body>
