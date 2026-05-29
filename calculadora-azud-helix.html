@@ -404,6 +404,16 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
         <span id="r-biofilm-text">—</span>
       </div>
 
+      <div id="r-hydrocap-alert" style="display:none" class="alert info">
+        <b>💧 Límite hidráulico de válvulas AA DLP aplicado</b>
+        <span id="r-hydrocap-text">—</span>
+      </div>
+
+      <div id="r-minfilters-alert" style="display:none" class="alert info">
+        <b>🔩 Mínimo de filtros por serie aplicado</b>
+        <span id="r-minfilters-text">—</span>
+      </div>
+
       <div class="alert info" id="r-install">
         <b>Requerimiento de instalación</b>
         <span id="r-install-text">—</span>
@@ -817,6 +827,28 @@ function render(){
       +'Caudal efectivo por filtro: '+fmt(r.effectiveFlow,2)+' m³/h (en lugar de '+fmt(r.allowedFlow,2)+' m³/h estándar). '
       +'Esto resulta en '+fmtI(r.baseFilters)+' filtros de proceso en lugar de '+fmtI(Math.ceil(r.flowM3h/r.allowedFlow))+' del dimensionamiento estándar.';
   }else{el('r-biofilm-alert').style.display='none';}
+
+  /* Alerta límite hidráulico AA (hydroCap) */
+  if(r.capped){
+    el('r-hydrocap-alert').style.display='block';
+    el('r-hydrocap-text').textContent=
+      'La serie FT200 AA DLP tiene válvulas de membrana 3-vías DN50 con una capacidad máxima de '+r.serie.hydroCap+' m³/h por filtro. '
+      +'La matriz Azud indica '+fmt(r.matrixFlow,1)+' m³/h para '+r.micron+' µm / calidad '+r.quality
+      +', pero el dimensionamiento se limita a '+r.serie.hydroCap+' m³/h/filtro. '
+      +'Por eso se necesitan '+fmtI(r.baseFilters)+' filtros en lugar de '+fmtI(Math.ceil(r.flowM3h/r.matrixFlow))
+      +' que resultarían sin este tope. Para este caudal y micraje considere la serie FT200 DLP o FT4DCL DLP que no tienen esta restricción.';
+  }else{el('r-hydrocap-alert').style.display='none';}
+
+  /* Alerta mínimo de filtros por serie */
+  var sMinF=r.serie.minFilters||1;
+  if(sMinF>1&&r.baseFilters<=sMinF){
+    el('r-minfilters-alert').style.display='block';
+    el('r-minfilters-text').textContent=
+      'La serie '+s.name+' requiere un mínimo de '+sMinF+' filtros para garantizar el correcto funcionamiento del retrolavado hidráulico '
+      +'(un filtro retrolavando mientras los demás mantienen el caudal). '
+      +'El caudal de diseño de '+fmt(r.flowM3h,2)+' m³/h resultaría en '+fmtI(Math.ceil(r.flowM3h/r.effectiveFlow))
+      +' filtro(s) por cálculo, pero se aplica el mínimo de '+sMinF+' según ficha técnica Azud.';
+  }else{el('r-minfilters-alert').style.display='none';}
 
   el('r-install-text').innerHTML=r.aa?s.installAA:s.installStd;
 
