@@ -89,14 +89,6 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .step-tag{color:var(--accent);font-size:11px;font-weight:900;letter-spacing:.04em}
 .panel-body{padding:20px;display:grid;gap:14px}
 
-/* Unit tabs */
-.unit-tabs{display:flex;gap:4px;background:var(--paper-soft);border-radius:10px;padding:3px}
-.unit-tab{flex:1;padding:8px 0;border:none;border-radius:8px;font-size:13px;font-weight:600;
-  cursor:pointer;background:transparent;color:var(--muted);transition:all .15s}
-.unit-tab.active{background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm)}
-
-.gac-panel{display:none}.gac-panel.active{display:contents}
-
 /* Section label */
 .section-lbl{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
   color:var(--muted);padding-bottom:5px;border-bottom:1px solid var(--line)}
@@ -114,8 +106,9 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .inline-wrap input{font-family:var(--font-num)}
 .inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;font-family:var(--font-body)}
 .inline-wrap select{border-left:1px solid var(--line);background:var(--paper-soft);
-  font-size:12.5px;color:var(--navy);cursor:pointer;appearance:none;padding-right:32px;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%238A9BB0' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;appearance:none;
+  min-width:92px;padding:11px 32px 11px 12px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%230084db' stroke-width='1.8' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center}
 
 .select-wrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
@@ -347,7 +340,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 }
 @media print{
   body{background:#fff}.shell{padding:16px}
-  .input-panel,.formula-strip,.btn-row,.unit-tabs{display:none !important}
+  .input-panel,.formula-strip,.btn-row{display:none !important}
   .layout{grid-template-columns:1fr}
 }
 </style>
@@ -401,58 +394,30 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         </div>
         <div class="panel-body">
 
-          <div class="unit-tabs">
-            <button class="unit-tab active" type="button" onclick="gacSetUnits('imperial')">Imperial (US)</button>
-            <button class="unit-tab" type="button" onclick="gacSetUnits('metric')">Métrico (SI)</button>
-          </div>
-
-          <!-- Imperial inputs -->
-          <div class="gac-panel active" id="gac-panel-imperial">
-            <div class="field">
-              <label>Flujo volumétrico</label>
-              <div class="inline-wrap">
-                <input type="number" id="gac-i-flow" placeholder="ej. 30" min="0" step="any">
-                <select style="min-width:70px;pointer-events:none"><option>GPM</option></select>
-              </div>
-            </div>
-            <div class="field">
-              <label>TCCV solicitado</label>
-              <div class="num-wrap">
-                <input type="number" id="gac-i-tccv" placeholder="ej. 7" min="0" step="any">
-                <span class="num-badge">min</span>
-              </div>
-              <div class="qf">
-                <span class="qf-lbl">Rápido:</span>
-                <button class="qf-chip" type="button" onclick="gacFill('gac-i-tccv',2)">Cloro 2′</button>
-                <button class="qf-chip" type="button" onclick="gacFill('gac-i-tccv',4)">Clor·cat 4′</button>
-                <button class="qf-chip" type="button" onclick="gacFill('gac-i-tccv',7)">COV/THM 7′</button>
-                <button class="qf-chip" type="button" onclick="gacFill('gac-i-tccv',10)">PFAS 10′</button>
-              </div>
+          <!-- Flujo volumétrico con selector de unidad -->
+          <div class="field">
+            <label>Flujo volumétrico</label>
+            <div class="inline-wrap">
+              <input type="number" id="gac-flow" placeholder="ej. 30" min="0" step="any">
+              <select id="gac-flow-unit">
+                <option value="gpm">GPM</option>
+                <option value="m3h">m³/h</option>
+              </select>
             </div>
           </div>
 
-          <!-- Metric inputs -->
-          <div class="gac-panel" id="gac-panel-metric">
-            <div class="field">
-              <label>Flujo volumétrico</label>
-              <div class="inline-wrap">
-                <input type="number" id="gac-m-flow" placeholder="ej. 5" min="0" step="any">
-                <select style="min-width:70px;pointer-events:none"><option>m³/h</option></select>
-              </div>
+          <div class="field">
+            <label>TCCV solicitado</label>
+            <div class="num-wrap">
+              <input type="number" id="gac-tccv" placeholder="ej. 7" min="0" step="any">
+              <span class="num-badge">min</span>
             </div>
-            <div class="field">
-              <label>TCCV solicitado</label>
-              <div class="num-wrap">
-                <input type="number" id="gac-m-tccv" placeholder="ej. 7" min="0" step="any">
-                <span class="num-badge">min</span>
-              </div>
-              <div class="qf">
-                <span class="qf-lbl">Rápido:</span>
-                <button class="qf-chip" type="button" onclick="gacFill('gac-m-tccv',2)">Cloro 2′</button>
-                <button class="qf-chip" type="button" onclick="gacFill('gac-m-tccv',4)">Clor·cat 4′</button>
-                <button class="qf-chip" type="button" onclick="gacFill('gac-m-tccv',7)">COV/THM 7′</button>
-                <button class="qf-chip" type="button" onclick="gacFill('gac-m-tccv',10)">PFAS 10′</button>
-              </div>
+            <div class="qf">
+              <span class="qf-lbl">Rápido:</span>
+              <button class="qf-chip" type="button" onclick="gacFill('gac-tccv',2)">Cloro 2′</button>
+              <button class="qf-chip" type="button" onclick="gacFill('gac-tccv',4)">Clor·cat 4′</button>
+              <button class="qf-chip" type="button" onclick="gacFill('gac-tccv',7)">COV/THM 7′</button>
+              <button class="qf-chip" type="button" onclick="gacFill('gac-tccv',10)">PFAS 10′</button>
             </div>
           </div>
 
@@ -794,7 +759,6 @@ var GAC_GAL_TO_L    = 3.78541;
 var GAC_FT3_TO_L    = 28.3168;
 var TANK_H_PX       = 160;
 
-var gacCurrentUnits  = 'imperial';
 var gacCurrentCarbon = 'coco';
 var gacLastResult    = null;
 
@@ -803,16 +767,6 @@ function gacFmt(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFracti
 function gacFmtInt(n){ return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'; }
 function gacGetVal(id){ var v=parseFloat(gacEl(id).value); return (isNaN(v)||v<=0)?null:v; }
 function gacFill(id,val){ gacEl(id).value=val; gacEl(id).focus(); }
-
-function gacSetUnits(u){
-  gacCurrentUnits=u;
-  document.querySelectorAll('.unit-tab').forEach(function(t,i){
-    t.classList.toggle('active',(i===0&&u==='imperial')||(i===1&&u==='metric'));
-  });
-  document.querySelectorAll('.gac-panel').forEach(function(p){ p.classList.remove('active'); });
-  gacEl('gac-panel-'+u).classList.add('active');
-  gacHideResults();
-}
 
 function gacSetCarbon(key,btn){
   gacCurrentCarbon=key;
@@ -935,13 +889,12 @@ function gacBuildParallel(volFt3,flowGPM,carbonKey,bwTime){
 function gacCalculate(){
   var flow,tccv,flowGPM,volFt3;
   var bwTime=parseFloat(gacEl('gac-bw-time').value)||10;
-  if(gacCurrentUnits==='imperial'){
-    flow=gacGetVal('gac-i-flow'); tccv=gacGetVal('gac-i-tccv');
-    if(!flow||!tccv){ alert('Por favor ingrese valores válidos mayores a cero.'); return; }
+  var flowUnit=gacEl('gac-flow-unit').value;
+  flow=gacGetVal('gac-flow'); tccv=gacGetVal('gac-tccv');
+  if(!flow||!tccv){ alert('Por favor ingrese valores válidos mayores a cero.'); return; }
+  if(flowUnit==='gpm'){
     flowGPM=flow; volFt3=(flowGPM*tccv)/7.48052;
   } else {
-    flow=gacGetVal('gac-m-flow'); tccv=gacGetVal('gac-m-tccv');
-    if(!flow||!tccv){ alert('Por favor ingrese valores válidos mayores a cero.'); return; }
     flowGPM=flow*4.40287; volFt3=(flow*tccv/60)*35.3147;
   }
   var carbon=GAC_CARBON_TYPES[gacCurrentCarbon];
@@ -993,7 +946,7 @@ function gacCalculate(){
   }
 
   // Detail
-  gacEl('gac-d-flow').textContent=gacCurrentUnits==='imperial'
+  gacEl('gac-d-flow').textContent=flowUnit==='gpm'
     ?flow+' GPM ('+gacFmtInt(flow*GAC_GAL_TO_L)+' L/min)'
     :flow+' m³/h ('+gacFmt(flowGPM,1)+' GPM)';
   gacEl('gac-d-tccv').textContent=tccv+' min';
@@ -1068,18 +1021,17 @@ function gacCalculate(){
   if(showParallel){ gacBuildParallel(volFt3,flowGPM,gacCurrentCarbon,bwTime); }
   else { gacEl('gac-parallel-section').classList.remove('visible'); gacEl('gac-parallel-grid').innerHTML=''; }
 
-  gacLastResult={flow:flow,flowGPM:flowGPM,tccv:tccv,tccvReal:tccvReal,
+  gacLastResult={flow:flow,flowUnit:flowUnit,flowGPM:flowGPM,tccv:tccv,tccvReal:tccvReal,
     volFt3:volFt3,volM3:volM3,volL:volL,oversize:oversize,vsl:vsl,
     svGPM:svGPM,svMh:svMh,bwGPM:bwGPM,bwLpm:bwLpm,bwWaterL:bwWaterL,
     bwTime:bwTime,carbon:carbon,carbonKey:gacCurrentCarbon,
     totalKgInstalled:totalKgInstalled,totalKgReq:totalKgReq,
-    gravelFt3:gravelFt3,gravelKg:gravelKg,units:gacCurrentUnits};
+    gravelFt3:gravelFt3,gravelKg:gravelKg};
 }
 
 function gacClear(){
-  document.querySelectorAll('.shell input[type="number"]').forEach(function(i){
-    if(i.id!=='gac-bw-time') i.value='';
-  });
+  gacEl('gac-flow').value='';
+  gacEl('gac-tccv').value='';
   gacHideResults();
   gacEl('gac-empty').style.display='';
   gacLastResult=null;
@@ -1095,7 +1047,7 @@ function gacCopySummary(btn){
   lines.push('═══════════════════════════════════════════════════════');
   lines.push('');
   lines.push('DATOS DEL PROYECTO');
-  lines.push(r.units==='imperial'
+  lines.push(r.flowUnit==='gpm'
     ?'  Flujo de diseño:         '+r.flow+' GPM ('+gacFmtInt(r.flow*GAC_GAL_TO_L)+' L/min)'
     :'  Flujo de diseño:         '+r.flow+' m³/h ('+gacFmt(r.flowGPM,1)+' GPM)');
   lines.push('  TCCV solicitado:         '+r.tccv+' min');
@@ -1146,7 +1098,7 @@ gacBuildVesselTable();
 gacEl('gac-btn-print').addEventListener('click',function(){ window.print(); });
 gacEl('gac-btn-copy').addEventListener('click',function(){ gacCopySummary(this); });
 document.addEventListener('keydown',function(e){
-  if(e.key==='Enter'&&e.target&&e.target.tagName==='INPUT'&&e.target.closest('.shell')){
+  if(e.key==='Enter'&&e.target&&(e.target.id==='gac-flow'||e.target.id==='gac-tccv'||e.target.id==='gac-bw-time')){
     e.preventDefault(); gacCalculate();
   }
 });
