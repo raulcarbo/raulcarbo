@@ -759,14 +759,14 @@ function render(){
     pWrap.style.display='none';
   }
 
-  /* Alternativa FT4DCL */
+  /* Alternativa FT4DCL — solo cuando FT200 supera el máximo de la serie */
   var alt=calcFT4DCLAlt(r);
   var aWrap=el('r-alt4dcl-wrap');
-  if(alt){
+  if(alt && r.overMax){
     var saved=r.totalFilters-alt.altTotal;
     var ah='<div class="alert ok" style="margin-bottom:10px">'+
-      '<b>💡 Alternativa recomendada — Serie '+alt.altSerie.name+' · Ø4" · 3,240 cm²/filtro</b>'+
-      'Con filtros Ø4" se necesitan <strong>'+fmtI(alt.altTotal)+' elementos</strong> para el mismo caudal de '+fmt(r.flowM3h,1)+' m³/h'+
+      '<b>💡 Opción 3 — Cambiar a serie '+alt.altSerie.name+' · Ø4" · 3,240 cm²/filtro</b>'+
+      'Al superar los '+s.maxFilters+' módulos de la serie '+s.name+', otra alternativa es usar filtros Ø4": se necesitan solo <strong>'+fmtI(alt.altTotal)+' elementos</strong> para el mismo caudal de '+fmt(r.flowM3h,1)+' m³/h'+
       (saved>0?' — <strong>'+saved+' filtro'+(saved>1?'s':'')+' menos</strong> que con '+s.name:'.')+
       '. Q máx/filtro: '+fmt(alt.altAllowedFlow,1)+' m³/h · Retrolavado: '+fmtI(alt.altSerie.waterStd)+' L/filtro · '+
       'Para dimensionar completo seleccione la pestaña <strong>'+alt.altSerie.name+'</strong> en la barra de series.</div>';
@@ -1002,9 +1002,9 @@ function buildSpec(){
     '',
     'Nota: Selección preliminar. Validar con análisis fisicoquímico del agua, presión disponible,',
     'configuración de colectores y arreglo hidráulico. Consultar ficha técnica '+s.name+'.'
-  ]).concat(alt?[
+  ]).concat(alt&&r.overMax?[
     '',
-    'ALTERNATIVA RECOMENDADA — '+alt.altSerie.name+' (Ø4" · 3,240 cm²/filtro)',
+    'OPCIÓN 3 — CAMBIAR A SERIE '+alt.altSerie.name+' (Ø4" · 3,240 cm²/filtro)',
     'Elementos '+alt.altSerie.name+': '+fmtI(alt.altTotal)+
       (r.totalFilters-alt.altTotal>0?' ('+( r.totalFilters-alt.altTotal)+' filtros menos que '+s.name+')':''),
     alt.altOverMax&&alt.altParOpts.length>0
