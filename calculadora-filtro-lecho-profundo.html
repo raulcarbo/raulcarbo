@@ -557,7 +557,7 @@ function fmtInt(n) {
 /* ── Selección del tanque comercial ───────────────────── */
 function selectFilterTank(areaRequiredFt2) {
   for (const t of COMMERCIAL_TANKS) {
-    if (t.areaFt2 >= areaRequiredFt2) return { ...t, oversize: false, tanksNeeded: 1 };
+    if (t.areaFt2 >= areaRequiredFt2 * 0.95) return { ...t, oversize: false, tanksNeeded: 1 };
   }
   const biggest = COMMERCIAL_TANKS[COMMERCIAL_TANKS.length - 1];
   const tanksNeeded = Math.ceil(areaRequiredFt2 / biggest.areaFt2);
