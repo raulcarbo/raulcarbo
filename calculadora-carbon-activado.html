@@ -901,7 +901,7 @@ function gacCalculate(){
   var volM3=volFt3/35.3147, volL=volM3*1000;
   var totalKgReq=volFt3*GAC_FT3_TO_L*carbon.density;
   var vesselIdx=-1;
-  for(var i=0;i<GAC_VESSELS.length;i++){ if(GAC_VESSELS[i].carbonFt3>=volFt3){ vesselIdx=i; break; } }
+  for(var i=0;i<GAC_VESSELS.length;i++){ if(GAC_VESSELS[i].carbonFt3 >= volFt3*0.95){ vesselIdx=i; break; } }
   var oversize=vesselIdx===-1, vsl=oversize?null:GAC_VESSELS[vesselIdx];
   var svGPM=0,svMh=0,bwGPM=0,bwLpm=0,bwM3h=0,bwWaterL=0,bwWaterM3=0,tccvReal=0;
   var totalKgInstalled=0,gravelFt3=0,gravelKg=0;
