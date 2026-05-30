@@ -162,32 +162,29 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .results-panel{display:none}.results-panel.visible{display:contents}
 
 /* KPI row */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.kpi{border-radius:13px;padding:14px 16px}
-.kpi-icon{font-size:18px;margin-bottom:4px}
-.kpi-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.kpi-val{font-family:var(--font-num);font-size:19px;font-weight:700;letter-spacing:-.03em}
-.kpi-val small{font-family:var(--font-body);font-size:.4em;font-weight:600;margin-left:3px}
-.kpi-sub{font-size:10.5px;margin-top:4px;font-family:var(--font-num);line-height:1.4}
-.kpi-blue{background:var(--info-bg)}
-.kpi-blue .kpi-lbl{color:var(--accent)}.kpi-blue .kpi-val{color:var(--navy)}.kpi-blue .kpi-sub{color:var(--accent)}
-.kpi-green{background:var(--ok-soft)}
-.kpi-green .kpi-lbl{color:var(--ok)}.kpi-green .kpi-val{color:#065f3a}.kpi-green .kpi-sub{color:var(--ok)}
-.kpi-teal{background:#E6F5F0}
-.kpi-teal .kpi-lbl{color:#0E7C6B}.kpi-teal .kpi-val{color:#065C4F}.kpi-teal .kpi-sub{color:#0E7C6B}
-.kpi-purple{background:#EDE9FE}
-.kpi-purple .kpi-lbl{color:#7C3AED}.kpi-purple .kpi-val{color:#4C1D95}.kpi-purple .kpi-sub{color:#7C3AED}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:4px}
+.kpi{border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(160deg,#fff,var(--paper-soft));padding:15px}
+.kpi.kpi-ok{border-color:var(--ok-border);background:linear-gradient(160deg,#fff,var(--ok-soft))}
+.kpi.kpi-warn{border-color:var(--warn-border);background:linear-gradient(160deg,#FFFDF5,var(--warn-soft))}
+.kpi.kpi-err{border-color:var(--err-border);background:linear-gradient(160deg,#FFF5F5,var(--err-soft))}
+.kpi-lbl{color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:6px}
+.kpi-val{color:var(--navy);font-size:22px;font-weight:900;letter-spacing:-.04em;
+  line-height:1;font-family:var(--font-num)}
+.kpi-val small{font-size:11px;color:var(--muted);letter-spacing:0;
+  margin-left:3px;font-family:var(--font-body);font-weight:600}
+.kpi-sub{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.4;font-family:var(--font-num)}
 
 /* Generic card */
 .card{background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden}
-.card-head{padding:12px 18px;background:var(--paper-soft);border-bottom:1px solid var(--line);
-  display:flex;align-items:center;justify-content:space-between;gap:10px}
-.card-head h3{font-size:13px;font-weight:800;color:var(--navy)}
-.card-head .tag{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  background:var(--info-bg);color:var(--accent);border:1px solid var(--info-border);
-  padding:3px 9px;border-radius:20px}
-.card-body{padding:18px}
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px}
+.card-title{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.card-title h3{color:var(--navy);font-size:16px;font-weight:700;line-height:1.2}
+.badge-pill{background:var(--navy);color:#fff;border-radius:999px;padding:5px 12px;
+  font-size:11px;font-weight:900;letter-spacing:.04em;white-space:nowrap;font-family:var(--font-title)}
+.badge-pill.accent{background:linear-gradient(135deg,var(--accent),var(--navy))}
 
 /* Bed visual */
 .bed-visual{display:flex;gap:22px;align-items:stretch}
@@ -473,36 +470,30 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 
         <!-- KPI row -->
         <div class="card">
-          <div class="card-head">
+          <div class="card-title">
             <h3>Dimensionamiento principal</h3>
-            <span class="tag">02 · RESULTADO</span>
+            <span class="badge-pill accent">02 · RESULTADO</span>
           </div>
-          <div class="card-body">
-            <div class="kpi-row">
-              <div class="kpi kpi-blue">
-                <div class="kpi-icon">⬡</div>
-                <div class="kpi-lbl">Volumen requerido</div>
-                <div class="kpi-val" id="gac-r-vol">—</div>
-                <div class="kpi-sub" id="gac-r-vol-alt"></div>
-              </div>
-              <div class="kpi kpi-green">
-                <div class="kpi-icon">⊚</div>
-                <div class="kpi-lbl">Recipiente recomendado</div>
-                <div class="kpi-val" id="gac-r-vessel">—</div>
-                <div class="kpi-sub" id="gac-r-vessel-sub"></div>
-              </div>
-              <div class="kpi kpi-teal">
-                <div class="kpi-icon">↕</div>
-                <div class="kpi-lbl">Velocidad de servicio</div>
-                <div class="kpi-val" id="gac-r-sv">—</div>
-                <div class="kpi-sub" id="gac-r-sv-alt"></div>
-              </div>
-              <div class="kpi kpi-purple">
-                <div class="kpi-icon">⚖</div>
-                <div class="kpi-lbl">Peso total carbón</div>
-                <div class="kpi-val" id="gac-r-kg">—</div>
-                <div class="kpi-sub" id="gac-r-kg-alt"></div>
-              </div>
+          <div class="kpi-row">
+            <div class="kpi">
+              <div class="kpi-lbl">Volumen requerido</div>
+              <div class="kpi-val" id="gac-r-vol">—</div>
+              <div class="kpi-sub" id="gac-r-vol-alt"></div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-lbl">Recipiente recomendado</div>
+              <div class="kpi-val" id="gac-r-vessel">—</div>
+              <div class="kpi-sub" id="gac-r-vessel-sub"></div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-lbl">Velocidad de servicio</div>
+              <div class="kpi-val" id="gac-r-sv">—</div>
+              <div class="kpi-sub" id="gac-r-sv-alt"></div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-lbl">Peso total carbón</div>
+              <div class="kpi-val" id="gac-r-kg">—</div>
+              <div class="kpi-sub" id="gac-r-kg-alt"></div>
             </div>
           </div>
         </div>
@@ -512,12 +503,11 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 
         <!-- Bed visual -->
         <div class="card" id="gac-bed-card" style="display:none">
-          <div class="card-head">
+          <div class="card-title">
             <h3>Perfil de medios — Carbón activado + Grava de soporte</h3>
-            <span class="tag">Por equipo</span>
+            <span class="badge-pill">Por equipo</span>
           </div>
-          <div class="card-body">
-            <div class="bed-visual">
+          <div class="bed-visual">
               <div class="bed-tank" id="gac-bed-tank"></div>
               <div class="bed-info">
                 <div class="bed-item">
@@ -540,10 +530,10 @@ h1,h2,h3,h4{font-family:var(--font-title)}
                 </div>
               </div>
             </div>
-          </div>
         </div>
 
         <!-- Backwash -->
+
         <div class="bw-card" id="gac-bw-card" style="display:none">
           <div class="bw-title" id="gac-bw-title">Retrolavado estimado · 9 GPM/ft² @ 20 °C</div>
           <div class="bw-grid">
@@ -591,9 +581,10 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         </div>
 
         <!-- Detail summary -->
-        <div class="card">
-          <div class="card-head"><h3>Resumen completo del dimensionamiento</h3></div>
-          <div class="card-body" style="padding:0">
+        <div class="card" style="padding:0">
+          <div class="card-title" style="padding:20px 20px 16px">
+            <h3>Resumen completo del dimensionamiento</h3>
+          </div>
             <table class="az-table">
               <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
               <tbody>
@@ -624,7 +615,6 @@ h1,h2,h3,h4{font-family:var(--font-title)}
                 Copiar resumen
               </button>
             </div>
-          </div>
         </div>
 
         <!-- Parallel section -->
