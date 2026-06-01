@@ -755,6 +755,16 @@ function bwRenderResults(r){
         'para descompactar la cama y eliminar finos.'+
       '</div>';
 
+  if(m.family==='carbon')
+    notices+=
+      '<div class="notice warn">'+
+        '<b>⚠ Carbón activado — inmersión previa obligatoria (MIP Carbotecnia)</b>'+
+        'Antes del <strong>primer retrolavado</strong>, el carbón activado granular debe permanecer inundado '+
+        '<strong>mínimo 24 horas</strong> (preferentemente 48-72 h) para que libere el aire atrapado en los poros. '+
+        'Si se retrolava sin haber completado la inmersión, el carbón puede ser arrastrado fuera del tanque '+
+        'incluso con un flujo muy pequeño.'+
+      '</div>';
+
   /* Media info card */
   var mediaCard =
     '<div class="card">'+
@@ -790,9 +800,19 @@ function bwRenderResults(r){
           'Área: '+bwFmt(tank.areaFt2,2)+' ft² · Vol: '+bwFmt(tank.volFt3,1)+' ft³')+
         dli('Flujo total de retrolavado','Velocidad × área del tanque.',
           bwFmt(r.flowGPM,1)+' GPM',bwFmt(r.flowLPM,1)+' L/min · '+bwFmt(r.flowLPM*60/1000,2)+' m³/h')+
-        dli('Volumen por retrolavado (10 min)','',
+        dli('Volumen estimado (10 min mínimo)','Tiempo real: hasta que el agua de salida salga libre de sólidos.',
           bwFmtInt(r.flowGPM*10)+' gal',bwFmt(r.flowGPM*10*3.78541/1000,2)+' m³')+
       '</ul>'+
+    '</div>';
+
+  /* Parallel note */
+  var parallelNote =
+    '<div class="notice info">'+
+      '<b>Sistemas en paralelo · MIP Retrolavado Carbotecnia</b>'+
+      'Si el caudal disponible para retrolavado es insuficiente para expandir la cama de este tanque, '+
+      'el medio puede distribuirse en <strong>2, 3 ó 4 tanques de menor diámetro</strong> conectados en paralelo. '+
+      'El criterio de diseño: que el flujo disponible logre expandir la cama de <em>uno solo</em> de los tanques. '+
+      'Los tanques se retrolavarán de manera secuencial.'+
     '</div>';
 
   /* Tech notice */
@@ -806,7 +826,7 @@ function bwRenderResults(r){
     '</div>';
 
   bwEl('bw-empty').style.display = 'none';
-  bwEl('bw-results-body').innerHTML = kpis + hero + notices + mediaCard + detail + techNotice;
+  bwEl('bw-results-body').innerHTML = kpis + hero + notices + mediaCard + detail + parallelNote + techNotice;
   bwEl('bw-copy-bar').style.display = '';
 }
 
