@@ -288,6 +288,20 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .notice.tech b{color:var(--navy)}
 
 /* Action buttons */
+/* Action buttons */
+.btn{border:0;border-radius:999px;padding:11px 22px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-body);
+  background:linear-gradient(135deg,var(--accent),var(--navy));color:#fff;
+  box-shadow:0 6px 18px rgba(0,132,219,.28);transition:all .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,132,219,.38)}
+.btn.sec{background:var(--surface);color:var(--navy);border:1.5px solid var(--line);box-shadow:none}
+.btn.sec:hover{background:var(--paper-soft)}
+.btn.sm{padding:9px 16px;font-size:12px;box-shadow:0 4px 12px rgba(0,132,219,.16)}
+.copy-bar{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:15px 20px;box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.copy-bar span{color:var(--muted);font-size:13px}
+.copy-bar span b{color:var(--navy)}
 .btn-sm{padding:8px 14px;font-size:12.5px;font-weight:600;display:inline-flex;
   align-items:center;gap:6px;background:var(--surface);color:var(--ink);
   border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s}
@@ -337,7 +351,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 }
 @media print{
   body{background:#fff}.shell{padding:16px}
-  .input-panel,.formula-strip,.btn-row{display:none !important}
+  .input-panel,.formula-strip,.btn-row,.copy-bar{display:none !important}
   .layout{grid-template-columns:1fr}
 }
 </style>
@@ -605,16 +619,6 @@ h1,h2,h3,h4{font-family:var(--font-title)}
                 <tr id="gac-d-bw-row" style="display:none"><td>Flujo de retrolavado</td><td id="gac-d-bw">—</td></tr>
               </tbody>
             </table>
-            <div style="display:flex;gap:8px;padding:14px 18px;border-top:1px solid var(--line)">
-              <button class="btn-sm" id="gac-btn-print" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
-                Imprimir / PDF
-              </button>
-              <button class="btn-sm" id="gac-btn-copy" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                Copiar resumen
-              </button>
-            </div>
         </div>
 
         <!-- Parallel section -->
@@ -638,6 +642,14 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         <div class="notice tech">
           <b>Grava de soporte</b>
           La grava de soporte (20% del volumen de carbón) es la capa inferior que soporta el lecho de carbón activado, distribuye el flujo uniformemente y evita que el medio filtrante salga por los distribuidores durante el retrolavado. Densidad aparente ≈ 45 kg/ft³. Granulometría típica: ½" × ¼" en la base, ¼" × 1/8" en la capa superior.
+        </div>
+
+        <div class="copy-bar">
+          <span><b>Resumen listo</b> · Cópielo para cotización o bitácora de proyecto.</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn sec sm" id="gac-btn-print" type="button">🖨 Imprimir / PDF</button>
+            <button class="btn sm" id="gac-btn-copy" type="button">📋 Copiar resumen</button>
+          </div>
         </div>
 
       </div><!-- /results-panel -->
