@@ -707,7 +707,7 @@ var SAV = {
   SALT_VOID_FRAC:   0.42,   // fracción vacíos lecho sal pellet
   SLOW_RINSE:       20,     // gal/ft³ enjuague lento
   FAST_RINSE:       35,     // gal/ft³ enjuague rápido
-  SAFETY:           0.90,   // factor de seguridad sobre cap teórica
+  SAFETY:           1.00,   // sin factor adicional — capTheor ya es valor operativo real
   GRAVEL_DENS:      45.31,  // kg/ft³ densidad grava de soporte
   GRAVEL_FRAC:      0.20,   // 20% del vol de resina → grava
   FT3_TO_L:         28.3168,
@@ -758,21 +758,21 @@ var SAV_BRINE = [
 var SAV_RESINS = {
   eficiencia: {
     label: 'Alta eficiencia de sal · Resinex K-8 FG (5.5 lb/ft³)',
-    desc:  'Regeneración con 5.5 lb NaCl/ft³. Maximiza el rendimiento de la sal — ideal cuando el costo operativo es prioritario. Capacidad de diseño 21.6 Kgr/ft³ (24 × 0.90). Equivalente: Resinex K-8 FG.',
+    desc:  'Regeneración con 5.5 lb NaCl/ft³. Maximiza el rendimiento de la sal — ideal cuando el costo operativo es prioritario. Capacidad de diseño 24 Kgr/ft³. Equivalente: Resinex K-8 FG.',
     capTheor: 24.0, regenLb: 5.5,
-    specs: 'REGEN: 5.5 lb NaCl/ft³ · CAP TEÓRICA: 24 Kgr/ft³ · RENDIMIENTO: 4.4 Kgr/lb'
+    specs: 'REGEN: 5.5 lb NaCl/ft³ · CAP DISEÑO: 24 Kgr/ft³ · RENDIMIENTO: 4.4 Kgr/lb'
   },
   estandar: {
     label: 'Estándar industrial · Resinex K-8 FG (10 lb/ft³)',
-    desc:  'Regeneración con 10 lb NaCl/ft³. Balance entre consumo de sal y capacidad — el nivel más usado en suavizadores industriales. Capacidad de diseño 22.5 Kgr/ft³ (25 × 0.90). Equivalente: Resinex K-8 FG.',
+    desc:  'Regeneración con 10 lb NaCl/ft³. Balance entre consumo de sal y capacidad — el nivel más usado en suavizadores industriales. Capacidad de diseño 25 Kgr/ft³. Equivalente: Resinex K-8 FG.',
     capTheor: 25.0, regenLb: 10.0,
-    specs: 'REGEN: 10 lb NaCl/ft³ · CAP TEÓRICA: 25 Kgr/ft³ · RENDIMIENTO: 2.5 Kgr/lb'
+    specs: 'REGEN: 10 lb NaCl/ft³ · CAP DISEÑO: 25 Kgr/ft³ · RENDIMIENTO: 2.5 Kgr/lb'
   },
   capacidad: {
     label: 'Alta capacidad · Resinex K-8 FG (15 lb/ft³)',
-    desc:  'Regeneración con 15 lb NaCl/ft³. Maximiza la retención de dureza por ciclo — ideal para minimizar frecuencia de regeneración. Capacidad de diseño 31.5 Kgr/ft³ (35 × 0.90). Equivalente: Resinex K-8 FG.',
+    desc:  'Regeneración con 15 lb NaCl/ft³. Maximiza la retención de dureza por ciclo — ideal para minimizar frecuencia de regeneración. Capacidad de diseño 35 Kgr/ft³. Equivalente: Resinex K-8 FG.',
     capTheor: 35.0, regenLb: 15.0,
-    specs: 'REGEN: 15 lb NaCl/ft³ · CAP TEÓRICA: 35 Kgr/ft³ · RENDIMIENTO: 2.3 Kgr/lb'
+    specs: 'REGEN: 15 lb NaCl/ft³ · CAP DISEÑO: 35 Kgr/ft³ · RENDIMIENTO: 2.3 Kgr/lb'
   }
 };
 
