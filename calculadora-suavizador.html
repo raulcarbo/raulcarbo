@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora Suavizadores — Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#003d82; --accent:#0084db; --accent-mid:#38bdf8;
+  --peach:#C05621; --peach-soft:#FEF0E8; --peach-mid:#fac1a5;
+  --surface:#fff; --paper:#F4F7FB; --paper-soft:#EEF3FA;
+  --line:#D6DDE7; --ink:#0B1424; --muted:#64748B;
+  --ok:#047857; --ok-soft:#D1FAE5; --ok-border:#6EE7B7;
+  --warn:#B45309; --warn-soft:#FEF3C7; --warn-border:#FCD34D;
+  --err:#B91C1C; --err-soft:#FEE2E2; --err-border:#FCA5A5;
+  --info-bg:#E0F2FE; --info-border:#BAE6FD; --info-text:#0C4A6E;
+  --shadow:0 1px 3px rgba(11,20,36,.05),0 8px 28px rgba(11,20,36,.09);
+  --shadow-sm:0 1px 3px rgba(11,20,36,.04),0 4px 12px rgba(11,20,36,.07);
+  --radius:16px; --radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:linear-gradient(180deg,#EEF3FA,#E4EBF5);color:var(--ink);
+  font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+.shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:14px 22px;margin-bottom:16px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(135deg,var(--accent-mid),var(--navy));
+  box-shadow:0 8px 20px rgba(0,132,219,.28);font-weight:900;
+  font-family:var(--font-title);font-size:11px;letter-spacing:-.01em}
+.brand h1{font-size:16px;font-weight:800;color:var(--navy);line-height:1.15}
+.brand span{display:block;margin-top:2px;color:var(--muted);font-size:11px;
+  font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.pill{background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  padding:7px 14px;font-size:12px;font-weight:800;box-shadow:var(--shadow-sm);
+  color:var(--navy);white-space:nowrap}
+
+/* Hero — azul industrial (agua / intercambio iónico) */
+.hero{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0a1628 0%,#0c2461 46%,#1a4480 100%);
+  color:#fff;border-radius:var(--radius-lg);padding:28px;
+  box-shadow:var(--shadow);margin-bottom:16px}
+.hero::after{content:"";position:absolute;inset:auto -80px -120px auto;
+  width:340px;height:340px;border-radius:50%;
+  border:52px solid rgba(255,255,255,.06);pointer-events:none}
+.hero-inner{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:end}
+.hero h2{font-size:clamp(18px,2.4vw,30px);line-height:1.1;
+  letter-spacing:-.04em;color:#fff !important;font-weight:800;margin-bottom:8px}
+.hero h2 em{font-style:normal;color:rgba(147,197,253,.95)}
+.hero p{color:rgba(255,255,255,.72);font-size:13px;line-height:1.6}
+.hero-note{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);
+  border-radius:14px;padding:16px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:6px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:12.5px;line-height:1.6}
+
+/* Formula strip */
+.formula-strip{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:10px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;
+  gap:5px 16px;justify-content:center;font-size:12.5px;color:var(--navy)}
+.formula-strip code{font-family:var(--font-num);font-size:11.5px;background:var(--info-bg);
+  padding:2px 7px;border-radius:5px;font-weight:700;color:#003d82;white-space:nowrap}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:380px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px}
+.results-col{display:grid;gap:14px}
+
+/* Panel */
+.panel{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.panel-head h3{font-size:15px;color:var(--navy);font-weight:700}
+.step-tag{color:var(--accent);font-size:11px;font-weight:900;letter-spacing:.04em}
+.panel-body{padding:20px;display:grid;gap:14px}
+
+/* Section label */
+.section-lbl{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);padding-bottom:5px;border-bottom:1px solid var(--line)}
+
+/* Fields */
+.field{display:grid;gap:5px}
+.field label{color:var(--navy);font-weight:700;font-size:13px}
+.field .hint{color:var(--muted);font-size:11.5px;line-height:1.4}
+
+.inline-wrap{display:grid;grid-template-columns:1fr auto;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.inline-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,132,219,.13)}
+.inline-wrap input,.inline-wrap select{min-width:0;border:0;outline:0;
+  padding:11px 12px;color:var(--ink);background:transparent;font-weight:700}
+.inline-wrap input{font-family:var(--font-num)}
+.inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;font-family:var(--font-body)}
+.inline-wrap select{border-left:1px solid var(--line);background:var(--paper-soft);
+  font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;appearance:none;
+  min-width:92px;padding:11px 32px 11px 12px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%230084db' stroke-width='1.8' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center}
+
+.select-wrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.select-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,132,219,.13)}
+.select-wrap select{width:100%;border:0;outline:0;padding:11px 36px 11px 12px;
+  color:var(--ink);background:transparent;font-weight:600;font-size:13px;cursor:pointer;
+  appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%238A9BB0' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center}
+
+.num-wrap{position:relative}
+.num-wrap input{width:100%;border:1px solid var(--line);border-radius:12px;
+  padding:11px 80px 11px 14px;font-family:var(--font-num);font-weight:700;
+  font-size:14px;color:var(--ink);background:var(--surface);outline:none;
+  transition:border-color .15s,box-shadow .15s}
+.num-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,132,219,.13)}
+.num-badge{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  font-size:10px;font-weight:700;color:var(--muted);background:var(--info-bg);
+  padding:2px 7px;border-radius:5px;white-space:nowrap;pointer-events:none}
+
+/* Resin info card */
+.resin-info-card{margin-top:4px;padding:12px 14px;
+  background:linear-gradient(160deg,var(--info-bg),var(--paper-soft));
+  border-left:3px solid var(--accent);border-radius:10px;
+  font-size:12px;line-height:1.5;color:var(--muted)}
+.resin-info-card b{display:block;font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.resin-info-card .specs{font-family:var(--font-num);font-size:10.5px;color:var(--accent);
+  margin-top:5px;font-weight:700;letter-spacing:.03em}
+
+/* Validation errors */
+.field.has-err .inline-wrap{border-color:var(--err) !important}
+.field.has-err .num-wrap input{border-color:var(--err) !important}
+.err-msg{display:none;font-size:11px;color:var(--err)}
+.field.has-err .err-msg{display:block}
+
+/* Buttons */
+.btn-row{display:flex;gap:10px}
+.btn-calc{flex:1;padding:13px 18px;border:none;border-radius:12px;font-size:14px;
+  font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--navy));
+  color:#fff;box-shadow:0 6px 18px rgba(0,132,219,.28);transition:all .15s}
+.btn-calc:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,132,219,.38)}
+.btn-clear{padding:13px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;
+  font-weight:600;cursor:pointer;background:var(--surface);color:var(--muted);transition:all .15s}
+.btn-clear:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Empty state */
+.empty-state{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:52px 32px;text-align:center;box-shadow:var(--shadow-sm)}
+.empty-icon{font-size:44px;margin-bottom:14px}
+.empty-state h3{font-size:17px;color:var(--navy);font-weight:700;margin-bottom:6px}
+.empty-state p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* Results visibility */
+.results-panel{display:none}.results-panel.visible{display:contents}
+
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:4px}
+.kpi{border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(160deg,#fff,var(--paper-soft));padding:15px}
+.kpi.kpi-ok{border-color:var(--ok-border);background:linear-gradient(160deg,#fff,var(--ok-soft))}
+.kpi.kpi-warn{border-color:var(--warn-border);background:linear-gradient(160deg,#FFFDF5,var(--warn-soft))}
+.kpi.kpi-err{border-color:var(--err-border);background:linear-gradient(160deg,#FFF5F5,var(--err-soft))}
+.kpi-lbl{color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:6px}
+.kpi-val{color:var(--navy);font-size:22px;font-weight:900;letter-spacing:-.04em;
+  line-height:1;font-family:var(--font-num)}
+.kpi-val small{font-size:11px;color:var(--muted);letter-spacing:0;
+  margin-left:3px;font-family:var(--font-body);font-weight:600}
+.kpi-sub{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.4;font-family:var(--font-num)}
+
+/* Generic card */
+.card{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px}
+.card-title{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.card-title h3{color:var(--navy);font-size:16px;font-weight:700;line-height:1.2}
+.badge-pill{background:var(--navy);color:#fff;border-radius:999px;padding:5px 12px;
+  font-size:11px;font-weight:900;letter-spacing:.04em;white-space:nowrap;font-family:var(--font-title)}
+.badge-pill.accent{background:linear-gradient(135deg,var(--accent),var(--navy))}
+
+/* Bed visual */
+.bed-visual{display:flex;gap:22px;align-items:stretch}
+.bed-tank{position:relative;width:80px;flex-shrink:0;background:var(--surface);
+  border:2.5px solid var(--ink);border-radius:8px 8px 4px 4px;overflow:hidden;
+  display:flex;flex-direction:column}
+.bed-layer{width:100%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-num);font-size:7.5px;font-weight:700;color:rgba(255,255,255,.85);
+  text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(0,0,0,.1)}
+.bed-freeboard{width:100%;
+  background:repeating-linear-gradient(45deg,var(--surface),var(--surface) 5px,var(--paper-soft) 5px,var(--paper-soft) 10px);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-num);font-size:7px;font-weight:500;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;border-bottom:1px dashed var(--line);
+  text-align:center;line-height:1.3;padding:0 4px}
+.bed-info{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.bed-item{display:flex;align-items:center;gap:10px}
+.bed-swatch{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.bed-texts{display:flex;flex-direction:column}
+.bed-texts b{font-weight:800;color:var(--navy);font-size:13px}
+.bed-texts span{font-family:var(--font-num);font-size:11px;color:var(--muted)}
+.bed-total-row{border-top:1px solid var(--line);padding-top:10px;margin-top:4px;
+  display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px}
+.bed-total-row b{font-weight:800;color:var(--navy)}
+.bed-total-row span{font-family:var(--font-num);font-weight:700;color:var(--accent)}
+
+/* bw-card (regen/backwash) */
+.bw-card{background:var(--surface);border:1px solid var(--line);
+  border-left:4px solid var(--accent-mid);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:15px 18px}
+.bw-title{font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:12px}
+.bw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.bw-lbl{font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:3px}
+.bw-val{font-family:var(--font-num);font-size:17px;font-weight:700;color:var(--ink)}
+.bw-val small{font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--muted);margin-left:2px}
+.bw-sub{font-family:var(--font-num);font-size:10.5px;color:var(--muted);margin-top:2px}
+
+/* Twin / doble alternado card */
+.ll-card{background:var(--peach-soft);border:1px solid rgba(192,86,33,.2);
+  border-left:4px solid var(--peach-mid);border-radius:var(--radius);
+  padding:15px 18px;display:none}
+.ll-card.visible{display:block}
+.ll-title{font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--peach);font-weight:700;margin-bottom:12px}
+.ll-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:12px}
+.ll-note{margin-top:10px;font-size:12px;color:var(--peach);line-height:1.55}
+
+/* Detail table */
+.az-table{width:100%;border-collapse:separate;border-spacing:0;
+  border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface)}
+.az-table th,.az-table td{padding:9px 13px;border-bottom:1px solid var(--line);
+  text-align:left;font-size:12.5px}
+.az-table th{background:var(--paper-soft);color:var(--navy);font-weight:900;
+  font-family:var(--font-title);font-size:11.5px}
+.az-table th:last-child,.az-table td:last-child{text-align:right}
+.az-table tr:last-child td{border-bottom:0}
+.az-table td:last-child{font-weight:700;color:var(--navy);font-family:var(--font-num);font-size:12px}
+.az-table .hl td:last-child{color:var(--accent)}
+.az-table td:first-child{color:var(--muted)}
+
+/* Alerts */
+.alert{border-radius:12px;padding:11px 15px;font-size:12.5px;line-height:1.55;display:none}
+.alert.show{display:block}
+.alert.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-border)}
+.alert.err{background:var(--err-soft);color:var(--err);border:1px solid var(--err-border)}
+.alert.info{background:var(--info-bg);color:var(--info-text);border:1px solid var(--info-border)}
+
+/* Notices */
+.notice{padding:12px 16px;border-radius:12px;font-size:12px;line-height:1.65}
+.notice b{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:800;margin-bottom:5px}
+.notice.info{background:var(--info-bg);border:1px solid var(--info-border);color:var(--info-text)}
+.notice.info b{color:var(--accent)}
+.notice.tech{background:var(--paper-soft);border:1px solid var(--line);color:var(--muted)}
+.notice.tech b{color:var(--navy)}
+
+/* Action buttons */
+.btn-sm{padding:8px 14px;font-size:12.5px;font-weight:600;display:inline-flex;
+  align-items:center;gap:6px;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);background:var(--info-bg)}
+.btn-sm svg{width:13px;height:13px}
+
+/* Footer */
+.footer{margin-top:24px;background:var(--info-bg);border:1px solid var(--info-border);
+  border-radius:12px;padding:14px 18px;font-size:12px;color:var(--muted);line-height:1.65}
+.footer strong{color:var(--navy);font-weight:700}
+.bottom-bar{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}.input-panel{position:static}
+  .hero-inner{grid-template-columns:1fr}.hero-note{display:none}
+  .kpi-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:540px){
+  .bw-grid,.ll-grid{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#fff}.shell{padding:16px}
+  .input-panel,.formula-strip,.btn-row{display:none !important}
+  .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">ION</div>
+      <h1>Calculadora de Suavizadores
+        <span>Intercambio catiónico · AWWA M37 · NSF/ANSI 44</span>
+      </h1>
+    </div>
+    <div class="pill">Carbotecnia · Ing. de Proceso</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <h2><em>Dimensionamiento de suavizadores</em><br>por intercambio catiónico (ciclo sodio)</h2>
+        <p>Determine el volumen y tipo de resina catiónica fuerte, el tanque comercial, el tanque de salmuera, el ciclo entre regeneraciones y el consumo operativo mensual de sal. Para una recomendación final se requiere análisis físico-químico del agua revisado por nuestro personal de ingeniería.</p>
+      </div>
+      <div class="hero-note">
+        <b>Parámetros clave de diseño</b>
+        <span>SV típica: 4 gpm/ft³ · Retrolavado: 6 gpm/ft² × 10 min · Regeneración estándar: 10 lb NaCl/ft³ · Grava soporte: 20% vol. resina · Freeboard mínimo: 50%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula strip -->
+  <div class="formula-strip">
+    <code>Vol resina = Q ÷ SV</code>
+    <code>Cap diseño = cap teórica × 0.90</code>
+    <code>Ciclo = (ft³ × Kgr/ft³) ÷ dureza</code>
+    <code>Sal/ciclo = ft³ × lb/ft³</code>
+    <code>Q RLV = 6 gpm/ft² × Área</code>
+  </div>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- Input panel (sticky left) -->
+    <div class="input-panel">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Parámetros del proyecto</h3>
+          <span class="step-tag">01 · ENTRADAS</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="field" id="sav-f-flow">
+            <label>Flujo volumétrico</label>
+            <div class="inline-wrap">
+              <input type="number" id="sav-flow" placeholder="ej. 300" min="0" step="any">
+              <select id="sav-flow-unit">
+                <option value="gpm">GPM</option>
+                <option value="lpm" selected>L/min</option>
+                <option value="lps">L/s</option>
+                <option value="m3h">m³/h</option>
+              </select>
+            </div>
+            <div class="hint">Flujo sostenido de servicio en condiciones normales</div>
+            <div class="err-msg">Ingrese un valor válido mayor a cero.</div>
+          </div>
+
+          <div class="field" id="sav-f-vs">
+            <label>Velocidad de servicio</label>
+            <div class="num-wrap">
+              <input type="number" id="sav-vservicio" value="4" min="2" max="5" step="0.5">
+              <span class="num-badge">gpm/ft³</span>
+            </div>
+            <div class="hint">Rango: 2–5 gpm/ft³ · 4 = diseño típico · 2–3 = aguas muy duras</div>
+            <div class="err-msg">Debe estar entre 2 y 5 gpm/ft³.</div>
+          </div>
+
+          <div class="section-lbl">Calidad del agua de entrada</div>
+
+          <div class="field" id="sav-f-hard">
+            <label>Dureza total</label>
+            <div class="inline-wrap">
+              <input type="number" id="sav-hard" placeholder="ej. 300" min="0" step="any">
+              <select id="sav-hard-unit">
+                <option value="mgl" selected>mg/L</option>
+                <option value="grgal">gr/gal</option>
+                <option value="fr">°fH</option>
+                <option value="de">°dH</option>
+              </select>
+            </div>
+            <div class="hint">1 gr/gal = 17.1 mg/L · 1 °fH = 10 mg/L · 1 °dH = 17.8 mg/L</div>
+            <div class="err-msg">Ingrese un valor válido mayor a cero.</div>
+          </div>
+
+          <div class="field">
+            <label>TDS <span style="font-size:10px;font-weight:500;color:var(--muted)">(opcional)</span></label>
+            <div class="num-wrap">
+              <input type="number" id="sav-tds" placeholder="ej. 500" min="0" step="any">
+              <span class="num-badge">mg/L</span>
+            </div>
+            <div class="hint">Permite estimar efecto del sodio disuelto en el agua</div>
+          </div>
+
+          <div class="section-lbl">Configuración de diseño</div>
+
+          <div class="field">
+            <label>Perfil de resina catiónica</label>
+            <div class="select-wrap">
+              <select id="sav-resin-profile" onchange="savUpdateResinCard()">
+                <option value="eficiencia">Alta eficiencia de sal — 5.5 lb/ft³ · 24 Kgr/ft³</option>
+                <option value="estandar" selected>Estándar industrial — 10 lb/ft³ · 25 Kgr/ft³</option>
+                <option value="capacidad">Alta capacidad — 15 lb/ft³ · 35 Kgr/ft³</option>
+              </select>
+            </div>
+            <div class="resin-info-card" id="sav-resin-info"></div>
+          </div>
+
+          <div class="field">
+            <label>Horas de operación por día <span style="font-size:10px;font-weight:500;color:var(--muted)">(opcional)</span></label>
+            <div class="num-wrap">
+              <input type="number" id="sav-op-hours" value="24" min="1" max="24" step="1">
+              <span class="num-badge">horas</span>
+            </div>
+            <div class="hint">Para proyectar consumo mensual · default 24 h continuo</div>
+          </div>
+
+          <div class="field">
+            <label>Costo de sal por kg <span style="font-size:10px;font-weight:500;color:var(--muted)">(opcional)</span></label>
+            <div class="num-wrap">
+              <input type="number" id="sav-salt-cost" placeholder="ej. 13.00" min="0" step="any" value="13.00">
+              <span class="num-badge">MXN/kg</span>
+            </div>
+            <div class="hint">Para estimar costo operativo mensual de regeneración</div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-calc" type="button" id="sav-btn-calc">Calcular dimensionamiento</button>
+            <button class="btn-clear" type="button" id="sav-btn-clear">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /input-panel -->
+
+    <!-- Results column -->
+    <div class="results-col">
+
+      <div class="empty-state" id="sav-empty">
+        <div class="empty-icon">💧</div>
+        <h3>Ingrese los parámetros del proyecto</h3>
+        <p>Complete el flujo, la dureza y la configuración en el panel izquierdo y presione <strong>Calcular dimensionamiento</strong> para obtener el resultado.</p>
+      </div>
+
+      <div class="results-panel" id="sav-results">
+
+        <!-- KPI row -->
+        <div class="card">
+          <div class="card-title">
+            <h3>Dimensionamiento principal</h3>
+            <span class="badge-pill accent">02 · RESULTADO</span>
+          </div>
+          <div class="kpi-row">
+            <div class="kpi">
+              <div class="kpi-lbl">Volumen de resina</div>
+              <div class="kpi-val" id="sav-r-vol">—</div>
+              <div class="kpi-sub" id="sav-r-vol-alt"></div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-lbl">Tanque recomendado</div>
+              <div class="kpi-val" id="sav-r-tank">—</div>
+              <div class="kpi-sub" id="sav-r-tank-sub"></div>
+            </div>
+            <div class="kpi" id="sav-kpi-cycle">
+              <div class="kpi-lbl">Ciclo entre regens</div>
+              <div class="kpi-val" id="sav-r-cycle">—</div>
+              <div class="kpi-sub" id="sav-r-cycle-alt"></div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-lbl">Sal mensual</div>
+              <div class="kpi-val" id="sav-r-salt">—</div>
+              <div class="kpi-sub" id="sav-r-salt-alt"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert" id="sav-alert-ebct"></div>
+        <div class="alert" id="sav-alert-ch"></div>
+        <div class="alert" id="sav-alert-cycle"></div>
+        <div class="alert" id="sav-alert-hard"></div>
+        <div class="alert" id="sav-alert-oversize"></div>
+
+        <!-- Bed visual -->
+        <div class="card" id="sav-bed-card" style="display:none">
+          <div class="card-title">
+            <h3>Perfil de medios — Resina catiónica + Grava de soporte</h3>
+            <span class="badge-pill">Por equipo</span>
+          </div>
+          <div class="bed-visual">
+            <div class="bed-tank" id="sav-bed-tank"></div>
+            <div class="bed-info">
+              <div class="bed-item">
+                <div class="bed-swatch" style="background:#D4A017"></div>
+                <div class="bed-texts">
+                  <b>Resina catiónica</b>
+                  <span id="sav-bed-resin-vals">—</span>
+                </div>
+              </div>
+              <div class="bed-item">
+                <div class="bed-swatch" style="background:#6B7280"></div>
+                <div class="bed-texts">
+                  <b>Grava de soporte</b>
+                  <span id="sav-bed-gravel-vals">—</span>
+                </div>
+              </div>
+              <div class="bed-total-row">
+                <b>Total medios por equipo</b>
+                <span id="sav-bed-total">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Regen / backwash card -->
+        <div class="bw-card" id="sav-regen-card" style="display:none">
+          <div class="bw-title">Retrolavado y regeneración estimados · Ciclo sodio @ 20 °C</div>
+          <div class="bw-grid">
+            <div>
+              <div class="bw-lbl">Flujo de retrolavado</div>
+              <div class="bw-val" id="sav-bw-flow">—</div>
+              <div class="bw-sub" id="sav-bw-flow-alt"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Agua por ciclo regen</div>
+              <div class="bw-val" id="sav-regen-water">—</div>
+              <div class="bw-sub" id="sav-regen-water-alt"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Tanque de salmuera</div>
+              <div class="bw-val" id="sav-brine-tank">—</div>
+              <div class="bw-sub" id="sav-brine-tank-sub"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Sal por ciclo</div>
+              <div class="bw-val" id="sav-salt-cycle">—</div>
+              <div class="bw-sub" id="sav-salt-cycle-alt"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Expansión de cama</div>
+              <div class="bw-val">~50<small>%</small></div>
+              <div class="bw-sub">Validar según T° y malla</div>
+            </div>
+            <div>
+              <div class="bw-lbl">TCCV real instalado</div>
+              <div class="bw-val" id="sav-ebct">—</div>
+              <div class="bw-sub" id="sav-ebct-alt"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Twin / doble alternado -->
+        <div class="ll-card" id="sav-twin-card">
+          <div class="ll-title">⧉ Sistema doble alternado (twin) · Recomendado para ciclos &lt; 4 h</div>
+          <div class="ll-grid">
+            <div>
+              <div class="bw-lbl">Suavizador A (en servicio)</div>
+              <div class="bw-val" id="sav-ll-a">—</div>
+              <div class="bw-sub" id="sav-ll-a-sub"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Suavizador B (regenerando)</div>
+              <div class="bw-val" id="sav-ll-b">—</div>
+              <div class="bw-sub" id="sav-ll-b-sub"></div>
+            </div>
+            <div>
+              <div class="bw-lbl">Resina total instalada</div>
+              <div class="bw-val" id="sav-ll-total">—</div>
+              <div class="bw-sub">2× la resina individual</div>
+            </div>
+          </div>
+          <div class="ll-note"><strong>Twin alternado:</strong> ambos equipos son idénticos. El "A" está en servicio mientras el "B" se regenera, y viceversa. Garantiza suministro continuo de agua suavizada sin interrupción. Especialmente recomendado en procesos donde el agua dura no puede tolerarse ni por un instante (calderas, procesos de precisión).</div>
+        </div>
+
+        <!-- Detail summary -->
+        <div class="card" style="padding:0">
+          <div class="card-title" style="padding:20px 20px 16px">
+            <h3>Resumen completo del dimensionamiento</h3>
+          </div>
+          <table class="az-table">
+            <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><td>Flujo de diseño</td><td id="sav-d-flow">—</td></tr>
+              <tr><td>Velocidad de servicio</td><td id="sav-d-vs">—</td></tr>
+              <tr><td>Dureza total del agua</td><td id="sav-d-hard">—</td></tr>
+              <tr><td>Perfil de resina</td><td id="sav-d-resin">—</td></tr>
+              <tr><td>Volumen mínimo requerido</td><td id="sav-d-vol-req">—</td></tr>
+              <tr class="hl"><td>Tanque comercial seleccionado</td><td id="sav-d-tank">—</td></tr>
+              <tr><td>Volumen real de resina</td><td id="sav-d-resin-real">—</td></tr>
+              <tr><td>Capacidad de diseño</td><td id="sav-d-cap">—</td></tr>
+              <tr><td>Dureza retenida por ciclo</td><td id="sav-d-hard-total">—</td></tr>
+              <tr class="hl"><td>Agua suavizada por ciclo</td><td id="sav-d-water">—</td></tr>
+              <tr class="hl"><td>Tiempo entre regeneraciones</td><td id="sav-d-cycle">—</td></tr>
+              <tr><td>Sal por regeneración</td><td id="sav-d-salt-cycle">—</td></tr>
+              <tr><td>Tanque de salmuera</td><td id="sav-d-brine-tank">—</td></tr>
+              <tr><td>Flujo de retrolavado</td><td id="sav-d-bw-flow">—</td></tr>
+              <tr><td>Profundidad de cama de resina</td><td id="sav-d-bed-depth">—</td></tr>
+              <tr><td>Freeboard disponible</td><td id="sav-d-freeboard">—</td></tr>
+              <tr><td>TCCV real instalado</td><td id="sav-d-ebct">—</td></tr>
+              <tr><td>Carga hidráulica de servicio</td><td id="sav-d-ch">—</td></tr>
+              <tr class="hl"><td>Grava de soporte (20% vol.)</td><td id="sav-d-gravel">—</td></tr>
+              <tr class="hl"><td>Consumo mensual de sal</td><td id="sav-d-salt-month">—</td></tr>
+              <tr id="sav-d-cost-row" style="display:none"><td>Costo mensual estimado de sal</td><td id="sav-d-cost">—</td></tr>
+            </tbody>
+          </table>
+          <div style="display:flex;gap:8px;padding:14px 18px;border-top:1px solid var(--line)">
+            <button class="btn-sm" id="sav-btn-print" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+              Imprimir / PDF
+            </button>
+            <button class="btn-sm" id="sav-btn-copy" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copiar resumen
+            </button>
+          </div>
+        </div>
+
+        <div class="notice info">
+          <b>Parámetros de referencia — AWWA M37</b>
+          TCCV óptimo 1.5–4 min · Carga hidráulica 6–12 gpm/ft² · Concentración salmuera 8–12% NaCl ·
+          Expansión de cama ≈ 50% en retrolavado · Freeboard mínimo 50% · Profundidad mínima de cama 700 mm.
+        </div>
+
+        <div class="notice tech">
+          <b>Notas de ingeniería</b>
+          Pre-dimensionamiento basado en resina catiónica fuerte gel tipo Resinex K-8 FG con regeneración
+          descendente en ciclo sodio. Factor de seguridad aplicado: 0.90 sobre capacidad teórica.
+          El tanque sugerido proviene del catálogo comercial Carbotecnia (tanques composite a presión).
+          Para diseños críticos (calderas, procesos industriales) se requiere análisis completo del agua
+          incluyendo fierro total, manganeso, cloro libre y temperatura. Si se requiere caudal continuo
+          durante la regeneración, especificar sistema doble alternado (twin) con válvulas programables
+          por volumen o tiempo.
+        </div>
+
+      </div><!-- /results-panel -->
+
+    </div><!-- /results-col -->
+  </div><!-- /layout -->
+
+  <div class="footer">
+    <strong>Advertencia técnica:</strong> Este pre-dimensionamiento es referencial. El diseño final requiere análisis físico-químico completo del agua y revisión por el equipo de ingeniería de Carbotecnia.
+  </div>
+  <div class="bottom-bar">
+    <span>© Carbotecnia · Zapopan, Jalisco</span>
+    <span>Metodología: AWWA M37 · NSF/ANSI 44 · MIP Carbotecnia</span>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+/* ==============================================================
+   CONSTANTES — MIP Suavización Carbotecnia
+   AWWA M37 · DuPont AmberLite · Dow Marathon C · Resinex K-8 FG
+   ============================================================== */
+var SAV = {
+  BW_RATE:          6,      // gpm/ft² retrolavado
+  BW_TIME_MIN:      10,     // min retrolavado
+  EBCT_OPT:         2.0,    // min TCCV óptimo
+  EBCT_MIN:         1.5,    // min TCCV mínimo
+  CH_MAX:           15,     // gpm/ft² carga hidráulica máx
+  BRINE_CONC:       0.10,   // 10% NaCl salmuera diluida
+  BRINE_DENS_10:    1.07,   // kg/L @ 10% NaCl
+  BRINE_SAT_CONC:   0.264,  // fracción másica salmuera saturada
+  BRINE_SAT_DENS:   1.20,   // kg/L salmuera saturada
+  SALT_VOID_FRAC:   0.42,   // fracción vacíos lecho sal pellet
+  SLOW_RINSE:       20,     // gal/ft³ enjuague lento
+  FAST_RINSE:       35,     // gal/ft³ enjuague rápido
+  SAFETY:           0.90,   // factor de seguridad sobre cap teórica
+  GRAVEL_DENS:      45.31,  // kg/ft³ densidad grava de soporte
+  GRAVEL_FRAC:      0.20,   // 20% del vol de resina → grava
+  FT3_TO_L:         28.3168,
+  GAL_TO_L:         3.78541,
+  LB_TO_KG:         0.453592,
+  GR_GAL_TO_MGL:    17.1,
+  MGL_PER_FR:       10.0,
+  MGL_PER_DE:       17.8,
+  DAYS_MONTH:       30
+};
+
+/* ==============================================================
+   CATÁLOGO TANQUES DE RESINA — Carbotecnia
+   ============================================================== */
+var SAV_TANKS = [
+  { size:'8" × 44"',  diam: 8, h:44, resinFt3:  0.75 },
+  { size:'9" × 48"',  diam: 9, h:48, resinFt3:  1.00 },
+  { size:'10" × 54"', diam:10, h:54, resinFt3:  1.50 },
+  { size:'12" × 52"', diam:12, h:52, resinFt3:  1.75 },
+  { size:'13" × 54"', diam:13, h:54, resinFt3:  2.00 },
+  { size:'14" × 65"', diam:14, h:65, resinFt3:  3.00 },
+  { size:'16" × 65"', diam:16, h:65, resinFt3:  4.00 },
+  { size:'18" × 65"', diam:18, h:65, resinFt3:  5.00 },
+  { size:'21" × 62"', diam:21, h:62, resinFt3:  7.00 },
+  { size:'24" × 72"', diam:24, h:72, resinFt3: 10.00 },
+  { size:'30" × 72"', diam:30, h:72, resinFt3: 15.00 },
+  { size:'36" × 72"', diam:36, h:72, resinFt3: 20.00 },
+  { size:'42" × 72"', diam:42, h:72, resinFt3: 30.00 },
+  { size:'48" × 72"', diam:48, h:72, resinFt3: 40.00 },
+  { size:'63" × 83"', diam:63, h:83, resinFt3: 62.00 }
+];
+
+/* ==============================================================
+   CATÁLOGO TANQUES DE SALMUERA — Carbotecnia
+   ============================================================== */
+var SAV_BRINE = [
+  { size:'18" × 33"', capL:  100 },
+  { size:'18" × 40"', capL:  145 },
+  { size:'24" × 50"', capL:  350 },
+  { size:'30" × 50"', capL:  500 },
+  { size:'39" × 48"', capL: 1000 },
+  { size:'50" × 60"', capL: 2000 }
+];
+
+/* ==============================================================
+   PERFILES DE RESINA — Resinex K-8 FG
+   ============================================================== */
+var SAV_RESINS = {
+  eficiencia: {
+    label: 'Alta eficiencia de sal · Resinex K-8 FG (5.5 lb/ft³)',
+    desc:  'Regeneración con 5.5 lb NaCl/ft³. Maximiza el rendimiento de la sal — ideal cuando el costo operativo es prioritario. Capacidad de diseño 21.6 Kgr/ft³ (24 × 0.90). Equivalente: Resinex K-8 FG.',
+    capTheor: 24.0, regenLb: 5.5,
+    specs: 'REGEN: 5.5 lb NaCl/ft³ · CAP TEÓRICA: 24 Kgr/ft³ · RENDIMIENTO: 4.4 Kgr/lb'
+  },
+  estandar: {
+    label: 'Estándar industrial · Resinex K-8 FG (10 lb/ft³)',
+    desc:  'Regeneración con 10 lb NaCl/ft³. Balance entre consumo de sal y capacidad — el nivel más usado en suavizadores industriales. Capacidad de diseño 22.5 Kgr/ft³ (25 × 0.90). Equivalente: Resinex K-8 FG.',
+    capTheor: 25.0, regenLb: 10.0,
+    specs: 'REGEN: 10 lb NaCl/ft³ · CAP TEÓRICA: 25 Kgr/ft³ · RENDIMIENTO: 2.5 Kgr/lb'
+  },
+  capacidad: {
+    label: 'Alta capacidad · Resinex K-8 FG (15 lb/ft³)',
+    desc:  'Regeneración con 15 lb NaCl/ft³. Maximiza la retención de dureza por ciclo — ideal para minimizar frecuencia de regeneración. Capacidad de diseño 31.5 Kgr/ft³ (35 × 0.90). Equivalente: Resinex K-8 FG.',
+    capTheor: 35.0, regenLb: 15.0,
+    specs: 'REGEN: 15 lb NaCl/ft³ · CAP TEÓRICA: 35 Kgr/ft³ · RENDIMIENTO: 2.3 Kgr/lb'
+  }
+};
+
+/* ==============================================================
+   UTILIDADES
+   ============================================================== */
+function savEl(id){ return document.getElementById(id); }
+
+function savFmt(n, dec){
+  if(dec===undefined) dec=1;
+  if(!isFinite(n)) return '—';
+  return n.toLocaleString('es-MX',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+}
+function savFmtInt(n){
+  if(!isFinite(n)) return '—';
+  return Math.round(n).toLocaleString('es-MX');
+}
+
+function savAlert(id, cls, html){
+  var el = savEl(id);
+  if(!html){ el.className='alert'; el.style.display='none'; el.innerHTML=''; return; }
+  el.className = 'alert show ' + cls;
+  el.style.display = 'block';
+  el.innerHTML = html;
+}
+
+/* ==============================================================
+   CATÁLOGOS
+   ============================================================== */
+function savSelectTank(resinFt3Req){
+  for(var i=0;i<SAV_TANKS.length;i++){
+    if(SAV_TANKS[i].resinFt3 >= resinFt3Req * 0.95)
+      return Object.assign({}, SAV_TANKS[i], {oversize:false});
+  }
+  var big = SAV_TANKS[SAV_TANKS.length-1];
+  return Object.assign({}, big, {oversize:true, tanksNeeded:Math.ceil(resinFt3Req/big.resinFt3)});
+}
+
+function savSelectBrine(volL){
+  for(var i=0;i<SAV_BRINE.length;i++){
+    if(SAV_BRINE[i].capL >= volL) return Object.assign({}, SAV_BRINE[i]);
+  }
+  return Object.assign({}, SAV_BRINE[SAV_BRINE.length-1]);
+}
+
+/* ==============================================================
+   NORMALIZACIÓN DE UNIDADES
+   ============================================================== */
+function savNormalize(){
+  var flowRaw  = parseFloat(savEl('sav-flow').value);
+  var flowUnit = savEl('sav-flow-unit').value;
+  var flowGpm;
+  if(flowUnit==='gpm')       flowGpm = flowRaw;
+  else if(flowUnit==='lpm')  flowGpm = flowRaw / SAV.GAL_TO_L;
+  else if(flowUnit==='lps')  flowGpm = (flowRaw * 60) / SAV.GAL_TO_L;
+  else /* m3h */             flowGpm = (flowRaw * 1000 / 60) / SAV.GAL_TO_L;
+
+  var vs = parseFloat(savEl('sav-vservicio').value);
+  if(isNaN(vs)||vs<2||vs>5) vs=4;
+
+  var hardRaw  = parseFloat(savEl('sav-hard').value);
+  var hardUnit = savEl('sav-hard-unit').value;
+  var hardMgL;
+  if(hardUnit==='mgl')       hardMgL = hardRaw;
+  else if(hardUnit==='grgal') hardMgL = hardRaw * SAV.GR_GAL_TO_MGL;
+  else if(hardUnit==='fr')   hardMgL = hardRaw * SAV.MGL_PER_FR;
+  else /* de */              hardMgL = hardRaw * SAV.MGL_PER_DE;
+  var hardGrGal = hardMgL / SAV.GR_GAL_TO_MGL;
+
+  var opH = parseFloat(savEl('sav-op-hours').value);
+  if(isNaN(opH)||opH<1||opH>24) opH=24;
+
+  var saltCost = parseFloat(savEl('sav-salt-cost').value);
+  if(isNaN(saltCost)||saltCost<0) saltCost=0;
+
+  var resinKey = savEl('sav-resin-profile').value;
+  var resin = SAV_RESINS[resinKey] || SAV_RESINS.estandar;
+
+  return {
+    flowGpm:  flowGpm,
+    flowLpm:  flowGpm * SAV.GAL_TO_L,
+    flowM3h:  flowGpm * SAV.GAL_TO_L * 60 / 1000,
+    vs: vs, hardMgL: hardMgL, hardGrGal: hardGrGal,
+    opH: opH, saltCost: saltCost, resin: resin
+  };
+}
+
+/* ==============================================================
+   VALIDACIÓN
+   ============================================================== */
+function savValidate(){
+  var ok = true;
+  [['sav-f-flow','sav-flow'],['sav-f-hard','sav-hard']].forEach(function(pair){
+    var f = savEl(pair[0]), v = parseFloat(savEl(pair[1]).value);
+    if(!v||v<=0||isNaN(v)){ f.classList.add('has-err'); ok=false; }
+    else f.classList.remove('has-err');
+  });
+  var vf = savEl('sav-f-vs'), vv = parseFloat(savEl('sav-vservicio').value);
+  if(isNaN(vv)||vv<2||vv>5){ vf.classList.add('has-err'); ok=false; }
+  else vf.classList.remove('has-err');
+  return ok;
+}
+
+/* ==============================================================
+   MOTOR DE CÁLCULO
+   ============================================================== */
+function savCalculate(){
+  if(!savValidate()) return;
+  var I = savNormalize();
+
+  // 1. Volumen mínimo de resina
+  var resinFt3Req = I.flowGpm / I.vs;
+  var resinLReq   = resinFt3Req * SAV.FT3_TO_L;
+  var resinM3Req  = resinLReq / 1000;
+
+  // 2. Selección tanque (tolerancia 5%)
+  var tank         = savSelectTank(resinFt3Req);
+  var resinFt3     = tank.resinFt3;
+  var resinL       = resinFt3 * SAV.FT3_TO_L;
+  var areaFt2      = Math.PI * Math.pow(tank.diam/12, 2) / 4;
+  var bedDepthFt   = resinFt3 / areaFt2;
+  var bedDepthMm   = bedDepthFt * 0.3048 * 1000;
+  var hFt          = tank.h / 12;
+  var freeboardPct = ((hFt - bedDepthFt) / bedDepthFt) * 100;
+  var chGpmFt2     = I.flowGpm / areaFt2;
+  var linVelMH     = chGpmFt2 * 2.4458;
+  var overPct      = ((resinFt3 - resinFt3Req) / resinFt3Req) * 100;
+
+  // 3. Grava de soporte
+  var gravelFt3 = resinFt3 * SAV.GRAVEL_FRAC;
+  var gravelKg  = gravelFt3 * SAV.GRAVEL_DENS;
+  var gravelLb  = gravelKg / SAV.LB_TO_KG;
+
+  // 4. Capacidad de diseño
+  var capDesign = I.resin.capTheor * SAV.SAFETY; // Kgr/ft³
+
+  // 5. Dureza retenida por ciclo
+  var hardKgr = resinFt3 * capDesign;
+
+  // 6. Agua tratada por ciclo
+  var waterGal = (resinFt3 * capDesign * 1000) / I.hardGrGal;
+  var waterL   = waterGal * SAV.GAL_TO_L;
+  var waterM3  = waterL / 1000;
+
+  // 7. Tiempo entre regeneraciones
+  var cycleMin    = waterGal / I.flowGpm;
+  var cycleH      = cycleMin / 60;
+  var cycleDays   = cycleH / 24;
+  var regenPerDay = I.opH / cycleH;
+
+  // 8. Sal por ciclo
+  var saltLb = resinFt3 * I.resin.regenLb;
+  var saltKg = saltLb * SAV.LB_TO_KG;
+
+  // 9. Eficiencia de sal
+  var saltPerM3  = saltKg / waterM3;
+  var saltYield  = hardKgr / saltLb;
+
+  // 10. Consumo mensual
+  var saltMonthKg   = saltKg * regenPerDay * SAV.DAYS_MONTH;
+  var saltMonthLb   = saltMonthKg / SAV.LB_TO_KG;
+  var saltMonthCost = saltMonthKg * I.saltCost;
+
+  // 11. TCCV (Empty Bed Contact Time)
+  var ebct = (resinFt3 * 7.481) / I.flowGpm;
+
+  // 12. Retrolavado
+  var bwFlowGpm  = SAV.BW_RATE * areaFt2;
+  var bwFlowLpm  = bwFlowGpm * SAV.GAL_TO_L;
+  var bwWaterGal = bwFlowGpm * SAV.BW_TIME_MIN;
+
+  // 13. Volúmenes ciclo de regeneración
+  var slowRinseGal = SAV.SLOW_RINSE * resinFt3;
+  var fastRinseGal = SAV.FAST_RINSE * resinFt3;
+  var brineKg      = saltKg / SAV.BRINE_CONC;
+  var brineL       = brineKg / SAV.BRINE_DENS_10;
+  var brineGal     = brineL / SAV.GAL_TO_L;
+  var regenWaterGal = bwWaterGal + brineGal + slowRinseGal + fastRinseGal;
+  var regenWaterL   = regenWaterGal * SAV.GAL_TO_L;
+  var regenWaterPct = (regenWaterGal / waterGal) * 100;
+
+  // 14. Tanque de salmuera (metodología Carbotecnia)
+  var satBrineKg = saltKg / SAV.BRINE_SAT_CONC;
+  var satBrineL  = satBrineKg / SAV.BRINE_SAT_DENS;
+  var brineTankL = satBrineL / SAV.SALT_VOID_FRAC;
+  var brineTank  = savSelectBrine(brineTankL);
+
+  savRender({
+    I: I,
+    resinFt3Req: resinFt3Req, resinLReq: resinLReq, resinM3Req: resinM3Req,
+    tank: tank, resinFt3: resinFt3, resinL: resinL,
+    areaFt2: areaFt2, bedDepthFt: bedDepthFt, bedDepthMm: bedDepthMm,
+    hFt: hFt, freeboardPct: freeboardPct, chGpmFt2: chGpmFt2,
+    linVelMH: linVelMH, overPct: overPct,
+    gravelFt3: gravelFt3, gravelKg: gravelKg, gravelLb: gravelLb,
+    capDesign: capDesign, hardKgr: hardKgr,
+    waterGal: waterGal, waterL: waterL, waterM3: waterM3,
+    cycleMin: cycleMin, cycleH: cycleH, cycleDays: cycleDays, regenPerDay: regenPerDay,
+    saltLb: saltLb, saltKg: saltKg,
+    saltPerM3: saltPerM3, saltYield: saltYield,
+    saltMonthKg: saltMonthKg, saltMonthLb: saltMonthLb, saltMonthCost: saltMonthCost,
+    ebct: ebct,
+    bwFlowGpm: bwFlowGpm, bwFlowLpm: bwFlowLpm, bwWaterGal: bwWaterGal,
+    regenWaterGal: regenWaterGal, regenWaterL: regenWaterL, regenWaterPct: regenWaterPct,
+    satBrineL: satBrineL, brineTankL: brineTankL, brineTank: brineTank
+  });
+}
+
+/* ==============================================================
+   VISUAL DE LA CAMA (50% freeboard · 50% medios)
+   ============================================================== */
+function savRenderBed(r){
+  var TANK_H   = 280;
+  var bedH     = TANK_H * 0.50;
+  var freeH    = TANK_H - bedH;
+  var totalFt3 = r.resinFt3 + r.gravelFt3;
+  var resinH   = (r.resinFt3  / totalFt3) * bedH;
+  var gravelH  = (r.gravelFt3 / totalFt3) * bedH;
+
+  savEl('sav-bed-tank').style.height = TANK_H + 'px';
+  savEl('sav-bed-tank').innerHTML =
+    '<div class="bed-freeboard" style="height:'+freeH+'px">Espacio<br>libre 50%<br>(retrolav.)</div>' +
+    '<div class="bed-layer" style="background:#D4A017;height:'+resinH+'px">Resina</div>' +
+    '<div class="bed-layer" style="background:#6B7280;height:'+gravelH+'px">Grava</div>';
+}
+
+/* ==============================================================
+   RENDERIZADO DE RESULTADOS
+   ============================================================== */
+function savRender(r){
+  var I = r.I;
+
+  // ── Formato ciclo ──
+  var cycleVal, cycleAlt;
+  if(r.cycleH < 1){
+    cycleVal = savFmt(r.cycleMin,0)+'<small>min</small>';
+    cycleAlt = 'Ciclo muy corto · revisar diseño';
+  } else if(r.cycleH < 24){
+    var hh = Math.floor(r.cycleH);
+    var mm = Math.round((r.cycleH - hh) * 60);
+    if(mm===60){ hh++; mm=0; }
+    cycleVal = hh+'<small>h</small> '+String(mm).padStart(2,'0')+'<small>min</small>';
+    cycleAlt = savFmt(r.regenPerDay,2)+' regen/día ('+I.opH+' h op.)';
+  } else {
+    cycleVal = savFmt(r.cycleDays,1)+'<small>días</small>';
+    cycleAlt = savFmt(r.cycleH,1)+' h continuas';
+  }
+
+  // ── KPIs ──
+  savEl('sav-r-vol').innerHTML       = savFmt(r.resinFt3Req,1)+'<small>ft³</small>';
+  savEl('sav-r-vol-alt').textContent = savFmt(r.resinLReq,0)+' L · '+savFmt(r.resinM3Req,2)+' m³';
+
+  savEl('sav-r-tank').textContent     = r.tank.size;
+  savEl('sav-r-tank-sub').textContent = r.resinFt3+' ft³ · '+r.tank.diam+'"ø';
+
+  savEl('sav-r-cycle').innerHTML      = cycleVal;
+  savEl('sav-r-cycle-alt').textContent = cycleAlt;
+
+  savEl('sav-r-salt').innerHTML      = savFmtInt(r.saltMonthKg)+'<small>kg</small>';
+  savEl('sav-r-salt-alt').textContent = savFmt(r.saltMonthKg/20,1)+' sacos 20 kg/mes';
+
+  // KPI ciclo: color según duración
+  var kpiCycle = savEl('sav-kpi-cycle');
+  if(r.cycleH < 4)       kpiCycle.className = 'kpi kpi-warn';
+  else if(r.cycleH >= 24) kpiCycle.className = 'kpi kpi-ok';
+  else                    kpiCycle.className = 'kpi';
+
+  // ── Bed visual ──
+  savRenderBed(r);
+  savEl('sav-bed-card').style.display = 'block';
+  savEl('sav-bed-resin-vals').textContent  = savFmt(r.resinFt3,2)+' ft³ · '+savFmt(r.resinL,0)+' L';
+  savEl('sav-bed-gravel-vals').textContent = savFmt(r.gravelFt3,2)+' ft³ · '+savFmt(r.gravelKg,0)+' kg';
+  savEl('sav-bed-total').textContent       = savFmt(r.gravelKg,0)+' kg grava · '+savFmt(r.resinFt3+r.gravelFt3,2)+' ft³ total';
+
+  // ── Regen card ──
+  savEl('sav-regen-card').style.display   = 'block';
+  savEl('sav-bw-flow').innerHTML          = savFmt(r.bwFlowGpm,1)+'<small>GPM</small>';
+  savEl('sav-bw-flow-alt').textContent    = savFmt(r.bwFlowLpm,0)+' L/min · 6 gpm/ft² × '+savFmt(r.areaFt2,2)+' ft²';
+  savEl('sav-regen-water').innerHTML      = savFmtInt(r.regenWaterL)+'<small>L</small>';
+  savEl('sav-regen-water-alt').textContent = savFmtInt(r.regenWaterGal)+' gal · '+savFmt(r.regenWaterPct,1)+'% del ciclo';
+  savEl('sav-brine-tank').textContent     = r.brineTank.size;
+  savEl('sav-brine-tank-sub').textContent = r.brineTank.capL+' L cap. · '+savFmt(r.brineTankL,0)+' L req.';
+  savEl('sav-salt-cycle').innerHTML       = savFmt(r.saltKg,1)+'<small>kg</small>';
+  savEl('sav-salt-cycle-alt').textContent = savFmt(r.saltLb,1)+' lb · '+savFmt(r.saltKg/20,2)+' sacos 20 kg';
+  savEl('sav-ebct').innerHTML             = savFmt(r.ebct,2)+'<small>min</small>';
+  savEl('sav-ebct-alt').textContent       = r.ebct>=SAV.EBCT_OPT ? 'En rango óptimo ≥ 2 min' : (r.ebct>=SAV.EBCT_MIN ? 'Aceptable ≥ 1.5 min' : 'Bajo — revisar SV');
+
+  // ── Twin card ──
+  var twinCard = savEl('sav-twin-card');
+  if(r.cycleH < 4){
+    twinCard.classList.add('visible');
+    savEl('sav-ll-a').textContent     = r.tank.size;
+    savEl('sav-ll-a-sub').textContent = r.resinFt3+' ft³ · 100% del flujo';
+    savEl('sav-ll-b').textContent     = r.tank.size;
+    savEl('sav-ll-b-sub').textContent = r.resinFt3+' ft³ · en regeneración';
+    savEl('sav-ll-total').innerHTML   = savFmt(r.resinFt3*2,0)+'<small>ft³</small>';
+  } else {
+    twinCard.classList.remove('visible');
+  }
+
+  // ── Alertas ──
+  savAlert('sav-alert-ebct',
+    r.ebct < SAV.EBCT_MIN ? 'err' : (r.ebct < SAV.EBCT_OPT && I.hardMgL>250 ? 'warn' : ''),
+    r.ebct < SAV.EBCT_MIN
+      ? '<b>TCCV muy bajo ('+savFmt(r.ebct,2)+' min)</b> — Por debajo de 1.5 min: riesgo de fuga prematura de dureza. Reducir la velocidad de servicio a 2–3 gpm/ft³ o seleccionar un tanque mayor.'
+      : (r.ebct < SAV.EBCT_OPT && I.hardMgL>250
+          ? '<b>TCCV bajo para agua dura ('+savFmt(r.ebct,2)+' min)</b> — Con dureza '+savFmt(I.hardMgL,0)+' mg/L se recomienda TCCV ≥ 2 min. Considere reducir la SV a 3 gpm/ft³.'
+          : null)
+  );
+  savAlert('sav-alert-ch',
+    r.chGpmFt2>15 ? 'err' : '',
+    r.chGpmFt2>15
+      ? '<b>Carga hidráulica excesiva ('+savFmt(r.chGpmFt2,1)+' gpm/ft²)</b> — Excede el máximo de 15 gpm/ft². Utilice un tanque de mayor diámetro.'
+      : null
+  );
+  savAlert('sav-alert-cycle',
+    r.cycleH<4 ? 'warn' : '',
+    r.cycleH<4
+      ? '<b>Ciclo de regeneración corto ('+savFmt(r.cycleH,1)+' h)</b> — Se recomienda sistema doble alternado (twin) para garantizar servicio continuo ininterrumpido.'
+      : null
+  );
+  savAlert('sav-alert-hard',
+    I.hardMgL>500 ? 'warn' : '',
+    I.hardMgL>500
+      ? '<b>Dureza muy elevada ('+savFmt(I.hardMgL,0)+' mg/L)</b> — Para valores > 500 mg/L evaluar pretratamiento (precipitación con cal) antes del intercambio iónico.'
+      : null
+  );
+  savAlert('sav-alert-oversize',
+    r.tank.oversize ? 'warn' : '',
+    r.tank.oversize
+      ? '<b>Volumen requerido ('+savFmt(r.resinFt3Req,1)+' ft³) excede el catálogo estándar</b> — Se sugieren <b>'+r.tank.tanksNeeded+' tanques de 63″ × 83″ en paralelo</b> o un diseño industrial especial.'
+      : null
+  );
+
+  // ── Tabla de detalle ──
+  savEl('sav-d-flow').textContent      = savFmt(I.flowGpm,1)+' GPM · '+savFmt(I.flowLpm,0)+' L/min · '+savFmt(I.flowM3h,2)+' m³/h';
+  savEl('sav-d-vs').textContent        = I.vs+' gpm/ft³';
+  savEl('sav-d-hard').textContent      = savFmt(I.hardMgL,0)+' mg/L (CaCO₃) · '+savFmt(I.hardGrGal,1)+' gr/gal';
+  savEl('sav-d-resin').textContent     = I.resin.label;
+  savEl('sav-d-vol-req').textContent   = savFmt(r.resinFt3Req,2)+' ft³ · '+savFmt(r.resinLReq,0)+' L';
+  savEl('sav-d-tank').textContent      = r.tank.size+(r.tank.oversize?' × '+r.tank.tanksNeeded:'')+' · '+r.resinFt3+' ft³ cap.';
+  savEl('sav-d-resin-real').textContent = savFmt(r.resinFt3,2)+' ft³ · '+savFmt(r.resinL,0)+' L';
+  savEl('sav-d-cap').textContent       = savFmt(r.capDesign,1)+' Kgr/ft³ ('+I.resin.capTheor+' teór × 0.90)';
+  savEl('sav-d-hard-total').textContent = savFmt(r.hardKgr,1)+' Kgr · '+savFmtInt(r.hardKgr*1000)+' granos';
+  savEl('sav-d-water').textContent     = savFmt(r.waterM3,1)+' m³ · '+savFmtInt(r.waterL)+' L · '+savFmtInt(r.waterGal)+' gal';
+  savEl('sav-d-cycle').textContent     = savFmt(r.cycleH,1)+' h · '+savFmt(r.cycleDays,2)+' días';
+  savEl('sav-d-salt-cycle').textContent = savFmt(r.saltKg,1)+' kg · '+savFmt(r.saltLb,1)+' lb · '+savFmt(r.saltKg/20,2)+' sacos 20 kg';
+  savEl('sav-d-brine-tank').textContent = r.brineTank.size+' ('+r.brineTank.capL+' L cap. · '+savFmt(r.brineTankL,0)+' L req.)';
+  savEl('sav-d-bw-flow').textContent   = savFmt(r.bwFlowGpm,1)+' GPM · '+savFmt(r.bwFlowLpm,0)+' L/min';
+  savEl('sav-d-bed-depth').textContent = savFmt(r.bedDepthFt*12,0)+'″ · '+savFmtInt(r.bedDepthMm)+' mm';
+  savEl('sav-d-freeboard').textContent = savFmt(r.freeboardPct,0)+' %'+(r.freeboardPct<50?' ⚠ < 50% mínimo':'');
+  savEl('sav-d-ebct').textContent      = savFmt(r.ebct,2)+' min';
+  savEl('sav-d-ch').textContent        = savFmt(r.chGpmFt2,1)+' gpm/ft² · '+savFmt(r.linVelMH,1)+' m/h';
+  savEl('sav-d-gravel').textContent    = savFmt(r.gravelFt3,2)+' ft³ · '+savFmt(r.gravelKg,0)+' kg · '+savFmt(r.gravelLb,0)+' lb';
+  savEl('sav-d-salt-month').textContent = savFmtInt(r.saltMonthKg)+' kg · '+savFmt(r.saltMonthKg/20,0)+' sacos 20 kg';
+  if(I.saltCost>0){
+    savEl('sav-d-cost-row').style.display = '';
+    savEl('sav-d-cost').textContent = '$'+savFmtInt(r.saltMonthCost)+' MXN/mes  ($'+savFmt(r.saltMonthCost*12/1000,1)+'k MXN/año)';
+  } else {
+    savEl('sav-d-cost-row').style.display = 'none';
+  }
+
+  // ── Mostrar resultados ──
+  savEl('sav-empty').style.display = 'none';
+  savEl('sav-results').classList.add('visible');
+}
+
+/* ==============================================================
+   TARJETA DE RESINA
+   ============================================================== */
+function savUpdateResinCard(){
+  var key = savEl('sav-resin-profile').value;
+  var r = SAV_RESINS[key] || SAV_RESINS.estandar;
+  savEl('sav-resin-info').innerHTML =
+    '<b>'+r.label+'</b>'+r.desc+
+    '<div class="specs">'+r.specs+'</div>';
+}
+
+/* ==============================================================
+   LIMPIAR
+   ============================================================== */
+function savClear(){
+  ['sav-flow','sav-hard','sav-tds'].forEach(function(id){ savEl(id).value=''; });
+  savEl('sav-vservicio').value='4';
+  savEl('sav-op-hours').value='24';
+  savEl('sav-salt-cost').value='13.00';
+  document.querySelectorAll('.has-err').forEach(function(e){ e.classList.remove('has-err'); });
+  savEl('sav-empty').style.display = '';
+  savEl('sav-results').classList.remove('visible');
+  savEl('sav-bed-card').style.display = 'none';
+  savEl('sav-regen-card').style.display = 'none';
+  savEl('sav-twin-card').classList.remove('visible');
+  ['sav-alert-ebct','sav-alert-ch','sav-alert-cycle','sav-alert-hard','sav-alert-oversize']
+    .forEach(function(id){ savAlert(id,'',null); });
+}
+
+/* ==============================================================
+   EVENTOS
+   ============================================================== */
+savEl('sav-btn-calc').addEventListener('click', savCalculate);
+savEl('sav-btn-clear').addEventListener('click', savClear);
+['sav-flow','sav-hard','sav-vservicio','sav-tds','sav-op-hours','sav-salt-cost'].forEach(function(id){
+  savEl(id).addEventListener('keydown', function(e){ if(e.key==='Enter') savCalculate(); });
+});
+savEl('sav-btn-print').addEventListener('click', function(){ window.print(); });
+savEl('sav-btn-copy').addEventListener('click', function(){
+  var rows = document.querySelectorAll('#sav-results .az-table tbody tr');
+  var lines = ['=== DIMENSIONAMIENTO SUAVIZADOR — Carbotecnia ==='];
+  rows.forEach(function(tr){
+    var tds = tr.querySelectorAll('td');
+    if(tds.length===2) lines.push(tds[0].textContent+': '+tds[1].textContent);
+  });
+  var btn = savEl('sav-btn-copy');
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
+    btn.textContent = '✓ Copiado';
+    setTimeout(function(){
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar resumen';
+    }, 2000);
+  });
+});
+
+// Inicialización
+savUpdateResinCard();
+</script>
+</body>
+</html>
