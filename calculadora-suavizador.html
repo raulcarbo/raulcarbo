@@ -280,6 +280,30 @@ h1,h2,h3,h4{font-family:var(--font-title)}
   font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--muted)}
 
+/* Parallel section */
+.par-section{display:none}.par-section.visible{display:block}
+.par-head h3{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:2px}
+.par-head p{font-size:12px;color:var(--muted);margin-bottom:10px}
+.par-grid{display:grid;gap:8px}
+.par-option{background:var(--surface);border:1.5px solid var(--line);
+  border-radius:var(--radius);padding:14px 16px;transition:border-color .15s}
+.par-option:hover{border-color:var(--accent-mid)}
+.par-option.best{border-color:var(--accent);background:var(--info-bg)}
+.par-top{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.par-title{font-family:var(--font-num);font-size:14px;font-weight:700;color:var(--ink)}
+.par-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 9px;border-radius:20px;white-space:nowrap}
+.par-badge.best{background:var(--accent);color:#fff}
+.par-badge.ok{background:var(--ok-soft);color:var(--ok)}
+.par-badge.wrn{background:var(--warn-soft);color:var(--warn)}
+.par-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:2px 12px}
+.par-detail{display:flex;justify-content:space-between;align-items:baseline;gap:6px;
+  padding:3px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.04)}
+.par-detail:last-child{border-bottom:none}
+.pdl{color:var(--muted)}
+.pdv{font-family:var(--font-num);font-weight:700;color:var(--ink);font-size:12px;text-align:right}
+
 @media(max-width:900px){
   .layout{grid-template-columns:1fr}.input-panel{position:static}
   .hero-inner{grid-template-columns:1fr}.hero-note{display:none}
@@ -572,6 +596,15 @@ h1,h2,h3,h4{font-family:var(--font-title)}
             </div>
           </div>
           <div class="ll-note"><strong>Twin alternado:</strong> ambos equipos son idénticos. El "A" está en servicio mientras el "B" se regenera, y viceversa. Garantiza suministro continuo de agua suavizada sin interrupción. Especialmente recomendado en procesos donde el agua dura no puede tolerarse ni por un instante (calderas, procesos de precisión).</div>
+        </div>
+
+        <!-- Parallel configurations -->
+        <div class="par-section" id="sav-par-section">
+          <div class="par-head">
+            <h3>⧉ Configuraciones en paralelo</h3>
+            <p>Alternativas con múltiples equipos para el mismo flujo total. Retrolavado secuencial por equipo.</p>
+          </div>
+          <div class="par-grid" id="sav-par-grid"></div>
         </div>
 
         <!-- Detail summary -->
@@ -1033,6 +1066,11 @@ function savRender(r){
     twinCard.classList.remove('visible');
   }
 
+  // ── Configuraciones paralelas ──
+  var showParallel = r.tank.oversize || r.tank.diam >= 21;
+  if(showParallel) savBuildParallel(r);
+  else { savEl('sav-par-section').classList.remove('visible'); savEl('sav-par-grid').innerHTML=''; }
+
   // ── Alertas ──
   savAlert('sav-alert-ebct',
     r.ebct < SAV.EBCT_MIN ? 'err' : (r.ebct < SAV.EBCT_OPT && I.hardMgL>250 ? 'warn' : ''),
@@ -1101,6 +1139,92 @@ function savRender(r){
 }
 
 /* ==============================================================
+   CONFIGURACIONES EN PARALELO
+   ============================================================== */
+function savBuildParallel(r){
+  var grid    = savEl('sav-par-grid');
+  var section = savEl('sav-par-section');
+  grid.innerHTML = '';
+
+  var options = [];
+  SAV_TANKS.forEach(function(t){
+    if(t.diam < 13) return;
+    var count = Math.ceil(r.resinFt3Req / t.resinFt3);
+    if(count < 2 || count > 8) return;
+
+    var totalResin   = t.resinFt3 * count;
+    var flowPerUnit  = r.I.flowGpm / count;
+    var svPerUnit    = flowPerUnit / t.resinFt3;        // gpm/ft³
+    var areaFt2      = Math.PI * Math.pow(t.diam/12,2) / 4;
+    var bwFlowGpm    = SAV.BW_RATE * areaFt2;
+    var bwFlowLpm    = bwFlowGpm * SAV.GAL_TO_L;
+    var capDesign    = r.I.resin.capTheor * SAV.SAFETY;
+    var waterGalUnit = (t.resinFt3 * capDesign * 1000) / r.I.hardGrGal;
+    var cycleHUnit   = (waterGalUnit / flowPerUnit) / 60;
+    var saltKgUnit   = t.resinFt3 * r.I.resin.regenLb * SAV.LB_TO_KG;
+    var regenPerDay  = r.I.opH / cycleHUnit;
+    var saltMonthTot = saltKgUnit * count * regenPerDay * SAV.DAYS_MONTH;
+    var gravelFt3Tot = t.resinFt3 * SAV.GRAVEL_FRAC * count;
+    var gravelKgTot  = gravelFt3Tot * SAV.GRAVEL_DENS;
+    var marginPct    = ((totalResin - r.resinFt3Req) / r.resinFt3Req) * 100;
+
+    options.push({ t:t, count:count, totalResin:totalResin,
+      flowPerUnit:flowPerUnit, svPerUnit:svPerUnit,
+      bwFlowGpm:bwFlowGpm, bwFlowLpm:bwFlowLpm,
+      cycleHUnit:cycleHUnit, saltKgUnit:saltKgUnit, saltMonthTot:saltMonthTot,
+      gravelFt3Tot:gravelFt3Tot, gravelKgTot:gravelKgTot, marginPct:marginPct });
+  });
+
+  if(!options.length){ section.classList.remove('visible'); return; }
+
+  options.sort(function(a,b){
+    var aOk=(a.svPerUnit>=2&&a.svPerUnit<=5)?0:1;
+    var bOk=(b.svPerUnit>=2&&b.svPerUnit<=5)?0:1;
+    if(aOk!==bOk) return aOk-bOk;
+    return a.count - b.count;
+  });
+
+  options.forEach(function(o,i){
+    var isBest = (i===0);
+    var svOk   = o.svPerUnit>=2 && o.svPerUnit<=5;
+    var badge  = isBest
+      ? '<span class="par-badge best">Recomendado</span>'
+      : (svOk
+          ? '<span class="par-badge ok">Vel. óptima</span>'
+          : (o.svPerUnit < 2
+              ? '<span class="par-badge wrn">Vel. baja</span>'
+              : '<span class="par-badge wrn">Vel. alta</span>'));
+
+    var cycleStr;
+    if(o.cycleHUnit<1){ cycleStr=savFmt(o.cycleHUnit*60,0)+' min'; }
+    else if(o.cycleHUnit<24){
+      var hh=Math.floor(o.cycleHUnit);
+      var mm=Math.round((o.cycleHUnit-hh)*60);
+      cycleStr=hh+'h '+String(mm).padStart(2,'0')+'min';
+    } else { cycleStr=savFmt(o.cycleHUnit/24,1)+' días'; }
+
+    var div = document.createElement('div');
+    div.className = 'par-option'+(isBest?' best':'');
+    div.innerHTML =
+      '<div class="par-top"><span class="par-title">'+o.count+'× '+o.t.size+'</span>'+badge+'</div>'+
+      '<div class="par-details">'+
+        '<div class="par-detail"><span class="pdl">Flujo por equipo</span><span class="pdv">'+savFmt(o.flowPerUnit,1)+' GPM</span></div>'+
+        '<div class="par-detail"><span class="pdl">Resina por equipo</span><span class="pdv">'+o.t.resinFt3+' ft³</span></div>'+
+        '<div class="par-detail"><span class="pdl">Resina total instalada</span><span class="pdv">'+savFmt(o.totalResin,1)+' ft³</span></div>'+
+        '<div class="par-detail"><span class="pdl">Vel. servicio</span><span class="pdv">'+savFmt(o.svPerUnit,2)+' gpm/ft³</span></div>'+
+        '<div class="par-detail"><span class="pdl">Ciclo entre regens</span><span class="pdv">'+cycleStr+'</span></div>'+
+        '<div class="par-detail"><span class="pdl">Sal por ciclo / equipo</span><span class="pdv">'+savFmt(o.saltKgUnit,1)+' kg</span></div>'+
+        '<div class="par-detail"><span class="pdl">Q retrolavado por equipo</span><span class="pdv">'+savFmt(o.bwFlowGpm,1)+' GPM · '+savFmt(o.bwFlowLpm,0)+' L/min</span></div>'+
+        '<div class="par-detail"><span class="pdl">Grava soporte total</span><span class="pdv">'+savFmt(o.gravelFt3Tot,2)+' ft³ · '+savFmtInt(o.gravelKgTot)+' kg</span></div>'+
+        '<div class="par-detail"><span class="pdl">Sal mensual total</span><span class="pdv">'+savFmtInt(o.saltMonthTot)+' kg</span></div>'+
+        '<div class="par-detail"><span class="pdl">Margen de resina</span><span class="pdv">'+savFmt(o.marginPct,0)+'%</span></div>'+
+      '</div>';
+    grid.appendChild(div);
+  });
+  section.classList.add('visible');
+}
+
+/* ==============================================================
    TARJETA DE RESINA
    ============================================================== */
 function savUpdateResinCard(){
@@ -1125,6 +1249,8 @@ function savClear(){
   savEl('sav-bed-card').style.display = 'none';
   savEl('sav-regen-card').style.display = 'none';
   savEl('sav-twin-card').classList.remove('visible');
+  savEl('sav-par-section').classList.remove('visible');
+  savEl('sav-par-grid').innerHTML='';
   ['sav-alert-ebct','sav-alert-ch','sav-alert-cycle','sav-alert-hard','sav-alert-oversize']
     .forEach(function(id){ savAlert(id,'',null); });
 }
