@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Retrolavado por Temperatura — Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#E8640A; --orange-dark:#B84D06; --orange-deeper:#7C3404;
+  --orange-soft:#FEF0E5; --orange-light:#FFF8F2; --orange-mid:#FFA046;
+  --blue:#1473E6; --blue-dark:#0D5ABB; --blue-deeper:#093A7A;
+  --blue-soft:#E3F0FE; --blue-light:#F0F7FF;
+  --navy:#093A7A; --accent:#E8640A;
+  --surface:#fff; --paper:#F4F7FB; --paper-soft:#EEF3FA;
+  --line:#D6DDE7; --ink:#0B1424; --muted:#64748B;
+  --ok:#047857; --ok-soft:#D1FAE5; --ok-border:#6EE7B7;
+  --warn:#B45309; --warn-soft:#FEF3C7; --warn-border:#FCD34D;
+  --err:#B91C1C; --err-soft:#FEE2E2; --err-border:#FCA5A5;
+  --shadow:0 1px 3px rgba(11,20,36,.05),0 8px 28px rgba(11,20,36,.09);
+  --shadow-sm:0 1px 3px rgba(11,20,36,.04),0 4px 12px rgba(11,20,36,.07);
+  --radius:16px; --radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:linear-gradient(180deg,#EEF3FA,#E4EBF5);color:var(--ink);
+  font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+.shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:14px 22px;margin-bottom:16px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(135deg,var(--blue),var(--blue-deeper));
+  box-shadow:0 8px 20px rgba(20,115,230,.30);font-weight:900;
+  font-family:var(--font-title);font-size:10px;letter-spacing:-.01em}
+.brand h1{font-size:16px;font-weight:800;color:var(--navy);line-height:1.15}
+.brand span{display:block;margin-top:2px;color:var(--muted);font-size:11px;
+  font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.pill{background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  padding:7px 14px;font-size:12px;font-weight:800;box-shadow:var(--shadow-sm);
+  color:var(--navy);white-space:nowrap}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0D2847 0%,#1A4B8C 50%,#1473E6 100%);
+  color:#fff;border-radius:var(--radius-lg);padding:28px;
+  box-shadow:var(--shadow);margin-bottom:16px}
+.hero::after{content:"";position:absolute;inset:auto -80px -120px auto;
+  width:340px;height:340px;border-radius:50%;
+  border:52px solid rgba(232,100,10,.12);pointer-events:none}
+.hero-inner{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:end}
+.hero h2{font-size:clamp(18px,2.4vw,30px);line-height:1.1;
+  letter-spacing:-.04em;color:#fff !important;font-weight:800;margin-bottom:8px}
+.hero h2 em{font-style:normal;color:var(--orange-mid)}
+.hero p{color:rgba(255,255,255,.72);font-size:13px;line-height:1.6}
+.hero-note{border:1px solid rgba(232,100,10,.30);background:rgba(232,100,10,.10);
+  border-radius:14px;padding:16px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:6px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:12.5px;line-height:1.6}
+
+/* Formula strip */
+.formula-strip{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:10px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;
+  gap:5px 16px;justify-content:center;font-size:12.5px;color:var(--navy)}
+.formula-strip code{font-family:var(--font-num);font-size:11.5px;
+  background:var(--blue-soft);padding:2px 7px;border-radius:5px;
+  font-weight:700;color:var(--blue-deeper);border:1px solid #B3D4F7;white-space:nowrap}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:380px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px}
+
+/* Panel */
+.panel{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;
+  padding:16px 20px 12px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.8)}
+.panel-head h3{font-size:15px;color:var(--navy);font-weight:700}
+.step-tag{color:var(--orange-dark);font-size:11px;font-weight:900;
+  letter-spacing:.04em;text-transform:uppercase}
+
+/* Fields */
+.panel-body{padding:18px 20px 22px}
+.field-group{font-family:var(--font-num);font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--orange-dark);
+  margin:18px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.field-group:first-child{margin-top:0}
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{color:var(--navy);font-weight:700;font-size:13px;
+  display:block;margin-bottom:6px}
+.field .hint{color:var(--muted);font-size:11.5px;line-height:1.4;margin-top:5px}
+
+/* Choice buttons */
+.choice-grid{display:grid;gap:7px}
+.choice-grid-2{grid-template-columns:repeat(2,1fr)}
+.choice-btn{width:100%;text-align:left;border:1.5px solid var(--line);
+  background:var(--surface);color:var(--ink);border-radius:12px;
+  padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .15s;line-height:1.35}
+.choice-btn:hover{border-color:var(--orange);background:var(--orange-soft);color:var(--orange-deeper)}
+.choice-btn.active{border-color:var(--blue);background:var(--blue-soft);
+  color:var(--blue-deeper);box-shadow:0 0 0 3px rgba(20,115,230,.14)}
+.choice-btn.disabled{opacity:.5;cursor:not-allowed}
+.choice-btn.disabled:hover{border-color:var(--line);background:var(--surface);color:var(--ink)}
+
+/* Inputs */
+.inline-wrap{display:grid;grid-template-columns:1fr auto;border:1.5px solid var(--line);
+  border-radius:12px;overflow:hidden;background:var(--surface);transition:all .15s}
+.inline-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(20,115,230,.14)}
+.inline-wrap input{border:none;padding:11px 12px;color:var(--ink);
+  background:transparent;font-weight:700;font-size:15px;
+  font-family:var(--font-num);outline:none;width:100%;min-width:0}
+.inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;font-family:var(--font-body)}
+.inline-wrap .unit{border-left:1px solid var(--line);padding:11px 12px;
+  font-family:var(--font-num);font-size:11px;font-weight:700;color:var(--muted);
+  background:var(--paper);display:flex;align-items:center;white-space:nowrap}
+.select-wrap{border:1.5px solid var(--line);border-radius:12px;
+  background:var(--surface);transition:all .15s}
+.select-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(20,115,230,.14)}
+.select-wrap select{width:100%;border:none;padding:11px 36px 11px 14px;
+  font-size:13px;font-weight:700;color:var(--ink);background:transparent;
+  cursor:pointer;appearance:none;outline:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%2364748B' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center}
+
+/* Buttons */
+.btn-row{display:flex;gap:10px;margin-top:18px}
+.btn-calc{flex:1;padding:13px 18px;border:none;border-radius:12px;font-size:14px;
+  font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--orange),var(--orange-dark));
+  color:#fff;box-shadow:0 6px 18px rgba(232,100,10,.30);transition:all .15s}
+.btn-calc:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(232,100,10,.42)}
+.btn-clear{padding:13px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;
+  font-weight:600;cursor:pointer;background:var(--surface);color:var(--muted);transition:all .15s}
+.btn-clear:hover{border-color:var(--blue);color:var(--blue-dark)}
+
+/* Empty state */
+.empty-state{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:52px 32px;text-align:center;
+  box-shadow:var(--shadow-sm)}
+.empty-icon{font-size:44px;margin-bottom:14px}
+.empty-state h3{font-size:17px;color:var(--navy);font-weight:700;margin-bottom:6px}
+.empty-state p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* Results column */
+.results-col{display:flex;flex-direction:column;gap:12px}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;box-shadow:var(--shadow-sm)}
+.kpi-lbl{color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:6px;font-family:var(--font-num)}
+.kpi-val{color:var(--navy);font-size:22px;font-weight:900;letter-spacing:-.04em;
+  font-family:var(--font-num);line-height:1}
+.kpi-val small{font-size:11px;color:var(--muted);letter-spacing:0;
+  font-weight:600;margin-left:4px;font-family:var(--font-body)}
+.kpi-sub{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.4;
+  font-family:var(--font-num)}
+
+/* Result hero card — deep blue */
+.result-hero{background:linear-gradient(135deg,#0D2847 0%,#1A4B8C 50%,#1473E6 100%);
+  border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow);
+  position:relative;overflow:hidden}
+.result-hero::before{content:"";position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,100,10,.22) 0%,transparent 70%);
+  pointer-events:none}
+.result-hero-inner{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;gap:20px}
+.rh-divider{background:rgba(255,255,255,.18);align-self:stretch}
+.rh-tag{font-family:var(--font-num);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.60);margin-bottom:10px}
+.rh-lbl{font-family:var(--font-num);font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:4px}
+.rh-val{font-family:var(--font-title);font-weight:700;font-size:24px;color:#fff;line-height:1.15}
+.rh-sub{font-size:12px;color:rgba(255,255,255,.70);margin-top:5px;line-height:1.4}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.card-title{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px 12px;border-bottom:1px solid var(--line)}
+.card-title h3{color:var(--navy);font-size:15px;font-weight:700}
+.badge-pill{background:var(--navy);color:#fff;border-radius:999px;padding:5px 12px;
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  font-family:var(--font-title)}
+.badge-pill.accent{background:linear-gradient(135deg,var(--orange),var(--orange-dark))}
+.badge-pill.blue{background:linear-gradient(135deg,var(--blue),var(--blue-deeper))}
+
+/* Detail list */
+.detail-list{list-style:none}
+.detail-list li{display:grid;grid-template-columns:1fr auto;align-items:baseline;
+  gap:14px;padding:10px 20px;border-bottom:1px solid var(--line)}
+.detail-list li:last-child{border-bottom:none}
+.dl-name{font-size:13px;color:var(--muted);line-height:1.4}
+.dl-name b{display:block;font-weight:700;color:var(--ink);font-size:13px;margin-bottom:1px}
+.dl-val{text-align:right;font-family:var(--font-num);font-size:13px;
+  font-weight:600;color:var(--ink);white-space:nowrap}
+.dl-val em{font-style:normal;display:block;font-size:10.5px;font-weight:400;
+  color:var(--muted);margin-top:2px}
+
+/* Media info card */
+.media-info-card{border-left:4px solid var(--orange);border-radius:14px;
+  padding:14px 16px;font-size:12.5px;line-height:1.55;color:var(--muted);
+  background:linear-gradient(135deg,#fff,var(--orange-light))}
+.media-info-card b{display:block;font-size:13px;font-weight:700;
+  color:var(--ink);margin-bottom:3px;font-family:var(--font-title)}
+.media-info-card .source{font-family:var(--font-num);font-size:9.5px;
+  color:var(--orange-dark);margin-top:6px;letter-spacing:.04em;
+  font-weight:600;text-transform:uppercase}
+
+/* Notices */
+.notice{border-radius:12px;padding:13px 16px;font-size:12.5px;line-height:1.6}
+.notice b{display:block;font-family:var(--font-num);font-size:9.5px;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.notice.info{background:var(--blue-soft);border:1px solid #B3D4F7;color:var(--blue-deeper)}
+.notice.info b{color:var(--blue-dark)}
+.notice.warn{background:var(--warn-soft);border:1px solid var(--warn-border);color:var(--warn)}
+.notice.warn b{color:var(--orange)}
+.notice.err{background:var(--err-soft);border:1px solid var(--err-border);color:var(--err)}
+.notice.err b{color:var(--err)}
+.notice.tech{background:var(--paper-soft);border:1px solid var(--line);color:var(--muted)}
+.notice.tech b{color:var(--ink)}
+
+/* Copy bar */
+.btn{border:0;border-radius:999px;padding:11px 22px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-body);
+  background:linear-gradient(135deg,var(--blue),var(--blue-deeper));color:#fff;
+  box-shadow:0 6px 18px rgba(20,115,230,.24);transition:all .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(20,115,230,.34)}
+.btn.sec{background:var(--surface);color:var(--navy);border:1.5px solid var(--line);box-shadow:none}
+.btn.sec:hover{background:var(--paper-soft)}
+.btn.sm{padding:9px 16px;font-size:12px;box-shadow:0 4px 12px rgba(20,115,230,.16)}
+.copy-bar{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:15px 20px;box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.copy-bar span{color:var(--muted);font-size:13px}
+.copy-bar span b{color:var(--navy)}
+
+/* Footer */
+.footer{margin-top:24px;background:var(--blue-soft);border:1px solid #B3D4F7;
+  border-radius:12px;padding:14px 18px;font-size:12px;color:var(--muted);line-height:1.65}
+.footer strong{color:var(--navy);font-weight:700}
+.bottom-bar{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .hero-inner{grid-template-columns:1fr}
+  .result-hero-inner{grid-template-columns:1fr;gap:14px}
+  .rh-divider{display:none}
+}
+@media(max-width:600px){
+  .kpi-row{grid-template-columns:1fr}
+  .choice-grid-2{grid-template-columns:1fr}
+}
+@media print{
+  .input-panel,.formula-strip,.btn-row,.copy-bar{display:none !important}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">BW</div>
+      <div>
+        <h1>Retrolavado por Temperatura</h1>
+        <span>Carbotecnia · Herramienta de ingeniería</span>
+      </div>
+    </div>
+    <div class="pill">MIP Carbotecnia · AWWA B100 · v1.0</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <h2>Calculadora maestra de<br><em>retrolavado</em> por temperatura</h2>
+        <p>Calcule la velocidad y el flujo exacto de retrolavado dinámico según la temperatura del agua, el tipo de medio granular y su densidad. Datos provenientes de fichas técnicas de fabricante y MIPs de Carbotecnia.</p>
+      </div>
+      <div class="hero-note">
+        <b>Fuentes de datos</b>
+        <span>MIP Carbotecnia · Fichas técnicas · AWWA B100 · El flujo final debe validarse operativamente</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula strip -->
+  <div class="formula-strip">
+    <span>Metodología:</span>
+    <code>Q_BW = V_BW × Área(ft²)</code>
+    <code>V_BW = f(T°C, expansión%) — interpolación lineal</code>
+    <code>m/h = GPM/ft² × 2.4448</code>
+    <code>Vol. por BW = Q_BW × 10 min</code>
+  </div>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- Input panel -->
+    <div class="input-panel">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Parámetros de operación</h3>
+          <span class="step-tag">01 · Entradas</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="field-group">Medio granular</div>
+
+          <div class="field">
+            <label>Familia de medio</label>
+            <input type="hidden" id="bw-family" value="carbon">
+            <div class="choice-grid choice-grid-2" id="bw-family-choices"></div>
+          </div>
+
+          <div class="field">
+            <label>Medio específico</label>
+            <input type="hidden" id="bw-media">
+            <div class="choice-grid" id="bw-media-choices"></div>
+            <div class="hint" id="bw-media-hint"></div>
+          </div>
+
+          <div class="field-group">Condiciones de operación</div>
+
+          <div class="field">
+            <label>Temperatura del agua</label>
+            <div class="inline-wrap">
+              <input type="number" id="bw-temp" value="25" min="5" max="40" step="1">
+              <span class="unit">°C</span>
+            </div>
+            <div class="hint">Rango: 5–40 °C · la viscosidad varía con la temperatura</div>
+          </div>
+
+          <div class="field">
+            <label>Expansión de cama deseada</label>
+            <input type="hidden" id="bw-expansion" value="40">
+            <div class="choice-grid" id="bw-expansion-choices"></div>
+            <div class="hint" id="bw-exp-hint">40% es el valor estándar para la mayoría de medios</div>
+          </div>
+
+          <div class="field-group">Equipo</div>
+
+          <div class="field">
+            <label>Tamaño del tanque</label>
+            <div class="select-wrap">
+              <select id="bw-tank"></select>
+            </div>
+            <div class="hint">Diámetros comerciales · catálogo Carbotecnia</div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-calc" type="button" id="bw-btn-calc">Calcular retrolavado</button>
+            <button class="btn-clear" type="button" id="bw-btn-reset">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /input-panel -->
+
+    <!-- Results column -->
+    <div class="results-col" id="bw-results-col">
+
+      <div class="empty-state" id="bw-empty">
+        <div class="empty-icon">🌊</div>
+        <h3>Seleccione el medio y las condiciones</h3>
+        <p>Configure el medio granular, temperatura y expansión,<br>luego presione <strong>Calcular retrolavado</strong>.</p>
+      </div>
+
+      <!-- Dynamic results injected here -->
+      <div id="bw-results-body"></div>
+
+      <!-- Copy bar (static, shown after calculation) -->
+      <div class="copy-bar" id="bw-copy-bar" style="display:none">
+        <span><b>Parámetros listos</b> · Cópielos para programar la válvula de retrolavado.</span>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn sec sm" id="bw-btn-print" type="button">🖨 Imprimir</button>
+          <button class="btn sm" id="bw-btn-copy" type="button">📋 Copiar parámetros</button>
+        </div>
+      </div>
+
+    </div><!-- /results-col -->
+  </div><!-- /layout -->
+
+  <!-- Footer -->
+  <div class="footer">
+    <strong>Retrolavado dinámico · Carbotecnia</strong><br>
+    Los valores de ficha técnica dan una idea aproximada de la velocidad de retrolavado.
+    El flujo real debe validarse operativamente: incrementar poco a poco hasta que empiecen a salir
+    partículas del medio, luego disminuir hasta que dejen de salir. Ese flujo es el correcto.
+    Cerrar el retrolavado gradualmente (~5 s) para permitir la estratificación.
+  </div>
+  <div class="bottom-bar">
+    <span>© Carbotecnia · Zapopan, Jalisco · Mexico</span>
+    <span>MIP Retrolavado · Fichas técnicas · AWWA B100 · v1.0</span>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+/* ================================================================
+   BASE DE DATOS DE MEDIOS GRANULARES
+   ================================================================ */
+var MEDIA_DB = {
+  gac_coco_12x40:{
+    family:'carbon', label:'GAC Coco 12×40 (Micro 4)',
+    density_kgL:0.62, density_lbft3:38.7,
+    source:'Ficha técnica Carbotecnia Micro 4 — curvas de expansión 12×40',
+    reason:'Carbón de concha de coco con microporos predominantes. Densidad baja (0.62 kg/L) → requiere menor energía cinética para expandir la cama.',
+    matrix:[[10,4.0,5.5,7.0],[17,5.0,6.5,8.0],[25,6.5,8.5,10.0],[30,7.5,10.0,12.0]]
+  },
+  gac_coco_8x30:{
+    family:'carbon', label:'GAC Coco 8×30 (Micro 4)',
+    density_kgL:0.62, density_lbft3:38.7,
+    source:'Ficha técnica Carbotecnia Micro 4 — curvas de expansión 8×30',
+    reason:'Granulometría más gruesa que 12×40, requiere mayor flujo para la misma expansión.',
+    matrix:[[10,8.0,11.0,14.0],[17,10.0,14.0,18.0],[25,13.0,18.0,22.0],[30,15.0,20.0,25.0]]
+  },
+  gac_bit_8x30:{
+    family:'carbon', label:'GAC Bituminoso 8×30 (Gama B)',
+    density_kgL:0.48, density_lbft3:30.0,
+    source:'Ficha técnica Carbotecnia Gama B — curvas de expansión 8×30',
+    reason:'Carbón bituminoso de menor densidad que el coco (0.48 kg/L) → se expande más fácilmente.',
+    matrix:[[10,7.5,10.5,12.0],[17,9.5,12.0,14.0],[25,12.0,15.0,17.0],[30,14.0,17.5,20.0]]
+  },
+  gac_bit_12x40:{
+    family:'carbon', label:'GAC Bituminoso 12×40 (Gama B)',
+    density_kgL:0.50, density_lbft3:31.2,
+    source:'Ficha técnica Carbotecnia Gama B — curvas de expansión 12×40',
+    reason:'Granulometría fina: menor flujo necesario vs. 8×30. Densidad ligeramente mayor que 8×30 del mismo producto.',
+    matrix:[[10,4.0,5.5,7.0],[17,5.0,7.0,8.0],[25,6.5,8.5,10.0],[30,7.5,10.0,12.0]]
+  },
+  arena_silica:{
+    family:'lecho', label:'1 solo medio (Arena sílica)',
+    density_kgL:1.60, density_lbft3:100,
+    source:'MIP Filtración rápida en lecho profundo Carbotecnia',
+    reason:'Alta densidad (1.60 kg/L, GE 2.6). Requiere alta energía cinética para expandir la cama.',
+    matrix:[[10,14.0,18.0,22.0],[17,16.0,20.0,26.0],[25,19.0,24.0,30.0],[30,22.0,28.0,34.0]]
+  },
+  zeolita:{
+    family:'lecho', label:'1 solo medio (Zeolita)',
+    density_kgL:0.88, density_lbft3:55,
+    source:'Fichas técnicas Zeolita — valores exactos de retrolavado',
+    reason:'Alumino-silicato de alta pureza. Densidad media (0.88 kg/L). Al ser más ligera, requiere menor flujo para expandirse en comparación con la arena.',
+    matrix:[[5,8.0,12.5,16.0],[10,10.0,14.8,19.0],[16,12.0,17.2,22.0],[21,14.0,19.8,25.0],[27,16.0,22.3,28.0]]
+  },
+  filtro_dual:{
+    family:'lecho', label:'Filtro Dual (Arena sílica + Antracita)',
+    density_kgL:1.60, density_lbft3:100,
+    source:'MIP Filtración rápida en lecho profundo Carbotecnia',
+    reason:'La velocidad de retrolavado la dicta el medio de mayor densidad (Arena) para garantizar la fluidización y re-estratificación de ambas capas.',
+    isMultimedia:true,
+    matrix:[[10,14.0,18.0,22.0],[17,16.0,20.0,26.0],[25,19.0,24.0,30.0],[30,22.0,28.0,34.0]]
+  },
+  multimedia:{
+    family:'lecho', label:'Multimedia (Arena, Zeolita, Garnet + Grava)',
+    density_kgL:1.60, density_lbft3:100,
+    source:'MIP Filtración rápida en lecho profundo Carbotecnia',
+    reason:'Compuesto por Zeolita (arriba), Arena (medio) y Garnet 8-12/30-40 (fondo). El retrolavado lo dicta el componente más denso para asegurar la expansión completa.',
+    isMultimedia:true,
+    matrix:[[10,14.0,18.0,22.0],[15,16.0,21.0,26.0],[20,18.0,24.0,28.0],[25,20.0,26.0,30.0],[30,23.0,28.0,34.0]]
+  },
+  resina_cat:{
+    family:'resina', label:'Resina Catiónica Fuerte (Resinex K-8 FG)',
+    density_kgL:0.85, density_lbft3:53,
+    source:'MIP Carbotecnia suavizadores — retrolavado fijo a 50% expansión',
+    reason:'Las resinas son esféricas y de baja densidad. Se retroalavan siempre a 50% de expansión con velocidad constante (~6 gpm/ft²) prácticamente independiente de la temperatura.',
+    forceExpansion:50,
+    matrix:[[5,5.0,5.5,6.0],[15,5.5,5.8,6.0],[25,5.8,6.0,6.0],[35,6.0,6.0,6.0]]
+  },
+  katalox:{
+    family:'catalizador', label:'Katalox Light (Zeolita + MnO₂)',
+    density_kgL:1.06, density_lbft3:66,
+    source:'Ficha técnica Katalox Light Rev. 02/26 — valores EXACTOS de velocidad óptima',
+    reason:'Zeolita recubierta con MnO₂ de alta capacidad. Densidad intermedia (1.06 kg/L). La ficha técnica publica velocidades óptimas para 30% de expansión por temperatura.',
+    matrix:[[5,12.0,15.0,18.0],[10,16.0,19.5,23.0],[15,19.0,23.0,27.0],[20,22.0,26.0,30.0],[25,24.0,28.0,32.0],[30,25.0,29.0,33.0]]
+  }
+};
+
+var FAMILIES = {
+  carbon:'Carbón Activado',
+  lecho:'Lecho Profundo',
+  resina:'Resinas I.I.',
+  catalizador:'Catalizadores'
+};
+
+var EXPANSIONS = [
+  {value:'30',label:'30% — mínimo recomendado'},
+  {value:'40',label:'40% — estándar Carbotecnia'},
+  {value:'50',label:'50% — fluidización completa'}
+];
+
+var TANKS = [
+  {label:'9" × 48"',diam:9,height:48,areaFt2:0.44,volFt3:1.0},
+  {label:'10" × 54"',diam:10,height:54,areaFt2:0.55,volFt3:1.5},
+  {label:'12" × 52"',diam:12,height:52,areaFt2:0.79,volFt3:2.0},
+  {label:'13" × 54"',diam:13,height:54,areaFt2:0.92,volFt3:2.5},
+  {label:'14" × 65"',diam:14,height:65,areaFt2:1.07,volFt3:3.0},
+  {label:'16" × 65"',diam:16,height:65,areaFt2:1.40,volFt3:4.0},
+  {label:'18" × 65"',diam:18,height:65,areaFt2:1.77,volFt3:5.0},
+  {label:'21" × 62"',diam:21,height:62,areaFt2:2.41,volFt3:7.0},
+  {label:'24" × 72"',diam:24,height:72,areaFt2:3.14,volFt3:10.0},
+  {label:'30" × 72"',diam:30,height:72,areaFt2:4.91,volFt3:15.0},
+  {label:'36" × 72"',diam:36,height:72,areaFt2:7.07,volFt3:20.0},
+  {label:'42" × 72"',diam:42,height:72,areaFt2:9.62,volFt3:30.0},
+  {label:'48" × 72"',diam:48,height:72,areaFt2:12.57,volFt3:40.0},
+  {label:'63" × 67"',diam:63,height:67,areaFt2:21.65,volFt3:60.0}
+];
+
+/* ================================================================
+   UTILIDADES
+   ================================================================ */
+function bwEl(id){ return document.getElementById(id); }
+function bwFmt(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
+function bwFmtInt(n){ return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'; }
+
+function interpolate(matrix, tempC, expIdx){
+  if(matrix.length===1) return matrix[0][expIdx+1];
+  if(tempC<=matrix[0][0]) return matrix[0][expIdx+1];
+  if(tempC>=matrix[matrix.length-1][0]) return matrix[matrix.length-1][expIdx+1];
+  for(var i=0;i<matrix.length-1;i++){
+    var t0=matrix[i][0],t1=matrix[i+1][0];
+    if(tempC>=t0&&tempC<=t1){
+      var v0=matrix[i][expIdx+1],v1=matrix[i+1][expIdx+1];
+      return v0+(v1-v0)*((tempC-t0)/(t1-t0));
+    }
+  }
+  return matrix[0][expIdx+1];
+}
+
+function bwSetActive(containerId, value){
+  var box=bwEl(containerId);
+  if(!box) return;
+  box.querySelectorAll('.choice-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.getAttribute('data-value')===value);
+  });
+}
+
+/* ================================================================
+   POPULATE UI
+   ================================================================ */
+function bwPopulateFamilies(){
+  var box=bwEl('bw-family-choices');
+  box.innerHTML=Object.keys(FAMILIES).map(function(k){
+    return '<button type="button" class="choice-btn" data-value="'+k+'">'+FAMILIES[k]+'</button>';
+  }).join('');
+  bwEl('bw-family').value='carbon';
+  bwSetActive('bw-family-choices','carbon');
+  box.querySelectorAll('.choice-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      bwEl('bw-family').value=this.getAttribute('data-value');
+      bwSetActive('bw-family-choices',this.getAttribute('data-value'));
+      bwPopulateMedia();
+    });
+  });
+  bwPopulateMedia();
+}
+
+function bwPopulateMedia(){
+  var fam=bwEl('bw-family').value;
+  var box=bwEl('bw-media-choices');
+  var items=Object.keys(MEDIA_DB).filter(function(k){ return MEDIA_DB[k].family===fam; });
+  box.innerHTML=items.map(function(k){
+    return '<button type="button" class="choice-btn" data-value="'+k+'">'+MEDIA_DB[k].label+'</button>';
+  }).join('');
+  if(items.length){
+    bwEl('bw-media').value=items[0];
+    bwSetActive('bw-media-choices',items[0]);
+  }
+  box.querySelectorAll('.choice-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      bwEl('bw-media').value=this.getAttribute('data-value');
+      bwSetActive('bw-media-choices',this.getAttribute('data-value'));
+      bwUpdateMediaHint();
+      bwUpdateExpansion();
+    });
+  });
+  bwUpdateMediaHint();
+  bwUpdateExpansion();
+}
+
+function bwPopulateExpansion(){
+  var box=bwEl('bw-expansion-choices');
+  box.innerHTML=EXPANSIONS.map(function(e){
+    return '<button type="button" class="choice-btn" data-value="'+e.value+'">'+e.label+'</button>';
+  }).join('');
+  bwEl('bw-expansion').value='40';
+  bwSetActive('bw-expansion-choices','40');
+  box.querySelectorAll('.choice-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      if(this.classList.contains('disabled')) return;
+      bwEl('bw-expansion').value=this.getAttribute('data-value');
+      bwSetActive('bw-expansion-choices',this.getAttribute('data-value'));
+    });
+  });
+}
+
+function bwLockExpansion(value){
+  bwEl('bw-expansion').value=String(value);
+  bwSetActive('bw-expansion-choices',String(value));
+  bwEl('bw-expansion-choices').querySelectorAll('.choice-btn').forEach(function(btn){
+    btn.classList.toggle('disabled', btn.getAttribute('data-value')!==String(value));
+  });
+}
+
+function bwUnlockExpansion(){
+  bwEl('bw-expansion-choices').querySelectorAll('.choice-btn').forEach(function(btn){
+    btn.classList.remove('disabled');
+  });
+}
+
+function bwUpdateMediaHint(){
+  var m=MEDIA_DB[bwEl('bw-media').value];
+  if(m) bwEl('bw-media-hint').textContent=
+    'Densidad: '+bwFmt(m.density_kgL,2)+' kg/L ('+bwFmt(m.density_lbft3,0)+' lb/ft³) · '+m.source.split('—')[0].trim();
+}
+
+function bwUpdateExpansion(){
+  var m=MEDIA_DB[bwEl('bw-media').value];
+  if(m&&m.forceExpansion){
+    bwLockExpansion(m.forceExpansion);
+    bwEl('bw-exp-hint').textContent='Resinas: siempre 50% de expansión (MIP Carbotecnia).';
+  } else {
+    bwUnlockExpansion();
+    bwEl('bw-exp-hint').textContent=m&&m.isMultimedia
+      ?'Multimedia: se recomienda 50% para re-estratificación completa.'
+      :'40% es el valor estándar para la mayoría de medios · MIP Carbotecnia';
+  }
+}
+
+function bwPopulateTanks(){
+  bwEl('bw-tank').innerHTML=TANKS.map(function(t,i){
+    return '<option value="'+i+'">'+t.label+' — Área: '+bwFmt(t.areaFt2,2)+' ft²</option>';
+  }).join('');
+  bwEl('bw-tank').value='8';
+}
+
+/* ================================================================
+   CÁLCULO
+   ================================================================ */
+var bwLastResult = null;
+
+function bwCalculate(){
+  var mediaKey=bwEl('bw-media').value;
+  var m=MEDIA_DB[mediaKey];
+  var tempC=parseFloat(bwEl('bw-temp').value)||25;
+  var expPct=m&&m.forceExpansion ? m.forceExpansion : parseInt(bwEl('bw-expansion').value);
+  var tank=TANKS[parseInt(bwEl('bw-tank').value)];
+  if(!m||!tank) return;
+
+  var expIdx = expPct===30?0:expPct===40?1:2;
+  var gpmFt2 = interpolate(m.matrix,tempC,expIdx);
+  var mh      = gpmFt2 * 2.4448;
+  var flowGPM = gpmFt2 * tank.areaFt2;
+  var flowLPM = flowGPM * 3.78541;
+
+  bwLastResult = {m:m,mediaKey:mediaKey,tempC:tempC,expPct:expPct,
+    gpmFt2:gpmFt2,mh:mh,flowGPM:flowGPM,flowLPM:flowLPM,tank:tank};
+
+  bwRenderResults(bwLastResult);
+}
+
+/* ================================================================
+   RENDER
+   ================================================================ */
+function bwRenderResults(r){
+  var m=r.m, tank=r.tank;
+
+  /* KPIs */
+  var kpis =
+    '<div class="kpi-row">'+
+      '<div class="kpi">'+
+        '<div class="kpi-lbl">Velocidad de retrolavado</div>'+
+        '<div class="kpi-val">'+bwFmt(r.gpmFt2,1)+'<small>gpm/ft²</small></div>'+
+        '<div class="kpi-sub">'+bwFmt(r.mh,1)+' m/h · @'+r.tempC+'°C · '+r.expPct+'% exp.</div>'+
+      '</div>'+
+      '<div class="kpi">'+
+        '<div class="kpi-lbl">Flujo total — válvula</div>'+
+        '<div class="kpi-val">'+bwFmt(r.flowGPM,1)+'<small>GPM</small></div>'+
+        '<div class="kpi-sub">'+bwFmt(r.flowLPM,1)+' L/min · '+bwFmt(r.flowLPM*60/1000,2)+' m³/h</div>'+
+      '</div>'+
+      '<div class="kpi">'+
+        '<div class="kpi-lbl">Área del tanque</div>'+
+        '<div class="kpi-val">'+bwFmt(tank.areaFt2,2)+'<small>ft²</small></div>'+
+        '<div class="kpi-sub">'+tank.label+' · '+bwFmt(tank.volFt3,1)+' ft³ medio</div>'+
+      '</div>'+
+    '</div>';
+
+  /* Hero card */
+  var hero =
+    '<div class="result-hero">'+
+      '<div class="result-hero-inner">'+
+        '<div>'+
+          '<div class="rh-tag">'+m.label+' · '+r.tempC+'°C · '+r.expPct+'% expansión</div>'+
+          '<div class="rh-lbl">Programar en válvula</div>'+
+          '<div class="rh-val">'+bwFmt(r.flowGPM,1)+' GPM</div>'+
+          '<div class="rh-sub">'+bwFmt(r.flowLPM,1)+' L/min · tanque '+tank.label+'</div>'+
+        '</div>'+
+        '<div class="rh-divider"></div>'+
+        '<div>'+
+          '<div class="rh-lbl">Velocidad superficial interpolada</div>'+
+          '<div class="rh-val">'+bwFmt(r.gpmFt2,2)+' gpm/ft²</div>'+
+          '<div class="rh-sub">'+bwFmt(r.mh,2)+' m/h · a '+r.tempC+'°C</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+
+  /* Notices */
+  var notices = '';
+  if(m.isMultimedia)
+    notices+=
+      '<div class="notice info">'+
+        '<b>Filtros de múltiples medios (Dual / Multimedia)</b>'+
+        'En lechos compuestos por varios medios, la velocidad de retrolavado la dicta el medio de mayor densidad '+
+        '(<strong>arena sílica o garnet</strong>). El flujo calculado garantiza la energía cinética suficiente para '+
+        'expandir toda la cama y permitir que los materiales se re-estratifiquen por diferencia de densidades.'+
+      '</div>';
+
+  if(r.flowGPM>60)
+    notices+=
+      '<div class="notice warn">'+
+        '<b>Alerta — tanque de agua clara recomendado</b>'+
+        'El flujo total ('+bwFmt(r.flowGPM,1)+' GPM / '+bwFmt(r.flowLPM,1)+' L/min) supera los 60 GPM. '+
+        'Se recomienda instalar un <strong>tanque de agua clara</strong> con capacidad mínima de '+
+        bwFmtInt(r.flowGPM*10)+' galones ('+bwFmtInt(r.flowGPM*10*3.78541/1000)+' m³) para 10 minutos de retrolavado.'+
+      '</div>';
+
+  if(m.forceExpansion)
+    notices+=
+      '<div class="notice info">'+
+        '<b>Resinas — expansión fija al 50%</b>'+
+        'Las resinas de intercambio iónico se retroalavan siempre a 50% de expansión con velocidad prácticamente '+
+        'constante (~6 gpm/ft²), independiente de la temperatura. El retrolavado en resinas sirve principalmente '+
+        'para descompactar la cama y eliminar finos.'+
+      '</div>';
+
+  /* Media info card */
+  var mediaCard =
+    '<div class="card">'+
+      '<div class="card-title">'+
+        '<h3>'+m.label+'</h3>'+
+        '<span class="badge-pill">Medio seleccionado</span>'+
+      '</div>'+
+      '<div style="padding:16px 20px">'+
+        '<div class="media-info-card">'+
+          '<b>'+m.label+'</b>'+
+          'Densidad aparente: <strong>'+bwFmt(m.density_kgL,2)+' kg/L</strong> ('+bwFmt(m.density_lbft3,0)+' lb/ft³)<br>'+
+          m.reason+
+          '<div class="source">Fuente: '+m.source+'</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+
+  /* Detail card */
+  var detail =
+    '<div class="card">'+
+      '<div class="card-title">'+
+        '<h3>Detalles del cálculo</h3>'+
+        '<span class="badge-pill accent">02 · Detalle</span>'+
+      '</div>'+
+      '<ul class="detail-list">'+
+        dli('Medio granular','',m.label,'')+
+        dli('Densidad aparente','',bwFmt(m.density_kgL,2)+' kg/L',bwFmt(m.density_lbft3,0)+' lb/ft³')+
+        dli('Temperatura del agua','',r.tempC+' °C',bwFmt(r.tempC*9/5+32,1)+' °F')+
+        dli('Expansión de cama','',r.expPct+'%'+(m.forceExpansion?' (forzado)':''),'')+
+        dli('Velocidad interpolada','Interpolación lineal entre puntos de ficha técnica.',
+          bwFmt(r.gpmFt2,2)+' gpm/ft²',bwFmt(r.mh,2)+' m/h')+
+        dli('Tanque seleccionado','',tank.label,
+          'Área: '+bwFmt(tank.areaFt2,2)+' ft² · Vol: '+bwFmt(tank.volFt3,1)+' ft³')+
+        dli('Flujo total de retrolavado','Velocidad × área del tanque.',
+          bwFmt(r.flowGPM,1)+' GPM',bwFmt(r.flowLPM,1)+' L/min · '+bwFmt(r.flowLPM*60/1000,2)+' m³/h')+
+        dli('Volumen por retrolavado (10 min)','',
+          bwFmtInt(r.flowGPM*10)+' gal',bwFmt(r.flowGPM*10*3.78541/1000,2)+' m³')+
+      '</ul>'+
+    '</div>';
+
+  /* Tech notice */
+  var techNotice =
+    '<div class="notice tech">'+
+      '<b>Nota de ingeniería · MIP Retrolavado Carbotecnia</b>'+
+      'Los valores de ficha técnica son orientativos. El flujo real debe validarse operativamente: '+
+      'incrementar poco a poco hasta que empiecen a salir partículas del medio, luego disminuir hasta '+
+      'que dejen de salir. Ese es el flujo correcto. Cerrar el retrolavado gradualmente (~5 s) para '+
+      'permitir la estratificación de los materiales.'+
+    '</div>';
+
+  bwEl('bw-empty').style.display = 'none';
+  bwEl('bw-results-body').innerHTML = kpis + hero + notices + mediaCard + detail + techNotice;
+  bwEl('bw-copy-bar').style.display = '';
+}
+
+function dli(name, sub, val, valSub){
+  return '<li>'+
+    '<div class="dl-name"><b>'+name+'</b>'+(sub?sub:'')+'</div>'+
+    '<div class="dl-val">'+val+(valSub?'<em>'+valSub+'</em>':'')+'</div>'+
+    '</li>';
+}
+
+/* ================================================================
+   COPIAR PARÁMETROS
+   ================================================================ */
+function bwCopy(){
+  var r=bwLastResult;
+  if(!r) return;
+  var lines=[
+    '═══════════════════════════════════════════════════',
+    '  PARÁMETROS DE RETROLAVADO — Carbotecnia v1.0',
+    '═══════════════════════════════════════════════════','',
+    'Medio:            '+r.m.label,
+    'Densidad:         '+bwFmt(r.m.density_kgL,2)+' kg/L',
+    'Temperatura:      '+r.tempC+' °C',
+    'Expansión:        '+r.expPct+'%','',
+    'VELOCIDAD:        '+bwFmt(r.gpmFt2,2)+' gpm/ft² ('+bwFmt(r.mh,2)+' m/h)',
+    'FLUJO TOTAL:      '+bwFmt(r.flowGPM,1)+' GPM ('+bwFmt(r.flowLPM,1)+' L/min)',
+    'TANQUE:           '+r.tank.label+' — área '+bwFmt(r.tank.areaFt2,2)+' ft²',
+    'VOL. POR RETRO:   '+bwFmtInt(r.flowGPM*10)+' gal (10 min)','',
+    '─────────────────────────────────────────────────',
+    'Carbotecnia · www.carbotecnia.info',
+    'Validar operativamente · MIP Retrolavado',
+    '─────────────────────────────────────────────────'
+  ];
+  var text=lines.join('\n');
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(bwCopiedState);
+  } else {
+    var ta=document.createElement('textarea');
+    ta.value=text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); bwCopiedState();
+  }
+}
+
+function bwCopiedState(){
+  var btn=bwEl('bw-btn-copy'), orig=btn.textContent;
+  btn.textContent='✓ Copiado';
+  btn.style.background='var(--ok-soft)';
+  btn.style.color='var(--ok)';
+  setTimeout(function(){
+    btn.textContent=orig;
+    btn.style.background='';
+    btn.style.color='';
+  }, 2200);
+}
+
+/* ================================================================
+   LIMPIAR
+   ================================================================ */
+function bwReset(){
+  bwEl('bw-temp').value='25';
+  bwEl('bw-expansion').value='40';
+  bwUnlockExpansion();
+  bwSetActive('bw-expansion-choices','40');
+  bwEl('bw-family').value='carbon';
+  bwEl('bw-tank').value='8';
+  bwSetActive('bw-family-choices','carbon');
+  bwPopulateMedia();
+  bwEl('bw-empty').style.display='';
+  bwEl('bw-results-body').innerHTML='';
+  bwEl('bw-copy-bar').style.display='none';
+  bwLastResult=null;
+}
+
+/* ================================================================
+   EVENTOS
+   ================================================================ */
+bwEl('bw-btn-calc').addEventListener('click', bwCalculate);
+bwEl('bw-btn-reset').addEventListener('click', bwReset);
+bwEl('bw-btn-print').addEventListener('click', function(){ window.print(); });
+bwEl('bw-btn-copy').addEventListener('click', bwCopy);
+bwEl('bw-temp').addEventListener('keydown', function(e){ if(e.key==='Enter') bwCalculate(); });
+
+bwPopulateExpansion();
+bwPopulateFamilies();
+bwPopulateTanks();
+</script>
+</body>
+</html>
