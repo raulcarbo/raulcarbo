@@ -653,7 +653,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
           <tr>
             <th>Tamaño de recipiente</th>
             <th>Volumen carbón (ft³)</th>
-            <th>Grava soporte (ft³)</th>
+            <th>Grava 1/8×1/16 (ft³)</th>
             <th>Área transversal (ft²)</th>
             <th>Diámetro (in)</th>
             <th>Q retrolavado (GPM)</th>
@@ -716,20 +716,20 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 </div><!-- /shell -->
 <script>
 var GAC_VESSELS = [
-  { vessel:'9 x 48',  carbonFt3:1,   areaFt2:0.44,  diameterIn:9  },
-  { vessel:'10 x 54', carbonFt3:1.5, areaFt2:0.55,  diameterIn:10 },
-  { vessel:'12 x 52', carbonFt3:2,   areaFt2:0.79,  diameterIn:12 },
-  { vessel:'13 x 54', carbonFt3:2.5, areaFt2:0.92,  diameterIn:13 },
-  { vessel:'14 x 65', carbonFt3:3,   areaFt2:1.07,  diameterIn:14 },
-  { vessel:'16 x 65', carbonFt3:4,   areaFt2:1.40,  diameterIn:16 },
-  { vessel:'18 x 65', carbonFt3:5,   areaFt2:1.77,  diameterIn:18 },
-  { vessel:'21 x 62', carbonFt3:7,   areaFt2:2.41,  diameterIn:21 },
-  { vessel:'24 x 72', carbonFt3:10,  areaFt2:3.14,  diameterIn:24 },
-  { vessel:'30 x 72', carbonFt3:15,  areaFt2:4.91,  diameterIn:30 },
-  { vessel:'36 x 72', carbonFt3:20,  areaFt2:7.07,  diameterIn:36 },
-  { vessel:'42 x 72', carbonFt3:30,  areaFt2:9.62,  diameterIn:42 },
-  { vessel:'48 x 72', carbonFt3:40,  areaFt2:12.57, diameterIn:48 },
-  { vessel:'63 x 67', carbonFt3:60,  areaFt2:21.65, diameterIn:63 }
+  { vessel:'9 x 48',  carbonFt3:1,   areaFt2:0.44,  diameterIn:9,  gravelFt3:0.14 },
+  { vessel:'10 x 54', carbonFt3:1.5, areaFt2:0.55,  diameterIn:10, gravelFt3:0.18 },
+  { vessel:'12 x 52', carbonFt3:2,   areaFt2:0.79,  diameterIn:12, gravelFt3:0.28 },
+  { vessel:'13 x 54', carbonFt3:2.5, areaFt2:0.92,  diameterIn:13, gravelFt3:0.33 },
+  { vessel:'14 x 65', carbonFt3:3,   areaFt2:1.07,  diameterIn:14, gravelFt3:0.40 },
+  { vessel:'16 x 65', carbonFt3:4,   areaFt2:1.40,  diameterIn:16, gravelFt3:0.54 },
+  { vessel:'18 x 65', carbonFt3:5,   areaFt2:1.77,  diameterIn:18, gravelFt3:0.71 },
+  { vessel:'21 x 62', carbonFt3:7,   areaFt2:2.41,  diameterIn:21, gravelFt3:1.03 },
+  { vessel:'24 x 72', carbonFt3:10,  areaFt2:3.14,  diameterIn:24, gravelFt3:1.43 },
+  { vessel:'30 x 72', carbonFt3:15,  areaFt2:4.91,  diameterIn:30, gravelFt3:2.49 },
+  { vessel:'36 x 72', carbonFt3:20,  areaFt2:7.07,  diameterIn:36, gravelFt3:3.95 },
+  { vessel:'42 x 72', carbonFt3:30,  areaFt2:9.62,  diameterIn:42, gravelFt3:5.87 },
+  { vessel:'48 x 72', carbonFt3:40,  areaFt2:12.57, diameterIn:48, gravelFt3:8.32 },
+  { vessel:'63 x 67', carbonFt3:60,  areaFt2:21.65, diameterIn:63, gravelFt3:17.12 }
 ];
 
 var GAC_CARBON_TYPES = {
@@ -781,7 +781,7 @@ function gacBuildVesselTable(){
   tbody.innerHTML='';
   GAC_VESSELS.forEach(function(v,i){
     var bw=(GAC_BW_RATE*v.areaFt2).toFixed(1);
-    var gravel=(v.carbonFt3*0.20).toFixed(2);
+    var gravel=v.gravelFt3.toFixed(2);
     var tr=document.createElement('tr');
     tr.setAttribute('data-idx',i);
     tr.innerHTML='<td>'+v.vessel+'"</td><td>'+v.carbonFt3+'</td><td>'+gravel+'</td><td>'+v.areaFt2+'</td><td>'+v.diameterIn+'</td><td>'+bw+'</td>';
