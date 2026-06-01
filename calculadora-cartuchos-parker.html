@@ -837,7 +837,7 @@ function parRenderStandard(I, s, sst, flowLpd, solidGpD, massFrac, massExceeded)
   var hero = parEl('par-result-hero');
   hero.className = 'result-hero';
   parEl('par-rh-tag').textContent    = s.label+' · '+s.certifs+' · '+I.micron+' µm absoluto';
-  parEl('par-rh-config').textContent = best.label+'"';
+  parEl('par-rh-config').textContent = best.label;
   parEl('par-rh-sub1').textContent   = best.tieUsed+' TIE totales · '+I.micron+' µm · absoluto ≥ 99.98%';
   parEl('par-rh-lbl2').textContent   = 'Vida útil '+lifeDesc;
   parEl('par-rh-life').textContent   = lifeStr;
@@ -856,14 +856,14 @@ function parRenderStandard(I, s, sst, flowLpd, solidGpD, massFrac, massExceeded)
     li('TIE calculados','Equivalentes de 10" necesarios.',
       tie+' TIE', parFmt(I.flowGpm,2)+' GPM ÷ '+parFmt(s.gpmPerTie,1)+' = '+parFmt(tieFrac,2)+' → '+tie+' TIE')+
     li('Configuración recomendada','Mayor longitud = menos housings.',
-      best.label+'"', best.tieUsed+' TIE · '+best.count+' cartucho'+(best.count>1?'s':'')+' de '+best.length+'"')+
+      best.label, best.tieUsed+' TIE · '+best.count+' cartucho'+(best.count>1?'s':'')+' de '+best.length+'"')+
     li('Presión disponible','',
       parFmt(I.presPsi,1)+' psi '+(preOk?'<span class="tag tag-ok">OK</span>':'<span class="tag tag-err">Bajo</span>'),
       parFmt(I.presPsi/14.5038,2)+' bar · cambio a '+s.changePsi+' psi ΔP');
 
   /* Alternatives */
   parEl('par-alt-list').innerHTML =
-    li(best.label+'"','<span style="color:var(--accent);font-weight:700">✓ Recomendado</span>',
+    li(best.label,'<span style="color:var(--accent);font-weight:700">✓ Recomendado</span>',
       best.tieUsed+' TIE', best.count+' cart. de '+best.length+'"')+
     phys.slice(1).map(function(p){
       return li(p.count+' cartucho'+(p.count>1?'s':'')+' de '+p.length+'"', p.tieUsed+' TIE totales',
@@ -1012,7 +1012,7 @@ function parCopySummary(){
     lines.push('CONFIGURACIÓN: '+r.configLabel);
     lines.push('MÓDULOS 20" EQUIV.: '+r.n20);
   } else {
-    lines.push('CONFIGURACIÓN: '+r.best.label+'"');
+    lines.push('CONFIGURACIÓN: '+r.best.label);
     lines.push('TIE REQUERIDOS: '+r.tie);
   }
   var lifeStr = parLifeLabel(r.lifeDays, r.lifeHrs, r.solidGpD);
