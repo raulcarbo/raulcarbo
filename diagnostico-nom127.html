@@ -325,7 +325,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         <div class="hero-badges">
           <span class="hero-badge">8 parámetros NOM-127</span>
           <span class="hero-badge">Tren lógico de proceso</span>
-          <span class="hero-badge">Katalox · GAC · Ósmosis · UV</span>
+          <span class="hero-badge">Katalox · GAC · OI (SDT + As) · UV</span>
           <span class="hero-badge">Apéndice C NOM-127</span>
         </div>
       </div>
@@ -334,8 +334,8 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         <ul>
           <li>Filtración profunda (turbidez)</li>
           <li>Katalox Light — Fe²⁺, Mn²⁺, S²⁻</li>
-          <li>Bayoxide E33 — Arsénico</li>
           <li>Carbón Activado Granular</li>
+          <li>Ósmosis Inversa — SDT y Arsénico</li>
           <li>Suavizador catiónico (dureza)</li>
           <li>Ósmosis Inversa (SDT > 1,000)</li>
           <li>Desinfección UV / Ozonación</li>
@@ -571,8 +571,8 @@ function dxEvaluate(inp){
 /* ================================================================
    CONSTRUCTOR DEL TREN DE TRATAMIENTO
    El orden sigue la lógica de ingeniería de procesos:
-   Oxidación → Filtración gruesa → Metales → Arsénico → Orgánicos
-   → Dureza → Desmineralización → Desinfección.
+   Oxidación → Filtración gruesa → Metales (Katalox) → Orgánicos (GAC)
+   → Dureza (Suavizador) → OI (SDT y/o Arsénico) → Desinfección UV.
 
    Fuentes de cada decisión indicadas en comentarios.
    ================================================================ */
@@ -583,15 +583,16 @@ function dxBuildTrain(inp, fl){
   var needsOxidant = fl.fe.fail || fl.mn.fail || fl.as.fail;
   var needsFiltGrossa = fl.turbidez.fail || inp.fuente === 'superficial';
   var needsKatalox = fl.fe.fail || fl.mn.fail;
-  var needsBayoxide = fl.as.fail;
   /* GAC siempre requerido — MIP Ósmosis Inversa: "Cloro libre: 0.1 mg/L" límite
      para alimentación a membranas; también para remoción de orgánicos y pesticidas. */
   var needsGac = true;
-  /* Suavizador si dureza NOM-127 excede 500, O si SDT > 1000 (necesario antes de OI
-     — MIP OI: "prefiere no omitir el suavizador" para proteger membranas; límite
-     dureza al equipo de OI: 170 mg/L). */
-  var needsSuavizador = fl.dureza.fail || fl.sdt.fail;
-  var needsRO = fl.sdt.fail;
+  /* OI requerida si SDT > 1,000 mg/L (NOM-127) O si Arsénico excede norma.
+     Las membranas de poliamida rechazan 97–99% del As(V) (arsenato), generado
+     por pre-oxidación con cloro a partir de As(III). No se usa Bayoxide E33. */
+  var needsRO = fl.sdt.fail || fl.as.fail;
+  /* Suavizador si dureza NOM-127 excede 500, O si hay OI (proteger membranas;
+     límite dureza al equipo de OI: 170 mg/L — MIP OI Carbotecnia). */
+  var needsSuavizador = fl.dureza.fail || needsRO;
   /* UV/desinfección: siempre recomendada para agua potable, obligatoria si hay
      presencia de bacterias (NOM-127 Sección 6). */
   var needsUV = true;
@@ -606,12 +607,19 @@ function dxBuildTrain(inp, fl){
     var asStr = !fl.as.skipped ? 'As '+dxFmt(inp.as,3)+' mg/L' : '';
     var metStr = [feStr,mnStr,asStr].filter(Boolean).join(', ');
     var whyClo = '';
-    if(needsOxidant) whyClo = 'Los metales detectados ('+metStr+') requieren oxidación previa a su remoción catalítica o adsorción.';
-    else whyClo = 'Agua superficial requiere pre-cloración para inhibir microorganismos y facilitar la coagulación de coloides.';
+    if(needsOxidant){
+      whyClo = 'Los contaminantes detectados ('+metStr+') requieren oxidación previa. ';
+      if(fl.as.fail && !fl.as.skipped)
+        whyClo += 'El cloro convierte As(III) → As(V) (arsenato), que es rechazado con mayor eficiencia (~97–99%) por las membranas de Ósmosis Inversa que el As(III) (~70%). ';
+      if(needsKatalox)
+        whyClo += 'El oxidante debe inyectarse 10–20 s antes del Katalox Light (MIP Carbotecnia).';
+    } else {
+      whyClo = 'Agua superficial requiere pre-cloración para inhibir microorganismos y facilitar la coagulación de coloides.';
+    }
     steps.push({
       num: ++stepNum, cat:'oxidacion', catLabel:'Oxidación', catColor:'#D97706', catBg:'#FEFCE8',
       icon:'⚡', name:'Sistema de Cloración (Hipoclorito de Sodio)',
-      why: whyClo + ' El oxidante debe inyectarse 10–20 segundos antes de llegar a la cama de Katalox Light para garantizar mezcla suficiente.',
+      why: whyClo.trim(),
       specs:['Oxidante: NaOCl (hipoclorito)', 'Cloro libre residual: 1 ppm', 'ORP salida Katalox: > 500 mV'],
       source:'MIP Catalizadores MnO₂ Katalox Light · NOM-127 Ap. C',
       alert: needsRO ? 'IMPORTANTE: La concentración de cloro libre en la alimentación a la Ósmosis Inversa no debe exceder 0.1 mg/L (MIP OI). El carbón activado granular del Paso siguiente eliminará el residual.' : ''
@@ -637,7 +645,7 @@ function dxBuildTrain(inp, fl){
      Requerido si hay turbidez que excede el límite, o si hay metales que
      precipitarán como Fe(OH)₃ / MnO₂ luego de la cloración, o si es superficial.
      Fuente: NOM-127 Apéndice C; MIP Katalox — "colocar después del lecho profundo". */
-  if(needsFiltGrossa || needsKatalox || needsBayoxide){
+  if(needsFiltGrossa || needsKatalox){
     var whyLecho = '';
     if(fl.turbidez.fail && !fl.turbidez.skipped)
       whyLecho = 'Turbidez de '+dxFmt(inp.turb,1)+' UNT supera el límite NOM-127 de 4.0 UNT. ';
@@ -680,23 +688,7 @@ function dxBuildTrain(inp, fl){
     });
   }
 
-  /* ── Paso 5: Filtro con Bayoxide E33
-     Fuente: Fichas técnicas Bayoxide E33 (Lanxess).
-     — Adsorción sobre óxido de hierro granular (GEH/Bayoxide E33).
-     — TCCV recomendado: 3–5 min.
-     — Pre-oxidación con Cl convierte As(III) → As(V), más fácilmente adsorbido. */
-  if(needsBayoxide){
-    steps.push({
-      num: ++stepNum, cat:'arsenico', catLabel:'Remoción de arsénico', catColor:'#BE123C', catBg:'#FFF1F2',
-      icon:'💎', name:'Filtro con Bayoxide E33 (GEH)',
-      why: 'Arsénico '+dxFmt(inp.as,3)+' mg/L excede el límite NOM-127-2021 de 0.025 mg/L (reducido de 0.050 en la versión anterior). Bayoxide E33 es un óxido de hierro granular que adsorbe As(III) y As(V). La pre-cloración convierte As(III) a As(V), incrementando la eficiencia de remoción.',
-      specs:['TCCV: 3–5 min', 'pH óptimo: 5.5–8.0', 'Cap. adsorción: 15–45 g As/kg medio', 'Punto de quiebre: monitorear con As < 0.010 mg/L'],
-      source:'Ficha técnica Bayoxide E33 — Lanxess · NOM-127-SSA1-2021 §5.2',
-      alert:''
-    });
-  }
-
-  /* ── Paso 6: Filtro de Carbón Activado Granular (GAC)
+  /* ── Paso 5: Filtro de Carbón Activado Granular (GAC)
      SIEMPRE incluido. Fuentes:
      — MIP Ósmosis Inversa: "Cloro libre: 0.1 mg/L" = límite máximo en alimentación
        a membranas (las destruye si se excede).
@@ -720,8 +712,8 @@ function dxBuildTrain(inp, fl){
     var whySuav = '';
     if(fl.dureza.fail && !fl.dureza.skipped)
       whySuav = 'Dureza '+dxFmt(inp.dureza,0)+' mg/L CaCO₃ supera NOM-127 (500 mg/L). ';
-    if(fl.sdt.fail)
-      whySuav += 'La alimentación a la Ósmosis Inversa requiere dureza < 170 mg/L CaCO₃ (límite de membranas, MIP OI Carbotecnia) para evitar incrustación en membranas de poliamida. ';
+    if(needsRO)
+      whySuav += 'La alimentación a la Ósmosis Inversa requiere dureza < 170 mg/L CaCO₃ (MIP OI Carbotecnia) para evitar incrustación en membranas de poliamida. ';
     if(!whySuav) whySuav = 'Requerido como pretratamiento para la Ósmosis Inversa.';
     steps.push({
       num: ++stepNum, cat:'suavizador', catLabel:'Intercambio iónico', catColor:'#0284C7', catBg:'#F0F9FF',
@@ -733,9 +725,10 @@ function dxBuildTrain(inp, fl){
     });
   }
 
-  /* ── Paso 8: Prefiltros de Cartucho + Ósmosis Inversa
+  /* ── Paso: Prefiltros de Cartucho + Ósmosis Inversa
      Fuente: MIP Ósmosis Inversa Carbotecnia.
-     — SDT > 1,000 mg/L: única tecnología capaz de rechazar el exceso de sales.
+     — SDT > 1,000 mg/L O Arsénico > 0.025 mg/L activan este paso.
+     — Las membranas de poliamida rechazan 97–99% del As(V) (arsenato).
      — Prefiltros de cartucho 1–5 µm obligatorios para SDI < 3.
      — Límites de alimentación OI: Turb < 5 NTU, Fe+Mn < 0.3 mg/L, Cl < 0.1 mg/L. */
   if(needsRO){
@@ -747,13 +740,30 @@ function dxBuildTrain(inp, fl){
       source:'MIP Ósmosis Inversa Carbotecnia · Catálogo Parker Hannifin',
       alert:''
     });
+    /* Construir "why" dinámico para la OI según qué parámetros la activan */
+    var roWhy = '';
+    var roAlert = '';
+    var roReasons = [];
+    if(fl.sdt.fail && !fl.sdt.skipped)
+      roReasons.push('SDT de '+dxFmt(inp.sdt,0)+' mg/L excede el límite NOM-127 de 1,000 mg/L');
+    if(fl.as.fail && !fl.as.skipped)
+      roReasons.push('Arsénico de '+dxFmt(inp.as,3)+' mg/L excede el límite NOM-127-2021 de 0.025 mg/L');
+    roWhy = roReasons.join(' y ') + '. ';
+    roWhy += 'La Ósmosis Inversa es la tecnología seleccionada para tratar estos incumplimientos: rechaza el 95–99% de sales disueltas y el 97–99% del arsénico en forma de arsenato As(V) (generado por la pre-cloración). Las membranas de poliamida enrolladas en espiral retienen iones hidratados > 12–13 Å.';
+    if(fl.sdt.fail && !fl.sdt.skipped)
+      roAlert = 'Para SDT de entrada de '+dxFmt(inp.sdt,0)+' mg/L con 97% de rechazo y 75% de recuperación, el SDT del permeado estimado es ≈'+dxFmt(inp.sdt*0.03,0)+' mg/L. Verificar con software de diseño (ROSA, IMSDesign).';
+    if(fl.as.fail && !fl.as.skipped){
+      var asOut = inp.as * 0.02;
+      if(roAlert) roAlert += ' ';
+      roAlert += 'Arsénico estimado en permeado: ≈'+dxFmt(asOut,4)+' mg/L (rechazo 98% As(V)). Pre-oxidación con cloro es crítica para maximizar el rechazo.';
+    }
     steps.push({
-      num: ++stepNum, cat:'ro', catLabel:'Desmineralización', catColor:'#4338CA', catBg:'#EEF2FF',
+      num: ++stepNum, cat:'ro', catLabel:'Desmineralización / Remoción As', catColor:'#4338CA', catBg:'#EEF2FF',
       icon:'🔮', name:'Sistema de Ósmosis Inversa Industrial',
-      why: 'SDT de '+dxFmt(inp.sdt,0)+' mg/L excede el límite NOM-127 de 1,000 mg/L. La OI es la única tecnología con capacidad de rechazar el 95–99% de sales disueltas. Las membranas de poliamida enrolladas en espiral permiten el paso del agua pero retienen iones disueltos (tamaño < 12-13 Å).',
-      specs:['Membranas: Poliamida enrollada en espiral', 'Rechazo de sales: 95–99%', 'Recuperación típica: 70–80%', 'Presión de operación: 100–200 psi (agua dulce)', 'Cloro < 0.1 mg/L · Dureza < 170 mg/L · Turb < 5 NTU'],
-      source:'MIP Ósmosis Inversa Carbotecnia · Filmtec / Hydranautics · NOM-127',
-      alert: 'IMPORTANTE: El SDT del permeado depende del rechazo de la membrana y la recuperación. Para SDT de entrada de '+dxFmt(inp.sdt,0)+' mg/L con 97% de rechazo y 75% de recuperación, el SDT del permeado estimado es ≈'+dxFmt(inp.sdt*0.03,0)+' mg/L. Verificar con software de diseño (ROSA, IMSDesign).'
+      why: roWhy,
+      specs:['Membranas: Poliamida enrollada en espiral', 'Rechazo sales: 95–99% · Rechazo As(V): 97–99%', 'Recuperación típica: 70–80%', 'Presión: 100–200 psi (agua dulce)', 'Cloro < 0.1 mg/L · Dureza < 170 mg/L · Turb < 5 NTU'],
+      source:'MIP Ósmosis Inversa Carbotecnia · NOM-127-SSA1-2021 §5.2 · Filmtec / Hydranautics',
+      alert: roAlert
     });
   }
 
