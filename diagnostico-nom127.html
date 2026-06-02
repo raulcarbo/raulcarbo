@@ -255,6 +255,25 @@ h1,h2,h3,h4{font-family:var(--font-title)}
   color:var(--teal);font-size:18px;opacity:.6;margin:0 0 0 17px;
   font-family:var(--font-num)}
 
+/* Advisory (Engineering review) card */
+.train-step.advisory{background:var(--warn-soft) !important}
+.adv-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;margin-bottom:10px;
+  border:1px solid var(--warn-border);border-radius:10px;overflow:hidden}
+.adv-table th{font-family:var(--font-num);font-size:10px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--warn);
+  padding:7px 10px 5px;background:var(--warn-soft);border-bottom:1px solid var(--warn-border);text-align:left}
+.adv-table td{padding:8px 10px;border-bottom:1px solid rgba(217,119,6,.10);
+  font-size:12px;vertical-align:top;line-height:1.55}
+.adv-table td.adv-param{font-weight:700;color:var(--ink);white-space:nowrap;min-width:160px}
+.adv-table td.adv-limit{font-family:var(--font-num);font-size:11px;color:var(--warn);
+  font-weight:700;white-space:nowrap;padding-right:14px}
+.adv-table td.adv-risk{color:var(--muted)}
+.adv-table tr:last-child td{border-bottom:none}
+.adv-cta{margin-top:12px;padding:11px 14px;
+  background:linear-gradient(135deg,#B45309,#92400E);
+  border-radius:10px;color:#fff;font-size:13px;font-weight:700;line-height:1.5}
+.adv-cta span{display:block;font-size:11.5px;font-weight:400;opacity:.88;margin-top:3px}
+
 /* ── Copy bar ── */
 .copy-bar{background:var(--surface);border:1px solid var(--line);
   border-radius:var(--radius-lg);padding:15px 20px;box-shadow:var(--shadow-sm);
@@ -765,6 +784,34 @@ function dxBuildTrain(inp, fl){
       source:'MIP Ósmosis Inversa Carbotecnia · NOM-127-SSA1-2021 §5.2 · Filmtec / Hydranautics',
       alert: roAlert
     });
+
+    /* ── Tarjeta de revisión de ingeniería (parámetros críticos OI)
+       Aparece siempre que hay OI para recordar al equipo de ventas que
+       estos parámetros deben validarse antes de cotizar. */
+    steps.push({
+      num: '⚠',
+      isAdvisory: true,
+      cat: 'ingenieria', catLabel: 'Revisión obligatoria — Ingeniería Carbotecnia',
+      catColor: '#B45309', catBg: '#FFFBEB',
+      icon: '📋',
+      name: 'Parámetros críticos para OI — Revisar con Ingeniería Carbotecnia',
+      why: 'El dimensionamiento definitivo de la Ósmosis Inversa requiere validar los siguientes parámetros en el análisis de agua. Si alguno está presente o supera los límites del MIP, contactar al Departamento de Ingeniería antes de cotizar o dimensionar el equipo.',
+      advParams: [
+        { name:'Sílice (SiO₂)',                          limit:'< 20 mg/L',  risk:'Incrustación de sílice amorfa; el gel de sílice obstruye irreversiblemente las membranas.' },
+        { name:'Boro (B)',                                limit:'< 0.5 mg/L', risk:'Bajo rechazo a pH neutro (~70–80%); puede requerir elevación de pH o membranas selectivas.' },
+        { name:'Aluminio (Al)',                           limit:'< 0.05 mg/L',risk:'Precipita como Al(OH)₃ en membranas si el pH fluctúa; colmata prefiltros de cartucho.' },
+        { name:'Hierro + Manganeso (Fe+Mn suma)',         limit:'< 0.3 mg/L', risk:'Verificar residual tras Katalox y suavizador; el Fe/Mn no removido incrusta membranas.' },
+        { name:'Cloro libre residual',                   limit:'< 0.1 mg/L', risk:'El cloro degrada irreversiblemente las membranas de poliamida en horas.' },
+        { name:'DQO (Demanda Química de O₂)',            limit:'< 10 mg/L',  risk:'Biofouling acelerado; carga orgánica alta indica necesidad de pretratamiento adicional.' },
+        { name:'COT (Carbono Orgánico Total)',            limit:'< 3 mg/L',   risk:'Carga orgánica total; exceder este valor incrementa el riesgo de biofouling y deterioro de membrana.' },
+        { name:'Compuestos halogenados adsorbibles (AOX)',limit:'Analizar',   risk:'Pesticidas, solventes clorados, THMs — algunos atraviesan la membrana; requiere análisis especializado.' },
+        { name:'Compuestos orgánicos fijos',             limit:'Analizar',   risk:'Fenoles, ftalatos, plaguicidas no volátiles — evaluar su impacto en rechazo y vida útil de membrana.' },
+        { name:'Bario (Ba²⁺) y Estroncio (Sr²⁺)',       limit:'Analizar',   risk:'BaSO₄ y SrSO₄ son sales prácticamente insolubles; precipitan en membranas sin antiscalante adecuado.' }
+      ],
+      specs: [],
+      source: 'MIP Ósmosis Inversa Carbotecnia · Cuestionario OI · NOM-127-SSA1-2021',
+      alert: ''
+    });
   }
 
   /* ── Paso Final: Desinfección UV
@@ -888,12 +935,45 @@ function dxRenderSemaphore(fl, inp){
 function dxRenderTrain(steps){
   if(!steps.length) return '';
 
-  function stepHtml(s, isLast){
+  function stepHtml(s, isLast, idx){
+    var animDelay = idx * 80;
+    if(s.isAdvisory){
+      var rowsHtml = s.advParams.map(function(p){
+        return '<tr>'+
+          '<td class="adv-param">'+p.name+'</td>'+
+          '<td class="adv-limit">'+p.limit+'</td>'+
+          '<td class="adv-risk">'+p.risk+'</td>'+
+        '</tr>';
+      }).join('');
+      return '<div class="train-connector">↓</div>'+
+        '<div class="train-step advisory" style="animation-delay:'+animDelay+'ms;border-left:4px solid '+s.catColor+'">'+
+          '<div class="step-num-col">'+
+            '<div class="step-num" style="background:'+s.catColor+';font-size:16px">'+s.num+'</div>'+
+          '</div>'+
+          '<div class="step-icon-wrap" style="background:'+s.catBg+';border-color:'+s.catColor+'33">'+
+            s.icon+
+          '</div>'+
+          '<div class="step-body">'+
+            '<div class="step-cat" style="color:'+s.catColor+'">'+s.catLabel+'</div>'+
+            '<div class="step-name">'+s.name+'</div>'+
+            '<div class="step-why">'+s.why+'</div>'+
+            '<table class="adv-table">'+
+              '<thead><tr>'+
+                '<th>Parámetro</th><th>Límite OI</th><th>Riesgo si se excede</th>'+
+              '</tr></thead>'+
+              '<tbody>'+rowsHtml+'</tbody>'+
+            '</table>'+
+            '<div class="adv-cta">📞 Contactar al Departamento de Ingeniería Carbotecnia para validar estos parámetros antes del dimensionamiento definitivo.'+
+              '<span>Solicitar el Cuestionario completo MIP Ósmosis Inversa · Ingeniería Carbotecnia · Zapopan, Jalisco</span>'+
+            '</div>'+
+            '<div class="step-source" style="margin-top:10px">📖 '+s.source+'</div>'+
+          '</div>'+
+        '</div>';
+    }
     var specsHtml = s.specs.filter(Boolean).map(function(sp){
       return '<span class="step-spec">'+sp+'</span>';
     }).join('');
     var alertHtml = s.alert ? '<div class="step-alert">⚠ '+s.alert+'</div>' : '';
-    var animDelay = (s.num - 1) * 80;
     return '<div class="train-step" style="animation-delay:'+animDelay+'ms;border-left:4px solid '+s.catColor+'">'+
       '<div class="step-num-col">'+
         '<div class="step-num" style="background:'+s.catColor+'">'+s.num+'</div>'+
@@ -920,7 +1000,7 @@ function dxRenderTrain(steps){
       '<span class="badge-pill teal">'+steps.length+' etapas</span>'+
     '</div>'+
     '<div class="train-wrap">';
-  steps.forEach(function(s, i){ html += stepHtml(s, i === steps.length - 1); });
+  steps.forEach(function(s, i){ html += stepHtml(s, i === steps.length - 1, i); });
   html += '</div></div>';
   return html;
 }
@@ -1025,6 +1105,18 @@ function dxCopy(){
   lines.push('');
 
   steps.forEach(function(s){
+    if(s.isAdvisory){
+      lines.push('  [⚠] '+s.name.toUpperCase());
+      lines.push('      '+s.why);
+      lines.push('      Parámetros a validar con Ingeniería:');
+      s.advParams.forEach(function(p){
+        lines.push('        · '+p.name+' ('+p.limit+'): '+p.risk);
+      });
+      lines.push('      ACCIÓN: Contactar al Departamento de Ingeniería Carbotecnia.');
+      lines.push('      Fuente: '+s.source);
+      lines.push('');
+      return;
+    }
     lines.push('  ['+s.num+'] '+s.name.toUpperCase());
     lines.push('      Categoría: '+s.catLabel);
     lines.push('      Por qué: '+s.why.replace(/<[^>]+>/g,''));
