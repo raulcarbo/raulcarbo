@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico NOM-127 · Tren de Potabilización · Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#0891B2; --teal-dark:#0E7490; --teal-deeper:#164E63;
+  --teal-soft:#E0F7FA; --teal-light:#F0FDFF; --teal-mid:#22D3EE;
+  --navy:#0D2B4E; --accent:#0891B2;
+  --surface:#fff; --paper:#F4F7FB; --paper-soft:#EEF3FA;
+  --line:#D6DDE7; --ink:#0B1424; --muted:#64748B;
+  --pass:#059669; --pass-soft:#ECFDF5; --pass-border:#6EE7B7;
+  --fail:#DC2626; --fail-soft:#FEF2F2; --fail-border:#FCA5A5;
+  --warn:#D97706; --warn-soft:#FEF3C7; --warn-border:#FCD34D;
+  --info-bg:#EFF6FF; --info-border:#BFDBFE; --info-text:#1E40AF;
+  --shadow:0 1px 3px rgba(11,20,36,.05),0 8px 28px rgba(11,20,36,.09);
+  --shadow-sm:0 1px 3px rgba(11,20,36,.04),0 4px 12px rgba(11,20,36,.07);
+  --radius:16px; --radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:linear-gradient(180deg,#EEF3FA,#E4EBF5);color:var(--ink);
+  font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+.shell{width:min(1380px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* ── Topbar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:14px 22px;margin-bottom:16px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--teal),var(--teal-deeper));
+  box-shadow:0 8px 20px rgba(8,145,178,.35);font-weight:900;
+  font-family:var(--font-title);font-size:11px;letter-spacing:-.01em}
+.brand h1{font-size:16px;font-weight:800;color:var(--navy);line-height:1.15}
+.brand span{display:block;margin-top:2px;color:var(--muted);font-size:11px;
+  font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.pill{background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  padding:7px 14px;font-size:12px;font-weight:800;box-shadow:var(--shadow-sm);
+  color:var(--navy);white-space:nowrap}
+.pill.nom{background:var(--teal-soft);border-color:var(--teal);color:var(--teal-deeper)}
+
+/* ── Hero ── */
+.hero{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#051520 0%,#0A2E4A 45%,#0E4F6B 100%);
+  color:#fff;border-radius:var(--radius-lg);padding:28px;
+  box-shadow:var(--shadow);margin-bottom:16px}
+.hero::before{content:"";position:absolute;top:-60px;right:-60px;
+  width:360px;height:360px;border-radius:50%;
+  background:radial-gradient(circle,rgba(8,145,178,.25) 0%,transparent 70%);pointer-events:none}
+.hero::after{content:"";position:absolute;bottom:-80px;left:20%;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(34,211,238,.12) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:center}
+.hero h2{font-size:clamp(18px,2.4vw,30px);line-height:1.1;
+  letter-spacing:-.04em;color:#fff !important;font-weight:800;margin-bottom:10px}
+.hero h2 em{font-style:normal;color:var(--teal-mid)}
+.hero p{color:rgba(255,255,255,.72);font-size:13px;line-height:1.6;max-width:560px}
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.hero-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;padding:5px 12px;font-size:11px;font-weight:700;color:rgba(255,255,255,.85);
+  font-family:var(--font-title);letter-spacing:.03em;white-space:nowrap}
+.hero-note{border:1px solid rgba(8,145,178,.35);background:rgba(8,145,178,.12);
+  border-radius:14px;padding:18px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:8px;color:var(--teal-mid);font-family:var(--font-title)}
+.hero-note ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+.hero-note li{color:rgba(255,255,255,.75);font-size:12px;line-height:1.5;
+  padding-left:14px;position:relative}
+.hero-note li::before{content:"▶";position:absolute;left:0;font-size:7px;
+  color:var(--teal-mid);top:4px}
+
+/* ── Formula strip ── */
+.formula-strip{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:10px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;
+  gap:5px 16px;justify-content:center;font-size:12.5px;color:var(--navy)}
+.formula-strip code{font-family:var(--font-num);font-size:11.5px;background:var(--teal-soft);
+  padding:2px 7px;border-radius:5px;font-weight:700;color:var(--teal-deeper);
+  border:1px solid #A5F3FC;white-space:nowrap}
+
+/* ── Layout ── */
+.layout{display:grid;grid-template-columns:400px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px}
+.results-col{display:flex;flex-direction:column;gap:14px}
+
+/* ── Panel ── */
+.panel{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;
+  padding:16px 20px 12px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.8)}
+.panel-head h3{font-size:15px;color:var(--navy);font-weight:700}
+.step-tag{color:var(--teal-dark);font-size:11px;font-weight:900;
+  letter-spacing:.04em;text-transform:uppercase}
+.panel-body{padding:18px 20px 22px;display:grid;gap:14px}
+
+/* ── Fields ── */
+.section-lbl{font-family:var(--font-num);font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--teal-dark);
+  padding-bottom:5px;border-bottom:1px solid var(--line)}
+.field{display:grid;gap:5px}
+.field label{color:var(--navy);font-weight:700;font-size:13px}
+.field .hint{color:var(--muted);font-size:11.5px;line-height:1.4}
+.inline-wrap{display:grid;grid-template-columns:1fr auto;
+  border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);
+  transition:border-color .15s,box-shadow .15s}
+.inline-wrap:focus-within{border-color:var(--teal);box-shadow:0 0 0 4px rgba(8,145,178,.13)}
+.inline-wrap input{border:none;padding:11px 12px;color:var(--ink);background:transparent;
+  font-weight:700;font-size:15px;font-family:var(--font-num);outline:none;width:100%;min-width:0}
+.inline-wrap input::placeholder{color:#AAB7C4;font-weight:400;font-family:var(--font-body);font-size:13px}
+.inline-wrap .unit{border-left:1px solid var(--line);padding:11px 12px;
+  font-family:var(--font-num);font-size:11px;font-weight:700;color:var(--muted);
+  background:var(--paper);display:flex;align-items:center;white-space:nowrap}
+.select-wrap{border:1.5px solid var(--line);border-radius:12px;background:var(--surface);
+  transition:border-color .15s,box-shadow .15s}
+.select-wrap:focus-within{border-color:var(--teal);box-shadow:0 0 0 4px rgba(8,145,178,.13)}
+.select-wrap select{width:100%;border:none;padding:11px 36px 11px 14px;
+  font-size:13px;font-weight:700;color:var(--ink);background:transparent;
+  cursor:pointer;appearance:none;outline:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%2364748B' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center}
+
+/* ── Buttons ── */
+.btn-row{display:flex;gap:10px;margin-top:6px}
+.btn-diag{flex:1;padding:14px 18px;border:none;border-radius:12px;font-size:14px;
+  font-weight:700;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,var(--teal),var(--teal-deeper));
+  box-shadow:0 6px 18px rgba(8,145,178,.32);transition:all .15s}
+.btn-diag:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(8,145,178,.46)}
+.btn-diag.loading{opacity:.7;cursor:wait}
+.btn-clear{padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;
+  font-weight:600;cursor:pointer;background:var(--surface);color:var(--muted);transition:all .15s}
+.btn-clear:hover{border-color:var(--teal);color:var(--teal-dark)}
+
+/* ── Copy/action buttons ── */
+.btn{border:0;border-radius:999px;padding:11px 22px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:var(--font-body);
+  background:linear-gradient(135deg,var(--teal),var(--teal-deeper));color:#fff;
+  box-shadow:0 6px 18px rgba(8,145,178,.24);transition:all .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(8,145,178,.36)}
+.btn.sec{background:var(--surface);color:var(--navy);border:1.5px solid var(--line);box-shadow:none}
+.btn.sec:hover{background:var(--paper-soft)}
+.btn.sm{padding:9px 16px;font-size:12px}
+
+/* ── Empty state ── */
+.empty-state{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:60px 32px;text-align:center;box-shadow:var(--shadow-sm)}
+.empty-icon{font-size:56px;margin-bottom:16px;opacity:.85}
+.empty-state h3{font-size:18px;color:var(--navy);font-weight:700;margin-bottom:8px}
+.empty-state p{font-size:13px;color:var(--muted);line-height:1.65;max-width:380px;margin:0 auto}
+
+/* ── Score gauge ── */
+.score-card{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);
+  padding:20px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center}
+.score-ring{width:90px;height:90px;position:relative;flex-shrink:0}
+.score-ring svg{width:90px;height:90px;transform:rotate(-90deg)}
+.score-ring circle{fill:none;stroke-width:8;stroke-linecap:round}
+.score-ring .bg{stroke:var(--line)}
+.score-ring .arc{transition:stroke-dashoffset .6s ease}
+.score-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-num);font-size:20px;font-weight:900;color:var(--navy)}
+.score-info h3{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.score-info p{font-size:13px;color:var(--muted);line-height:1.5}
+.score-flags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sflag{border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;
+  font-family:var(--font-title);white-space:nowrap;letter-spacing:.03em}
+.sflag.fail{background:var(--fail-soft);color:var(--fail);border:1px solid var(--fail-border)}
+.sflag.pass{background:var(--pass-soft);color:var(--pass);border:1px solid var(--pass-border)}
+.sflag.skip{background:var(--paper-soft);color:var(--muted);border:1px solid var(--line)}
+
+/* ── Semaphore (traffic light) table ── */
+.card{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.card-title{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px 12px;border-bottom:1px solid var(--line)}
+.card-title h3{color:var(--navy);font-size:15px;font-weight:700}
+.badge-pill{background:var(--navy);color:#fff;border-radius:999px;padding:5px 12px;
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  font-family:var(--font-title)}
+.badge-pill.teal{background:linear-gradient(135deg,var(--teal),var(--teal-deeper))}
+.badge-pill.fail{background:linear-gradient(135deg,#DC2626,#991B1B)}
+
+.sem-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--surface)}
+.sem-table th{padding:9px 16px;background:var(--paper-soft);color:var(--navy);
+  font-family:var(--font-title);font-size:11px;font-weight:900;letter-spacing:.04em;
+  border-bottom:1px solid var(--line);text-align:left}
+.sem-table th:not(:first-child){text-align:right}
+.sem-table td{padding:10px 16px;border-bottom:1px solid var(--line);font-size:13px;
+  vertical-align:middle}
+.sem-table tr:last-child td{border-bottom:none}
+.sem-table .param-name{font-weight:700;color:var(--ink);font-size:13px}
+.sem-table .param-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.sem-table td.num{text-align:right;font-family:var(--font-num);font-weight:700;
+  font-size:14px;color:var(--ink)}
+.sem-table td.limit{text-align:right;font-family:var(--font-num);font-size:12px;color:var(--muted)}
+.sem-table td.status{text-align:right}
+.sem-table td.dev{text-align:right;font-family:var(--font-num);font-size:12px}
+.sem-table tr.row-fail{background:linear-gradient(90deg,rgba(220,38,38,.04) 0%,transparent 100%)}
+.sem-table tr.row-pass{background:transparent}
+.sem-table tr.row-skip{opacity:.55}
+.status-badge{border-radius:999px;padding:4px 10px;font-size:10.5px;font-weight:800;
+  letter-spacing:.03em;font-family:var(--font-title);white-space:nowrap;display:inline-block}
+.status-badge.pass{background:var(--pass-soft);color:var(--pass);border:1px solid var(--pass-border)}
+.status-badge.fail{background:var(--fail-soft);color:var(--fail);border:1px solid var(--fail-border)}
+.status-badge.skip{background:var(--paper-soft);color:var(--muted);border:1px solid var(--line)}
+.dev-plus{color:var(--fail);font-weight:700}
+.dev-minus{color:var(--pass);font-weight:700}
+
+/* ── Treatment train ── */
+.train-wrap{padding:16px 20px 20px}
+.train-step{position:relative;display:grid;
+  grid-template-columns:44px 52px 1fr;gap:0 14px;
+  padding:16px 18px;
+  border:1.5px solid var(--line);border-radius:16px;
+  background:var(--surface);box-shadow:var(--shadow-sm);
+  transition:transform .15s,box-shadow .15s;
+  animation:stepIn .35s ease both}
+.train-step:hover{transform:translateX(4px);box-shadow:var(--shadow)}
+@keyframes stepIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.step-num-col{display:flex;flex-direction:column;align-items:center;gap:0}
+.step-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:900;font-size:14px;font-family:var(--font-title);
+  flex-shrink:0;color:#fff;background:var(--teal)}
+.step-line{width:2px;flex:1;margin-top:6px;background:var(--line)}
+.step-icon-wrap{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;
+  justify-content:center;font-size:26px;flex-shrink:0;
+  background:var(--paper-soft);border:1px solid var(--line)}
+.step-body{padding-bottom:2px}
+.step-cat{font-family:var(--font-num);font-size:9.5px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.step-name{font-size:15px;font-weight:800;color:var(--navy);line-height:1.2;
+  font-family:var(--font-title);margin-bottom:7px}
+.step-why{font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+.step-why strong{color:var(--ink)}
+.step-specs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+.step-spec{font-family:var(--font-num);font-size:10.5px;font-weight:600;
+  padding:3px 8px;border-radius:6px;background:var(--paper-soft);
+  border:1px solid var(--line);color:var(--navy);white-space:nowrap}
+.step-source{font-family:var(--font-num);font-size:9.5px;color:var(--muted);
+  letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+.step-alert{margin-top:8px;padding:8px 12px;border-radius:10px;font-size:12px;
+  background:var(--warn-soft);border:1px solid var(--warn-border);color:var(--warn);line-height:1.5}
+.train-connector{height:14px;display:flex;align-items:center;justify-content:center;
+  color:var(--teal);font-size:18px;opacity:.6;margin:0 0 0 17px;
+  font-family:var(--font-num)}
+
+/* ── Copy bar ── */
+.copy-bar{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:15px 20px;box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.copy-bar span{color:var(--muted);font-size:13px}
+.copy-bar span b{color:var(--navy)}
+
+/* ── Source context notice ── */
+.source-notice{border-radius:12px;padding:12px 16px;font-size:12.5px;line-height:1.6;
+  background:var(--teal-soft);border:1px solid #A5F3FC;color:var(--teal-deeper)}
+.source-notice b{font-size:11px;font-family:var(--font-num);font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:4px}
+
+/* ── Footer ── */
+.footer{margin-top:24px;background:var(--teal-soft);border:1px solid #A5F3FC;
+  border-radius:12px;padding:14px 18px;font-size:12px;color:var(--teal-deeper);line-height:1.65}
+.footer strong{color:var(--teal-deeper);font-weight:700}
+.bottom-bar{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+
+/* ── Responsive ── */
+@media(max-width:960px){
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .hero-inner{grid-template-columns:1fr}
+  .hero-note{display:none}
+  .train-step{grid-template-columns:44px 1fr}
+  .step-icon-wrap{display:none}
+}
+@media(max-width:640px){
+  .sem-table .dev{display:none}
+  .score-card{grid-template-columns:1fr}
+  .score-ring{margin:0 auto}
+}
+@media print{
+  .input-panel,.formula-strip,.btn-row,.copy-bar,.btn-diag,.btn-clear{display:none !important}
+  body{background:#fff}
+  .train-step:hover{transform:none}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">DX</div>
+      <div>
+        <h1>Diagnóstico de Potabilización</h1>
+        <span>Carbotecnia · NOM-127-SSA1-2021</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <div class="pill nom">NOM-127-SSA1-2021</div>
+      <div class="pill">Carbotecnia · v1.0</div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <h2>Diagnóstico básico · <em>Tren de potabilización</em><br>para cumplir la NOM-127</h2>
+        <p>Ingrese los resultados del análisis fisicoquímico y bacteriológico. El sistema identifica los parámetros fuera de norma y genera automáticamente el diagrama de bloques con la tecnología Carbotecnia requerida para potabilizar el agua.</p>
+        <div class="hero-badges">
+          <span class="hero-badge">8 parámetros NOM-127</span>
+          <span class="hero-badge">Tren lógico de proceso</span>
+          <span class="hero-badge">Katalox · GAC · Ósmosis · UV</span>
+          <span class="hero-badge">Apéndice C NOM-127</span>
+        </div>
+      </div>
+      <div class="hero-note">
+        <b>Tecnologías evaluadas</b>
+        <ul>
+          <li>Filtración profunda (turbidez)</li>
+          <li>Katalox Light — Fe²⁺, Mn²⁺, S²⁻</li>
+          <li>Bayoxide E33 — Arsénico</li>
+          <li>Carbón Activado Granular</li>
+          <li>Suavizador catiónico (dureza)</li>
+          <li>Ósmosis Inversa (SDT > 1,000)</li>
+          <li>Desinfección UV / Ozonación</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula strip -->
+  <div class="formula-strip">
+    <span>NOM-127-SSA1-2021:</span>
+    <code>Turbidez ≤ 4.0 UNT</code>
+    <code>SDT ≤ 1,000 mg/L</code>
+    <code>Dureza ≤ 500 mg/L</code>
+    <code>Fe ≤ 0.30 mg/L</code>
+    <code>Mn ≤ 0.15 mg/L</code>
+    <code>As ≤ 0.025 mg/L</code>
+    <code>Bacterias: Ausencia</code>
+  </div>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- ─── Input panel ─── -->
+    <div class="input-panel">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Análisis fisicoquímico</h3>
+          <span class="step-tag">01 · Entradas</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="section-lbl">Fuente de agua</div>
+
+          <div class="field">
+            <label>Procedencia del agua</label>
+            <div class="select-wrap">
+              <select id="dx-fuente">
+                <option value="pozo">Pozo profundo (&gt; 50 m)</option>
+                <option value="superficial">Superficial · Lago / Río / Presa</option>
+                <option value="municipal">Red Municipal</option>
+              </select>
+            </div>
+            <div class="hint">Determina la estrategia de prefiltración y pre-cloración.</div>
+          </div>
+
+          <div class="section-lbl">Parámetros fisicoquímicos</div>
+
+          <div class="field">
+            <label>Turbidez</label>
+            <div class="inline-wrap">
+              <input type="number" id="dx-turb" placeholder="Ej. 8.5" min="0" step="0.1">
+              <span class="unit">UNT</span>
+            </div>
+            <div class="hint">NOM-127 límite: <strong>4.0 UNT</strong> · Dejar vacío si no se midió.</div>
+          </div>
+
+          <div class="field">
+            <label>Sólidos Disueltos Totales (SDT)</label>
+            <div class="inline-wrap">
+              <input type="number" id="dx-sdt" placeholder="Ej. 1250" min="0" step="1">
+              <span class="unit">mg/L</span>
+            </div>
+            <div class="hint">NOM-127 límite: <strong>1,000 mg/L</strong></div>
+          </div>
+
+          <div class="field">
+            <label>Dureza Total</label>
+            <div class="inline-wrap">
+              <input type="number" id="dx-dureza" placeholder="Ej. 320" min="0" step="1">
+              <span class="unit">mg/L CaCO₃</span>
+            </div>
+            <div class="hint">NOM-127 límite: <strong>500 mg/L</strong></div>
+          </div>
+
+          <div class="section-lbl">Metales y metalloides</div>
+
+          <div class="field">
+            <label>Hierro (Fe total)</label>
+            <div class="inline-wrap">
+              <input type="number" id="dx-fe" placeholder="Ej. 0.45" min="0" step="0.01">
+              <span class="unit">mg/L</span>
+            </div>
+            <div class="hint">NOM-127 límite: <strong>0.30 mg/L</strong></div>
+          </div>
+
+          <div class="field">
+            <label>Manganeso (Mn)</label>
+            <div class="inline-wrap">
+              <input type="number" id="dx-mn" placeholder="Ej. 0.20" min="0" step="0.01">
+              <span class="unit">mg/L</span>
+            </div>
+            <div class="hint">NOM-127 límite: <strong>0.15 mg/L</strong></div>
+          </div>
+
+          <div class="field">
+            <label>Arsénico (As)</label>
+            <div class="inline-wrap">
+              <input type="number" id="dx-as" placeholder="Ej. 0.030" min="0" step="0.001">
+              <span class="unit">mg/L</span>
+            </div>
+            <div class="hint">NOM-127-2021 límite: <strong>0.025 mg/L</strong> (reducido de 0.050)</div>
+          </div>
+
+          <div class="section-lbl">Microbiológico</div>
+
+          <div class="field">
+            <label>Coliformes / E. coli</label>
+            <div class="select-wrap">
+              <select id="dx-bact">
+                <option value="ausencia">Ausencia (Cumple NOM)</option>
+                <option value="presencia">Presencia detectada</option>
+              </select>
+            </div>
+            <div class="hint">NOM-127: Ausencia en 100 mL (E. coli)</div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-diag" type="button" id="dx-btn-calc">🔬 Generar Diagnóstico</button>
+            <button class="btn-clear" type="button" id="dx-btn-clear">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /input-panel -->
+
+    <!-- ─── Results column ─── -->
+    <div class="results-col" id="dx-results-col">
+
+      <div class="empty-state" id="dx-empty">
+        <div class="empty-icon">🧪</div>
+        <h3>Ingrese el análisis de agua</h3>
+        <p>Complete los parámetros disponibles del análisis fisicoquímico y presione <strong>Generar Diagnóstico</strong>. Los campos vacíos se omitirán del diagnóstico.</p>
+      </div>
+
+      <!-- Injected by JS -->
+      <div id="dx-results-body"></div>
+
+      <!-- Copy bar (hidden until results shown) -->
+      <div class="copy-bar" id="dx-copy-bar" style="display:none">
+        <span><b>Diagnóstico listo</b> · Comparta la propuesta técnica con el cliente.</span>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn sec sm" id="dx-btn-print" type="button">🖨 Imprimir</button>
+          <button class="btn sm" id="dx-btn-copy" type="button">📋 Copiar propuesta</button>
+        </div>
+      </div>
+
+    </div><!-- /results-col -->
+
+  </div><!-- /layout -->
+
+  <!-- Footer -->
+  <div class="footer">
+    <strong>Diagnóstico NOM-127-SSA1-2021 · Carbotecnia</strong><br>
+    Este diagnóstico es orientativo y se basa en los parámetros ingresados. Un análisis fisicoquímico completo
+    (cationes, aniones, pH, alcalinidad, temperatura) es indispensable para el dimensionamiento definitivo de equipos.
+    Para sistemas con ósmosis inversa, se recomienda solicitar el cuestionario completo de MIP Carbotecnia.
+    <strong>Fuentes:</strong> NOM-127-SSA1-2021 · MIP Ósmosis Inversa · MIP Catalizadores MnO₂ Katalox Light ·
+    MIP Química Básica del Agua · AWWA.
+  </div>
+  <div class="bottom-bar">
+    <span>© Carbotecnia · Zapopan, Jalisco · México</span>
+    <span>NOM-127-SSA1-2021 · Diagnóstico de potabilización · v1.0</span>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+/* ================================================================
+   CONSTANTES NOM-127-SSA1-2021
+   Fuente: NOM-127-SSA1-2021, publicada en el DOF 22-nov-2021,
+   vigente a partir del 22-nov-2022.
+   ================================================================ */
+var NOM = {
+  turbidez: { lim: 4.0,   unit: 'UNT',        label: 'Turbidez',                nom: '5.1' },
+  sdt:      { lim: 1000,  unit: 'mg/L',        label: 'Sólidos Disueltos Totales', nom: '5.1' },
+  dureza:   { lim: 500,   unit: 'mg/L CaCO₃',  label: 'Dureza Total',            nom: '5.1' },
+  fe:       { lim: 0.30,  unit: 'mg/L',        label: 'Hierro (Fe total)',        nom: '5.2' },
+  mn:       { lim: 0.15,  unit: 'mg/L',        label: 'Manganeso (Mn)',           nom: '5.2' },
+  as:       { lim: 0.025, unit: 'mg/L',        label: 'Arsénico (As)',            nom: '5.2' },
+  bact:     { lim: 0,     unit: 'Ausencia',     label: 'Coliformes / E. coli',    nom: '6' }
+};
+
+/* ================================================================
+   UTILIDADES
+   ================================================================ */
+function dxEl(id){ return document.getElementById(id); }
+function dxFmt(n, d){
+  if(!isFinite(n)) return '—';
+  return n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d});
+}
+function dxFmtPct(n){ return dxFmt(n,1)+'%'; }
+
+/* ================================================================
+   LEER ENTRADAS
+   ================================================================ */
+function dxGetInputs(){
+  return {
+    fuente:  dxEl('dx-fuente').value,
+    turb:    parseFloat(dxEl('dx-turb').value),
+    sdt:     parseFloat(dxEl('dx-sdt').value),
+    dureza:  parseFloat(dxEl('dx-dureza').value),
+    fe:      parseFloat(dxEl('dx-fe').value),
+    mn:      parseFloat(dxEl('dx-mn').value),
+    as:      parseFloat(dxEl('dx-as').value),
+    bact:    dxEl('dx-bact').value
+  };
+}
+
+/* ================================================================
+   MOTOR DE DIAGNÓSTICO NOM-127
+   Compara cada parámetro con el límite. Devuelve objeto con
+   flags de incumplimiento y datos para la tabla semáforo.
+   ================================================================ */
+function dxEvaluate(inp){
+  function check(val, lim){
+    var skipped = isNaN(val);
+    var fail    = !skipped && val > lim;
+    var dev     = skipped ? null : ((val - lim) / lim * 100);
+    return { val:val, lim:lim, fail:fail, skipped:skipped, dev:dev };
+  }
+  return {
+    turbidez: check(inp.turb,   NOM.turbidez.lim),
+    sdt:      check(inp.sdt,    NOM.sdt.lim),
+    dureza:   check(inp.dureza, NOM.dureza.lim),
+    fe:       check(inp.fe,     NOM.fe.lim),
+    mn:       check(inp.mn,     NOM.mn.lim),
+    as:       check(inp.as,     NOM.as.lim),
+    bact:     { val:inp.bact, fail: inp.bact==='presencia', skipped: false, dev: null }
+  };
+}
+
+/* ================================================================
+   CONSTRUCTOR DEL TREN DE TRATAMIENTO
+   El orden sigue la lógica de ingeniería de procesos:
+   Oxidación → Filtración gruesa → Metales → Arsénico → Orgánicos
+   → Dureza → Desmineralización → Desinfección.
+
+   Fuentes de cada decisión indicadas en comentarios.
+   ================================================================ */
+function dxBuildTrain(inp, fl){
+  var steps = [];
+  var stepNum = 0;
+
+  var needsOxidant = fl.fe.fail || fl.mn.fail || fl.as.fail;
+  var needsFiltGrossa = fl.turbidez.fail || inp.fuente === 'superficial';
+  var needsKatalox = fl.fe.fail || fl.mn.fail;
+  var needsBayoxide = fl.as.fail;
+  /* GAC siempre requerido — MIP Ósmosis Inversa: "Cloro libre: 0.1 mg/L" límite
+     para alimentación a membranas; también para remoción de orgánicos y pesticidas. */
+  var needsGac = true;
+  /* Suavizador si dureza NOM-127 excede 500, O si SDT > 1000 (necesario antes de OI
+     — MIP OI: "prefiere no omitir el suavizador" para proteger membranas; límite
+     dureza al equipo de OI: 170 mg/L). */
+  var needsSuavizador = fl.dureza.fail || fl.sdt.fail;
+  var needsRO = fl.sdt.fail;
+  /* UV/desinfección: siempre recomendada para agua potable, obligatoria si hay
+     presencia de bacterias (NOM-127 Sección 6). */
+  var needsUV = true;
+
+  /* ── Paso 1: Sistema de Pre-cloración
+     Fuente: MIP Catalizadores MnO₂ — oxidante debe inyectarse 10-20 s antes de
+     contactar el Katalox Light para permitir mezclado suficiente.
+     También sirve como pre-desinfectante para agua superficial. */
+  if(needsOxidant || inp.fuente === 'superficial'){
+    var feStr = !fl.fe.skipped ? 'Fe '+dxFmt(inp.fe,2)+' mg/L' : '';
+    var mnStr = !fl.mn.skipped ? 'Mn '+dxFmt(inp.mn,2)+' mg/L' : '';
+    var asStr = !fl.as.skipped ? 'As '+dxFmt(inp.as,3)+' mg/L' : '';
+    var metStr = [feStr,mnStr,asStr].filter(Boolean).join(', ');
+    var whyClo = '';
+    if(needsOxidant) whyClo = 'Los metales detectados ('+metStr+') requieren oxidación previa a su remoción catalítica o adsorción.';
+    else whyClo = 'Agua superficial requiere pre-cloración para inhibir microorganismos y facilitar la coagulación de coloides.';
+    steps.push({
+      num: ++stepNum, cat:'oxidacion', catLabel:'Oxidación', catColor:'#D97706', catBg:'#FEFCE8',
+      icon:'⚡', name:'Sistema de Cloración (Hipoclorito de Sodio)',
+      why: whyClo + ' El oxidante debe inyectarse 10–20 segundos antes de llegar a la cama de Katalox Light para garantizar mezcla suficiente.',
+      specs:['Oxidante: NaOCl (hipoclorito)', 'Cloro libre residual: 1 ppm', 'ORP salida Katalox: > 500 mV'],
+      source:'MIP Catalizadores MnO₂ Katalox Light · NOM-127 Ap. C',
+      alert: needsRO ? 'IMPORTANTE: La concentración de cloro libre en la alimentación a la Ósmosis Inversa no debe exceder 0.1 mg/L (MIP OI). El carbón activado granular del Paso siguiente eliminará el residual.' : ''
+    });
+  }
+
+  /* ── Paso 2: Filtro de Discos Azud
+     Solo para agua superficial con turbidez alta — alta carga de sólidos requiere
+     prefiltración mecánica antes del lecho granular.
+     Fuente: Asesor Discos vs. Lecho Carbotecnia. */
+  if(inp.fuente === 'superficial' && fl.turbidez.fail && !fl.turbidez.skipped){
+    steps.push({
+      num: ++stepNum, cat:'prefilt', catLabel:'Prefiltración mecánica', catColor:'#4B5563', catBg:'#F9FAFB',
+      icon:'🌀', name:'Filtro de Discos (Azud Helix® o similar)',
+      why: 'Fuente superficial con Turbidez de '+dxFmt(inp.turb,1)+' UNT (NOM: 4.0 UNT). El filtro de discos retiene sólidos gruesos y reduce la carga al lecho profundo, extendiendo su ciclo de retrolavado.',
+      specs:['Tamaño de disco: 100–200 µm', 'Descarga automática por ΔP', 'Operación sin electricidad (tipo filtro de piscina no aplica)'],
+      source:'Catálogo Azud Helix Flow · NOM-127 Ap. C',
+      alert:''
+    });
+  }
+
+  /* ── Paso 3: Filtro de Lecho Profundo
+     Requerido si hay turbidez que excede el límite, o si hay metales que
+     precipitarán como Fe(OH)₃ / MnO₂ luego de la cloración, o si es superficial.
+     Fuente: NOM-127 Apéndice C; MIP Katalox — "colocar después del lecho profundo". */
+  if(needsFiltGrossa || needsKatalox || needsBayoxide){
+    var whyLecho = '';
+    if(fl.turbidez.fail && !fl.turbidez.skipped)
+      whyLecho = 'Turbidez de '+dxFmt(inp.turb,1)+' UNT supera el límite NOM-127 de 4.0 UNT. ';
+    if(needsKatalox)
+      whyLecho += 'Los precipitados de Fe(OH)₃ y MnO₂ formados por la pre-cloración deben filtrarse en el lecho antes de llegar al Katalox Light. ';
+    if(!whyLecho && inp.fuente === 'superficial')
+      whyLecho = 'Agua superficial. Se incluye como barrera mecánica obligatoria para coloides y sólidos suspendidos.';
+    steps.push({
+      num: ++stepNum, cat:'filtracion', catLabel:'Filtración granular', catColor:'#78350F', catBg:'#FEF9EE',
+      icon:'⛰️', name:'Filtro de Lecho Profundo (Arena Sílica / Dual)',
+      why: whyLecho.trim(),
+      specs:['Media: Arena sílica (D60 0.5–0.8 mm)', 'Vel. servicio: 5–10 gpm/ft²', 'Retrolavado: 12–18 gpm/ft²', inp.fuente==='superficial'?'Considerar lecho dual Antracita + Arena':''],
+      source:'MIP Filtración en lecho profundo Carbotecnia · NOM-127 Ap. C',
+      alert:''
+    });
+  }
+
+  /* ── Paso 4: Filtro con Katalox Light
+     Fuente: MIP Catalizadores MnO₂ Katalox Light (Carbotecnia / Watch Water).
+     — TCCV mínimo 3 min, recomendado 4 min (para Fe y Mn).
+     — Vel. superficial: 4–12 gpm/ft² (criterio conservador Carbotecnia 4–8 gpm/ft²).
+     — Dos etapas en serie si Fe > 1 mg/L, o Mn > Fe, o C = Fe + 2×Mn > 10.
+     — pH óptimo para Mn²⁺: 8.5–10.5 (elevarlo aumenta eficiencia). */
+  if(needsKatalox){
+    var cVal = (!isNaN(inp.fe)?inp.fe:0) + 2*(!isNaN(inp.mn)?inp.mn:0);
+    var twoStage = (!isNaN(inp.fe) && inp.fe > 1.0) ||
+                   (!isNaN(inp.mn) && !isNaN(inp.fe) && inp.mn > inp.fe) ||
+                   cVal > 10;
+    var whyKat = '';
+    if(fl.fe.fail && !fl.fe.skipped) whyKat += 'Hierro '+dxFmt(inp.fe,2)+' mg/L supera NOM (0.30 mg/L). ';
+    if(fl.mn.fail && !fl.mn.skipped) whyKat += 'Manganeso '+dxFmt(inp.mn,2)+' mg/L supera NOM (0.15 mg/L). ';
+    whyKat += 'El MnO₂ superficial del Katalox Light cataliza la oxidación de Fe²⁺ y Mn²⁺, precipitándolos como Fe(OH)₃ y MnO₂ que quedan retenidos entre los gránulos.';
+    steps.push({
+      num: ++stepNum, cat:'metales', catLabel:'Catálisis de metales', catColor:'#EA580C', catBg:'#FFF7ED',
+      icon:'🔬', name: twoStage ? 'Filtros con Katalox Light (2 etapas en serie)' : 'Filtro con Katalox Light',
+      why: whyKat,
+      specs:['TCCV: 4 min mín (3 min absoluto)', 'Vel.: 4–8 gpm/ft² (Carbotecnia)', 'pH para Mn²⁺: 8.5–10.5', 'Vida útil: 7–10 años', twoStage?'2 etapas en serie (Fe o Mn alto)':''],
+      source:'MIP Catalizadores MnO₂ Katalox Light · Watch Water México',
+      alert: twoStage ? 'Dos etapas en serie recomendadas: Fe > 1 mg/L o Mn > Fe (MIP Katalox Light). El primer recipiente precipita mayormente Fe²⁺; el segundo, Mn²⁺.' : ''
+    });
+  }
+
+  /* ── Paso 5: Filtro con Bayoxide E33
+     Fuente: Fichas técnicas Bayoxide E33 (Lanxess).
+     — Adsorción sobre óxido de hierro granular (GEH/Bayoxide E33).
+     — TCCV recomendado: 3–5 min.
+     — Pre-oxidación con Cl convierte As(III) → As(V), más fácilmente adsorbido. */
+  if(needsBayoxide){
+    steps.push({
+      num: ++stepNum, cat:'arsenico', catLabel:'Remoción de arsénico', catColor:'#BE123C', catBg:'#FFF1F2',
+      icon:'💎', name:'Filtro con Bayoxide E33 (GEH)',
+      why: 'Arsénico '+dxFmt(inp.as,3)+' mg/L excede el límite NOM-127-2021 de 0.025 mg/L (reducido de 0.050 en la versión anterior). Bayoxide E33 es un óxido de hierro granular que adsorbe As(III) y As(V). La pre-cloración convierte As(III) a As(V), incrementando la eficiencia de remoción.',
+      specs:['TCCV: 3–5 min', 'pH óptimo: 5.5–8.0', 'Cap. adsorción: 15–45 g As/kg medio', 'Punto de quiebre: monitorear con As < 0.010 mg/L'],
+      source:'Ficha técnica Bayoxide E33 — Lanxess · NOM-127-SSA1-2021 §5.2',
+      alert:''
+    });
+  }
+
+  /* ── Paso 6: Filtro de Carbón Activado Granular (GAC)
+     SIEMPRE incluido. Fuentes:
+     — MIP Ósmosis Inversa: "Cloro libre: 0.1 mg/L" = límite máximo en alimentación
+       a membranas (las destruye si se excede).
+     — NOM-127 Apéndice C: GAC para remoción de THMs, pesticidas, orgánicos.
+     — Carbotecnia: incluir antes de toda OI para proteger membranas. */
+  steps.push({
+    num: ++stepNum, cat:'gac', catLabel:'Adsorción de orgánicos', catColor:'#16A34A', catBg:'#F0FDF4',
+    icon:'🌿', name:'Filtro de Carbón Activado Granular (GAC)',
+    why: 'Siempre requerido en trenes de potabilización. Remueve cloro libre residual (↓ a < 0.1 mg/L para proteger membranas de OI), compuestos orgánicos, pesticidas, THMs y sabores/olores.' + (needsRO ? ' CRÍTICO: sin GAC, el cloro dañaría irreversiblemente las membranas de poliamida.' : ''),
+    specs:['GAC Coco 12×40 (microporos) o 8×30 (mesoporos)', 'TCCV: 5–10 min', 'Vel.: 3–5 gpm/ft²', 'Vida útil: 3–5 años (por adsorción)'],
+    source:'MIP Carbón Activado Granular · MIP Ósmosis Inversa Carbotecnia · NOM-127 Ap. C',
+    alert: needsRO ? 'NOTA OI: El cloro libre en la alimentación a membranas no debe exceder 0.1 mg/L. Este filtro es la barrera de protección para las membranas (MIP OI Carbotecnia).' : ''
+  });
+
+  /* ── Paso 7: Suavizador por Intercambio Catiónico
+     Fuente: MIP Ósmosis Inversa Carbotecnia.
+     — "Ing. Olivares (01/08/2025): prefiere no omitir el suavizador".
+     — Límite de dureza en alimentación a OI: 170 mg/L CaCO₃.
+     — NOM-127 límite de dureza en agua potable: 500 mg/L. */
+  if(needsSuavizador){
+    var whySuav = '';
+    if(fl.dureza.fail && !fl.dureza.skipped)
+      whySuav = 'Dureza '+dxFmt(inp.dureza,0)+' mg/L CaCO₃ supera NOM-127 (500 mg/L). ';
+    if(fl.sdt.fail)
+      whySuav += 'La alimentación a la Ósmosis Inversa requiere dureza < 170 mg/L CaCO₃ (límite de membranas, MIP OI Carbotecnia) para evitar incrustación en membranas de poliamida. ';
+    if(!whySuav) whySuav = 'Requerido como pretratamiento para la Ósmosis Inversa.';
+    steps.push({
+      num: ++stepNum, cat:'suavizador', catLabel:'Intercambio iónico', catColor:'#0284C7', catBg:'#F0F9FF',
+      icon:'💧', name:'Suavizador por Intercambio Catiónico (Ciclo Sodio)',
+      why: whySuav.trim() + ' La resina catiónica fuerte (Resinex K-8 FG) intercambia Ca²⁺ y Mg²⁺ por Na⁺, eliminando la dureza.',
+      specs:['Resina: Resinex K-8 FG (cationite fuerte)', 'Vel. servicio: 4–5 gpm/ft³', 'Cap.: 25 Kgr/ft³ @ 10 lb NaCl/ft³', 'Regeneración: NaCl (sal pellet)'],
+      source:'MIP Suavizadores Carbotecnia · MIP Ósmosis Inversa',
+      alert: (!fl.dureza.skipped && !fl.dureza.fail && needsRO) ? 'La dureza cumple la NOM-127, pero se incluye el suavizador porque la alimentación a la OI requiere dureza < 170 mg/L. Sin suavizador, las membranas se incrustarían prematuramente (MIP OI).' : ''
+    });
+  }
+
+  /* ── Paso 8: Prefiltros de Cartucho + Ósmosis Inversa
+     Fuente: MIP Ósmosis Inversa Carbotecnia.
+     — SDT > 1,000 mg/L: única tecnología capaz de rechazar el exceso de sales.
+     — Prefiltros de cartucho 1–5 µm obligatorios para SDI < 3.
+     — Límites de alimentación OI: Turb < 5 NTU, Fe+Mn < 0.3 mg/L, Cl < 0.1 mg/L. */
+  if(needsRO){
+    steps.push({
+      num: ++stepNum, cat:'cartucho', catLabel:'Filtración de seguridad', catColor:'#7C3AED', catBg:'#F5F3FF',
+      icon:'🔵', name:'Prefiltros de Cartucho 1–5 µm',
+      why: 'Barrera de seguridad obligatoria antes de las membranas de OI. Retiene partículas finas y cualquier precipitado que escape de las etapas anteriores. Reduce el SDI (Índice de Densidad de Sedimentación) a < 3, requerido para membranas de poliamida.',
+      specs:['Cartucho sedimento: 5 µm (1er etapa)', 'Cartucho fino: 1 µm (2da etapa)', 'Carcasa CPVC o acero 316L', 'Cambio: cuando ΔP = 10 psi'],
+      source:'MIP Ósmosis Inversa Carbotecnia · Catálogo Parker Hannifin',
+      alert:''
+    });
+    steps.push({
+      num: ++stepNum, cat:'ro', catLabel:'Desmineralización', catColor:'#4338CA', catBg:'#EEF2FF',
+      icon:'🔮', name:'Sistema de Ósmosis Inversa Industrial',
+      why: 'SDT de '+dxFmt(inp.sdt,0)+' mg/L excede el límite NOM-127 de 1,000 mg/L. La OI es la única tecnología con capacidad de rechazar el 95–99% de sales disueltas. Las membranas de poliamida enrolladas en espiral permiten el paso del agua pero retienen iones disueltos (tamaño < 12-13 Å).',
+      specs:['Membranas: Poliamida enrollada en espiral', 'Rechazo de sales: 95–99%', 'Recuperación típica: 70–80%', 'Presión de operación: 100–200 psi (agua dulce)', 'Cloro < 0.1 mg/L · Dureza < 170 mg/L · Turb < 5 NTU'],
+      source:'MIP Ósmosis Inversa Carbotecnia · Filmtec / Hydranautics · NOM-127',
+      alert: 'IMPORTANTE: El SDT del permeado depende del rechazo de la membrana y la recuperación. Para SDT de entrada de '+dxFmt(inp.sdt,0)+' mg/L con 97% de rechazo y 75% de recuperación, el SDT del permeado estimado es ≈'+dxFmt(inp.sdt*0.03,0)+' mg/L. Verificar con software de diseño (ROSA, IMSDesign).'
+    });
+  }
+
+  /* ── Paso Final: Desinfección UV
+     Fuente: NOM-127-SSA1-2021 Sección 6 (tratamiento microbiológico).
+     — Siempre recomendada en punto de cisterna o distribución.
+     — UV-C (254 nm) inactiva E. coli, Giardia y Cryptosporidium sin
+       generar subproductos de desinfección (SPDs). */
+  var whyUV = fl.bact.fail
+    ? 'Presencia de coliformes/E. coli detectada en análisis — incumplimiento directo de NOM-127 Sección 6. La lámpara UV-C (254 nm) inactiva microorganismos patógenos sin generar trihalometanos ni subproductos de desinfección.'
+    : 'Siempre se recomienda como barrera de seguridad final para agua potable, especialmente cuando el agua pasa por una cisterna (riesgo de recontaminación). La UV no genera subproductos de desinfección.';
+  steps.push({
+    num: ++stepNum, cat:'uv', catLabel:'Desinfección final', catColor:'#7C3AED', catBg:'#FAF5FF',
+    icon:'☀️', name:'Lámpara de Luz Ultravioleta (UV-C)',
+    why: whyUV,
+    specs:['Dosis UV mínima: 40 mJ/cm² (EPA)', 'Longitud de onda: 254 nm (UV-C)', 'Turb. máx. en entrada: 1 UNT', 'Cloro residual recomendado pos-UV: 0.2–0.5 mg/L (si aplica)'],
+    source:'NOM-127-SSA1-2021 §6 · EPA UVDGM · AWWA',
+    alert: needsRO ? 'En sistemas con OI, la UV se instala en la línea de permeado para garantizar la calidad microbiológica del agua desmineralizada.' : ''
+  });
+
+  return steps;
+}
+
+/* ================================================================
+   RENDER — PUNTUACIÓN DE CUMPLIMIENTO
+   ================================================================ */
+function dxRenderScore(fl, inp){
+  var params = Object.keys(fl);
+  var evaluated = params.filter(function(k){ return !fl[k].skipped; });
+  var failed = params.filter(function(k){ return fl[k].fail; });
+  var pct = evaluated.length === 0 ? 0 : Math.round((evaluated.length - failed.length) / evaluated.length * 100);
+
+  var ringColor = pct >= 80 ? 'var(--pass)' : pct >= 50 ? 'var(--warn)' : 'var(--fail)';
+  var r = 35, circ = 2 * Math.PI * r;
+  var dash = circ;
+  var offset = circ * (1 - pct / 100);
+
+  var scoreLabel = pct === 100 ? 'Análisis cumple la NOM-127' : failed.length + ' parámetro' + (failed.length!==1?'s':'') + ' fuera de norma';
+  var scoreDesc = pct === 100
+    ? 'Todos los parámetros evaluados cumplen con los límites de la NOM-127-SSA1-2021. Se recomienda un sistema de pulido como medida preventiva.'
+    : 'El agua requiere tratamiento para cumplir la NOM-127-SSA1-2021. El tren de potabilización sugerido aborda cada incumplimiento detectado.';
+
+  var flagsHtml = params.map(function(k){
+    var meta = NOM[k] || {};
+    var label = meta.label || k;
+    var f = fl[k];
+    if(f.skipped) return '<span class="sflag skip">'+label+': —</span>';
+    if(f.fail)    return '<span class="sflag fail">⚠ '+label+'</span>';
+    return '<span class="sflag pass">✓ '+label+'</span>';
+  }).join('');
+
+  return '<div class="score-card">'+
+    '<div class="score-ring">'+
+      '<svg viewBox="0 0 90 90">'+
+        '<circle class="bg" cx="45" cy="45" r="'+r+'" stroke-dasharray="'+dash+'" stroke-dashoffset="0"/>'+
+        '<circle class="arc" cx="45" cy="45" r="'+r+'" stroke="'+ringColor+'"'+
+          ' stroke-dasharray="'+dash+'" stroke-dashoffset="'+offset+'"/>'+
+      '</svg>'+
+      '<div class="score-pct" style="color:'+ringColor+'">'+pct+'%</div>'+
+    '</div>'+
+    '<div class="score-info">'+
+      '<h3>'+scoreLabel+'</h3>'+
+      '<p>'+scoreDesc+'</p>'+
+      '<div class="score-flags" style="margin-top:10px">'+flagsHtml+'</div>'+
+    '</div>'+
+  '</div>';
+}
+
+/* ================================================================
+   RENDER — TABLA SEMÁFORO (Calidad vs NOM-127)
+   ================================================================ */
+function dxRenderSemaphore(fl, inp){
+  function row(key, meta, f, valDisplay){
+    var cls = f.skipped ? 'row-skip' : f.fail ? 'row-fail' : 'row-pass';
+    var badge = f.skipped
+      ? '<span class="status-badge skip">No ingresado</span>'
+      : f.fail
+        ? '<span class="status-badge fail">⚠ Excede NOM</span>'
+        : '<span class="status-badge pass">✓ Cumple</span>';
+    var devHtml = '';
+    if(!f.skipped && f.dev !== null){
+      var pct = dxFmt(Math.abs(f.dev),1);
+      devHtml = f.fail
+        ? '<span class="dev-plus">+'+pct+'%</span>'
+        : '<span class="dev-minus">−'+pct+'%</span>';
+    }
+    return '<tr class="'+cls+'">'+
+      '<td><div class="param-name">'+meta.label+'</div>'+
+        '<div class="param-sub">NOM-127 §'+meta.nom+'</div></td>'+
+      '<td class="num">'+(f.skipped?'—':valDisplay)+'</td>'+
+      '<td class="limit">'+dxFmt(meta.lim,meta.lim<1?3:meta.lim<10?2:0)+' '+meta.unit+'</td>'+
+      '<td class="status">'+badge+'</td>'+
+      '<td class="dev">'+devHtml+'</td>'+
+    '</tr>';
+  }
+
+  return '<div class="card">'+
+    '<div class="card-title">'+
+      '<h3>🚦 Semáforo de Calidad — NOM-127-SSA1-2021</h3>'+
+      '<span class="badge-pill teal">Diagnóstico</span>'+
+    '</div>'+
+    '<table class="sem-table">'+
+      '<thead><tr>'+
+        '<th>Parámetro</th><th>Valor ingresado</th><th>Límite NOM</th><th>Estado</th><th>Desviación</th>'+
+      '</tr></thead>'+
+      '<tbody>'+
+        row('turbidez', NOM.turbidez, fl.turbidez, dxFmt(inp.turb,1)+' UNT')+
+        row('sdt',      NOM.sdt,      fl.sdt,      dxFmt(inp.sdt,0)+' mg/L')+
+        row('dureza',   NOM.dureza,   fl.dureza,   dxFmt(inp.dureza,0)+' mg/L CaCO₃')+
+        row('fe',       NOM.fe,       fl.fe,       dxFmt(inp.fe,2)+' mg/L')+
+        row('mn',       NOM.mn,       fl.mn,       dxFmt(inp.mn,2)+' mg/L')+
+        row('as',       NOM.as,       fl.as,       dxFmt(inp.as,3)+' mg/L')+
+        row('bact',     NOM.bact,     fl.bact,     inp.bact==='presencia'?'Presencia':'Ausencia')+
+      '</tbody>'+
+    '</table>'+
+  '</div>';
+}
+
+/* ================================================================
+   RENDER — DIAGRAMA DE BLOQUES (Tren de Potabilización)
+   ================================================================ */
+function dxRenderTrain(steps){
+  if(!steps.length) return '';
+
+  function stepHtml(s, isLast){
+    var specsHtml = s.specs.filter(Boolean).map(function(sp){
+      return '<span class="step-spec">'+sp+'</span>';
+    }).join('');
+    var alertHtml = s.alert ? '<div class="step-alert">⚠ '+s.alert+'</div>' : '';
+    var animDelay = (s.num - 1) * 80;
+    return '<div class="train-step" style="animation-delay:'+animDelay+'ms;border-left:4px solid '+s.catColor+'">'+
+      '<div class="step-num-col">'+
+        '<div class="step-num" style="background:'+s.catColor+'">'+s.num+'</div>'+
+        (!isLast ? '<div class="step-line"></div>' : '')+
+      '</div>'+
+      '<div class="step-icon-wrap" style="background:'+s.catBg+';border-color:'+s.catColor+'33">'+
+        s.icon+
+      '</div>'+
+      '<div class="step-body">'+
+        '<div class="step-cat" style="color:'+s.catColor+'">'+s.catLabel+'</div>'+
+        '<div class="step-name">'+s.name+'</div>'+
+        '<div class="step-why">'+s.why+'</div>'+
+        (specsHtml ? '<div class="step-specs">'+specsHtml+'</div>' : '')+
+        alertHtml+
+        '<div class="step-source">📖 '+s.source+'</div>'+
+      '</div>'+
+    '</div>'+
+    (!isLast ? '<div class="train-connector">↓</div>' : '');
+  }
+
+  var html = '<div class="card">'+
+    '<div class="card-title">'+
+      '<h3>⚙️ Tren de Potabilización Sugerido</h3>'+
+      '<span class="badge-pill teal">'+steps.length+' etapas</span>'+
+    '</div>'+
+    '<div class="train-wrap">';
+  steps.forEach(function(s, i){ html += stepHtml(s, i === steps.length - 1); });
+  html += '</div></div>';
+  return html;
+}
+
+/* ================================================================
+   RENDER — CONTEXTO DE FUENTE
+   ================================================================ */
+function dxRenderSourceNote(fuente){
+  var notes = {
+    pozo: {
+      icon:'🌊',
+      title:'Agua de Pozo Profundo (> 50 m)',
+      text:'El agua subterránea profunda suele estar libre de bacterias, pero es frecuente la presencia de hierro disuelto (Fe²⁺), manganeso (Mn²⁺) y sulfuro de hidrógeno (H₂S), formados por actividad bacteriana anaerobia y disolución de minerales. Típicamente tiene baja turbidez, mayor dureza y puede tener SDT elevados por mineralización prolongada.'
+    },
+    superficial: {
+      icon:'🌊',
+      title:'Agua Superficial (Lago / Río / Presa)',
+      text:'El agua superficial está expuesta a contaminación microbiológica (bacterias, Giardia, Cryptosporidium), sólidos suspendidos estacionales y materia orgánica natural (NOM) que genera THMs al clorar. Requiere prefiltración robusta, pre-cloración y carbón activado. La calidad varía con la temporada de lluvias.'
+    },
+    municipal: {
+      icon:'🏙️',
+      title:'Red Municipal (Agua de la Ciudad)',
+      text:'El agua municipal ya recibió tratamiento primario (coagulación, floculación, filtración, cloración). Los problemas frecuentes son: recontaminación en la cisterna, presencia de THMs/orgánicos por exceso de cloro, hierro y manganeso de la red de distribución, y SDT elevados por la fuente de origen.'
+    }
+  };
+  var n = notes[fuente];
+  return '<div class="source-notice"><b>'+n.icon+' '+n.title+'</b>'+n.text+'</div>';
+}
+
+/* ================================================================
+   MAIN — EJECUTAR DIAGNÓSTICO
+   ================================================================ */
+var dxLastResult = null;
+
+function dxRun(){
+  var inp = dxGetInputs();
+  var fl  = dxEvaluate(inp);
+  var steps = dxBuildTrain(inp, fl);
+
+  dxLastResult = { inp: inp, fl: fl, steps: steps };
+
+  var html = '';
+  html += dxRenderScore(fl, inp);
+  html += dxRenderSourceNote(inp.fuente);
+  html += dxRenderSemaphore(fl, inp);
+  html += dxRenderTrain(steps);
+
+  dxEl('dx-empty').style.display = 'none';
+  dxEl('dx-results-body').innerHTML = html;
+  dxEl('dx-copy-bar').style.display = '';
+
+  /* Smooth scroll to results on mobile */
+  if(window.innerWidth < 960){
+    dxEl('dx-results-body').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+/* ================================================================
+   COPIAR PROPUESTA TÉCNICA
+   ================================================================ */
+function dxCopy(){
+  var r = dxLastResult;
+  if(!r) return;
+  var inp = r.inp, fl = r.fl, steps = r.steps;
+  var failed = Object.keys(fl).filter(function(k){ return fl[k].fail; });
+  var today = new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
+  var fuenteLabel = { pozo:'Pozo profundo', superficial:'Superficial (Lago/Río/Presa)', municipal:'Red Municipal' };
+
+  var lines = [
+    '═══════════════════════════════════════════════════════',
+    '  DIAGNÓSTICO TÉCNICO · POTABILIZACIÓN NOM-127-SSA1-2021',
+    '  Carbotecnia · Fecha: '+today,
+    '═══════════════════════════════════════════════════════',
+    '',
+    'DATOS DEL ANÁLISIS DE AGUA',
+    '  Procedencia: '+fuenteLabel[inp.fuente],
+    ''
+  ];
+
+  var paramKeys = ['turbidez','sdt','dureza','fe','mn','as','bact'];
+  var paramVals = {
+    turbidez: isNaN(inp.turb)?'No ingresado':dxFmt(inp.turb,1)+' UNT  (límite: 4.0 UNT)',
+    sdt:      isNaN(inp.sdt)?'No ingresado':dxFmt(inp.sdt,0)+' mg/L  (límite: 1,000 mg/L)',
+    dureza:   isNaN(inp.dureza)?'No ingresado':dxFmt(inp.dureza,0)+' mg/L CaCO₃  (límite: 500 mg/L)',
+    fe:       isNaN(inp.fe)?'No ingresado':dxFmt(inp.fe,2)+' mg/L  (límite: 0.30 mg/L)',
+    mn:       isNaN(inp.mn)?'No ingresado':dxFmt(inp.mn,2)+' mg/L  (límite: 0.15 mg/L)',
+    as:       isNaN(inp.as)?'No ingresado':dxFmt(inp.as,3)+' mg/L  (límite: 0.025 mg/L)',
+    bact:     inp.bact==='presencia'?'Presencia  ⚠ EXCEDE NOM':'Ausencia  ✓ Cumple'
+  };
+  paramKeys.forEach(function(k){
+    var meta = NOM[k];
+    var suffix = fl[k].fail ? '  ⚠ EXCEDE NOM' : (!fl[k].skipped ? '  ✓ Cumple' : '');
+    lines.push('  '+meta.label+': '+paramVals[k]);
+  });
+
+  lines.push('');
+  lines.push('RESULTADO: '+failed.length+' parámetro(s) fuera de norma.');
+  lines.push('');
+  lines.push('─────────────────────────────────────────────────────────');
+  lines.push('  TREN DE POTABILIZACIÓN SUGERIDO ('+steps.length+' etapas)');
+  lines.push('─────────────────────────────────────────────────────────');
+  lines.push('');
+
+  steps.forEach(function(s){
+    lines.push('  ['+s.num+'] '+s.name.toUpperCase());
+    lines.push('      Categoría: '+s.catLabel);
+    lines.push('      Por qué: '+s.why.replace(/<[^>]+>/g,''));
+    if(s.specs.filter(Boolean).length){
+      lines.push('      Especificaciones: '+s.specs.filter(Boolean).join(' · '));
+    }
+    lines.push('      Fuente: '+s.source);
+    if(s.alert) lines.push('      NOTA: '+s.alert);
+    lines.push('');
+  });
+
+  lines.push('─────────────────────────────────────────────────────────');
+  lines.push('  IMPORTANTE: Este diagnóstico es orientativo.');
+  lines.push('  Para dimensionamiento definitivo se requiere análisis');
+  lines.push('  fisicoquímico completo (cationes, aniones, pH,');
+  lines.push('  alcalinidad, temperatura, sílice).');
+  lines.push('');
+  lines.push('  Carbotecnia · Zapopan, Jalisco · México');
+  lines.push('  www.carbotecnia.info');
+  lines.push('─────────────────────────────────────────────────────────');
+
+  var text = lines.join('\n');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(dxCopiedState);
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); dxCopiedState();
+  }
+}
+
+function dxCopiedState(){
+  var btn = dxEl('dx-btn-copy'), orig = btn.textContent;
+  btn.textContent = '✓ Copiado';
+  btn.style.background = 'var(--pass-soft)';
+  btn.style.color = 'var(--pass)';
+  setTimeout(function(){
+    btn.textContent = orig;
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 2400);
+}
+
+/* ================================================================
+   LIMPIAR
+   ================================================================ */
+function dxClear(){
+  ['dx-turb','dx-sdt','dx-dureza','dx-fe','dx-mn','dx-as'].forEach(function(id){
+    dxEl(id).value = '';
+  });
+  dxEl('dx-fuente').value = 'pozo';
+  dxEl('dx-bact').value = 'ausencia';
+  dxEl('dx-empty').style.display = '';
+  dxEl('dx-results-body').innerHTML = '';
+  dxEl('dx-copy-bar').style.display = 'none';
+  dxLastResult = null;
+}
+
+/* ================================================================
+   EVENTOS
+   ================================================================ */
+dxEl('dx-btn-calc').addEventListener('click', function(){
+  var btn = this;
+  btn.textContent = '⏳ Analizando…';
+  btn.classList.add('loading');
+  setTimeout(function(){
+    dxRun();
+    btn.textContent = '🔬 Generar Diagnóstico';
+    btn.classList.remove('loading');
+  }, 420); /* pequeño delay para efecto visual de "procesamiento" */
+});
+
+dxEl('dx-btn-clear').addEventListener('click', dxClear);
+dxEl('dx-btn-print').addEventListener('click', function(){ window.print(); });
+dxEl('dx-btn-copy').addEventListener('click', dxCopy);
+
+/* Enter en cualquier input numérico dispara el diagnóstico */
+document.querySelectorAll('.inline-wrap input').forEach(function(inp){
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter') dxEl('dx-btn-calc').click(); });
+});
+</script>
+</body>
+</html>
