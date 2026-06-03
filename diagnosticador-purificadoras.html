@@ -336,7 +336,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         <b>Tren de tecnologías</b>
         <ul>
           <li>Pre-cloración en cisterna</li>
-          <li>Filtro de lecho profundo (zeolita)</li>
+          <li>Filtro de lecho profundo multimedia</li>
           <li>Purificador de carbón activado (GAC)</li>
           <li>Suavizador de resina catiónica</li>
           <li>Ósmosis inversa comercial / industrial</li>
@@ -629,7 +629,7 @@ function pBuildTrain(inp, fl){
       whyLecho += 'Turbidez de '+pFmt(inp.turb,1)+' UNT supera el límite NOM-201 de 3.0 UNT. ';
     if(fl.color.fail && !fl.color.skipped)
       whyLecho += 'Color verdadero de '+pFmt(inp.color,0)+' Pt/Co supera el límite NOM-201 de 15 Pt/Co. ';
-    whyLecho += 'El lecho profundo de zeolita clínica o multimedia (arena + antracita) retiene sólidos suspendidos, '
+    whyLecho += 'El lecho profundo multimedia (grava soporte + arena sílica + antracita) retiene sólidos suspendidos, '
       + 'coloides y los compuestos que generan color y turbidez, protegiendo el carbón activado '
       + 'y los prefiltros de saturación prematura.';
     steps.push({
@@ -637,9 +637,9 @@ function pBuildTrain(inp, fl){
       cat:'lecho', catLabel:'Filtración de sedimentos',
       catColor:'#78350F', catBg:'#FEF9EE',
       icon:'⛰️',
-      name:'Filtro de lecho profundo (zeolita o multimedia)',
+      name:'Filtro de lecho profundo multimedia',
       why: whyLecho,
-      specs:['Media: zeolita clínica 14×40 o arena sílica+antracita', 'Vel. servicio: 5–10 gpm/ft²', 'Retrolavado automático: 12–18 gpm/ft²', 'Manómetros diferencial de entrada/salida'],
+      specs:['Capas: grava soporte + arena sílica + antracita', 'Vel. servicio: 5–10 gpm/ft²', 'Retrolavado automático: 12–18 gpm/ft²', 'Manómetros diferencial de entrada/salida'],
       legal:'NOM-201-SSA1-2015 Tabla 1 — Turbidez ≤ 3.0 UNT y Color verdadero ≤ 15 Pt/Co en producto terminado.',
       source:'NOM-201-SSA1-2015 · MIP Filtración en lecho profundo Carbotecnia · AWWA',
       alert:''
