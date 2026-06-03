@@ -637,7 +637,7 @@ function dxBuildTrain(inp, fl){
     }
     steps.push({
       num: ++stepNum, cat:'oxidacion', catLabel:'Oxidación', catColor:'#D97706', catBg:'#FEFCE8',
-      icon:'⚡', name:'Sistema de Cloración (Hipoclorito de Sodio)',
+      icon:'⚡', name:'Sistema de cloración (hipoclorito de sodio)',
       why: whyClo.trim(),
       specs:['Oxidante: NaOCl (hipoclorito)', 'Cloro libre residual: 1 ppm', 'ORP salida Katalox: > 500 mV'],
       source:'MIP Catalizadores MnO₂ Katalox Light · NOM-127 Ap. C',
@@ -652,7 +652,7 @@ function dxBuildTrain(inp, fl){
   if(inp.fuente === 'superficial' && fl.turbidez.fail && !fl.turbidez.skipped){
     steps.push({
       num: ++stepNum, cat:'prefilt', catLabel:'Prefiltración mecánica', catColor:'#4B5563', catBg:'#F9FAFB',
-      icon:'🌀', name:'Filtro de Discos (Azud Helix® o similar)',
+      icon:'🌀', name:'Filtro de discos (Azud Helix® o similar)',
       why: 'Fuente superficial con Turbidez de '+dxFmt(inp.turb,1)+' UNT (NOM: 4.0 UNT). El filtro de discos retiene sólidos gruesos y reduce la carga al lecho profundo, extendiendo su ciclo de retrolavado.',
       specs:['Tamaño de disco: 100–200 µm', 'Descarga automática por ΔP', 'Operación sin electricidad (tipo filtro de piscina no aplica)'],
       source:'Catálogo Azud Helix Flow · NOM-127 Ap. C',
@@ -674,7 +674,7 @@ function dxBuildTrain(inp, fl){
       whyLecho = 'Agua superficial. Se incluye como barrera mecánica obligatoria para coloides y sólidos suspendidos.';
     steps.push({
       num: ++stepNum, cat:'filtracion', catLabel:'Filtración granular', catColor:'#78350F', catBg:'#FEF9EE',
-      icon:'⛰️', name:'Filtro de Lecho Profundo (Arena Sílica / Dual)',
+      icon:'⛰️', name:'Filtro de lecho profundo (arena sílica / dual)',
       why: whyLecho.trim(),
       specs:['Media: Arena sílica (D60 0.5–0.8 mm)', 'Vel. servicio: 5–10 gpm/ft²', 'Retrolavado: 12–18 gpm/ft²', inp.fuente==='superficial'?'Considerar lecho dual Antracita + Arena':''],
       source:'MIP Filtración en lecho profundo Carbotecnia · NOM-127 Ap. C',
@@ -715,7 +715,7 @@ function dxBuildTrain(inp, fl){
      — Carbotecnia: incluir antes de toda OI para proteger membranas. */
   steps.push({
     num: ++stepNum, cat:'gac', catLabel:'Adsorción de orgánicos', catColor:'#16A34A', catBg:'#F0FDF4',
-    icon:'🌿', name:'Filtro de Carbón Activado Granular (GAC)',
+    icon:'🌿', name:'Purificador de carbón activado granular (GAC)',
     why: 'Siempre requerido en trenes de potabilización. Remueve cloro libre residual (↓ a < 0.1 mg/L para proteger membranas de OI), compuestos orgánicos, pesticidas, THMs y sabores/olores.' + (needsRO ? ' CRÍTICO: sin GAC, el cloro dañaría irreversiblemente las membranas de poliamida.' : ''),
     specs:['GAC Coco 12×40 (microporos) o 8×30 (mesoporos)', 'TCCV: 5–10 min', 'Vel.: 3–5 gpm/ft²', 'Vida útil: 3–5 años (por adsorción)'],
     source:'MIP Carbón Activado Granular · MIP Ósmosis Inversa Carbotecnia · NOM-127 Ap. C',
@@ -736,7 +736,7 @@ function dxBuildTrain(inp, fl){
     if(!whySuav) whySuav = 'Requerido como pretratamiento para la Ósmosis Inversa.';
     steps.push({
       num: ++stepNum, cat:'suavizador', catLabel:'Intercambio iónico', catColor:'#0284C7', catBg:'#F0F9FF',
-      icon:'💧', name:'Suavizador por Intercambio Catiónico (Ciclo Sodio)',
+      icon:'💧', name:'Suavizador por intercambio catiónico (ciclo sodio)',
       why: whySuav.trim() + ' La resina catiónica fuerte (Resinex K-8 FG) intercambia Ca²⁺ y Mg²⁺ por Na⁺, eliminando la dureza.',
       specs:['Resina: Resinex K-8 FG (cationite fuerte)', 'Vel. servicio: 4–5 gpm/ft³', 'Cap.: 25 Kgr/ft³ @ 10 lb NaCl/ft³', 'Regeneración: NaCl (sal pellet)'],
       source:'MIP Suavizadores Carbotecnia · MIP Ósmosis Inversa',
@@ -753,7 +753,7 @@ function dxBuildTrain(inp, fl){
   if(needsRO){
     steps.push({
       num: ++stepNum, cat:'cartucho', catLabel:'Filtración de seguridad', catColor:'#7C3AED', catBg:'#F5F3FF',
-      icon:'🔵', name:'Prefiltros de Cartucho 1–5 µm',
+      icon:'🔵', name:'Prefiltros de cartucho 1–5 µm',
       why: 'Barrera de seguridad obligatoria antes de las membranas de OI. Retiene partículas finas y cualquier precipitado que escape de las etapas anteriores. Reduce el SDI (Índice de Densidad de Sedimentación) a < 3, requerido para membranas de poliamida.',
       specs:['Cartucho sedimento: 5 µm (1er etapa)', 'Cartucho fino: 1 µm (2da etapa)', 'Carcasa CPVC o acero 316L', 'Cambio: cuando ΔP = 10 psi'],
       source:'MIP Ósmosis Inversa Carbotecnia · Catálogo Parker Hannifin',
@@ -777,8 +777,8 @@ function dxBuildTrain(inp, fl){
       roAlert += 'Arsénico estimado en permeado: ≈'+dxFmt(asOut,4)+' mg/L (rechazo 98% As(V)). Pre-oxidación con cloro es crítica para maximizar el rechazo.';
     }
     steps.push({
-      num: ++stepNum, cat:'ro', catLabel:'Desmineralización / Remoción As', catColor:'#4338CA', catBg:'#EEF2FF',
-      icon:'🔮', name:'Sistema de Ósmosis Inversa Industrial',
+      num: ++stepNum, cat:'ro', catLabel:'Desmineralización / remoción As', catColor:'#4338CA', catBg:'#EEF2FF',
+      icon:'🔮', name:'Sistema de ósmosis inversa industrial',
       why: roWhy,
       specs:['Membranas: Poliamida enrollada en espiral', 'Rechazo sales: 95–99% · Rechazo As(V): 97–99%', 'Recuperación típica: 70–80%', 'Presión: 100–200 psi (agua dulce)', 'Cloro < 0.1 mg/L · Dureza < 170 mg/L · Turb < 5 NTU'],
       source:'MIP Ósmosis Inversa Carbotecnia · NOM-127-SSA1-2021 §5.2 · Filmtec / Hydranautics',
@@ -824,7 +824,7 @@ function dxBuildTrain(inp, fl){
     : 'Siempre se recomienda como barrera de seguridad final para agua potable, especialmente cuando el agua pasa por una cisterna (riesgo de recontaminación). La UV no genera subproductos de desinfección.';
   steps.push({
     num: ++stepNum, cat:'uv', catLabel:'Desinfección final', catColor:'#7C3AED', catBg:'#FAF5FF',
-    icon:'☀️', name:'Lámpara de Luz Ultravioleta (UV-C)',
+    icon:'☀️', name:'Lámpara de luz ultravioleta (UV-C)',
     why: whyUV,
     specs:['Dosis UV mínima: 40 mJ/cm² (EPA)', 'Longitud de onda: 254 nm (UV-C)', 'Turb. máx. en entrada: 1 UNT', 'Cloro residual recomendado pos-UV: 0.2–0.5 mg/L (si aplica)'],
     source:'NOM-127-SSA1-2021 §6 · EPA UVDGM · AWWA',
