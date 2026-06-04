@@ -170,12 +170,22 @@ select.cn-select-full:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(3
   margin-top:5px;line-height:1.4}
 
 /* ── Config highlight row ── */
-.cn-config-row{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
-  border-radius:20px;padding:20px 22px;margin-bottom:18px;box-shadow:var(--shadow-lg);
-  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.cn-config-main{font-family:var(--font-title);font-weight:700;font-size:22px;
-  color:#fff;line-height:1.15;letter-spacing:-.02em}
-.cn-config-sub{font-size:11.5px;color:rgba(255,255,255,.76);margin-top:5px;line-height:1.4}
+.cn-config-row{background:var(--blue-light);border:1px solid #BFDBFE;
+  border-left:3px solid var(--blue);
+  border-radius:16px;padding:16px 20px;margin-bottom:18px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.cn-config-rec-label{font-family:var(--font-num);font-size:9px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:4px}
+.cn-config-main{font-family:var(--font-title);font-weight:700;font-size:18px;
+  color:var(--blue-deeper);line-height:1.2;letter-spacing:-.02em}
+.cn-config-sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+.cn-config-alts{margin-top:12px;padding-top:10px;border-top:1px solid #BFDBFE;
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cn-config-alts-label{font-family:var(--font-num);font-size:9px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-right:2px}
+.cn-alt-chip{font-family:var(--font-num);font-size:10.5px;padding:4px 10px;
+  border-radius:999px;background:#fff;border:1px solid #BFDBFE;color:var(--text-soft);
+  white-space:nowrap}
 
 /* ── Badges ── */
 .cn-badge{display:inline-block;font-family:var(--font-num);font-size:9px;font-weight:600;
@@ -613,10 +623,8 @@ function cnRenderResults(r){
                 : r.lifeDays < 1 ? cnFmt(r.lifeHours,1)+' h'
                 : cnFmt(r.lifeDays,1)+' días';
 
-  var altConfs = r.phys.slice(1).map(function(p){
-    return '<div class="cn-detail-row">'+
-           '<div class="cn-dl">'+p.label+'<small>'+p.tieUsed+' TIE totales</small></div>'+
-           '<div class="cn-dv">'+p.count+' pzas.</div></div>';
+  var altChips = r.phys.slice(1).map(function(p){
+    return '<span class="cn-alt-chip">'+p.label+' ('+p.tieUsed+' TIE)</span>';
   }).join('');
 
   var notices = '';
@@ -665,9 +673,16 @@ function cnRenderResults(r){
     '</div>'+
 
     '<div class="cn-config-row cn-animate">'+
-      '<div><div class="cn-config-main">'+r.best.label+'</div>'+
-        '<div class="cn-config-sub">'+r.best.tieUsed+' TIE · '+cnMuLabel(I.micron)+productSubLabel+'</div></div>'+
-      lifeBadge(r.lifeDays)+
+      '<div style="flex:1;min-width:0">'+
+        '<div class="cn-config-rec-label">Configuración recomendada</div>'+
+        '<div class="cn-config-main">'+r.best.label+'</div>'+
+        '<div class="cn-config-sub">'+r.best.tieUsed+' TIE · '+cnMuLabel(I.micron)+productSubLabel+'</div>'+
+        '<div class="cn-config-alts">'+
+          '<span class="cn-config-alts-label">Alternativas</span>'+
+          altChips+
+        '</div>'+
+      '</div>'+
+      '<div>'+lifeBadge(r.lifeDays)+'</div>'+
     '</div>'+
 
     notices+
@@ -690,9 +705,6 @@ function cnRenderResults(r){
         '<div class="cn-dv">'+cnFmt(r.totalCapG,0)+' g<small>'+r.tie+' TIE × '+I.product.dirtCap+' g/TIE</small></div></div>'+
       '<div class="cn-detail-row"><div class="cn-dl">Fracción de masa<small>Límite MIP: 0.01%</small></div>'+
         '<div class="cn-dv">'+cnFmt(r.massFrac*100,4)+' %</div></div>'+
-
-      '<div class="cn-detail-group-title">Configuraciones físicas alternativas</div>'+
-      altConfs+
 
       (I.cartCost>0?
         '<div class="cn-detail-group-title">Costo operativo</div>'+
