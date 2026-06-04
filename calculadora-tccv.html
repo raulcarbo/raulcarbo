@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora TCCV (EBCT) · Carbón Activado · Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0057A0; --blue-dark:#003D73; --blue-deeper:#002850;
+  --blue-soft:#E8F2FB; --blue-mid:#00A3E0; --blue-light:#F0F7FF;
+  --surface:#FAFBFD; --surface-card:#fff;
+  --border:#DAE2EC; --border-focus:#0057A0;
+  --text:#1A2B3D; --muted:#5A6E80; --faint:#8A9BB0;
+  --pass:#0A8754; --pass-bg:#E6F5EE;
+  --warn:#C27200; --warn-bg:#FFF4E5;
+  --fail:#C53030; --fail-bg:#FDE8E8;
+  --shadow:0 4px 16px rgba(0,87,160,.10),0 2px 6px rgba(0,0,0,.04);
+  --shadow-sm:0 1px 3px rgba(0,87,160,.07),0 1px 2px rgba(0,0,0,.04);
+  --radius:12px; --radius-lg:18px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:linear-gradient(180deg,#EBF3FB,#DDE9F5);color:var(--text);
+  font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+h1,h2,h3{font-family:var(--font-title)}
+
+.shell{width:min(820px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* ── Topbar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:var(--surface-card);border:1px solid var(--border);border-radius:16px;
+  padding:13px 20px;margin-bottom:18px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--blue-deeper));
+  box-shadow:0 6px 16px rgba(0,87,160,.32);font-weight:900;
+  font-family:var(--font-title);font-size:9.5px;letter-spacing:-.01em;text-align:center;line-height:1.2}
+.brand-text h1{font-size:15px;font-weight:800;color:var(--blue-deeper);line-height:1.2}
+.brand-text span{display:block;font-size:11px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.pill{border-radius:999px;padding:6px 13px;font-size:11.5px;font-weight:800;
+  white-space:nowrap;background:var(--blue-soft);border:1px solid rgba(0,87,160,.2);
+  color:var(--blue-dark);font-family:var(--font-title)}
+
+/* ── Hero / formula banner ── */
+.hero-banner{background:linear-gradient(135deg,var(--blue-deeper) 0%,var(--blue-dark) 50%,var(--blue) 100%);
+  border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:18px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero-banner::before{content:"";position:absolute;top:-50px;right:-50px;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,163,224,.22) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.hero-inner h2{font-size:clamp(16px,2.2vw,22px);font-weight:800;color:#fff;
+  letter-spacing:-.03em;line-height:1.15;margin-bottom:6px}
+.hero-inner h2 em{font-style:normal;color:rgba(0,163,224,1)}
+.hero-inner p{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.55;max-width:480px}
+.formula-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;padding:14px 18px;backdrop-filter:blur(10px);white-space:nowrap}
+.formula-box .f-label{font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(0,163,224,.9);margin-bottom:4px;display:block;
+  font-family:var(--font-title)}
+.formula-box .f-eq{font-family:var(--font-num);font-size:13px;font-weight:600;
+  color:#fff;line-height:1.6}
+.formula-box .f-eq span{color:rgba(0,163,224,.9)}
+
+/* ── Main card ── */
+.calc-card{background:var(--surface-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+
+/* ── Method selector ── */
+.method-selector{display:grid;grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--border)}
+.method-btn{padding:14px 12px;border:none;background:transparent;
+  font-family:var(--font-body);font-size:13.5px;font-weight:600;
+  cursor:pointer;color:var(--faint);position:relative;
+  transition:color .2s,background .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.method-btn .m-icon{font-size:17px}
+.method-btn.active{color:var(--blue);background:var(--blue-soft)}
+.method-btn.active::after{content:'';position:absolute;bottom:0;left:16px;right:16px;
+  height:2.5px;background:var(--blue);border-radius:2px 2px 0 0}
+
+/* ── Card body ── */
+.calc-body{padding:24px 24px 20px}
+@media(max-width:480px){.calc-body{padding:18px 14px 16px}}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.input-grid{display:grid;gap:18px}
+.input-grid.two-col{grid-template-columns:1fr 1fr}
+@media(max-width:520px){.input-grid.two-col{grid-template-columns:1fr}}
+
+/* ── Field ── */
+.field{display:grid;gap:6px}
+.field label{font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em}
+
+/* ── Input + inline unit select ── */
+.input-wrap{display:flex;border:1.5px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;background:var(--surface-card);transition:border-color .15s,box-shadow .15s}
+.input-wrap:focus-within{border-color:var(--border-focus);box-shadow:0 0 0 3.5px rgba(0,87,160,.11)}
+.input-wrap input{flex:1;border:none;padding:11px 13px;
+  font-family:var(--font-num);font-size:15px;font-weight:600;color:var(--text);
+  background:transparent;outline:none;min-width:0}
+.input-wrap input::placeholder{color:var(--faint);font-weight:400;
+  font-family:var(--font-body);font-size:12.5px}
+.unit-select{border:none;border-left:1.5px solid var(--border);
+  background:#EEF4FA;padding:0 26px 0 11px;
+  font-family:var(--font-num);font-size:11.5px;font-weight:700;
+  color:var(--blue-dark);cursor:pointer;appearance:none;outline:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath fill='none' stroke='%235A6E80' stroke-width='1.5' d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;
+  min-width:70px;transition:background .15s}
+.unit-select:hover{background-color:#DDE9F5}
+
+/* ── Buttons ── */
+.btn-row{display:flex;gap:12px;margin-top:22px}
+.btn-calc{flex:1;padding:13px 20px;border:none;border-radius:var(--radius);
+  font-family:var(--font-body);font-size:14px;font-weight:700;cursor:pointer;
+  background:var(--blue);color:#fff;
+  box-shadow:0 4px 14px rgba(0,87,160,.30);transition:all .2s}
+.btn-calc:hover{background:var(--blue-dark);transform:translateY(-1px);
+  box-shadow:0 6px 18px rgba(0,87,160,.38)}
+.btn-calc:active{transform:translateY(0)}
+.btn-clear{padding:13px 18px;border:1.5px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font-body);font-size:14px;font-weight:600;
+  cursor:pointer;background:var(--surface-card);color:var(--muted);transition:all .2s}
+.btn-clear:hover{border-color:var(--faint);color:var(--text)}
+
+/* ── Result ── */
+.result-panel{margin-top:22px;border-radius:var(--radius);overflow:hidden;display:none}
+.result-panel.visible{display:block;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.result-main{padding:18px 22px;display:flex;align-items:center;
+  justify-content:space-between;gap:14px;flex-wrap:wrap}
+.result-label{font-size:11.5px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em}
+.result-value{font-family:var(--font-num);font-size:2.3rem;font-weight:700;
+  letter-spacing:-.03em;line-height:1}
+.result-value small{font-size:.42em;font-weight:600;margin-left:5px;letter-spacing:0}
+.result-detail{padding:0 22px 14px;font-size:11.5px;color:var(--muted);
+  font-family:var(--font-num);line-height:1.75}
+.result-verdict{padding:11px 22px;font-size:12.5px;font-weight:600;
+  border-top:1px solid rgba(0,0,0,.06)}
+.result-good{background:var(--pass-bg)}
+.result-good .result-value,.result-good .result-verdict{color:var(--pass)}
+.result-warn{background:var(--warn-bg)}
+.result-warn .result-value,.result-warn .result-verdict{color:var(--warn)}
+.result-low{background:var(--fail-bg)}
+.result-low .result-value,.result-low .result-verdict{color:var(--fail)}
+
+/* ── Reference table ── */
+.ref-card{background:var(--surface-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:18px}
+.ref-head{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 20px 11px;border-bottom:1px solid var(--border)}
+.ref-head h2{font-size:14px;font-weight:700;color:var(--blue-deeper)}
+.ref-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ref-table{width:100%;border-collapse:collapse;font-size:13px}
+.ref-table thead th{padding:9px 16px;font-weight:700;font-size:10.5px;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+  background:#F5F8FC;border-bottom:1px solid var(--border);
+  text-align:left;white-space:nowrap}
+.ref-table tbody td{padding:11px 16px;border-bottom:1px solid var(--border);
+  color:var(--text);vertical-align:middle}
+.ref-table tbody tr:last-child td{border-bottom:none}
+.ref-table tbody tr:hover{background:var(--blue-soft)}
+.ebct-badge{display:inline-block;font-family:var(--font-num);font-weight:700;
+  font-size:11.5px;padding:3px 9px;border-radius:6px;white-space:nowrap}
+.ebct-badge.fast{background:var(--pass-bg);color:var(--pass)}
+.ebct-badge.mid{background:var(--warn-bg);color:var(--warn)}
+.ebct-badge.long{background:var(--blue-soft);color:var(--blue)}
+.note-text{font-size:12px;color:var(--faint)}
+
+/* ── Footer note ── */
+.calc-footer{background:var(--blue-soft);border:1px solid rgba(0,87,160,.12);
+  border-radius:var(--radius);padding:14px 18px}
+.calc-footer p{font-size:12px;color:var(--muted);line-height:1.65}
+.calc-footer strong{color:var(--blue-deeper);font-weight:700}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  .hero-inner{grid-template-columns:1fr}
+  .formula-box{display:none}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">TCCV</div>
+      <div class="brand-text">
+        <h1>Calculadora de TCCV (EBCT)</h1>
+        <span>Carbotecnia · Carbón activado granular</span>
+      </div>
+    </div>
+    <div class="pill">GAC · Carbotecnia</div>
+  </div>
+
+  <!-- Hero + formula -->
+  <div class="hero-banner">
+    <div class="hero-inner">
+      <div>
+        <h2>Tiempo de contacto en <em>cama vacía (TCCV)</em></h2>
+        <p>Calcule el EBCT de su sistema de carbón activado para verificar que el tiempo de contacto es adecuado según el contaminante objetivo. Compatible con unidades métricas e imperiales.</p>
+      </div>
+      <div class="formula-box">
+        <span class="f-label">Fórmula</span>
+        <div class="f-eq">TCCV = <span>V<sub>lecho</sub></span> ÷ <span>Q</span><br>
+        <span style="font-size:11px;opacity:.75">(resultado en minutos)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main card -->
+  <div class="calc-card">
+
+    <!-- Method tabs -->
+    <div class="method-selector">
+      <button class="method-btn active" id="btn-volume" onclick="setMethod('volume')">
+        <span class="m-icon">⬡</span> Por volumen del medio
+      </button>
+      <button class="method-btn" id="btn-tank" onclick="setMethod('tank')">
+        <span class="m-icon">⊚</span> Por dimensiones del tanque
+      </button>
+    </div>
+
+    <div class="calc-body">
+
+      <!-- Panel: Por volumen -->
+      <div class="panel active" id="panel-volume">
+        <div class="input-grid two-col">
+
+          <div class="field">
+            <label>Flujo volumétrico (Q)</label>
+            <div class="input-wrap">
+              <input type="number" id="v-flow" placeholder="ej. 10" min="0" step="any">
+              <select class="unit-select" id="v-flow-unit">
+                <option value="m3h">m³/h</option>
+                <option value="Lmin">L/min</option>
+                <option value="GPM">GPM</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Volumen del medio (V)</label>
+            <div class="input-wrap">
+              <input type="number" id="v-vol" placeholder="ej. 0.5" min="0" step="any">
+              <select class="unit-select" id="v-vol-unit">
+                <option value="m3">m³</option>
+                <option value="L">L</option>
+                <option value="ft3">ft³</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /panel-volume -->
+
+      <!-- Panel: Por dimensiones -->
+      <div class="panel" id="panel-tank">
+        <div class="input-grid two-col">
+
+          <div class="field">
+            <label>Diámetro interno del tanque</label>
+            <div class="input-wrap">
+              <input type="number" id="t-diam" placeholder="ej. 60" min="0" step="any">
+              <select class="unit-select" id="t-diam-unit">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+                <option value="m">m</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Altura del lecho (carbón)</label>
+            <div class="input-wrap">
+              <input type="number" id="t-height" placeholder="ej. 120" min="0" step="any">
+              <select class="unit-select" id="t-height-unit">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+                <option value="m">m</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+        <div class="input-grid" style="margin-top:18px">
+          <div class="field">
+            <label>Flujo volumétrico (Q)</label>
+            <div class="input-wrap">
+              <input type="number" id="t-flow" placeholder="ej. 5" min="0" step="any">
+              <select class="unit-select" id="t-flow-unit">
+                <option value="m3h">m³/h</option>
+                <option value="Lmin">L/min</option>
+                <option value="GPM">GPM</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-tank -->
+
+      <!-- Buttons -->
+      <div class="btn-row">
+        <button class="btn-calc" onclick="calculate()">Calcular TCCV</button>
+        <button class="btn-clear" onclick="clearAll()">Limpiar</button>
+      </div>
+
+      <!-- Result -->
+      <div class="result-panel" id="result">
+        <div class="result-main">
+          <div class="result-label">Tiempo de contacto en cama vacía (TCCV / EBCT)</div>
+          <div class="result-value" id="result-value">—</div>
+        </div>
+        <div class="result-detail" id="result-detail"></div>
+        <div class="result-verdict" id="result-verdict"></div>
+      </div>
+
+    </div><!-- /calc-body -->
+  </div><!-- /calc-card -->
+
+  <!-- Reference table -->
+  <div class="ref-card">
+    <div class="ref-head">
+      <h2>TCCV recomendado según contaminante objetivo</h2>
+      <span class="pill" style="font-size:10px">Referencia de diseño</span>
+    </div>
+    <div class="ref-table-wrap">
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th>Contaminante</th>
+            <th>TCCV mínimo</th>
+            <th>Tipo de carbón recomendado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cloro libre</td>
+            <td><span class="ebct-badge fast">2 min</span></td>
+            <td>Cualquier GAC (reacción catalítica rápida)</td>
+          </tr>
+          <tr>
+            <td>Cloraminas</td>
+            <td><span class="ebct-badge long">10 min</span></td>
+            <td>GAC estándar (reacción catalítica lenta)</td>
+          </tr>
+          <tr>
+            <td>Cloraminas (con carbón catalítico)</td>
+            <td><span class="ebct-badge fast">4 min</span></td>
+            <td>Carbón catalítico</td>
+          </tr>
+          <tr>
+            <td>THM / Subproductos de desinfección</td>
+            <td><span class="ebct-badge mid">7 min</span></td>
+            <td>Carbón base cáscara de coco 12×40</td>
+          </tr>
+          <tr>
+            <td>COV (Compuestos orgánicos volátiles)</td>
+            <td><span class="ebct-badge mid">7 min</span></td>
+            <td>Carbón mineral o cáscara de coco</td>
+          </tr>
+          <tr>
+            <td>PFAS / PFOA / PFOS</td>
+            <td><span class="ebct-badge long">10 min</span></td>
+            <td>Carbón mineral bituminoso 12×40</td>
+          </tr>
+          <tr>
+            <td>Pesticidas</td>
+            <td><span class="ebct-badge long">≥ 10 min</span></td>
+            <td class="note-text">Consultar según tipo y concentración específica</td>
+          </tr>
+          <tr>
+            <td>Orgánicos naturales (taninos, color)</td>
+            <td><span class="ebct-badge mid">5–7 min</span></td>
+            <td>GAC, generalmente como post-tratamiento</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="calc-footer">
+    <p><strong>Nota técnica:</strong> El TCCV asume flujo pistón ideal (toda el agua atraviesa el lecho a la misma velocidad). En la práctica, la canalización, la distribución del flujo y la densidad de empaque afectan el tiempo de contacto real. Consulte con el equipo técnico Carbotecnia para el dimensionamiento definitivo de su sistema de carbón activado.</p>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+/* ── Conversiones a unidades base ── */
+var FLOW = { m3h: 1, Lmin: 0.06, GPM: 0.227125 };   /* → m³/h */
+var VOL  = { m3: 1, L: 0.001, ft3: 0.0283168 };      /* → m³  */
+var LEN  = { cm: 0.01, m: 1, 'in': 0.0254 };         /* → m   */
+
+var currentMethod = 'volume';
+
+function setMethod(m){
+  currentMethod = m;
+  document.getElementById('btn-volume').classList.toggle('active', m === 'volume');
+  document.getElementById('btn-tank').classList.toggle('active',   m === 'tank');
+  document.getElementById('panel-volume').classList.toggle('active', m === 'volume');
+  document.getElementById('panel-tank').classList.toggle('active',   m === 'tank');
+  hideResult();
+}
+
+function hideResult(){
+  document.getElementById('result').className = 'result-panel';
+}
+
+function v(id){
+  var n = parseFloat(document.getElementById(id).value);
+  return isNaN(n) || n <= 0 ? null : n;
+}
+function u(id){ return document.getElementById(id).value; }
+
+function fmt(n, d){
+  return n.toLocaleString('es-MX', {minimumFractionDigits:d, maximumFractionDigits:d});
+}
+
+function calculate(){
+  var ebct, lines = [];
+
+  if(currentMethod === 'volume'){
+    var qRaw = v('v-flow'), qUnit = u('v-flow-unit');
+    var vRaw = v('v-vol'),  vUnit = u('v-vol-unit');
+    if(!qRaw || !vRaw) return alert('Ingrese valores válidos mayores a cero en ambos campos.');
+    var qM3h = qRaw * FLOW[qUnit];
+    var vM3  = vRaw * VOL[vUnit];
+    ebct = (vM3 / qM3h) * 60;
+    lines.push('Volumen del lecho: ' + fmt(vRaw,4) + ' ' + vUnit + ' = ' + fmt(vM3,5) + ' m³');
+    lines.push('Flujo: ' + fmt(qRaw,3) + ' ' + qUnit + ' = ' + fmt(qM3h,4) + ' m³/h');
+  } else {
+    var dRaw = v('t-diam'),   dUnit = u('t-diam-unit');
+    var hRaw = v('t-height'), hUnit = u('t-height-unit');
+    var qRaw2= v('t-flow'),   qUnit2= u('t-flow-unit');
+    if(!dRaw || !hRaw || !qRaw2) return alert('Ingrese valores válidos mayores a cero en todos los campos.');
+    var dM  = dRaw  * LEN[dUnit];
+    var hM  = hRaw  * LEN[hUnit];
+    var qM3h2 = qRaw2 * FLOW[qUnit2];
+    var vM3 = Math.PI / 4 * dM * dM * hM;
+    ebct = (vM3 / qM3h2) * 60;
+    lines.push('Diámetro: ' + fmt(dRaw,2) + ' ' + dUnit + ' = ' + fmt(dM*100,2) + ' cm');
+    lines.push('Altura del lecho: ' + fmt(hRaw,2) + ' ' + hUnit + ' = ' + fmt(hM*100,2) + ' cm');
+    lines.push('Vol. calculado: ' + fmt(vM3*1000,2) + ' L (' + fmt(vM3,5) + ' m³)');
+    lines.push('Flujo: ' + fmt(qRaw2,3) + ' ' + qUnit2 + ' = ' + fmt(qM3h2,4) + ' m³/h');
+  }
+
+  var panel  = document.getElementById('result');
+  var valEl  = document.getElementById('result-value');
+  var detEl  = document.getElementById('result-detail');
+  var verdEl = document.getElementById('result-verdict');
+
+  valEl.innerHTML = fmt(ebct,2) + '<small>min</small>';
+  detEl.innerHTML = lines.join('<br>');
+  panel.className = 'result-panel visible';
+
+  if(ebct >= 7){
+    panel.classList.add('result-good');
+    verdEl.textContent = '✓ TCCV adecuado para la mayoría de aplicaciones de adsorción con carbón activado granular.';
+  } else if(ebct >= 4){
+    panel.classList.add('result-warn');
+    verdEl.textContent = '⚠ TCCV moderado. Suficiente para decloración y cloraminas con carbón catalítico, pero insuficiente para COV, THM o PFAS.';
+  } else if(ebct >= 2){
+    panel.classList.add('result-warn');
+    verdEl.textContent = '⚠ TCCV bajo. Adecuado solamente para remoción de cloro libre. Insuficiente para la mayoría de contaminantes adsorbidos.';
+  } else {
+    panel.classList.add('result-low');
+    verdEl.textContent = '✗ TCCV insuficiente. Tiempo de contacto demasiado corto incluso para decloración. Reduzca el flujo o aumente el volumen de carbón activado.';
+  }
+}
+
+function clearAll(){
+  document.querySelectorAll('.calc-body input').forEach(function(i){ i.value = ''; });
+  hideResult();
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && e.target.tagName === 'INPUT'){
+    e.preventDefault(); calculate();
+  }
+});
+</script>
+</body>
+</html>
