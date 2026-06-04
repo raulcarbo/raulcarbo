@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de filtros de cartucho nominal · Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#2563EB; --blue-dark:#1D4ED8; --blue-deeper:#1E3A8A;
+  --blue-soft:#DBEAFE; --blue-mid:#2563EB; --blue-light:#EFF6FF;
+  --blue-ice:#F8FBFF;
+  --ok:#065F46; --ok-soft:#D1FAE5;
+  --warn:#92400E; --warn-soft:#FEF3C7;
+  --err:#991B1B; --err-soft:#FEE2E2;
+  --surface:#F5F7FA; --surface-card:#fff;
+  --border:#DAE2EC; --border-soft:#EAF0F6;
+  --text:#121722; --text-soft:#2D3442; --muted:#5D6675; --faint:#8B96A5;
+  --shadow:0 4px 20px rgba(30,58,138,.10),0 2px 6px rgba(30,58,138,.05);
+  --shadow-sm:0 1px 3px rgba(30,58,138,.06),0 1px 2px rgba(30,58,138,.04);
+  --shadow-lg:0 8px 40px rgba(30,58,138,.14),0 4px 12px rgba(30,58,138,.07);
+  --radius:12px; --radius-lg:18px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  background:linear-gradient(180deg,#EEF2FF,#E0E7FF);
+  color:var(--text);font-family:var(--font-body);font-size:15px;
+  line-height:1.55;-webkit-font-smoothing:antialiased
+}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+.shell{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* ── Topbar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:var(--surface-card);border:1px solid var(--border);border-radius:16px;
+  padding:13px 20px;margin-bottom:18px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  box-shadow:0 6px 16px rgba(30,58,138,.32);font-weight:900;
+  font-family:var(--font-title);font-size:9.5px;letter-spacing:-.01em;text-align:center;line-height:1.2}
+.brand-text h1{font-size:15px;font-weight:800;color:var(--blue-deeper);line-height:1.2}
+.brand-text span{display:block;font-size:11px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.pill{border-radius:999px;padding:6px 13px;font-size:11.5px;font-weight:800;
+  white-space:nowrap;background:var(--blue-light);border:1px solid rgba(37,99,235,.2);
+  color:var(--blue-deeper);font-family:var(--font-title)}
+
+/* ── Hero banner ── */
+.hero-banner{background:linear-gradient(135deg,#050C2E 0%,var(--blue-deeper) 50%,var(--blue) 100%);
+  border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:18px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero-banner::before{content:"";position:absolute;top:-50px;right:-50px;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(37,99,235,.28) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.hero-inner h2{font-size:clamp(16px,2.2vw,22px);font-weight:800;color:#fff;
+  letter-spacing:-.03em;line-height:1.15;margin-bottom:6px}
+.hero-inner h2 em{font-style:normal;color:#93C5FD}
+.hero-inner p{font-size:12.5px;color:rgba(255,255,255,.70);line-height:1.55;max-width:520px}
+.formula-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;padding:14px 18px;backdrop-filter:blur(10px);white-space:nowrap}
+.formula-box .f-label{font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:#93C5FD;margin-bottom:4px;display:block;
+  font-family:var(--font-title)}
+.formula-box .f-eq{font-family:var(--font-num);font-size:13px;font-weight:600;
+  color:#fff;line-height:1.7}
+.formula-box .f-eq span{color:#93C5FD}
+
+/* ── Layout grid ── */
+.cn-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);
+  gap:28px;align-items:start}
+
+/* ── Card ── */
+.cn-card{background:var(--surface-card);border:1px solid var(--border);
+  border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.cn-card-title{padding:20px 24px 14px;border-bottom:1px solid var(--border-soft);
+  background:linear-gradient(180deg,var(--surface-card),var(--blue-ice));
+  font-family:var(--font-title);font-weight:600;font-size:18px;letter-spacing:-.02em;
+  color:var(--text);margin:0}
+.cn-section{padding:22px 24px;border-bottom:1px solid var(--border-soft)}
+.cn-section:last-child{border-bottom:none}
+.cn-section-label{font-family:var(--font-num);font-size:10px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--blue);
+  margin:0 0 14px;padding-bottom:6px;border-bottom:1px solid var(--border-soft)}
+
+/* ── Fields ── */
+.cn-field{margin-bottom:16px}
+.cn-field:last-child{margin-bottom:0}
+.cn-field > label{display:block;font-weight:500;font-size:13px;color:var(--text);margin-bottom:7px}
+.cn-req{color:var(--blue);margin-left:2px;font-weight:700}
+.cn-opt{font-family:var(--font-num);font-size:9px;font-weight:400;color:var(--faint);
+  background:var(--surface);border:1px solid var(--border);padding:1px 6px;
+  border-radius:999px;margin-left:6px;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle}
+.cn-hint{font-family:var(--font-num);font-size:9.5px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--faint);margin-top:6px;line-height:1.5}
+.cn-err{display:none;margin-top:6px;font-size:11px;color:var(--err)}
+.cn-field.has-error .cn-err{display:block}
+
+/* ── Input rows ── */
+.cn-input-row{display:grid;grid-template-columns:1fr 110px;border:1.5px solid var(--border);
+  border-radius:14px;overflow:hidden;transition:border-color .15s,box-shadow .15s;
+  background:var(--surface-card)}
+.cn-input-row:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.14)}
+.cn-input-row.cn-err-ring{border-color:var(--err);box-shadow:0 0 0 4px rgba(185,28,28,.12)}
+.cn-input-row input{border:none;padding:11px 13px;font-family:var(--font-num);font-size:15px;
+  background:var(--surface-card);color:var(--text);outline:none;width:100%;min-width:0}
+.cn-input-row input::placeholder{color:#AAB4C2}
+.cn-input-row select,.cn-unit{border:none;border-left:1px solid var(--border);
+  padding:11px 10px;font-family:var(--font-body);font-size:13px;font-weight:500;
+  background:var(--surface);color:var(--text-soft);outline:none;cursor:pointer;appearance:none}
+.cn-input-row select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%238B96A5' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 9px center;padding-right:24px}
+.cn-unit{cursor:default;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-num);font-size:11px;color:var(--faint)}
+
+/* ── Full-width select ── */
+select.cn-select-full{width:100%;border:1.5px solid var(--border);border-radius:14px;
+  padding:11px 34px 11px 13px;font-family:var(--font-body);font-size:14px;font-weight:500;
+  background-color:var(--surface-card);color:var(--text);outline:none;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%238B96A5' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;transition:border-color .15s,box-shadow .15s}
+select.cn-select-full:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.14)}
+
+/* ── Premium badge on select ── */
+.product-premium-note{display:inline-block;font-family:var(--font-num);font-size:9px;
+  font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;
+  border-radius:999px;background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  color:#fff;margin-left:8px;vertical-align:middle}
+
+/* ── Buttons ── */
+.cn-btn-row{display:flex;gap:10px;padding:20px 24px 24px}
+.cn-btn{flex:1;padding:13px 18px;font-family:var(--font-body);font-weight:600;font-size:13.5px;
+  letter-spacing:.02em;cursor:pointer;border-radius:999px;transition:all .15s;border:1.5px solid transparent}
+.cn-btn-primary{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 4px 12px rgba(30,58,138,.25)}
+.cn-btn-primary:hover{box-shadow:0 6px 18px rgba(30,58,138,.34);transform:translateY(-1px)}
+.cn-btn-ghost{background:#fff;color:var(--text);border-color:var(--border)}
+.cn-btn-ghost:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+
+/* ── Empty state ── */
+.cn-empty{text-align:center;padding:72px 24px;color:var(--faint);font-size:15px;
+  line-height:1.55;min-height:400px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center}
+.cn-empty-icon{width:52px;height:52px;border-radius:50%;background:var(--blue-light);
+  display:grid;place-items:center;margin-bottom:16px}
+
+/* ── Results ── */
+.cn-results-inner{padding:24px}
+.cn-kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--border-soft);border:1px solid var(--border);border-radius:18px;
+  overflow:hidden;margin-bottom:20px}
+.cn-kpi{background:var(--surface-card);padding:16px 18px}
+.cn-kpi-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.cn-kpi-value{font-family:var(--font-num);font-weight:600;font-size:24px;
+  letter-spacing:-.02em;color:var(--text);line-height:1}
+.cn-kpi-value sup{font-family:var(--font-body);font-size:12px;font-weight:500;
+  color:var(--faint);margin-left:5px}
+.cn-kpi-sub{font-family:var(--font-num);font-size:11px;color:var(--text-soft);
+  margin-top:5px;line-height:1.4}
+
+/* ── Config highlight row ── */
+.cn-config-row{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  border-radius:20px;padding:20px 22px;margin-bottom:18px;box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.cn-config-main{font-family:var(--font-title);font-weight:700;font-size:22px;
+  color:#fff;line-height:1.15;letter-spacing:-.02em}
+.cn-config-sub{font-size:11.5px;color:rgba(255,255,255,.76);margin-top:5px;line-height:1.4}
+
+/* ── Badges ── */
+.cn-badge{display:inline-block;font-family:var(--font-num);font-size:9px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:999px;white-space:nowrap}
+.cn-badge-green{background:var(--ok-soft);color:var(--ok);border:1px solid #6EE7B7}
+.cn-badge-amber{background:var(--warn-soft);color:var(--warn);border:1px solid #FCD34D}
+.cn-badge-red{background:var(--err-soft);color:var(--err);border:1px solid #FCA5A5}
+.cn-badge-blue{background:var(--blue-soft);color:var(--blue-deeper);border:1px solid #BFDBFE}
+
+/* ── Detail rows ── */
+.cn-detail-group-title{font-family:var(--font-title);font-weight:600;font-size:14.5px;
+  letter-spacing:-.01em;color:var(--text);margin:20px 0 3px;
+  display:flex;align-items:center;gap:8px}
+.cn-detail-group-title::before{content:'';width:6px;height:6px;background:var(--blue);
+  border-radius:50%;display:inline-block}
+.cn-detail-row{display:grid;grid-template-columns:1fr auto;align-items:baseline;
+  gap:14px;padding:11px 0;border-bottom:1px dashed var(--border)}
+.cn-detail-row:last-child{border-bottom:none}
+.cn-dl{font-size:13px;color:var(--muted);line-height:1.4}
+.cn-dl small{display:block;font-size:11px;color:var(--faint);margin-top:2px}
+.cn-dv{text-align:right;font-family:var(--font-num);font-size:13.5px;
+  font-weight:500;color:var(--text);white-space:nowrap}
+.cn-dv small{display:block;font-size:10.5px;font-weight:400;color:var(--faint);margin-top:3px}
+
+/* ── Notices ── */
+.cn-notice{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:12.5px;line-height:1.6}
+.cn-notice b{display:block;font-family:var(--font-num);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.cn-notice-red{background:var(--err-soft);border:1px solid #FCA5A5;color:var(--err)}
+.cn-notice-red b{color:var(--err)}
+.cn-notice-amber{background:var(--warn-soft);border:1px solid #FCD34D;color:var(--warn)}
+.cn-notice-amber b{color:var(--warn)}
+.cn-notice-blue{background:var(--blue-light);border:1px solid #BFDBFE;color:var(--blue-deeper)}
+.cn-notice-blue b{color:var(--blue)}
+.cn-notice-gray{background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.cn-notice-gray b{color:var(--text)}
+
+/* ── Result actions ── */
+.cn-result-actions{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);
+  display:flex;gap:10px;flex-wrap:wrap}
+.cn-action-btn{padding:9px 14px;font-family:var(--font-body);font-weight:500;font-size:12.5px;
+  display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--text);
+  border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:all .15s}
+.cn-action-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.cn-action-btn svg{width:13px;height:13px}
+.cn-action-btn.cn-copied{background:var(--ok-soft);border-color:#6EE7B7;color:var(--ok)}
+
+/* ── Footer ── */
+.page-footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  font-family:var(--font-num);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint)}
+
+/* ── Animations ── */
+@keyframes cnFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.cn-animate{animation:cnFadeUp .3s ease both}
+
+/* ── Responsive ── */
+@media(max-width:980px){
+  .cn-grid{grid-template-columns:1fr}
+  .hero-inner{grid-template-columns:1fr}
+  .formula-box{display:none}
+  .cn-kpi-strip{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .cn-section,.cn-results-inner{padding:16px 14px 20px}
+  .cn-card-title{padding:14px 14px 10px}
+  .cn-kpi-strip{grid-template-columns:1fr}
+  .cn-detail-row{grid-template-columns:1fr;gap:3px}
+  .cn-dv{text-align:left;white-space:normal}
+  .cn-btn-row{flex-direction:column;padding-left:14px;padding-right:14px}
+}
+@media print{
+  body{background:#fff}
+  .topbar,.hero-banner,.cn-btn-row,.cn-result-actions,.page-footer{display:none!important}
+  .cn-card{box-shadow:none;border:1px solid #ccc}
+  .cn-grid{grid-template-columns:1fr 1.35fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Topbar -->
+  <nav class="topbar">
+    <div class="brand">
+      <div class="logo">C<br>A</div>
+      <div class="brand-text">
+        <h1>Carbotecnia</h1>
+        <span>Tratamiento de agua · México</span>
+      </div>
+    </div>
+    <span class="pill">Cartucho nominal v1.2</span>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero-banner">
+    <div class="hero-inner">
+      <div>
+        <h2>Dimensionamiento de <em>filtros de cartucho nominal</em></h2>
+        <p>Selecciona la configuración óptima de cartuchos filtrantes nominales, incluyendo las series premium Parker Polyflow-G y 3M Micro-Klean RT con datos de ficha técnica oficial. Estima TIE requeridos, vida útil y costo operativo mensual.<br>
+        <strong style="color:#fff">Nota:</strong> el diseño final requiere prueba piloto con el líquido real.</p>
+      </div>
+      <div class="formula-box">
+        <span class="f-label">Dimensionamiento básico</span>
+        <div class="f-eq">TIE = <span>Q</span> / <span>q<sub style="font-size:10px">TIE</sub></span><br>
+        Vida = Cap<sub style="font-size:10px">total</sub> / Carga<sub style="font-size:10px">diaria</sub><br>
+        OPEX = Cambios/mes × <span>N</span> × <span>$</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main layout -->
+  <div class="cn-grid">
+
+    <!-- Inputs card -->
+    <div class="cn-card cn-card-inputs">
+      <p class="cn-card-title">Parámetros del sistema</p>
+
+      <div class="cn-section">
+        <div class="cn-section-label">Hidráulica</div>
+
+        <div class="cn-field" id="cnf-flow">
+          <label>Flujo a tratar <span class="cn-req">*</span></label>
+          <div class="cn-input-row" id="cnr-flow">
+            <input type="number" id="cn-flow" placeholder="50" min="0" step="any">
+            <select id="cn-flow-unit">
+              <option value="gpm">GPM</option>
+              <option value="lpm" selected>L/min</option>
+              <option value="m3h">m³/h</option>
+            </select>
+          </div>
+          <div class="cn-err">Valor requerido mayor a cero.</div>
+        </div>
+
+        <div class="cn-field">
+          <label>Horas de operación <span class="cn-opt">opcional</span></label>
+          <div class="cn-input-row">
+            <input type="number" id="cn-op-hours" value="24" min="1" max="24" step="1">
+            <span class="cn-unit">h/día</span>
+          </div>
+          <div class="cn-hint">Default 24 h continuo</div>
+        </div>
+      </div>
+
+      <div class="cn-section">
+        <div class="cn-section-label">Calidad del agua</div>
+
+        <div class="cn-field" id="cnf-turb">
+          <label>Turbidez <span class="cn-req">*</span></label>
+          <div class="cn-input-row" id="cnr-turb">
+            <input type="number" id="cn-turb" placeholder="5" min="0" step="any">
+            <span class="cn-unit">NTU</span>
+          </div>
+          <div class="cn-hint">SST estimados = NTU × 1.5 mg/L</div>
+          <div class="cn-err">Valor requerido mayor a cero.</div>
+        </div>
+
+        <div class="cn-field">
+          <label>SDI <span class="cn-opt">opcional</span></label>
+          <div class="cn-input-row">
+            <input type="number" id="cn-sdi" placeholder="3.5" min="0" max="6" step="0.1">
+            <span class="cn-unit">SDI</span>
+          </div>
+          <div class="cn-hint">SDI &gt; 4 aplica penalización +20%</div>
+        </div>
+      </div>
+
+      <div class="cn-section">
+        <div class="cn-section-label">Cartucho</div>
+
+        <div class="cn-field">
+          <label>Familia</label>
+          <select class="cn-select-full" id="cn-product"></select>
+          <div class="cn-hint" id="cn-product-hint"></div>
+        </div>
+
+        <div class="cn-field">
+          <label>Micraje <span class="cn-req">*</span></label>
+          <select class="cn-select-full" id="cn-micron"></select>
+          <div class="cn-hint" id="cn-micron-hint"></div>
+        </div>
+
+        <div class="cn-field" id="cn-poly-derate-wrap" style="display:none">
+          <label>Factor de diseño <span class="cn-opt">Polyflow-G</span></label>
+          <div class="cn-input-row">
+            <input type="number" id="cn-poly-derate" value="25" min="5" max="100" step="5">
+            <span class="cn-unit">% curva</span>
+          </div>
+          <div class="cn-hint">25% conservador sobre curva limpia de laboratorio (1 cP)</div>
+        </div>
+      </div>
+
+      <div class="cn-section">
+        <div class="cn-section-label">Presión y costo</div>
+
+        <div class="cn-field" id="cnf-pres">
+          <label>Presión disponible <span class="cn-req">*</span></label>
+          <div class="cn-input-row" id="cnr-pres">
+            <input type="number" id="cn-pres" placeholder="60" min="0" step="any">
+            <select id="cn-pres-unit">
+              <option value="psi" selected>psi</option>
+              <option value="bar">bar</option>
+            </select>
+          </div>
+          <div class="cn-hint">Mínimo recomendado: 35 psi</div>
+          <div class="cn-err">Valor requerido mayor a cero.</div>
+        </div>
+
+        <div class="cn-field">
+          <label>Costo por cartucho <span class="cn-opt">opcional</span></label>
+          <div class="cn-input-row">
+            <input type="number" id="cn-cart-cost" placeholder="250" min="0" step="any">
+            <span class="cn-unit">MXN</span>
+          </div>
+          <div class="cn-hint">Precio por pieza (20", 30" o 40"). El OPEX se multiplica por el número de piezas físicas recomendadas.</div>
+        </div>
+      </div>
+
+      <div class="cn-btn-row">
+        <button class="cn-btn cn-btn-primary" id="cn-btn-calc">Calcular</button>
+        <button class="cn-btn cn-btn-ghost" id="cn-btn-reset">Limpiar</button>
+      </div>
+    </div><!-- /inputs -->
+
+    <!-- Results card -->
+    <div class="cn-card cn-card-results">
+      <p class="cn-card-title">Resultados del dimensionamiento</p>
+      <div id="cn-results">
+        <div class="cn-empty">
+          <div class="cn-empty-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5">
+              <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+            </svg>
+          </div>
+          <p>Complete los parámetros<br>y presione <strong>Calcular</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cn-grid -->
+
+  <footer class="page-footer">
+    <span>© Carbotecnia · Calle B No. 2105 Int. A, Zapopan, Jalisco · www.carbotecnia.info</span>
+    <span>Pre-dimensionamiento referencial · El diseño final requiere prueba piloto con el líquido real</span>
+  </footer>
+
+</div><!-- /shell -->
+
+<script>
+var CN = {
+  TARGET_DP_PSI:        2.8,
+  DIRT_HOLD_DEPTH_G:    130,
+  DIRT_HOLD_PLEATED_G:   60,
+  SST_PER_NTU:          1.5,
+  SDI_PENALTY:          1.20,
+  PRESSURE_MIN_PSI:     35,
+  POLYFLOW_G_LIMIT_GPM: 5.0,
+  MICROKLEAN_LIMIT_GPM: 5.0,
+  LIFETIME_SHORT_DAYS:  7,
+  MASS_LIMIT:           0.0001,
+  GAL_TO_L:             3.78541,
+  LPM_TO_GPM:           1 / 3.78541,
+  M3H_TO_GPM:           1000 / 60 / 3.78541,
+  DAYS_MONTH:           30
+};
+
+var CN_PRODUCTS = {
+  depth: {
+    label:   'Cartucho estándar de profundidad nominal',
+    type:    'depth',
+    microns: [1, 5, 10, 20, 50],
+    gpmTie:  {1: 0.7, 5: 1.0, 10: 1.5, 20: 2.5, 50: 4.0},
+    dirtCap: 130,
+    hint:    'Termofusionado / polispun. Modelo conservador para agua con carga variable de sólidos.',
+    isPremium: false
+  },
+  pleated: {
+    label:   'Cartucho plisado nominal estándar',
+    type:    'pleated',
+    microns: [1, 5, 10, 20, 50],
+    gpmTie:  {1: 1.0, 5: 1.5, 10: 2.2, 20: 3.5, 50: 5.5},
+    dirtCap: 60,
+    hint:    'Menor caída de presión inicial · menor capacidad de carga de sólidos que profundidad.',
+    isPremium: false
+  },
+  polyflowG: {
+    label:   'Parker Polyflow-G · profundidad premium',
+    type:    'depth',
+    gpmPerPsid: {0.2: 4.2, 0.5: 11.0, 1: 33.0, 3: 70.0, 5: 70.0, 10: 70.0, 30: 70.0},
+    microns: [0.2, 0.5, 1, 3, 5, 10, 30],
+    dirtCap: 130,
+    hint:    'Datos de ficha técnica Parker. Área efectiva 3.6 ft²/TIE · 100% PP · 0.2–30 µm nominales.',
+    isPremium: true
+  },
+  microkleanRT: {
+    label:   '3M Micro-Klean RT · profundidad premium',
+    type:    'depth',
+    microns: [1, 5, 10, 20, 50],
+    gpmTie:  {1: 0.9, 5: 1.3, 10: 1.8, 20: 3.0, 50: 4.5},
+    dirtCap: 150,
+    hint:    'Fibra polipropileno 100% PP fundida por soplado. Alta capacidad de retención · 1–50 µm nominales · NSF/ANSI 42. Carbotecnia: carbotecnia.info/producto/3m-micro-klean-rt/',
+    isPremium: true
+  }
+};
+
+function cnEl(id){ return document.getElementById(id); }
+function cnFmt(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
+function cnFmtInt(n){ return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'; }
+function cnMuLabel(m){ return m<1?String(m)+' µm':m+' µm'; }
+
+function cnPopulateProducts(){
+  cnEl('cn-product').innerHTML = Object.keys(CN_PRODUCTS).map(function(k){
+    var p = CN_PRODUCTS[k];
+    var badge = p.isPremium ? ' ★ premium' : '';
+    return '<option value="'+k+'">'+p.label+badge+'</option>';
+  }).join('');
+  cnEl('cn-product').value = 'depth';
+  cnPopulateMicrons();
+}
+
+function cnPopulateMicrons(){
+  var p = CN_PRODUCTS[cnEl('cn-product').value];
+  cnEl('cn-micron').innerHTML = p.microns.map(function(m){
+    return '<option value="'+m+'">'+cnMuLabel(m)+'</option>';
+  }).join('');
+  cnEl('cn-micron').value = p.microns.indexOf(5)>=0?'5':String(p.microns[0]);
+  cnEl('cn-product-hint').textContent = p.hint;
+  cnEl('cn-micron-hint').textContent  = 'Disponibles: '+p.microns.map(cnMuLabel).join(', ')+'.';
+  var showDerate = cnEl('cn-product').value === 'polyflowG';
+  cnEl('cn-poly-derate-wrap').style.display = showDerate ? '' : 'none';
+}
+
+function cnPhysical(tie){
+  return [40, 30, 20, 10].map(function(len){
+    var f = len / 10, c = Math.ceil(tie / f);
+    return { length:len, count:c, tieUsed:c*f,
+             label:c+' cartucho'+(c>1?'s':'')+' de '+len+'"' };
+  });
+}
+
+function cnHydraulic(I){
+  if(I.productKey === 'polyflowG'){
+    var clean = I.product.gpmPerPsid[I.micron] * CN.TARGET_DP_PSI;
+    var calc  = clean * I.polyDerate;
+    var final = Math.min(calc, CN.POLYFLOW_G_LIMIT_GPM);
+    return {
+      maxGpm: final, cleanGpm: clean, calcGpm: calc,
+      coreLimited: calc > CN.POLYFLOW_G_LIMIT_GPM,
+      basis: 'Parker FT '+cnFmt(I.product.gpmPerPsid[I.micron],1)+' GPM/psid × '+
+             CN.TARGET_DP_PSI+' psid × '+cnFmt(I.polyDerate*100,0)+'%'+
+             (calc>CN.POLYFLOW_G_LIMIT_GPM?' (topado al máx. Parker: '+CN.POLYFLOW_G_LIMIT_GPM+' GPM/TIE)':'')
+    };
+  }
+  if(I.productKey === 'microkleanRT'){
+    return {
+      maxGpm: I.product.gpmTie[I.micron],
+      basis: 'Tabla 3M Micro-Klean RT · MIP Carbotecnia'
+    };
+  }
+  return { maxGpm: I.product.gpmTie[I.micron], basis: 'Tabla conservadora MIP Carbotecnia' };
+}
+
+function cnValidate(){
+  var ok = true;
+  [['cnf-flow','cn-flow','cnr-flow'],
+   ['cnf-turb','cn-turb','cnr-turb'],
+   ['cnf-pres','cn-pres','cnr-pres']].forEach(function(t){
+    var wrap=cnEl(t[0]), val=parseFloat(cnEl(t[1]).value), row=cnEl(t[2]);
+    if(!val||val<=0||isNaN(val)){
+      wrap.classList.add('has-error');
+      if(row) row.classList.add('cn-err-ring');
+      ok = false;
+    } else {
+      wrap.classList.remove('has-error');
+      if(row) row.classList.remove('cn-err-ring');
+    }
+  });
+  return ok;
+}
+
+function cnNormalize(){
+  var fRaw  = parseFloat(cnEl('cn-flow').value);
+  var fUnit = cnEl('cn-flow-unit').value;
+  var fGpm  = fUnit==='gpm' ? fRaw : fUnit==='lpm' ? fRaw*CN.LPM_TO_GPM : fRaw*CN.M3H_TO_GPM;
+  var pRaw  = parseFloat(cnEl('cn-pres').value);
+  var sdi   = parseFloat(cnEl('cn-sdi').value);
+  var pKey  = cnEl('cn-product').value;
+  return {
+    flowGpm:   fGpm,
+    flowLpm:   fGpm * CN.GAL_TO_L,
+    flowM3h:   fGpm * CN.GAL_TO_L * 60 / 1000,
+    turb:      parseFloat(cnEl('cn-turb').value),
+    sdi:       (!isNaN(sdi) && sdi>=0 && sdi<=6) ? sdi : null,
+    productKey: pKey,
+    product:   CN_PRODUCTS[pKey],
+    micron:    parseFloat(cnEl('cn-micron').value),
+    opHours:   Math.min(24, Math.max(1, parseFloat(cnEl('cn-op-hours').value)||24)),
+    presPsi:   cnEl('cn-pres-unit').value==='bar' ? pRaw*14.5038 : pRaw,
+    cartCost:  parseFloat(cnEl('cn-cart-cost').value) || 0,
+    polyDerate:(parseFloat(cnEl('cn-poly-derate').value)||25) / 100
+  };
+}
+
+window.cnCalculate = function(){
+  if(!cnValidate()) return;
+  var I = cnNormalize(), H = cnHydraulic(I);
+  var tieFrac = I.flowGpm / H.maxGpm;
+  var tie     = Math.max(1, Math.ceil(tieFrac));
+  var phys    = cnPhysical(tie), best = phys[0];
+  var sst     = I.turb * CN.SST_PER_NTU;
+  if(I.sdi !== null && I.sdi > 4) sst *= CN.SDI_PENALTY;
+  var flowLpd    = I.flowLpm * 60 * I.opHours;
+  var solidGpD   = flowLpd * sst / 1000;
+  var totalCapG  = tie * I.product.dirtCap;
+  var lifeDays   = solidGpD > 0 ? totalCapG / solidGpD : Infinity;
+  var lifeHours  = lifeDays * I.opHours;
+  var chgMo      = isFinite(lifeDays) && lifeDays > 0 ? CN.DAYS_MONTH / lifeDays : 0;
+  var opex       = chgMo * best.count * I.cartCost;
+  var massFrac   = solidGpD / (flowLpd * 1000);
+  var massExc    = massFrac > CN.MASS_LIMIT;
+  cnRenderResults({I,H,tieFrac,tie,phys,best,sst,flowLpd,solidGpD,totalCapG,lifeDays,lifeHours,chgMo,opex,massFrac,massExc});
+};
+
+function lifeBadge(days){
+  if(!isFinite(days)) return '<span class="cn-badge cn-badge-green">Muy larga</span>';
+  if(days < 7)        return '<span class="cn-badge cn-badge-red">Corta</span>';
+  if(days < 30)       return '<span class="cn-badge cn-badge-amber">Moderada</span>';
+  return '<span class="cn-badge cn-badge-green">Adecuada</span>';
+}
+
+function cnRenderResults(r){
+  var I = r.I;
+  var lifeLabel = !isFinite(r.lifeDays) ? '∞'
+                : r.lifeDays < 1 ? cnFmt(r.lifeHours,1)+' h'
+                : cnFmt(r.lifeDays,1)+' días';
+
+  var altConfs = r.phys.slice(1).map(function(p){
+    return '<div class="cn-detail-row">'+
+           '<div class="cn-dl">'+p.label+'<small>'+p.tieUsed+' TIE totales</small></div>'+
+           '<div class="cn-dv">'+p.count+' pzas.</div></div>';
+  }).join('');
+
+  var notices = '';
+  if(I.presPsi < CN.PRESSURE_MIN_PSI)
+    notices += '<div class="cn-notice cn-notice-red cn-animate"><b>Presión insuficiente</b>'+
+      'La red dispone de '+cnFmt(I.presPsi,1)+' psi. Los cartuchos se cambian al alcanzar 30–35 psi de ΔP. Considere una bomba de refuerzo.</div>';
+
+  if(r.massExc)
+    notices += '<div class="cn-notice cn-notice-red cn-animate"><b>Carga de sólidos supera el límite</b>'+
+      'La concentración ('+cnFmt(r.massFrac*100,4)+'% en masa) supera el 0.01% heurístico del MIP. '+
+      'Instale prefiltración: lecho profundo multimedia, discos Azud o filtros de bolsa. Alternativa: cartuchos de Alto Flujo Parker ParMax.</div>';
+  else if(isFinite(r.lifeDays) && r.lifeDays < CN.LIFETIME_SHORT_DAYS)
+    notices += '<div class="cn-notice cn-notice-amber cn-animate"><b>Vida útil muy corta</b>'+
+      'Los cartuchos se colmatarán en menos de 7 días. Considere prefiltración de lecho profundo multimedia o discos Azud para reducir la carga.</div>';
+
+  if(I.productKey === 'polyflowG')
+    notices += '<div class="cn-notice cn-notice-blue cn-animate"><b>Cálculo Polyflow-G</b>'+
+      'La ficha Parker reporta '+cnFmt(I.product.gpmPerPsid[I.micron],1)+' GPM/psid para '+cnMuLabel(I.micron)+
+      '. Se aplica '+cnFmt(I.polyDerate*100,0)+'% de factor de diseño y se topa al máximo fabricante de '+CN.POLYFLOW_G_LIMIT_GPM+' GPM/TIE.</div>';
+
+  if(I.productKey === 'microkleanRT')
+    notices += '<div class="cn-notice cn-notice-blue cn-animate"><b>3M Micro-Klean RT</b>'+
+      'Cartucho de profundidad premium 100% polipropileno fundido por soplado. Mayor capacidad de retención ('+I.product.dirtCap+' g/TIE) que el estándar. '+
+      'Caudales por TIE basados en MIP Carbotecnia para este producto. NSF/ANSI 42.</div>';
+
+  var productSubLabel = I.productKey==='polyflowG'  ? ' · Parker Polyflow-G'
+                      : I.productKey==='microkleanRT'? ' · 3M Micro-Klean RT'
+                      : I.productKey==='depth'       ? ' · profundidad'
+                      : ' · plisado';
+
+  var html =
+    '<div class="cn-results-inner">'+
+    '<div class="cn-kpi-strip cn-animate">'+
+      '<div class="cn-kpi"><div class="cn-kpi-label">TIE requeridos</div>'+
+        '<div class="cn-kpi-value">'+r.tie+'<sup>de 10"</sup></div>'+
+        '<div class="cn-kpi-sub">'+cnFmt(I.flowGpm,1)+' GPM ÷ '+cnFmt(r.H.maxGpm,2)+' GPM/TIE</div></div>'+
+      '<div class="cn-kpi"><div class="cn-kpi-label">Vida útil estimada</div>'+
+        '<div class="cn-kpi-value">'+lifeLabel+'</div>'+
+        '<div class="cn-kpi-sub">'+(isFinite(r.lifeDays)?cnFmt(r.lifeHours,0)+' h operación':'Carga mínima')+'</div></div>'+
+      '<div class="cn-kpi"><div class="cn-kpi-label">Cambios al mes</div>'+
+        '<div class="cn-kpi-value">'+(r.chgMo>0?cnFmt(r.chgMo,1):'&lt;1')+'</div>'+
+        '<div class="cn-kpi-sub">'+r.best.count+' pieza'+(r.best.count>1?'s':'')+' por cambio</div></div>'+
+      '<div class="cn-kpi"><div class="cn-kpi-label">OPEX mensual</div>'+
+        '<div class="cn-kpi-value">'+(I.cartCost>0?'$'+cnFmtInt(r.opex):'—')+'</div>'+
+        '<div class="cn-kpi-sub">'+(I.cartCost>0?'$'+cnFmt(r.opex*12/1000,1)+'k / año':'Ingrese costo')+'</div></div>'+
+    '</div>'+
+
+    '<div class="cn-config-row cn-animate">'+
+      '<div><div class="cn-config-main">'+r.best.label+'</div>'+
+        '<div class="cn-config-sub">'+r.best.tieUsed+' TIE · '+cnMuLabel(I.micron)+productSubLabel+'</div></div>'+
+      lifeBadge(r.lifeDays)+
+    '</div>'+
+
+    notices+
+
+    '<div class="cn-details cn-animate">'+
+      '<div class="cn-detail-group-title">Hidráulica</div>'+
+      '<div class="cn-detail-row"><div class="cn-dl">Flujo de diseño</div>'+
+        '<div class="cn-dv">'+cnFmt(I.flowGpm,1)+' GPM<small>'+cnFmt(I.flowLpm,1)+' L/min · '+cnFmt(I.flowM3h,2)+' m³/h</small></div></div>'+
+      '<div class="cn-detail-row"><div class="cn-dl">Caudal admisible / TIE<small>'+r.H.basis+'</small></div>'+
+        '<div class="cn-dv">'+cnFmt(r.H.maxGpm,2)+' GPM/TIE</div></div>'+
+      '<div class="cn-detail-row"><div class="cn-dl">Presión disponible</div>'+
+        '<div class="cn-dv">'+cnFmt(I.presPsi,1)+' psi<small>'+cnFmt(I.presPsi/14.5038,2)+' bar</small></div></div>'+
+
+      '<div class="cn-detail-group-title">Sólidos y vida útil</div>'+
+      '<div class="cn-detail-row"><div class="cn-dl">SST estimados'+(I.sdi!==null&&I.sdi>4?' (+20% SDI)':'')+'</div>'+
+        '<div class="cn-dv">'+cnFmt(r.sst,1)+' mg/L<small>'+cnFmt(I.turb,1)+' NTU × 1.5</small></div></div>'+
+      '<div class="cn-detail-row"><div class="cn-dl">Carga diaria de sólidos</div>'+
+        '<div class="cn-dv">'+cnFmt(r.solidGpD,0)+' g/día<small>'+cnFmt(r.flowLpd/1000,1)+' m³/día</small></div></div>'+
+      '<div class="cn-detail-row"><div class="cn-dl">Capacidad total del sistema</div>'+
+        '<div class="cn-dv">'+cnFmt(r.totalCapG,0)+' g<small>'+r.tie+' TIE × '+I.product.dirtCap+' g/TIE</small></div></div>'+
+      '<div class="cn-detail-row"><div class="cn-dl">Fracción de masa<small>Límite MIP: 0.01%</small></div>'+
+        '<div class="cn-dv">'+cnFmt(r.massFrac*100,4)+' %</div></div>'+
+
+      '<div class="cn-detail-group-title">Configuraciones físicas alternativas</div>'+
+      altConfs+
+
+      (I.cartCost>0?
+        '<div class="cn-detail-group-title">Costo operativo</div>'+
+        '<div class="cn-detail-row">'+
+          '<div class="cn-dl">'+r.best.count+' cartucho'+(r.best.count>1?'s':'')+' de '+r.best.length+'" a $'+cnFmt(I.cartCost,2)+' c/u</div>'+
+          '<div class="cn-dv">$'+cnFmtInt(r.opex)+' MXN/mes<small>$'+cnFmt(r.opex*12/1000,1)+'k MXN/año</small></div></div>'
+      : '')+
+    '</div>'+
+
+    '<div class="cn-result-actions">'+
+      '<button class="cn-action-btn" id="cn-btn-print">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+
+          '<path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/>'+
+        '</svg>Imprimir PDF</button>'+
+      '<button class="cn-action-btn" id="cn-btn-copy">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+
+          '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>'+
+        '</svg>Copiar resumen</button>'+
+    '</div>'+
+    '</div>';
+
+  cnEl('cn-results').innerHTML = html;
+  cnEl('cn-btn-print').addEventListener('click', function(){ window.print(); });
+  cnEl('cn-btn-copy').addEventListener('click', function(){ cnCopySummary(r); });
+}
+
+function cnCopySummary(r){
+  var I = r.I;
+  var lifeLabel = !isFinite(r.lifeDays) ? 'Muy larga'
+                : r.lifeDays < 1 ? cnFmt(r.lifeHours,1)+' h'
+                : cnFmt(r.lifeDays,1)+' días';
+  var lines = [
+    '═══════════════════════════════════════════════════',
+    '  FILTRO DE CARTUCHO NOMINAL · Carbotecnia v1.2',
+    '═══════════════════════════════════════════════════', '',
+    'Flujo:         '+cnFmt(I.flowGpm,1)+' GPM ('+cnFmt(I.flowLpm,1)+' L/min · '+cnFmt(I.flowM3h,2)+' m³/h)',
+    'Cartucho:      '+I.product.label,
+    'Micraje:       '+cnMuLabel(I.micron),
+    'Turbidez:      '+cnFmt(I.turb,1)+' NTU → SST '+cnFmt(r.sst,1)+' mg/L',
+    'Presión:       '+cnFmt(I.presPsi,1)+' psi · '+I.opHours+' h/día', '',
+    'TIE requeridos:  '+r.tie,
+    'Configuración:   '+r.best.label,
+    'Caudal/TIE:      '+cnFmt(r.H.maxGpm,2)+' GPM/TIE',
+    'Vida útil:       '+lifeLabel,
+    'Cambios/mes:     '+(r.chgMo>0?cnFmt(r.chgMo,1):'< 1')
+  ];
+  if(I.cartCost>0)
+    lines.push('OPEX mensual:    $'+cnFmtInt(r.opex)+' MXN ('+r.best.count+' cart. de '+r.best.length+'" × $'+cnFmt(I.cartCost,2)+')');
+  lines.push('', '─────────────────────────────────────────────────',
+    'Carbotecnia · www.carbotecnia.info',
+    'Pre-dimensionamiento referencial · Requiere prueba piloto');
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
+    var btn = cnEl('cn-btn-copy'), orig = btn.innerHTML;
+    btn.classList.add('cn-copied');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>Copiado';
+    setTimeout(function(){ btn.classList.remove('cn-copied'); btn.innerHTML = orig; }, 2000);
+  });
+}
+
+window.cnReset = function(){
+  ['cn-flow','cn-turb','cn-sdi','cn-pres','cn-cart-cost'].forEach(function(id){ cnEl(id).value=''; });
+  cnEl('cn-op-hours').value = '24';
+  cnEl('cn-poly-derate').value = '25';
+  cnEl('cn-flow-unit').value = 'lpm';
+  cnEl('cn-pres-unit').value = 'psi';
+  cnEl('cn-product').value = 'depth';
+  cnPopulateMicrons();
+  ['cnf-flow','cnf-turb','cnf-pres'].forEach(function(id){ cnEl(id).classList.remove('has-error'); });
+  ['cnr-flow','cnr-turb','cnr-pres'].forEach(function(id){ if(cnEl(id)) cnEl(id).classList.remove('cn-err-ring'); });
+  cnEl('cn-results').innerHTML =
+    '<div class="cn-empty">'+
+      '<div class="cn-empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg></div>'+
+      '<p>Complete los parámetros<br>y presione <strong>Calcular</strong>.</p>'+
+    '</div>';
+};
+
+cnPopulateProducts();
+cnEl('cn-product').addEventListener('change', cnPopulateMicrons);
+cnEl('cn-btn-calc').addEventListener('click', window.cnCalculate);
+cnEl('cn-btn-reset').addEventListener('click', window.cnReset);
+document.querySelectorAll('input[type="number"]').forEach(function(inp){
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter') window.cnCalculate(); });
+});
+</script>
+</body>
+</html>
