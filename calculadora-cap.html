@@ -364,7 +364,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             <label>Línea Megapol <span class="req">*</span></label>
             <div class="product-grid">
 
-              <button class="product-btn" data-prod="284" onclick="selectProduct('284')">
+              <button type="button" class="product-btn" data-prod="284">
                 <span class="pb-rank">1</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol 28-4</span>
@@ -373,7 +373,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
                 <span class="pb-yodo">Yodo 1,180</span>
               </button>
 
-              <button class="product-btn" data-prod="M" onclick="selectProduct('M')">
+              <button type="button" class="product-btn" data-prod="M">
                 <span class="pb-rank">2</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol M</span>
@@ -382,7 +382,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
                 <span class="pb-yodo">Yodo 950</span>
               </button>
 
-              <button class="product-btn" data-prod="C" onclick="selectProduct('C')">
+              <button type="button" class="product-btn" data-prod="C">
                 <span class="pb-rank">3</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol C</span>
@@ -396,8 +396,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           </div>
 
           <div class="actions">
-            <button class="btn btn-primary" onclick="calculate()">Calcular receta</button>
-            <button class="btn btn-ghost" onclick="resetForm()">Limpiar</button>
+            <button type="button" class="btn btn-primary" id="btn-calc">Calcular receta</button>
+            <button type="button" class="btn btn-ghost" id="btn-reset">Limpiar</button>
           </div>
 
         </div>
@@ -515,7 +515,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           <div class="panel-body">
             <ul class="checklist" id="checklist-body"></ul>
             <div class="actions" style="margin-top:20px">
-              <button class="btn btn-copy" onclick="copyRecipe()">Copiar receta de lote</button>
+              <button type="button" class="btn btn-copy" id="btn-copy">Copiar receta de lote</button>
             </div>
           </div>
         </div>
@@ -784,6 +784,27 @@ function resetForm() {
   document.getElementById('wrap-vol').style.borderColor  = '';
   document.getElementById('wrap-dosis').style.borderColor = '';
 }
+
+/* ── Wire up all events via JS (avoids WordPress stripping onclick / type issues) ── */
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.product-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      selectProduct(btn.getAttribute('data-prod'));
+    });
+  });
+  var bc = document.getElementById('btn-calc');
+  var br = document.getElementById('btn-reset');
+  if (bc) bc.addEventListener('click', function(e){ e.preventDefault(); calculate(); });
+  if (br) br.addEventListener('click', function(e){ e.preventDefault(); resetForm(); });
+  /* btn-copy is rendered dynamically; delegate from results column */
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'btn-copy') {
+      e.preventDefault();
+      copyRecipe();
+    }
+  });
+});
 </script>
 </body>
 </html>
