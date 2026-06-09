@@ -435,7 +435,6 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             <select class="full-sel" id="sel-regen-oxidant">
               <option value="naocl">Hipoclorito de Sodio (NaOCl) — 13%</option>
               <option value="kmno4">Permanganato de Potasio (KMnO₄) — sólido</option>
-              <option value="oxydes">OXYDES — sólido</option>
             </select>
           </div>
 
@@ -558,9 +557,8 @@ var OXIDANTS = {
    Fuente: tabla de regeneración Katalox Light, MIP 260302
    Unidades: mL o g de reactivo por ft³ de lecho               */
 var REGEN = {
-  naocl:  { label:'Hipoclorito de Sodio (NaOCl) 13%',       mlPerFt3:577, isLiquid:true,  unit:'mL' },
-  kmno4:  { label:'Permanganato de Potasio (KMnO₄) sólido', gPerFt3:60,  isLiquid:false, unit:'g'  },
-  oxydes: { label:'OXYDES sólido',                           gPerFt3:25,  isLiquid:false, unit:'g'  }
+  naocl: { label:'Hipoclorito de Sodio (NaOCl) 13%',       mlPerFt3:577, isLiquid:true,  unit:'mL' },
+  kmno4: { label:'Permanganato de Potasio (KMnO₄) sólido', gPerFt3:60,  isLiquid:false, unit:'g'  }
 };
 var FT3_TO_L = 28.3168;   // 1 ft³ = 28.3168 L
 
