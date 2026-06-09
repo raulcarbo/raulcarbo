@@ -13,6 +13,7 @@
   --brand:#0369A1;--brand-dark:#0C4A6E;--brand-mid:#0284C7;
   --brand-light:#EFF8FF;--brand-border:#BAE6FD;
   --green:#0F766E;--green-soft:#ECFDF5;--green-border:#A7F3D0;--green-dark:#065F46;
+  --orange:#C2410C;--orange-soft:#FFF7ED;--orange-border:#FDBA74;--orange-dark:#9A3412;--orange-mid:#EA580C;
   --warn:#B45309;--warn-soft:#FFFBEB;--warn-border:#FCD34D;
   --danger:#991B1B;--danger-soft:#FEF2F2;--danger-border:#FECACA;
   --ink:#0F1E2E;--steel:#374151;--muted:#6B7280;
@@ -183,6 +184,47 @@ select.full-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(3,105,
 .btn-copy:hover{transform:translateY(-1px)}
 .btn-copy svg{width:14px;height:14px;flex-shrink:0}
 .btn-copy.ok{background:linear-gradient(135deg,#0F766E,#065F46)}
+
+/* ── Section A / B headers ────────── */
+.sec-ab{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 16px;border-radius:12px}
+.sec-ab.sec-a{background:var(--brand-light);border:1px solid var(--brand-border)}
+.sec-ab.sec-b{background:var(--orange-soft);border:1px solid var(--orange-border)}
+.sec-ab-badge{font-family:var(--font-title);font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.sec-a .sec-ab-badge{background:var(--brand);color:#fff}
+.sec-b .sec-ab-badge{background:var(--orange-mid);color:#fff}
+.sec-ab-title{font-family:var(--font-title);font-weight:700;font-size:14px}
+.sec-a .sec-ab-title{color:var(--brand-dark)}
+.sec-b .sec-ab-title{color:var(--orange-dark)}
+.sec-ab-sub{font-size:12px;margin-left:auto;white-space:nowrap}
+.sec-a .sec-ab-sub{color:var(--brand)}
+.sec-b .sec-ab-sub{color:var(--orange-mid)}
+
+/* Regen card */
+.kpi-regen{
+  background:linear-gradient(135deg,var(--orange-dark),#7C2D12);
+  border-color:rgba(0,0,0,.15);
+}
+.kpi-regen::before{background:linear-gradient(90deg,var(--orange-mid),#FB923C)!important}
+.kpi-regen .kpi-label{color:rgba(255,255,255,.55)}
+.kpi-regen .kpi-val{color:#fff}
+.kpi-regen .kpi-val small{color:rgba(255,255,255,.6)}
+.kpi-regen .kpi-sub{color:rgba(255,255,255,.62)}
+.kpi-regen .metric-row{border-bottom-color:rgba(255,255,255,.08)}
+.kpi-regen .metric-row span{color:rgba(255,255,255,.55)}
+.kpi-regen .metric-row strong{color:#FED7AA}
+
+/* Regen procedure */
+.regen-proc{background:var(--orange-soft);border:1px solid var(--orange-border);border-radius:14px;padding:16px 18px}
+.regen-proc-title{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-dark);font-weight:700;margin-bottom:10px}
+.regen-proc ol{padding-left:18px;color:var(--orange-dark);font-size:12.5px;line-height:1.65}
+.regen-proc ol li{margin-bottom:4px}
+.regen-proc ol li strong{color:var(--orange-dark)}
+
+/* Regen alert (high Fe/Mn) */
+.alert.regen-needed{background:var(--orange-soft);border-color:var(--orange-border);color:var(--orange-dark)}
+
+/* Section B wrapper */
+.sec-b-wrap{display:grid;gap:14px}
 
 /* ── Footer ───────────────────────── */
 .disclaimer{display:flex;gap:12px;align-items:flex-start;background:#FFFBEB;border:1px solid #FCD34D;border-radius:14px;padding:16px 18px;margin-top:24px;font-size:12.5px;line-height:1.65;color:#78350F}
@@ -374,9 +416,32 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             </div>
           </div>
 
+          <div class="sec-label" style="color:var(--orange-mid);border-bottom-color:var(--orange-border)">Regeneración intermitente (mantenimiento)</div>
+
+          <div class="field">
+            <label>Volumen de lecho Katalox Light</label>
+            <div class="inline-wrap">
+              <input type="number" id="inp-katalox-vol" placeholder="Ej. 3.5" min="0" step="any">
+              <select class="unit-sel" id="unit-katalox" style="min-width:60px">
+                <option value="ft3">ft³</option>
+                <option value="l">Litros</option>
+              </select>
+            </div>
+            <div class="hint">Opcional. Llene este campo para obtener la receta de regeneración.</div>
+          </div>
+
+          <div class="field">
+            <label>Oxidante para regeneración</label>
+            <select class="full-sel" id="sel-regen-oxidant">
+              <option value="naocl">Hipoclorito de Sodio (NaOCl) — 13%</option>
+              <option value="kmno4">Permanganato de Potasio (KMnO₄) — sólido</option>
+              <option value="oxydes">OXYDES — sólido</option>
+            </select>
+          </div>
+
           <div class="actions">
-            <button class="btn btn-primary" id="btn-calc">Calcular dosificación</button>
-            <button class="btn btn-ghost" id="btn-reset">Limpiar</button>
+            <button type="button" class="btn btn-primary" id="btn-calc">Calcular dosificación</button>
+            <button type="button" class="btn btn-ghost" id="btn-reset">Limpiar</button>
           </div>
 
         </div>
@@ -489,6 +554,16 @@ var OXIDANTS = {
   }
 };
 
+/* ── Factores de regeneración intermitente (MIP 260302) ──
+   Fuente: tabla de regeneración Katalox Light, MIP 260302
+   Unidades: mL o g de reactivo por ft³ de lecho               */
+var REGEN = {
+  naocl:  { label:'Hipoclorito de Sodio (NaOCl) 13%',       mlPerFt3:577, isLiquid:true,  unit:'mL' },
+  kmno4:  { label:'Permanganato de Potasio (KMnO₄) sólido', gPerFt3:60,  isLiquid:false, unit:'g'  },
+  oxydes: { label:'OXYDES sólido',                           gPerFt3:25,  isLiquid:false, unit:'g'  }
+};
+var FT3_TO_L = 28.3168;   // 1 ft³ = 28.3168 L
+
 /* ── Helpers ── */
 function el(id){ return document.getElementById(id); }
 function num(id, def){ var v=parseFloat(el(id).value); return isFinite(v)?v:(def||0); }
@@ -580,12 +655,32 @@ function calculate(){
   var monthlyL  = dailyL  ? dailyL  * 30 : null;
   var monthlyKg = dailyKg ? dailyKg * 30 : null;
 
+  /* ── 6. Regeneración intermitente ── */
+  var kataloxRawVol = num('inp-katalox-vol', 0);
+  var kataloxUnit   = el('unit-katalox').value;
+  var kataloxFt3    = kataloxRawVol <= 0 ? 0
+    : (kataloxUnit === 'ft3' ? kataloxRawVol : kataloxRawVol / FT3_TO_L);
+  var regenKey  = el('sel-regen-oxidant').value;
+  var regenRec  = REGEN[regenKey];
+  var regenAmt  = 0;   // mL (liquid) or g (solid)
+  var regenAmtL = 0;   // L (liquid only)
+  if(kataloxFt3 > 0){
+    if(regenRec.isLiquid){
+      regenAmt  = kataloxFt3 * regenRec.mlPerFt3;
+      regenAmtL = regenAmt / 1000;
+    } else {
+      regenAmt  = kataloxFt3 * regenRec.gPerFt3;
+    }
+  }
+
   /* ── Render ── */
   renderResults({
     Q_m3h, Fe, Mn, H2S, resid, hours, ox, oxKey,
     demFe, demMn, demH2S, demand, dose, pureMassGh,
     injLh, injMlMin, injKgh, dailyL, dailyKg, monthlyL, monthlyKg,
-    conc, dens
+    conc, dens,
+    kataloxFt3, kataloxRawVol, kataloxUnit, regenKey, regenRec,
+    regenAmt, regenAmtL
   });
 }
 
@@ -715,24 +810,101 @@ function renderResults(r){
       </div>`;
   }
 
+  // Alert: recommend intermittent regeneration when Fe or Mn > 1 ppm
+  var alertRegen = '';
+  if(r.Fe > 1 || r.Mn > 1){
+    alertRegen = `
+      <div class="alert regen-needed">
+        <div class="alert-icon">🔄</div>
+        <div>
+          <b>Nota operativa · Regeneraciones obligatorias</b>
+          La concentración de ${r.Fe > 1 && r.Mn > 1 ? 'hierro (<strong>'+fmtN(r.Fe,2)+' mg/L</strong>) y manganeso (<strong>'+fmtN(r.Mn,2)+' mg/L</strong>)' : r.Fe > 1 ? 'hierro (<strong>'+fmtN(r.Fe,2)+' mg/L</strong>)' : 'manganeso (<strong>'+fmtN(r.Mn,2)+' mg/L</strong>)'} supera 1 ppm. Se recomienda realizar <strong>regeneraciones intermitentes periódicas</strong> del lecho Katalox Light para mantener su actividad catalítica. Ingrese el volumen del lecho en la sección de entradas para obtener la receta exacta (Sección B).
+        </div>
+      </div>`;
+  }
+
+  // Section B: regeneration recipe (only if katalox vol entered)
+  var secBHtml = '';
+  if(r.kataloxFt3 > 0){
+    var regenMainVal, regenMainUnit, regenSub;
+    if(r.regenRec.isLiquid){
+      regenMainVal  = fmtN(r.regenAmtL, 2);
+      regenMainUnit = 'L';
+      regenSub      = fmtN(r.regenAmt, 0) + ' mL de solución ' + r.regenRec.label;
+    } else {
+      regenMainVal  = r.regenAmt >= 1000 ? fmtN(r.regenAmt/1000, 2) : fmtN(r.regenAmt, 0);
+      regenMainUnit = r.regenAmt >= 1000 ? 'kg' : 'g';
+      regenSub      = r.regenRec.label + ' por regeneración';
+    }
+    var regenFt3Display = fmtN(r.kataloxFt3, 2) + ' ft³';
+    if(r.kataloxUnit === 'l'){
+      regenFt3Display = fmtN(r.kataloxRawVol, 1) + ' L (' + fmtN(r.kataloxFt3, 2) + ' ft³)';
+    }
+    var regenFactor = r.regenRec.isLiquid
+      ? (r.regenRec.mlPerFt3 + ' mL/ft³')
+      : (r.regenRec.gPerFt3  + ' g/ft³');
+
+    var regenCard = `
+      <div class="kpi-card kpi-regen">
+        <div class="kpi-label">Receta de Regeneración · Una aplicación</div>
+        <div class="kpi-val">${regenMainVal} <small>${regenMainUnit}</small></div>
+        <div class="kpi-sub">${regenSub}</div>
+        <div class="metric-row"><span>Volumen de lecho</span><strong>${regenFt3Display}</strong></div>
+        <div class="metric-row"><span>Factor (MIP 260302)</span><strong>${regenFactor}</strong></div>
+        <div class="metric-row"><span>Oxidante</span><strong>${r.regenRec.label}</strong></div>
+      </div>`;
+
+    var regenProc = `
+      <div class="regen-proc">
+        <div class="regen-proc-title">Procedimiento de regeneración</div>
+        <ol>
+          <li>Cierre la válvula de entrada y salida del filtro.</li>
+          <li>Prepare <strong>${regenMainVal} ${regenMainUnit}</strong> de ${r.regenRec.label}${r.regenRec.isLiquid ? ' sin diluir' : ' disuelto en agua limpia'}.</li>
+          <li>Introduzca la solución por la parte superior del lecho en modo de flujo descendente (downflow).</li>
+          <li>Deje reposar el reactivo en el lecho durante <strong>20 a 30 minutos</strong>.</li>
+          <li>Drene el lecho completamente.</li>
+          <li>Realice un retrolavado (backwash) con agua limpia durante <strong>5 minutos</strong> o hasta que el efluente salga claro.</li>
+          <li>Vuelva a poner el filtro en servicio y verifique ORP &gt; 500 mV en el efluente.</li>
+        </ol>
+      </div>`;
+
+    secBHtml = `
+      <div class="sec-ab sec-b">
+        <span class="sec-ab-badge">Sección B</span>
+        <span class="sec-ab-title">Mantenimiento · Regeneración Intermitente</span>
+        <span class="sec-ab-sub">Receta por ciclo</span>
+      </div>
+      <div class="sec-b-wrap">
+        <div class="cards-grid" style="grid-template-columns:1fr">${regenCard}</div>
+        ${regenProc}
+      </div>`;
+  }
+
   // Copy bar
   var copyBar = `
     <div class="copy-bar">
-      <p>Exporte los parámetros de ajuste para registrar en la bitácora de operación o enviar al operador de la planta.</p>
-      <button class="btn-copy" id="btn-copy-params">
+      <p>Exporte los parámetros de ajuste${r.kataloxFt3 > 0 ? ' y la receta de regeneración' : ''} para registrar en la bitácora de operación o enviar al operador de la planta.</p>
+      <button type="button" class="btn-copy" id="btn-copy-params">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="9" y="9" width="13" height="13" rx="2"/>
           <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
         </svg>
-        Copiar parámetros de bomba
+        Copiar${r.kataloxFt3 > 0 ? ' Sección A + B' : ' parámetros de bomba'}
       </button>
     </div>`;
 
   var html = `
+    <div class="sec-ab sec-a">
+      <span class="sec-ab-badge">Sección A</span>
+      <span class="sec-ab-title">Operación Diaria · Dosificación Continua</span>
+      <span class="sec-ab-sub">Ajuste de bomba</span>
+    </div>
     <div class="cards-grid">${card1}${card2}${card3}</div>
     ${alertORP}
     ${alertPH}
     ${alertKMnO4}
+    ${alertRegen}
+    ${secBHtml}
     ${copyBar}
   `;
 
@@ -795,10 +967,43 @@ function copyParams(r){
     lines.push('Consumo mensual:  ' + fmtN(r.monthlyKg,2) + ' kg/mes');
   }
   lines.push('');
-  lines.push('─── NOTAS OPERATIVAS ───────────────────────────────────────────');
+  lines.push('─── NOTAS OPERATIVAS (SECCIÓN A) ───────────────────────────────');
   lines.push('· Inyectar oxidante 10-20 s antes del lecho catalítico.');
   lines.push('· Verificar ORP > 500 mV a la salida del filtro.');
   lines.push('· Residual mínimo exigido: 1 ppm a la salida del lecho (MIP 260302).');
+
+  if(r.kataloxFt3 > 0){
+    var regenMainValTxt, regenMainUnitTxt;
+    if(r.regenRec.isLiquid){
+      regenMainValTxt  = fmtN(r.regenAmtL, 2);
+      regenMainUnitTxt = 'L';
+    } else {
+      regenMainValTxt  = r.regenAmt >= 1000 ? fmtN(r.regenAmt/1000, 2) : fmtN(r.regenAmt, 0);
+      regenMainUnitTxt = r.regenAmt >= 1000 ? 'kg' : 'g';
+    }
+    lines.push('');
+    lines.push('═══════════════════════════════════════════════════════════════');
+    lines.push('SECCIÓN B · MANTENIMIENTO — REGENERACIÓN INTERMITENTE');
+    lines.push('═══════════════════════════════════════════════════════════════');
+    lines.push('');
+    lines.push('─── DATOS DEL LECHO ────────────────────────────────────────────');
+    lines.push('Volumen Katalox Light: ' + fmtN(r.kataloxFt3, 2) + ' ft³' + (r.kataloxUnit==='l' ? ' (' + fmtN(r.kataloxRawVol,1) + ' L)' : ''));
+    lines.push('Oxidante regeneración: ' + r.regenRec.label);
+    lines.push('Factor (MIP 260302):   ' + (r.regenRec.isLiquid ? r.regenRec.mlPerFt3 + ' mL/ft³' : r.regenRec.gPerFt3 + ' g/ft³'));
+    lines.push('');
+    lines.push('─── ★ RECETA DE REGENERACIÓN (por ciclo) ★ ────────────────────');
+    lines.push('►  CANTIDAD:  ' + regenMainValTxt + ' ' + regenMainUnitTxt + (r.regenRec.isLiquid ? ' (' + fmtN(r.regenAmt,0) + ' mL)' : '') + ' de ' + r.regenRec.label);
+    lines.push('');
+    lines.push('─── PROCEDIMIENTO ──────────────────────────────────────────────');
+    lines.push('1. Cierre la válvula de entrada y salida del filtro.');
+    lines.push('2. Prepare ' + regenMainValTxt + ' ' + regenMainUnitTxt + ' de ' + r.regenRec.label + (r.regenRec.isLiquid ? ' sin diluir.' : ' disuelto en agua limpia.'));
+    lines.push('3. Introduzca la solución por la parte superior del lecho (downflow).');
+    lines.push('4. Deje reposar el reactivo en el lecho 20-30 minutos.');
+    lines.push('5. Drene el lecho completamente.');
+    lines.push('6. Realice un retrolavado con agua limpia durante 5 min o hasta efluente claro.');
+    lines.push('7. Vuelva a poner en servicio. Verifique ORP > 500 mV en el efluente.');
+  }
+
   lines.push('');
   lines.push('Generado con Calculadora de Dosificación Continua · Carbotecnia');
   lines.push('Ref. MIP Katalox Light 260302 · Factores estequiométricos estrictos');
@@ -825,13 +1030,16 @@ function copyParams(r){
 
 /* ── Reset ── */
 function resetAll(){
-  el('inp-flow').value    = '';
-  el('inp-fe').value      = '0';
-  el('inp-mn').value      = '0';
-  el('inp-h2s').value     = '0';
-  el('inp-residual').value= '1.0';
-  el('inp-hours').value   = '24';
-  el('sel-oxidant').value = 'naocl';
+  el('inp-flow').value         = '';
+  el('inp-fe').value           = '0';
+  el('inp-mn').value           = '0';
+  el('inp-h2s').value          = '0';
+  el('inp-residual').value     = '1.0';
+  el('inp-hours').value        = '24';
+  el('sel-oxidant').value      = 'naocl';
+  el('inp-katalox-vol').value  = '';
+  el('unit-katalox').value     = 'ft3';
+  el('sel-regen-oxidant').value= 'naocl';
   updateOxidantUI();
 
   ['chip-demand','chip-dose','chip-pump','chip-daily'].forEach(function(id){
@@ -853,9 +1061,14 @@ el('sel-oxidant').addEventListener('change', updateOxidantUI);
 el('btn-calc').addEventListener('click', calculate);
 el('btn-reset').addEventListener('click', resetAll);
 
-// Enter key on any input triggers calculate
+// Enter key on any number input triggers calculate
 document.querySelectorAll('input[type="number"]').forEach(function(inp){
   inp.addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+});
+
+// WordPress safety: prevent any button from submitting a parent form
+document.querySelectorAll('button').forEach(function(btn){
+  if(!btn.type || btn.type !== 'button') btn.type = 'button';
 });
 
 /* ── Init ── */
