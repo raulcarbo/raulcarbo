@@ -171,6 +171,27 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 /* contact time badge */
 .contact-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:7px 16px;font-size:11.5px;font-weight:700;color:#fff;font-family:var(--font-title);margin-top:12px;line-height:1}
 
+/* tank optional section */
+.tank-opt-wrap{background:var(--green-light);border:1px solid var(--green-border);border-left:3px solid var(--green);border-radius:12px;padding:11px 14px;margin:20px 0 14px;display:flex;align-items:center;gap:10px}
+.tank-opt-badge{background:var(--green);color:#fff;font-family:var(--font-title);font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.tank-opt-title{font-family:var(--font-title);font-weight:700;font-size:13px;color:var(--green-dark);line-height:1.3}
+.tank-opt-sub{font-weight:500;font-size:12px}
+
+/* tank kpi card */
+.kpi-card.kpi-tank{background:linear-gradient(135deg,#064E3B,#047857)}
+.kpi-card.kpi-tank::before{background:linear-gradient(90deg,var(--green-mid),#6EE7B7)}
+.kpi-tank .kpi-label,.kpi-tank .kpi-val small,.kpi-tank .kpi-sub{color:rgba(255,255,255,.6)}
+.kpi-tank .kpi-val{color:#fff}
+.kpi-tank .metric-row{border-bottom-color:rgba(255,255,255,.08);color:#fff}
+.kpi-tank .metric-row strong{color:#6EE7B7}
+
+/* tank mix recipe */
+.tank-recipe{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.tank-recipe-item{text-align:center}
+.tr-label{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:700;margin-bottom:4px}
+.tr-val{font-family:var(--font-num);font-weight:700;font-size:22px;color:#fff;line-height:1.1}
+.tr-unit{font-family:var(--font-body);font-size:12px;color:rgba(255,255,255,.65);margin-top:2px}
+
 /* alerts */
 .alert{border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.55;margin-top:10px}
 .alert-icon{font-size:18px;flex-shrink:0;margin-top:1px}
@@ -346,6 +367,41 @@ h1,h2,h3,h4{font-family:var(--font-title)}
             </select>
           </div>
 
+          <!-- tank dilution (inline mode only) -->
+          <div id="tank-inputs">
+            <div class="tank-opt-wrap">
+              <span class="tank-opt-badge">Opción</span>
+              <span class="tank-opt-title">Tanque de químico y bomba<br><span class="tank-opt-sub">(dilución y recarga)</span></span>
+            </div>
+            <div class="field">
+              <label>Tamaño del tanque de químico</label>
+              <div class="inline-wrap">
+                <input type="number" id="inp-tank-vol" placeholder="Ej. 200" min="0" step="any">
+                <select class="unit-sel" id="unit-tank" style="min-width:52px">
+                  <option value="l">L</option>
+                  <option value="gal">gal</option>
+                </select>
+              </div>
+              <div class="hint">Déjelo vacío si dosifica el producto concentrado directamente</div>
+            </div>
+            <div class="field">
+              <label>Concentración de trabajo en el tanque</label>
+              <div class="inline-wrap">
+                <input type="number" id="inp-work-conc" placeholder="2" min="0.1" max="13" step="0.1" value="2">
+                <span class="unit-badge">% p/p</span>
+              </div>
+              <div class="hint">Típico: 1 – 3% para bombas de diafragma</div>
+            </div>
+            <div class="field">
+              <label>Capacidad máxima de la bomba dosificadora</label>
+              <div class="inline-wrap">
+                <input type="number" id="inp-pump-max" placeholder="Ej. 50" min="0" step="any">
+                <span class="unit-badge">mL/min</span>
+              </div>
+              <div class="hint">Opcional · para calcular el % de apertura del dial</div>
+            </div>
+          </div>
+
           <!-- buttons -->
           <div class="btn-row">
             <button type="button" class="btn-primary" id="btn-calc">Calcular dosis</button>
@@ -392,6 +448,7 @@ function setMode(mode){
   el('btn-mode-batch').className  = 'mode-btn' + (mode==='batch'  ? ' active-batch'  : '');
   el('inline-inputs').style.display = mode==='inline' ? '' : 'none';
   el('batch-inputs').style.display  = mode==='batch'  ? '' : 'none';
+  el('tank-inputs').style.display   = mode==='inline' ? '' : 'none';
   el('chip2-label').textContent = mode==='inline' ? 'Ajuste de bomba' : 'Cantidad a verter';
   el('chip3-label').textContent = mode==='inline' ? 'Consumo 24 h'    : 'Volumen cisterna';
   ['chip-cl2','chip-result','chip-daily'].forEach(function(id){ el(id).textContent='—'; });
@@ -437,7 +494,34 @@ function calculate(){
     var daily24L  = ox.isLiquid ? injLh * 24  : null;
     var daily24Kg = ox.isLiquid ? null : injGh * 24 / 1000;
 
-    renderResults({ mode:'inline', Q, dose, pH, ox, pureGh, injLh, injMlMin, injGh, daily24L, daily24Kg, hoClFrac, hoClPct });
+    /* Tank dilution (optional) */
+    var tankVolRaw   = num('inp-tank-vol', 0);
+    var tankUnit     = el('unit-tank').value;
+    var tankL        = tankVolRaw <= 0 ? 0 : (tankUnit==='gal' ? tankVolRaw*3.78541 : tankVolRaw);
+    var workConcPct  = num('inp-work-conc', 2);
+    var workConcFrac = workConcPct / 100;
+    var pumpMaxMlMin = num('inp-pump-max', 0);
+
+    var tankResult = null;
+    if(tankL > 0 && workConcFrac > 0){
+      var activeWorkGL = workConcFrac * 1000;          // g Cl₂ activo por L (densidad ≈ 1.0)
+      var concVolL = null, solidG = null, waterVolL = null;
+      if(ox.isLiquid){
+        concVolL  = tankL * activeWorkGL / (ox.conc * ox.dens * 1000);
+        waterVolL = tankL - concVolL;
+      } else {
+        solidG    = tankL * activeWorkGL / ox.conc;    // g de sólido a disolver
+        waterVolL = tankL;
+      }
+      var injWorkLh    = pureGh / activeWorkGL;
+      var injWorkMlMin = injWorkLh * 1000 / 60;
+      var dailyWorkL   = injWorkLh * 24;
+      var refillDays   = dailyWorkL > 0 ? tankL / dailyWorkL : null;
+      var pumpPct      = (pumpMaxMlMin > 0 && injWorkMlMin > 0) ? Math.min(injWorkMlMin/pumpMaxMlMin*100, 999) : null;
+      tankResult = {concVolL, solidG, waterVolL, injWorkLh, injWorkMlMin, dailyWorkL, refillDays, pumpPct, workConcPct, pumpMaxMlMin, tankL};
+    }
+
+    renderResults({ mode:'inline', Q, dose, pH, ox, pureGh, injLh, injMlMin, injGh, daily24L, daily24Kg, hoClFrac, hoClPct, tankResult });
 
   } else {
     var volM3 = getVolM3();
@@ -528,6 +612,53 @@ function renderResults(r){
       <div class="metric-row"><span>Consumo anual</span><strong>${opexYear}</strong></div>
       <div class="metric-row"><span>Cl₂ puro/hora</span><strong>${fmtN(r.pureGh,2)} g/h</strong></div>
     </div>`;
+
+    /* ── Card 3: tank dilution (optional) ─────────────── */
+    if(r.tankResult){
+      var t = r.tankResult;
+      var recipeHtml;
+      if(t.concVolL !== null){
+        recipeHtml = `<div class="tank-recipe">
+          <div class="tank-recipe-item">
+            <div class="tr-label">Concentrado (${r.ox.name})</div>
+            <div class="tr-val">${fmtN(t.concVolL,1)}</div>
+            <div class="tr-unit">litros</div>
+          </div>
+          <div class="tank-recipe-item">
+            <div class="tr-label">Agua limpia</div>
+            <div class="tr-val">${fmtN(t.waterVolL,1)}</div>
+            <div class="tr-unit">litros</div>
+          </div>
+        </div>`;
+      } else {
+        recipeHtml = `<div class="tank-recipe">
+          <div class="tank-recipe-item">
+            <div class="tr-label">${r.ox.name} sólido a disolver</div>
+            <div class="tr-val">${t.solidG>=1000 ? fmtN(t.solidG/1000,2) : fmtN(t.solidG,0)}</div>
+            <div class="tr-unit">${t.solidG>=1000 ? 'kg' : 'g'}</div>
+          </div>
+          <div class="tank-recipe-item">
+            <div class="tr-label">Agua limpia en tanque</div>
+            <div class="tr-val">${fmtN(t.waterVolL,0)}</div>
+            <div class="tr-unit">litros</div>
+          </div>
+        </div>`;
+      }
+      var pumpPctRow = t.pumpPct !== null
+        ? `<div class="metric-row"><span>% apertura bomba</span><strong>${fmtN(t.pumpPct,1)}%</strong></div>`
+        : '';
+      card2 += `<div class="kpi-card kpi-tank" style="grid-column:1/-1">
+        <div class="kpi-label">Preparación del Tanque · Concentración de trabajo ${fmtN(t.workConcPct,1)}%</div>
+        <div class="kpi-val">${fmtN(t.refillDays,1)} <small>días entre recargas</small></div>
+        <div class="kpi-sub">Mezcla para tanque de ${fmtN(t.tankL,0)} L · inyección de solución diluida</div>
+        ${recipeHtml}
+        <div style="margin-top:10px">
+          <div class="metric-row"><span>Inyección de solución diluida</span><strong>${fmtN(t.injWorkMlMin,1)} mL/min · ${fmtN(t.injWorkLh,3)} L/h</strong></div>
+          <div class="metric-row"><span>Consumo de solución (24 h)</span><strong>${fmtN(t.dailyWorkL,1)} L/día</strong></div>
+          ${pumpPctRow}
+        </div>
+      </div>`;
+    }
 
   } else {
     /* ── Batch mode ───────────────────────────────────── */
@@ -626,6 +757,23 @@ function copyParams(r){
       lines.push('Dosificación:    ' + fmtN(r.injGh,0) + ' g/h de ' + r.ox.name);
       lines.push('Consumo 24h:     ' + fmtN(r.daily24Kg,3) + ' kg/día');
     }
+    if(r.tankResult){
+      var t = r.tankResult;
+      lines.push('');
+      lines.push('─── TANQUE DE QUÍMICO ─────────────────────────');
+      lines.push('Tamaño de tanque:      ' + fmtN(t.tankL,0) + ' L');
+      lines.push('Concentración trabajo: ' + fmtN(t.workConcPct,1) + '% p/p');
+      if(t.concVolL !== null){
+        lines.push('Agregar concentrado:   ' + fmtN(t.concVolL,1) + ' L de ' + r.ox.name);
+        lines.push('Agregar agua limpia:   ' + fmtN(t.waterVolL,1) + ' L');
+      } else {
+        lines.push('Disolver sólido:       ' + (t.solidG>=1000?fmtN(t.solidG/1000,2)+' kg':fmtN(t.solidG,0)+' g') + ' de ' + r.ox.name);
+        lines.push('Agua en tanque:        ' + fmtN(t.waterVolL,0) + ' L');
+      }
+      lines.push('Inyección sol. diluida:' + fmtN(t.injWorkMlMin,1) + ' mL/min (' + fmtN(t.injWorkLh,3) + ' L/h)');
+      lines.push('Recarga del tanque:    cada ' + fmtN(t.refillDays,1) + ' días');
+      if(t.pumpPct !== null) lines.push('% apertura bomba:      ' + fmtN(t.pumpPct,1) + '%');
+    }
   } else {
     lines.push('─── RECETA POR LOTE ───────────────────────────');
     lines.push('Volumen cisterna: ' + fmtN(r.volL,0) + ' L (' + fmtN(r.volM3,2) + ' m³)');
@@ -659,6 +807,8 @@ function resetAll(){
   el('inp-dose').value = '1.0'; el('dose-display').textContent = '1.0';
   el('inp-ph').value   = '7.2';
   el('sel-oxidant').value = 'naocl';
+  el('inp-tank-vol').value=''; el('unit-tank').value='l';
+  el('inp-work-conc').value='2'; el('inp-pump-max').value='';
   setMode('inline');
 }
 
