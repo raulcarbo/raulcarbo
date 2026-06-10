@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Post-cloración · Protección Residual | Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#4338CA;--brand-dark:#3730A3;--brand-mid:#818CF8;
+  --brand-light:#EEF2FF;--brand-border:#C7D2FE;
+  --green:#059669;--green-dark:#047857;--green-mid:#10B981;
+  --green-light:#ECFDF5;--green-border:#A7F3D0;
+  --blue:#0071A3;--blue-dark:#004F73;--blue-mid:#00BBFF;
+  --blue-light:#E0F7FF;--blue-border:#7DD3FA;
+  --warn:#B45309;--warn-soft:#FFFBEB;--warn-border:#FCD34D;
+  --danger:#991B1B;--danger-soft:#FEF2F2;--danger-border:#FECACA;
+  --ink:#0F1E2E;--steel:#374151;--muted:#6B7280;
+  --line:#E2E8F0;--surface:#FFFFFF;--paper:#F8FAFC;
+  --shadow:0 1px 3px rgba(15,30,46,.06),0 8px 24px rgba(15,30,46,.08);
+  --shadow-sm:0 1px 3px rgba(15,30,46,.07);
+  --radius:16px;--radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'Roboto Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff;color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+.shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* brand bar */
+.brand-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:var(--surface);border:1px solid var(--line);border-radius:18px;margin-bottom:16px;flex-wrap:wrap;gap:12px;box-shadow:var(--shadow-sm)}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--brand-mid),var(--brand-dark));color:#fff;display:grid;place-items:center;font-family:var(--font-title);font-weight:700;font-size:12px;box-shadow:0 4px 12px rgba(67,56,202,.28);letter-spacing:-.02em;text-align:center;line-height:1.1;padding:3px}
+.brand-name{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--brand-dark)}
+.brand-name span{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:400}
+.brand-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand-tag b{color:var(--brand);font-weight:600}
+
+/* hero */
+.calc-header{background:linear-gradient(135deg,#1E1B4B 0%,#312E81 50%,#4338CA 100%);border-radius:var(--radius-lg);padding:28px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.calc-header::after{content:"";position:absolute;inset:auto -80px -120px auto;width:340px;height:340px;border-radius:50%;border:52px solid rgba(255,255,255,.06);pointer-events:none}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:end}
+.calc-header h1{font-size:clamp(20px,2.6vw,36px);line-height:1.05;letter-spacing:-.04em;color:#fff !important;font-weight:800;margin-bottom:10px}
+.calc-header h1 em{font-style:normal;color:rgba(255,255,255,.78)}
+.calc-header p{color:rgba(255,255,255,.72);font-size:13.5px;line-height:1.6;margin:0}
+.hero-note{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);border-radius:16px;padding:18px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:13px;line-height:1.6}
+
+/* formula bar */
+.formula-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.formula-chip{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 18px;flex:1;min-width:130px;box-shadow:var(--shadow-sm)}
+.fc-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.fc-value{font-family:var(--font-num);font-weight:700;font-size:15px;color:var(--brand)}
+
+/* layout */
+.layout{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px;min-width:0}
+.results-col{min-width:0;display:grid;gap:14px}
+
+/* panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.panel-head h2{font-size:15px;color:var(--brand-dark);font-weight:700}
+.step-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.panel-body{padding:20px}
+
+/* mode toggle */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.mode-btn{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:14px 10px;cursor:pointer;text-align:center;transition:all .15s;width:100%}
+.mode-btn:hover{border-color:var(--muted)}
+.mode-btn.active-inline{border-color:var(--green);background:var(--green-light)}
+.mode-btn.active-batch{border-color:var(--blue);background:var(--blue-light)}
+.mode-btn-icon{font-size:22px;margin-bottom:5px;line-height:1}
+.mode-btn-title{font-family:var(--font-title);font-weight:700;font-size:12.5px;color:var(--ink);margin-bottom:3px}
+.mode-btn.active-inline .mode-btn-title{color:var(--green-dark)}
+.mode-btn.active-batch  .mode-btn-title{color:var(--blue-dark)}
+.mode-btn-sub{font-size:10.5px;color:var(--muted);line-height:1.3}
+
+/* fields */
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:700;font-size:13px;color:var(--steel);margin-bottom:6px;font-family:var(--font-title)}
+.inline-wrap{display:flex;gap:0;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);transition:border-color .15s}
+.inline-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(67,56,202,.12)}
+.inline-wrap input{flex:1;border:0;padding:10px 14px;min-width:0;background:transparent;font-family:var(--font-num);font-size:14px;color:var(--ink)}
+.inline-wrap input:focus{outline:none}
+.unit-badge{padding:0 14px;display:flex;align-items:center;font-family:var(--font-num);font-size:13px;color:var(--muted);border-left:1.5px solid var(--line);background:var(--paper);white-space:nowrap}
+.unit-sel{border:0;border-left:1.5px solid var(--line);padding:0 10px;background:var(--paper);color:var(--steel);font-size:13px;cursor:pointer;min-width:70px}
+.unit-sel:focus{outline:none}
+.full-sel{display:block;width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--surface);color:var(--ink);font-size:13.5px;cursor:pointer;transition:border-color .15s}
+.full-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(67,56,202,.12);outline:none}
+.hint{margin-top:5px;color:var(--muted);font-size:11.5px;line-height:1.4}
+.sec-label{font-family:var(--font-num);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin:18px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--brand-border)}
+
+/* slider */
+.slider-wrap{background:var(--brand-light);border:1px solid var(--brand-border);border-radius:14px;padding:14px;margin-bottom:14px}
+.slider-label{color:var(--brand-dark);font-weight:700;font-size:13px;font-family:var(--font-title);display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.nom-badge{background:var(--brand-light);border:1px solid var(--brand-border);color:var(--brand-dark);font-family:var(--font-num);font-size:9px;font-weight:700;letter-spacing:.08em;padding:2px 7px;border-radius:6px;text-transform:uppercase}
+.slider-row{display:flex;align-items:center;gap:10px}
+.slider-row input[type="range"]{flex:1;accent-color:var(--brand)}
+.slider-val-badge{font-family:var(--font-num);font-weight:700;font-size:18px;color:var(--brand);background:var(--surface);border:1.5px solid var(--brand-border);border-radius:10px;padding:6px 12px;min-width:88px;text-align:center;white-space:nowrap}
+.slider-val-badge small{font-size:11px;font-weight:400}
+.slider-hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+/* buttons */
+.btn-row{display:flex;gap:10px;margin-top:20px}
+.btn-primary{flex:1;border:0;border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:14px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 8px 20px rgba(67,56,202,.22);transition:transform .12s,box-shadow .12s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(67,56,202,.32)}
+.btn-reset{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 18px;font-weight:600;cursor:pointer;color:var(--muted);font-family:var(--font-title);font-size:13px;transition:border-color .12s}
+.btn-reset:hover{border-color:var(--muted);color:var(--steel)}
+
+/* empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--muted);gap:14px;background:var(--paper);border-radius:var(--radius-lg);border:1px dashed var(--line)}
+.empty-state svg{opacity:.35}
+.empty-state div{font-size:13.5px;line-height:1.6}
+
+/* cards */
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.kpi-card{border-radius:var(--radius-lg);padding:22px;border:1px solid var(--line);position:relative;overflow:hidden}
+.kpi-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.kpi-val{font-family:var(--font-num);font-weight:700;font-size:28px;line-height:1;margin-bottom:4px}
+.kpi-val small{font-size:14px;font-weight:500;margin-left:5px}
+.kpi-sub{font-size:12px;margin-bottom:14px;line-height:1.4}
+.metric-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid transparent;font-size:13px}
+.metric-row:last-child{border-bottom:0}
+.metric-row span{opacity:.7}
+.metric-row strong{font-family:var(--font-num);font-weight:600;font-size:12.5px}
+
+/* inline (green) card */
+.kpi-card.kpi-inline{background:linear-gradient(135deg,var(--green-dark),#022C22);border-color:rgba(0,0,0,.15)}
+.kpi-card.kpi-inline::before{background:linear-gradient(90deg,var(--green-mid),#6EE7B7)}
+.kpi-inline .kpi-label,.kpi-inline .kpi-val small,.kpi-inline .kpi-sub{color:rgba(255,255,255,.6)}
+.kpi-inline .kpi-val{color:#fff}
+.kpi-inline .metric-row{border-bottom-color:rgba(255,255,255,.08);color:#fff}
+.kpi-inline .metric-row strong{color:#6EE7B7}
+
+/* batch (blue) card */
+.kpi-card.kpi-batch{background:linear-gradient(135deg,var(--blue-dark),#001F38);border-color:rgba(0,0,0,.15)}
+.kpi-card.kpi-batch::before{background:linear-gradient(90deg,var(--blue-mid),#38BDF8)}
+.kpi-batch .kpi-label,.kpi-batch .kpi-val small,.kpi-batch .kpi-sub{color:rgba(255,255,255,.6)}
+.kpi-batch .kpi-val{color:#fff}
+.kpi-batch .metric-row{border-bottom-color:rgba(255,255,255,.08);color:#fff}
+.kpi-batch .metric-row strong{color:#38BDF8}
+
+/* opex / info card */
+.kpi-card.kpi-opex{background:var(--brand-light);border-color:var(--brand-border)}
+.kpi-opex .kpi-label{color:var(--brand)}
+.kpi-opex .kpi-val{color:var(--brand-dark)}
+.kpi-opex .kpi-val small{color:var(--brand)}
+.kpi-opex .kpi-sub{color:var(--brand)}
+.kpi-opex .metric-row{border-bottom-color:rgba(67,56,202,.1)}
+.kpi-opex .metric-row span{color:var(--muted)}
+.kpi-opex .metric-row strong{color:var(--brand-dark)}
+
+.kpi-card.kpi-info{background:var(--blue-light);border-color:var(--blue-border)}
+.kpi-info .kpi-label{color:var(--blue)}
+.kpi-info .kpi-val{color:var(--blue-dark)}
+.kpi-info .kpi-val small{color:var(--blue)}
+.kpi-info .kpi-sub{color:var(--blue)}
+.kpi-info .metric-row{border-bottom-color:rgba(0,113,163,.1)}
+.kpi-info .metric-row span{color:var(--muted)}
+.kpi-info .metric-row strong{color:var(--blue-dark)}
+
+/* contact time badge */
+.contact-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:7px 16px;font-size:11.5px;font-weight:700;color:#fff;font-family:var(--font-title);margin-top:12px;line-height:1}
+
+/* alerts */
+.alert{border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.55;margin-top:10px}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.alert.warn{background:var(--warn-soft);border:1px solid var(--warn-border);color:#92400E}
+.alert.danger{background:var(--danger-soft);border:1px solid var(--danger-border);color:#7F1D1D}
+
+/* action row */
+.action-row{display:flex;justify-content:flex-end;gap:10px;margin-top:10px;flex-wrap:wrap}
+.btn-copy,.btn-print{border:0;border-radius:999px;padding:10px 20px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:13px;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:transform .12s}
+.btn-copy{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 6px 16px rgba(67,56,202,.22)}
+.btn-copy.ok{background:linear-gradient(135deg,var(--green-dark),#022C22)}
+.btn-print{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;box-shadow:0 6px 16px rgba(5,150,105,.22)}
+.btn-copy:hover,.btn-print:hover{transform:translateY(-1px)}
+
+/* responsive */
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-note{display:none}
+  .cards-grid{grid-template-columns:1fr}
+}
+
+/* print */
+@media print{
+  .input-panel,.formula-bar,.brand-bar,.btn-row,.action-row{display:none!important}
+  .layout{display:block}
+  .calc-header{background:#1E1B4B!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .results-col{display:block}
+  .cards-grid{grid-template-columns:1fr 1fr!important;display:grid}
+  body{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- brand bar -->
+  <div class="brand-bar">
+    <div class="brand-mark">
+      <div class="brand-icon">CBT</div>
+      <div class="brand-name">Carbotecnia
+        <span>Water Treatment Tools</span>
+      </div>
+    </div>
+    <span class="brand-tag">Post-cloración · <b>NOM-127</b></span>
+  </div>
+
+  <!-- hero -->
+  <div class="calc-header">
+    <div class="hero-grid">
+      <div>
+        <h1>Post-cloración · <em>Protección residual</em></h1>
+        <p>Dosificación exacta de cloro para almacenamiento, distribución y agua de contacto humano.<br>
+        Hoteles, hospitales, plantas industriales y sistemas hidroneumáticos.</p>
+      </div>
+      <div class="hero-note">
+        <b>NOM-127-SSA1 · Cloro residual libre</b>
+        <span>Rango normativo: <strong>0.2 – 1.5 mg/L</strong> en el punto de consumo. El pH controla la fracción germicida de HOCl (pKa = 7.54): a pH 7.0 → 78% HOCl activo; a pH 8.0 → 24%; a pH 9.0 → 3%. Dosifique a pH 6.5 – 7.5 para máxima eficiencia.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- formula bar -->
+  <div class="formula-bar">
+    <div class="formula-chip">
+      <div class="fc-label">Cl₂ puro requerido</div>
+      <div class="fc-value" id="chip-cl2">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label" id="chip2-label">Ajuste de bomba</div>
+      <div class="fc-value" id="chip-result">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label" id="chip3-label">Consumo 24 h</div>
+      <div class="fc-value" id="chip-daily">—</div>
+    </div>
+  </div>
+
+  <!-- layout -->
+  <div class="layout">
+
+    <!-- input panel -->
+    <div class="input-panel">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Parámetros del sistema</h2>
+          <span class="step-tag">Post-cloración</span>
+        </div>
+        <div class="panel-body">
+
+          <!-- mode toggle -->
+          <div class="sec-label" style="margin-top:0">Modo de aplicación</div>
+          <div class="mode-grid">
+            <button type="button" class="mode-btn active-inline" id="btn-mode-inline">
+              <div class="mode-btn-icon">⚡</div>
+              <div class="mode-btn-title">En línea</div>
+              <div class="mode-btn-sub">Ajuste de bomba dosificadora</div>
+            </button>
+            <button type="button" class="mode-btn" id="btn-mode-batch">
+              <div class="mode-btn-icon">🪣</div>
+              <div class="mode-btn-title">Por lote</div>
+              <div class="mode-btn-sub">Directo en cisterna</div>
+            </button>
+          </div>
+
+          <!-- inline: flow -->
+          <div id="inline-inputs">
+            <div class="field">
+              <label>Caudal de la bomba hidroneumática</label>
+              <div class="inline-wrap">
+                <input type="number" id="inp-flow" placeholder="Ej. 5" min="0" step="any">
+                <select class="unit-sel" id="unit-flow">
+                  <option value="m3h">m³/h</option>
+                  <option value="gpm">GPM</option>
+                  <option value="lpm">L/min</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- batch: volume -->
+          <div id="batch-inputs" style="display:none">
+            <div class="field">
+              <label>Volumen de la cisterna o tanque</label>
+              <div class="inline-wrap">
+                <input type="number" id="inp-vol" placeholder="Ej. 10" min="0" step="any">
+                <select class="unit-sel" id="unit-vol">
+                  <option value="m3">m³</option>
+                  <option value="l">Litros</option>
+                  <option value="gal">Galones</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- dose slider -->
+          <div class="sec-label">Residual objetivo</div>
+          <div class="slider-wrap">
+            <span class="slider-label">
+              Dosis de cloro libre objetivo
+              <span class="nom-badge">NOM-127</span>
+            </span>
+            <div class="slider-row">
+              <input type="range" id="inp-dose" min="0.2" max="1.5" step="0.1" value="1.0">
+              <div class="slider-val-badge"><span id="dose-display">1.0</span> <small>mg/L</small></div>
+            </div>
+            <div class="slider-hint">Rango normativo: 0.2 – 1.5 mg/L &nbsp;·&nbsp; Para cisternas recomendado: 1.0 – 1.5 mg/L</div>
+          </div>
+
+          <!-- pH -->
+          <div class="sec-label">Calidad del agua</div>
+          <div class="field">
+            <label>pH del agua</label>
+            <div class="inline-wrap">
+              <input type="number" id="inp-ph" placeholder="7.2" min="5" max="10" step="0.1" value="7.2">
+              <span class="unit-badge">pH</span>
+            </div>
+            <div class="hint">Rango ideal 6.5 – 7.5 para máxima fracción germicida de HOCl</div>
+          </div>
+
+          <!-- oxidant -->
+          <div class="sec-label">Químico desinfectante</div>
+          <div class="field">
+            <label>Tipo de cloro comercial</label>
+            <select class="full-sel" id="sel-oxidant">
+              <optgroup label="── Cloro líquido ──────────────">
+                <option value="naocl">Hipoclorito de Sodio (NaOCl) — 13% p/p</option>
+              </optgroup>
+              <optgroup label="── Cloro granular (sólido) ────">
+                <option value="caocl2">Hipoclorito de Calcio Ca(OCl)₂ — 65%</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- buttons -->
+          <div class="btn-row">
+            <button type="button" class="btn-primary" id="btn-calc">Calcular dosis</button>
+            <button type="button" class="btn-reset" id="btn-reset">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- results -->
+    <div class="results-col">
+      <div id="results-body">
+        <div class="empty-state">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          <div>Seleccione el modo de aplicación e ingrese los<br>parámetros del sistema para calcular la dosis exacta.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+var currentMode = 'inline';
+
+var OXIDANTS = {
+  naocl:  { name:'NaOCl 13%',    label:'Hipoclorito de Sodio (NaOCl) 13%',    isLiquid:true,  conc:0.13, dens:1.20 },
+  caocl2: { name:'Ca(OCl)₂ 65%', label:'Hipoclorito de Calcio Ca(OCl)₂ 65%', isLiquid:false, conc:0.65 }
+};
+
+var PKA_HOCL = 7.54;
+
+function el(id){ return document.getElementById(id); }
+function num(id,def){ var v=parseFloat(el(id).value); return isFinite(v)?v:(def||0); }
+function fmtN(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
+
+function emptyState(){
+  return '<div class="empty-state"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><div>Seleccione el modo de aplicación e ingrese los<br>parámetros del sistema para calcular la dosis exacta.</div></div>';
+}
+
+function setMode(mode){
+  currentMode = mode;
+  el('btn-mode-inline').className = 'mode-btn' + (mode==='inline' ? ' active-inline' : '');
+  el('btn-mode-batch').className  = 'mode-btn' + (mode==='batch'  ? ' active-batch'  : '');
+  el('inline-inputs').style.display = mode==='inline' ? '' : 'none';
+  el('batch-inputs').style.display  = mode==='batch'  ? '' : 'none';
+  el('chip2-label').textContent = mode==='inline' ? 'Ajuste de bomba' : 'Cantidad a verter';
+  el('chip3-label').textContent = mode==='inline' ? 'Consumo 24 h'    : 'Volumen cisterna';
+  ['chip-cl2','chip-result','chip-daily'].forEach(function(id){ el(id).textContent='—'; });
+  el('results-body').innerHTML = emptyState();
+}
+
+function getFlowM3h(){
+  var v=num('inp-flow'); var u=el('unit-flow').value;
+  if(u==='gpm') return v*0.227124;
+  if(u==='lpm') return v*0.06;
+  return v;
+}
+
+function getVolM3(){
+  var v=num('inp-vol'); var u=el('unit-vol').value;
+  if(u==='l')   return v/1000;
+  if(u==='gal') return v*0.003785;
+  return v;
+}
+
+function calculate(){
+  var dose = parseFloat(el('inp-dose').value) || 1.0;
+  var pH   = num('inp-ph', 7.2);
+  var ox   = OXIDANTS[el('sel-oxidant').value];
+  var hoClFrac = 1 / (1 + Math.pow(10, pH - PKA_HOCL));
+  var hoClPct  = hoClFrac * 100;
+
+  if(currentMode === 'inline'){
+    var Q = getFlowM3h();
+    if(!Q || Q<=0){ alert('Ingrese un caudal válido mayor a cero.'); return; }
+
+    /* Cl₂ puro (g/h) = Caudal (m³/h) × Dosis (mg/L) = Caudal × Dosis (ya que 1 mg/L = 1 g/m³) */
+    var pureGh = dose * Q;
+    var injLh=null, injMlMin=null, injGh=null;
+    if(ox.isLiquid){
+      /* L/h = g/h ÷ (conc × dens × 1000 g/L) = g/h ÷ 156 */
+      injLh    = pureGh / (ox.conc * ox.dens * 1000);
+      injMlMin = injLh * 1000 / 60;
+    } else {
+      /* g/h sólido = g/h Cl₂ ÷ pureza */
+      injGh = pureGh / ox.conc;
+    }
+    var daily24L  = ox.isLiquid ? injLh * 24  : null;
+    var daily24Kg = ox.isLiquid ? null : injGh * 24 / 1000;
+
+    renderResults({ mode:'inline', Q, dose, pH, ox, pureGh, injLh, injMlMin, injGh, daily24L, daily24Kg, hoClFrac, hoClPct });
+
+  } else {
+    var volM3 = getVolM3();
+    if(!volM3 || volM3<=0){ alert('Ingrese un volumen de cisterna válido.'); return; }
+
+    var volL  = volM3 * 1000;
+    /* Cl₂ puro (g) = Vol (m³) × Dosis (g/m³) */
+    var pureG = dose * volM3;
+    var injVolL=null, injVolMl=null, injSolidG=null;
+    if(ox.isLiquid){
+      injVolL  = pureG / (ox.conc * ox.dens * 1000);
+      injVolMl = injVolL * 1000;
+    } else {
+      injSolidG = pureG / ox.conc;
+    }
+
+    renderResults({ mode:'batch', volM3, volL, dose, pH, ox, pureG, injVolL, injVolMl, injSolidG, hoClFrac, hoClPct });
+  }
+}
+
+function renderResults(r){
+  /* ── Alerts ─────────────────────────────────────────── */
+  var alertPH = '';
+  if(r.pH > 8.0){
+    alertPH = `<div class="alert warn">
+      <div class="alert-icon">⚠️</div>
+      <div><strong>pH alcalino detectado (${fmtN(r.pH,1)}) — Eficacia reducida</strong><br>
+      El ácido hipocloroso (HOCl), la forma activa del cloro, pierde drásticamente su poder desinfectante en aguas alcalinas (pH &gt; 8.0). Solo el <strong>${fmtN(r.hoClPct,1)}%</strong> del residual estará disponible como HOCl germicida. Considere disminuir el pH a 6.5–7.5 o aumentar el tiempo de contacto en la cisterna.</div>
+    </div>`;
+  }
+
+  var alertNOM201 = `<div class="alert danger">
+    <div class="alert-icon">⚠️</div>
+    <div><strong>AVISO NOM-201 · Agua Envasada y Fabricación de Hielo</strong><br>
+    Esta dosis garantiza un residual seguro para contacto humano (NOM-127-SSA1). Sin embargo, si esta agua será <strong>envasada en garrafones</strong> o utilizada para <strong>fabricar hielo</strong>, es <u>obligatorio</u> remover este cloro residual con un <strong>filtro de Carbón Activado Granular (CAG)</strong> antes del proceso, garantizando &lt; 0.1 mg/L de Cl₂ libre (NOM-201-SSA1).</div>
+  </div>`;
+
+  var card1, card2;
+
+  if(r.mode === 'inline'){
+    /* ── Chip updates ─────────────────────────────────── */
+    el('chip-cl2').textContent    = fmtN(r.pureGh,2) + ' g/h';
+    el('chip2-label').textContent = 'Ajuste de bomba';
+    el('chip3-label').textContent = 'Consumo 24 h';
+    el('chip-result').textContent = r.injMlMin!==null ? fmtN(r.injMlMin,1)+' mL/min' : fmtN(r.injGh,0)+' g/h';
+    el('chip-daily').textContent  = r.daily24L!==null ? fmtN(r.daily24L,2)+' L/día'  : fmtN(r.daily24Kg,3)+' kg/día';
+
+    /* ── Card 1: pump setting ─────────────────────────── */
+    var mainVal, mainUnit, mainSub, mainRows;
+    if(r.injMlMin !== null){
+      mainVal  = fmtN(r.injMlMin, 1);
+      mainUnit = 'mL/min';
+      mainSub  = 'Ajuste exacto en el dial de la bomba dosificadora';
+      mainRows = `
+        <div class="metric-row"><span>Equivale en L/h</span><strong>${fmtN(r.injLh,3)} L/h</strong></div>
+        <div class="metric-row"><span>Producto</span><strong>${r.ox.name} · dens. 1.20 kg/L</strong></div>
+        <div class="metric-row"><span>Caudal tratado</span><strong>${fmtN(r.Q,2)} m³/h</strong></div>
+        <div class="metric-row"><span>Dosis residual</span><strong>${fmtN(r.dose,1)} mg/L Cl₂</strong></div>
+        <div class="metric-row"><span>HOCl activo (pH ${fmtN(r.pH,1)})</span><strong>${fmtN(r.hoClPct,1)}%</strong></div>`;
+    } else {
+      mainVal  = fmtN(r.injGh, 0);
+      mainUnit = 'g/h';
+      mainSub  = 'Gramos de ' + r.ox.name + ' a preparar y dosificar por hora';
+      mainRows = `
+        <div class="metric-row"><span>Equivale en kg/h</span><strong>${fmtN(r.injGh/1000,4)} kg/h</strong></div>
+        <div class="metric-row"><span>Producto</span><strong>${r.ox.name} sólido granular</strong></div>
+        <div class="metric-row"><span>Caudal tratado</span><strong>${fmtN(r.Q,2)} m³/h</strong></div>
+        <div class="metric-row"><span>Dosis residual</span><strong>${fmtN(r.dose,1)} mg/L Cl₂</strong></div>
+        <div class="metric-row"><span>HOCl activo (pH ${fmtN(r.pH,1)})</span><strong>${fmtN(r.hoClPct,1)}%</strong></div>`;
+    }
+    card1 = `<div class="kpi-card kpi-inline">
+      <div class="kpi-label">Ajuste de Bomba Dosificadora · En Línea</div>
+      <div class="kpi-val">${mainVal} <small>${mainUnit}</small></div>
+      <div class="kpi-sub">${mainSub}</div>
+      ${mainRows}
+    </div>`;
+
+    /* ── Card 2: 24h OPEX ─────────────────────────────── */
+    var opexVal = r.daily24L!==null ? fmtN(r.daily24L,2) : fmtN(r.daily24Kg,3);
+    var opexUnit= r.daily24L!==null ? 'L/día' : 'kg/día';
+    var opexMes = r.daily24L!==null ? fmtN(r.daily24L*30,1)+' L/mes'   : fmtN(r.daily24Kg*30,2)+' kg/mes';
+    var opexYear= r.daily24L!==null ? fmtN(r.daily24L*365,0)+' L/año'  : fmtN(r.daily24Kg*365,1)+' kg/año';
+    card2 = `<div class="kpi-card kpi-opex">
+      <div class="kpi-label">Consumo · 24 horas continuas</div>
+      <div class="kpi-val">${opexVal} <small>${opexUnit}</small></div>
+      <div class="kpi-sub">${r.ox.name} en operación continua</div>
+      <div class="metric-row"><span>Consumo mensual</span><strong>${opexMes}</strong></div>
+      <div class="metric-row"><span>Consumo anual</span><strong>${opexYear}</strong></div>
+      <div class="metric-row"><span>Cl₂ puro/hora</span><strong>${fmtN(r.pureGh,2)} g/h</strong></div>
+    </div>`;
+
+  } else {
+    /* ── Batch mode ───────────────────────────────────── */
+    el('chip-cl2').textContent    = fmtN(r.pureG, 2) + ' g';
+    el('chip2-label').textContent = 'Cantidad a verter';
+    el('chip3-label').textContent = 'Volumen cisterna';
+    el('chip-daily').textContent  = fmtN(r.volL, 0) + ' L';
+
+    var batchVal, batchUnit, batchSub, batchRows, batchAlt;
+    if(r.injVolMl !== null){
+      var showL  = r.injVolMl >= 1000;
+      batchVal   = showL ? fmtN(r.injVolL,2)  : fmtN(r.injVolMl,0);
+      batchUnit  = showL ? 'litros' : 'mL';
+      batchAlt   = showL ? fmtN(r.injVolMl,0)+' mL' : fmtN(r.injVolL,3)+' L';
+      batchSub   = 'de ' + r.ox.name + ' a verter directamente en la cisterna';
+      batchRows  = `
+        <div class="metric-row"><span>${showL?'Equivale en mL':'Equivale en litros'}</span><strong>${batchAlt}</strong></div>
+        <div class="metric-row"><span>Producto</span><strong>${r.ox.name} · dens. 1.20 kg/L</strong></div>
+        <div class="metric-row"><span>Volumen cisterna</span><strong>${fmtN(r.volL,0)} L · ${fmtN(r.volM3,2)} m³</strong></div>
+        <div class="metric-row"><span>Dosis objetivo</span><strong>${fmtN(r.dose,1)} mg/L Cl₂ libre</strong></div>`;
+      el('chip-result').textContent = showL ? fmtN(r.injVolL,2)+' L' : fmtN(r.injVolMl,0)+' mL';
+    } else {
+      var showKg = r.injSolidG >= 1000;
+      batchVal   = showKg ? fmtN(r.injSolidG/1000,3) : fmtN(r.injSolidG,0);
+      batchUnit  = showKg ? 'kg' : 'gramos';
+      batchAlt   = showKg ? fmtN(r.injSolidG,0)+' g' : fmtN(r.injSolidG/1000,3)+' kg';
+      batchSub   = 'de ' + r.ox.name + ' a disolver en la cisterna';
+      batchRows  = `
+        <div class="metric-row"><span>${showKg?'Equivale en gramos':'Equivale en kg'}</span><strong>${batchAlt}</strong></div>
+        <div class="metric-row"><span>Producto</span><strong>${r.ox.name} sólido granular</strong></div>
+        <div class="metric-row"><span>Volumen cisterna</span><strong>${fmtN(r.volL,0)} L · ${fmtN(r.volM3,2)} m³</strong></div>
+        <div class="metric-row"><span>Dosis objetivo</span><strong>${fmtN(r.dose,1)} mg/L Cl₂ libre</strong></div>`;
+      el('chip-result').textContent = showKg ? fmtN(r.injSolidG/1000,3)+' kg' : fmtN(r.injSolidG,0)+' g';
+    }
+    card1 = `<div class="kpi-card kpi-batch">
+      <div class="kpi-label">Dosis por Lote · Cisterna</div>
+      <div class="kpi-val">${batchVal} <small>${batchUnit}</small></div>
+      <div class="kpi-sub">${batchSub}</div>
+      ${batchRows}
+      <div class="contact-badge">
+        ⏱ Tiempo de contacto mínimo: <strong style="margin-left:3px">30 minutos</strong> antes del consumo
+      </div>
+    </div>`;
+
+    /* ── Card 2: info ─────────────────────────────────── */
+    card2 = `<div class="kpi-card kpi-info">
+      <div class="kpi-label">Eficacia · Calidad del agua</div>
+      <div class="kpi-val">${fmtN(r.hoClPct,1)} <small>% HOCl</small></div>
+      <div class="kpi-sub">Fracción germicida activa a pH ${fmtN(r.pH,1)}</div>
+      <div class="metric-row"><span>Cl₂ puro a dosificar</span><strong>${fmtN(r.pureG,2)} g</strong></div>
+      <div class="metric-row"><span>HOCl activo (germicida)</span><strong>${fmtN(r.dose*r.hoClFrac,2)} mg/L</strong></div>
+      <div class="metric-row"><span>OCl⁻ (no germicida)</span><strong>${fmtN(r.dose*(1-r.hoClFrac),2)} mg/L</strong></div>
+      <div class="metric-row"><span>Tiempo de contacto</span><strong>≥ 30 min</strong></div>
+    </div>`;
+  }
+
+  /* ── Action row ───────────────────────────────────────── */
+  var actionRow = `<div class="action-row">
+    <button type="button" class="btn-copy" id="btn-copy">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar parámetros
+    </button>
+    <button type="button" class="btn-print" id="btn-print">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Imprimir receta
+    </button>
+  </div>`;
+
+  el('results-body').innerHTML = `<div class="cards-grid">${card1}${card2}</div>${alertPH}${alertNOM201}${actionRow}`;
+
+  el('btn-copy').addEventListener('click',  function(){ copyParams(r); });
+  el('btn-print').addEventListener('click', function(){ window.print(); });
+}
+
+function copyParams(r){
+  var lines = [];
+  lines.push('═══════════════════════════════════════════════');
+  lines.push('    RECETA DE POST-CLORACIÓN — Carbotecnia');
+  lines.push('═══════════════════════════════════════════════');
+  lines.push('Modo:           ' + (r.mode==='inline' ? 'En línea (bomba dosificadora)' : 'Por lote (cisterna)'));
+  lines.push('Oxidante:       ' + r.ox.label);
+  lines.push('Dosis objetivo: ' + fmtN(r.dose,1) + ' mg/L de Cl₂ libre');
+  lines.push('pH del agua:    ' + fmtN(r.pH,1));
+  lines.push('HOCl activo:    ' + fmtN(r.hoClPct,1) + '%');
+  lines.push('');
+  if(r.mode === 'inline'){
+    lines.push('─── AJUSTE DE BOMBA ───────────────────────────');
+    lines.push('Caudal:          ' + fmtN(r.Q,2) + ' m³/h');
+    lines.push('Cl₂ puro:        ' + fmtN(r.pureGh,2) + ' g/h');
+    if(r.injMlMin !== null){
+      lines.push('Inyección bomba: ' + fmtN(r.injMlMin,1) + ' mL/min');
+      lines.push('Equivale en L/h: ' + fmtN(r.injLh,3) + ' L/h');
+      lines.push('Consumo 24h:     ' + fmtN(r.daily24L,2) + ' L/día');
+      lines.push('Consumo mensual: ' + fmtN(r.daily24L*30,1) + ' L/mes');
+    } else {
+      lines.push('Dosificación:    ' + fmtN(r.injGh,0) + ' g/h de ' + r.ox.name);
+      lines.push('Consumo 24h:     ' + fmtN(r.daily24Kg,3) + ' kg/día');
+    }
+  } else {
+    lines.push('─── RECETA POR LOTE ───────────────────────────');
+    lines.push('Volumen cisterna: ' + fmtN(r.volL,0) + ' L (' + fmtN(r.volM3,2) + ' m³)');
+    lines.push('Cl₂ puro:         ' + fmtN(r.pureG,2) + ' g');
+    if(r.injVolMl !== null){
+      lines.push('Agregar:          ' + fmtN(r.injVolMl,0) + ' mL de ' + r.ox.name);
+      lines.push('Equivale en L:    ' + fmtN(r.injVolL,3) + ' L');
+    } else {
+      lines.push('Disolver:         ' + fmtN(r.injSolidG,0) + ' g de ' + r.ox.name);
+      lines.push('Equivale en kg:   ' + fmtN(r.injSolidG/1000,3) + ' kg');
+    }
+    lines.push('Tiempo contacto:  ≥ 30 minutos antes del consumo');
+  }
+  lines.push('');
+  lines.push('Norma: NOM-127-SSA1 (Cl₂ libre 0.2–1.5 mg/L)');
+  lines.push('NOM-201: remueva Cl₂ con CAG si agua será envasada o usada para hielo.');
+  lines.push('Generado con Carbotecnia Water Treatment Tools');
+
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
+    var btn = el('btn-copy');
+    var orig = btn.innerHTML;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('ok');
+    setTimeout(function(){ btn.innerHTML = orig; btn.classList.remove('ok'); }, 2000);
+  });
+}
+
+function resetAll(){
+  el('inp-flow').value = '';
+  el('inp-vol').value  = '';
+  el('inp-dose').value = '1.0'; el('dose-display').textContent = '1.0';
+  el('inp-ph').value   = '7.2';
+  el('sel-oxidant').value = 'naocl';
+  setMode('inline');
+}
+
+el('btn-mode-inline').addEventListener('click', function(){ setMode('inline'); });
+el('btn-mode-batch').addEventListener('click',  function(){ setMode('batch');  });
+el('inp-dose').addEventListener('input', function(){ el('dose-display').textContent = parseFloat(this.value).toFixed(1); });
+el('btn-calc').addEventListener('click',  calculate);
+el('btn-reset').addEventListener('click', resetAll);
+document.querySelectorAll('input[type="number"]').forEach(function(inp){
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+});
+</script>
+</body>
+</html>
