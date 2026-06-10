@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calculadoras y herramientas · Carbotecnia</title>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  LANDING DE CALCULADORAS · CARBOTECNIA · VERSIÓN COLORIDA (v2)
+  ════════════════════════════════════════════════════════════════════
+  CÓMO USAR EN WORDPRESS:
+  Copia desde  INICIO BLOQUE WORDPRESS  hasta  FIN BLOQUE WORDPRESS
+  y pégalo en un bloque "HTML personalizado". Todo el CSS está
+  encapsulado bajo .cbt-landing, no afecta al resto de tu tema.
+
+  CÓMO AGREGAR UNA CALCULADORA:
+  Copia una línea <li><a href="URL" target="_blank" rel="noopener">Nombre</a></li>
+  dentro de la sección correspondiente y cambia nombre y URL.
+
+  CÓMO PONER TU IMAGEN EN UNA SECCIÓN:
+  Cada sección tiene un recuadro <div class="cbt-media"> de relleno.
+  Reemplázalo por  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="..." />
+  La imagen se recorta automáticamente a un cuadrado de 112×112 px
+  con esquinas redondeadas (usa imágenes cuadradas o casi cuadradas).
+
+  CÓMO AGREGAR UNA SECCIÓN NUEVA:
+  Copia un bloque <section class="cbt-card" ...> completo y cambia:
+  - el color en  style="--c:#...; --cs:#...;"  (--c = color de la
+    sección, --cs = tinte claro de fondo)
+  - el icono SVG, el título, la descripción y la lista de enlaces.
+  ════════════════════════════════════════════════════════════════════
+-->
+<!-- Si tu tema de WordPress ya carga Outfit e Inter, puedes omitir estas 3 líneas -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0; background:#ffffff;">
+
+<!-- INICIO BLOQUE WORDPRESS -->
+<style>
+  .cbt-landing {
+    font-family: 'Inter', -apple-system, "Segoe UI", sans-serif;
+    color: #2a3440;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 40px 20px 56px;
+    box-sizing: border-box;
+  }
+  .cbt-landing *, .cbt-landing *::before, .cbt-landing *::after { box-sizing: border-box; }
+
+  /* ── Encabezado ── */
+  .cbt-landing .cbt-titulo {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: clamp(26px, 4vw, 34px);
+    line-height: 1.15;
+    color: #1d2630;
+    text-align: center;
+    margin: 0 0 12px;
+  }
+  .cbt-landing .cbt-intro {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #4b5663;
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 36px;
+    text-wrap: pretty;
+  }
+
+  /* ── Rejilla de secciones ── */
+  .cbt-landing .cbt-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 760px) {
+    .cbt-landing .cbt-grid { grid-template-columns: 1fr; }
+    .cbt-landing { padding: 28px 16px 40px; }
+  }
+
+  /* ── Tarjeta de sección (el color viene de --c y --cs) ── */
+  .cbt-landing .cbt-card {
+    background: #ffffff;
+    border: 1.5px solid var(--c);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(20, 30, 40, 0.06);
+  }
+  .cbt-landing .cbt-banda {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: var(--c);
+    color: #ffffff;
+    padding: 10px 18px;
+  }
+  .cbt-landing .cbt-banda-icono { display: grid; place-items: center; flex-shrink: 0; }
+  .cbt-landing .cbt-card-titulo {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+  }
+  .cbt-landing .cbt-card-body {
+    display: flex;
+    gap: 18px;
+    padding: 18px 20px 20px;
+  }
+  .cbt-landing .cbt-card-main { flex: 1; min-width: 0; }
+  .cbt-landing .cbt-card-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: #5a6573;
+    margin: 0 0 10px;
+  }
+
+  /* ── Espacio para imagen de la sección ── */
+  .cbt-landing .cbt-media {
+    width: 112px;
+    height: 112px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: var(--cs);
+    border: 1.5px dashed color-mix(in srgb, var(--c) 35%, #ffffff);
+    color: var(--c);
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 6px;
+    opacity: 0.85;
+  }
+  .cbt-landing .cbt-media span { font-size: 11px; font-weight: 500; opacity: 0.75; }
+  .cbt-landing .cbt-img {
+    width: 112px;
+    height: 112px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
+  }
+  @media (max-width: 480px) {
+    .cbt-landing .cbt-card-body { flex-direction: column; }
+    .cbt-landing .cbt-media, .cbt-landing .cbt-img { width: 100%; height: 96px; }
+  }
+
+  /* ── Lista de calculadoras ── */
+  .cbt-landing .cbt-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cbt-landing .cbt-lista li { border-top: 1px solid #eef1f4; }
+  .cbt-landing .cbt-lista li:first-child { border-top: none; }
+  .cbt-landing .cbt-lista a {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 2px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--c);
+    text-decoration: none;
+  }
+  .cbt-landing .cbt-lista a::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    background-color: var(--c);
+    -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>') center / contain no-repeat;
+    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>') center / contain no-repeat;
+  }
+  .cbt-landing .cbt-lista a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>
+
+<div class="cbt-landing">
+
+  <h2 class="cbt-titulo">Calculadoras y herramientas</h2>
+  <p class="cbt-intro">Herramientas de cálculo y diagnóstico para tratamiento de agua y aire: dimensionamiento de equipos, dosificación, normatividad y conversiones. Selecciona una categoría y abre la herramienta que necesitas.</p>
+
+  <div class="cbt-grid">
+
+    <!-- ═══ SECCIÓN: Carbón activado ═══ -->
+    <section class="cbt-card" style="--c:#39444f; --cs:#eef1f4;">
+      <div class="cbt-banda">
+        <span class="cbt-banda-icono"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="2.6"></circle><circle cx="15.5" cy="7" r="2"></circle><circle cx="13" cy="14.5" r="2.8"></circle><circle cx="7" cy="16.5" r="1.8"></circle><circle cx="17.5" cy="13" r="1.4"></circle></svg></span>
+        <h3 class="cbt-card-titulo">Carbón activado</h3>
+      </div>
+      <div class="cbt-card-body">
+        <!-- 🖼️ Cuando tengas tu imagen, reemplaza TODO el <div class="cbt-media">...</div>
+             por:  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="Carbón activado" />
+             (o bórralo si esta sección no llevará imagen) -->
+        <div class="cbt-media">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="2.6"></circle><circle cx="15.5" cy="7" r="2"></circle><circle cx="13" cy="14.5" r="2.8"></circle><circle cx="7" cy="16.5" r="1.8"></circle><circle cx="17.5" cy="13" r="1.4"></circle></svg>
+          <span>Tu imagen</span>
+        </div>
+        <div class="cbt-card-main">
+          <p class="cbt-card-desc">Dimensionamiento y selección de carbón activado para agua, aire y procesos.</p>
+          <ul class="cbt-lista">
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/calculadora-para-el-tiempo-de-contacto-en-cama-vacia-tccv/" target="_blank" rel="noopener">Tiempo de contacto en cama vacía (TCCV)</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/como-elegir-un-carbon-activado-por-su-aplicacion/" target="_blank" rel="noopener">Elegir un carbón activado por aplicación</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/dimensionamiento-de-carbon-activado-para-tratamiento-de-aire-y-gases/" target="_blank" rel="noopener">Carbón activado para aire y gases</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculo-para-optimizar-procesos-batch-con-carbon-activado-en-polvo-cap/" target="_blank" rel="noopener">Procesos batch con carbón en polvo (CAP)</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/calculadora-de-dimensionamiento-para-equipos-de-carbon-activado/" target="_blank" rel="noopener">Dimensionamiento de equipos de carbón activado</a></li>
+            <!-- ➕ Agrega aquí más calculadoras de esta sección -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECCIÓN: Filtración ═══ -->
+    <section class="cbt-card" style="--c:#2f6ea8; --cs:#ecf3f9;">
+      <div class="cbt-banda">
+        <span class="cbt-banda-icono"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7v6l-4 2v-8L4 5z"></path></svg></span>
+        <h3 class="cbt-card-titulo">Filtración</h3>
+      </div>
+      <div class="cbt-card-body">
+        <!-- 🖼️ Cuando tengas tu imagen, reemplaza TODO el <div class="cbt-media">...</div>
+             por:  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="Filtración" />
+             (o bórralo si esta sección no llevará imagen) -->
+        <div class="cbt-media">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7v6l-4 2v-8L4 5z"></path></svg>
+          <span>Tu imagen</span>
+        </div>
+        <div class="cbt-card-main">
+          <p class="cbt-card-desc">Filtros de lecho profundo, cartuchos y discos: dimensionamiento, selección y retrolavado.</p>
+          <ul class="cbt-lista">
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/calculadora-para-dimensionamiento-de-un-filtro-de-lecho-profundo/" target="_blank" rel="noopener">Filtro de lecho profundo</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-para-dimensionamiento-de-filtracion-de-cartuchos-absolutos-parker/" target="_blank" rel="noopener">Cartuchos absolutos Parker</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-para-dimensionamiento-de-filtros-de-cartucho-nominales/" target="_blank" rel="noopener">Cartuchos nominales</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-maestra-de-retrolavado-por-temperatura/" target="_blank" rel="noopener">Retrolavado por temperatura</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculo-para-filtros-de-discos-en-torres-de-enfriamiento/" target="_blank" rel="noopener">Filtros de discos en torres de enfriamiento</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/calculo-basico-para-un-filtro-de-discos-de-agua-azud/" target="_blank" rel="noopener">Filtros de discos Azud Helix Automatic</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/selector-de-tecnologia-de-filtracion-filtro-de-discos-vs-lecho-profundo/" target="_blank" rel="noopener">Filtro de discos vs lecho profundo</a></li>
+            <!-- ➕ Agrega aquí más calculadoras de esta sección -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECCIÓN: Hierro y manganeso ═══ -->
+    <section class="cbt-card" style="--c:#a8632e; --cs:#f7f0ea;">
+      <div class="cbt-banda">
+        <span class="cbt-banda-icono"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 4-8 4-8-4 8-4z"></path><path d="M4 12l8 4 8-4"></path><path d="M4 16l8 4 8-4"></path></svg></span>
+        <h3 class="cbt-card-titulo">Hierro y manganeso</h3>
+      </div>
+      <div class="cbt-card-body">
+        <!-- 🖼️ Cuando tengas tu imagen, reemplaza TODO el <div class="cbt-media">...</div>
+             por:  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="Hierro y manganeso" />
+             (o bórralo si esta sección no llevará imagen) -->
+        <div class="cbt-media">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 4-8 4-8-4 8-4z"></path><path d="M4 12l8 4 8-4"></path><path d="M4 16l8 4 8-4"></path></svg>
+          <span>Tu imagen</span>
+        </div>
+        <div class="cbt-card-main">
+          <p class="cbt-card-desc">Catalizadores para remoción de hierro y manganeso y su dosificación de oxidantes.</p>
+          <ul class="cbt-lista">
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-para-dimensionamiento-de-catalizador-de-hierro-y-manganeso/" target="_blank" rel="noopener">Dimensionamiento de catalizador</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-de-dosificacion-de-oxidantes-para-un-catalizador-de-hierro-y-manganeso/" target="_blank" rel="noopener">Dosificación de oxidantes para catalizador</a></li>
+            <!-- ➕ Agrega aquí más calculadoras de esta sección -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECCIÓN: Suavización y resinas ═══ -->
+    <section class="cbt-card" style="--c:#0e7d76; --cs:#e9f4f3;">
+      <div class="cbt-banda">
+        <span class="cbt-banda-icono"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10"></path><path d="M14 5l3 3-3 3"></path><path d="M17 16H7"></path><path d="M10 13l-3 3 3 3"></path></svg></span>
+        <h3 class="cbt-card-titulo">Suavización y resinas</h3>
+      </div>
+      <div class="cbt-card-body">
+        <!-- 🖼️ Cuando tengas tu imagen, reemplaza TODO el <div class="cbt-media">...</div>
+             por:  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="Suavización y resinas" />
+             (o bórralo si esta sección no llevará imagen) -->
+        <div class="cbt-media">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10"></path><path d="M14 5l3 3-3 3"></path><path d="M17 16H7"></path><path d="M10 13l-3 3 3 3"></path></svg>
+          <span>Tu imagen</span>
+        </div>
+        <div class="cbt-card-main">
+          <p class="cbt-card-desc">Suavizadores y resinas de intercambio iónico: capacidad, ciclos y ajuste del agua.</p>
+          <ul class="cbt-lista">
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/calculadora-para-dimensionamiento-de-un-suavizador-de-agua/" target="_blank" rel="noopener">Dimensionamiento de un suavizador</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/monitor-de-ciclo-y-regeneracion-de-resina-suavizadores-industriales/" target="_blank" rel="noopener">Monitor de ciclo y regeneración de resina</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-de-bypass-blending-para-ajuste-de-langelier-para-agua-suavizada/" target="_blank" rel="noopener">Bypass (blending) para ajuste de Langelier</a></li>
+            <!-- ➕ Agrega aquí más calculadoras de esta sección -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECCIÓN: Ósmosis inversa ═══ -->
+    <section class="cbt-card" style="--c:#4956a5; --cs:#eef0f8;">
+      <div class="cbt-banda">
+        <span class="cbt-banda-icono"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v16"></path><path d="M13 4v16" stroke-dasharray="2.5 2.5"></path><path d="M3 12h14"></path><path d="M14.5 9.5L17 12l-2.5 2.5"></path><path d="M20 4v16"></path></svg></span>
+        <h3 class="cbt-card-titulo">Ósmosis inversa</h3>
+      </div>
+      <div class="cbt-card-body">
+        <!-- 🖼️ Cuando tengas tu imagen, reemplaza TODO el <div class="cbt-media">...</div>
+             por:  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="Ósmosis inversa" />
+             (o bórralo si esta sección no llevará imagen) -->
+        <div class="cbt-media">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v16"></path><path d="M13 4v16" stroke-dasharray="2.5 2.5"></path><path d="M3 12h14"></path><path d="M14.5 9.5L17 12l-2.5 2.5"></path><path d="M20 4v16"></path></svg>
+          <span>Tu imagen</span>
+        </div>
+        <div class="cbt-card-main">
+          <p class="cbt-card-desc">Dimensionamiento básico de sistemas de ósmosis inversa industriales.</p>
+          <ul class="cbt-lista">
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-para-dimensionamiento-de-sitemas-de-osmosis-inversa-industriales/" target="_blank" rel="noopener">Dimensionamiento de ósmosis inversa industrial</a></li>
+            <!-- ➕ Agrega aquí más calculadoras de esta sección -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECCIÓN: Cloración y desinfección ═══ -->
+    <section class="cbt-card" style="--c:#2386a8; --cs:#eaf4f8;">
+      <div class="cbt-banda">
+        <span class="cbt-banda-icono"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 6.6 6 10.7a6 6 0 0 1-12 0C6 10.1 12 3.5 12 3.5z"></path><path d="M12 11v5"></path><path d="M9.5 13.5h5"></path></svg></span>
+        <h3 class="cbt-card-titulo">Cloración y desinfección</h3>
+      </div>
+      <div class="cbt-card-body">
+        <!-- 🖼️ Cuando tengas tu imagen, reemplaza TODO el <div class="cbt-media">...</div>
+             por:  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="Cloración y desinfección" />
+             (o bórralo si esta sección no llevará imagen) -->
+        <div class="cbt-media">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 6.6 6 10.7a6 6 0 0 1-12 0C6 10.1 12 3.5 12 3.5z"></path><path d="M12 11v5"></path><path d="M9.5 13.5h5"></path></svg>
+          <span>Tu imagen</span>
+        </div>
+        <div class="cbt-card-main">
+          <p class="cbt-card-desc">Dosificación de cloro y desinfección de agua y medios filtrantes.</p>
+          <ul class="cbt-lista">
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-de-pre-cloracion-desinfeccion-de-agua-con-cloro/" target="_blank" rel="noopener">Pre-cloración · desinfección de agua</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/post-cloracion-proteccion-residual-para-almacenamiento-distribucion/" target="_blank" rel="noopener">Post-cloración · protección residual</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/calculadora-para-desinfeccion-de-carbon-activado-resina-o-medios-granulares/" target="_blank" rel="noopener">Desinfección de medios con dióxido de cloro</a></li>
+            <!-- ➕ Agrega aquí más calculadoras de esta sección -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECCIÓN: Normatividad ═══ -->
+    <section class="cbt-card" style="--c:#6f53a6; --cs:#f1edf7;">
+      <div class="cbt-banda">
+        <span class="cbt-banda-icono"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4.5V3h6v1.5"></path><path d="M8.5 12.5l2.4 2.4L15.5 10"></path></svg></span>
+        <h3 class="cbt-card-titulo">Normatividad</h3>
+      </div>
+      <div class="cbt-card-body">
+        <!-- 🖼️ Cuando tengas tu imagen, reemplaza TODO el <div class="cbt-media">...</div>
+             por:  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="Normatividad" />
+             (o bórralo si esta sección no llevará imagen) -->
+        <div class="cbt-media">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4.5V3h6v1.5"></path><path d="M8.5 12.5l2.4 2.4L15.5 10"></path></svg>
+          <span>Tu imagen</span>
+        </div>
+        <div class="cbt-card-main">
+          <p class="cbt-card-desc">Diagnósticos para cumplir las normas mexicanas de agua para consumo.</p>
+          <ul class="cbt-lista">
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/diagnostico-basico-en-tratamiento-para-potabilizacion-de-agua-nom-127-ssa1-2021/" target="_blank" rel="noopener">Diagnóstico NOM-127 · agua potable</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/uncategorized/diagnostico-basico-para-cumplir-la-nom-201-ssa1-2015/" target="_blank" rel="noopener">Diagnóstico NOM-201 · agua y hielo purificados</a></li>
+            <!-- ➕ Agrega aquí más calculadoras de esta sección -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECCIÓN: Calidad del agua y conversiones ═══ -->
+    <section class="cbt-card" style="--c:#2e8a46; --cs:#ecf5ee;">
+      <div class="cbt-banda">
+        <span class="cbt-banda-icono"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h12"></path><path d="M14 6l3 3-3 3"></path><path d="M19 15H7"></path><path d="M10 12l-3 3 3 3"></path></svg></span>
+        <h3 class="cbt-card-titulo">Calidad del agua y conversiones</h3>
+      </div>
+      <div class="cbt-card-body">
+        <!-- 🖼️ Cuando tengas tu imagen, reemplaza TODO el <div class="cbt-media">...</div>
+             por:  <img class="cbt-img" src="URL-DE-TU-IMAGEN" alt="Calidad del agua y conversiones" />
+             (o bórralo si esta sección no llevará imagen) -->
+        <div class="cbt-media">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h12"></path><path d="M14 6l3 3-3 3"></path><path d="M19 15H7"></path><path d="M10 12l-3 3 3 3"></path></svg>
+          <span>Tu imagen</span>
+        </div>
+        <div class="cbt-card-main">
+          <p class="cbt-card-desc">Índices y conversión de unidades de calidad del agua.</p>
+          <ul class="cbt-lista">
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/calculadora-de-indice-de-langelier-lsi/" target="_blank" rel="noopener">Índice de Langelier (LSI)</a></li>
+        <li><a href="https://www.carbotecnia.info/aprendizaje/calculadoras/convertidor-de-unidades-tratamiento-y-calidad-del-agua/" target="_blank" rel="noopener">Convertidor de unidades de calidad de agua</a></li>
+            <!-- ➕ Agrega aquí más calculadoras de esta sección -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ➕ Para una sección nueva: copia un <section class="cbt-card">...</section>
+         completo, cambia los colores en style="--c:...; --cs:...", el icono,
+         el título, la descripción y los enlaces. -->
+
+  </div>
+</div>
+<!-- FIN BLOQUE WORDPRESS -->
+
+</body>
+</html>
