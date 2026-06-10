@@ -180,6 +180,15 @@ select.full-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(5,150,
 .tr-unit{font-family:var(--font-body);font-size:12px;color:var(--teal);margin-top:2px}
 .tank-recipe-divider{display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--teal);font-family:var(--font-num)}
 
+/* HOCl/OCl bar */
+.hocl-bar{height:8px;border-radius:4px;background:var(--line);margin:10px 0 6px;overflow:hidden;display:flex}
+.hocl-bar .seg-hocl{background:var(--brand);border-radius:4px 0 0 4px}
+.hocl-bar .seg-ocl{background:#94A3B8}
+.hocl-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-num);font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:5px}
+.hocl-badge.good{background:var(--brand-light);color:var(--brand-dark);border:1px solid var(--brand-border)}
+.hocl-badge.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-border)}
+.hocl-badge.bad{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border)}
+
 /* copy bar */
 .copy-bar{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .copy-bar p{font-size:13px;color:var(--muted);max-width:400px}
@@ -234,19 +243,19 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
   <div class="calc-header">
     <div class="hero-grid">
       <div>
-        <h1>Precloración · Demanda de cloro para <em>desinfección y oxidación de metales</em></h1>
-        <p>La precloración consiste en añadir cloro al sistema de agua antes del tratamiento: gestión de olor y corrosión, desinfección y eliminación de sustancias aceitosas. Calcule la dosis exacta para oxidar hierro, manganeso y H₂S, asegurar el residual normativo (NOM-127-SSA1) y obtener el ajuste exacto para su bomba dosificadora.</p>
+        <h1>Precloración · <em>Desinfección de agua</em> con cloro</h1>
+        <p>La precloración añade cloro al agua antes del tratamiento para la gestión de olor, corrosión, desinfección y eliminación de sustancias aceitosas. Ingrese la demanda de cloro de su fuente y el pH del agua para obtener la dosis real corregida y el ajuste exacto de su bomba dosificadora.</p>
       </div>
       <div class="hero-note">
-        <b>Fuente técnica</b>
-        <span>Manuales de Ingeniería Carbotecnia · Fe × 0.62 · Mn × 2.0 · H₂S × 3.0 · NOM-127-SSA1: residual libre <strong style="color:#fff">0.2 – 1.5 mg/L</strong>.</span>
+        <b>Corrección por pH</b>
+        <span>A pH 7.5 solo el 50% del cloro libre es HOCl (germicida activo). Esta calculadora ajusta la dosis para garantizar el residual HOCl deseado. NOM-127-SSA1: residual libre <strong style="color:#fff">0.2 – 1.5 mg/L</strong>.</span>
       </div>
     </div>
   </div>
 
   <div class="formula-bar">
-    <div class="formula-chip"><div class="fc-label">Demanda estequiom.</div><div class="fc-value" id="chip-demand">—</div></div>
-    <div class="formula-chip"><div class="fc-label">Dosis total + residual</div><div class="fc-value" id="chip-dose">—</div></div>
+    <div class="formula-chip"><div class="fc-label">Dosis total corregida</div><div class="fc-value" id="chip-demand">—</div></div>
+    <div class="formula-chip"><div class="fc-label">HOCl activo (pH)</div><div class="fc-value" id="chip-dose">—</div></div>
     <div class="formula-chip"><div class="fc-label">Ajuste bomba</div><div class="fc-value" id="chip-pump">—</div></div>
     <div class="formula-chip"><div class="fc-label">Consumo diario</div><div class="fc-value" id="chip-daily">—</div></div>
   </div>
@@ -274,27 +283,24 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             </div>
           </div>
 
-          <div class="sec-label">Calidad del agua cruda (mg/L)</div>
+          <div class="sec-label">Calidad del agua</div>
           <div class="field">
-            <label>Hierro Fe²⁺</label>
+            <label>Demanda de cloro del agua</label>
             <div class="inline-wrap">
-              <input type="number" id="inp-fe" placeholder="0.0" min="0" step="any" value="0">
+              <input type="number" id="inp-demand" placeholder="Ej. 1.5" min="0" step="0.1" value="0">
               <span class="unit-badge">mg/L</span>
             </div>
+            <div class="hint">Cloro consumido antes de que aparezca residual libre. Mida con prueba de demanda en laboratorio. Referencias: agua subterránea limpia 0.2–0.8 · agua superficial 1–3 · agua con materia orgánica 3–6 mg/L.</div>
           </div>
-          <div class="field">
-            <label>Manganeso Mn²⁺</label>
-            <div class="inline-wrap">
-              <input type="number" id="inp-mn" placeholder="0.0" min="0" step="any" value="0">
-              <span class="unit-badge">mg/L</span>
+
+          <div class="sec-label">pH del agua</div>
+          <div class="slider-wrap" style="background:var(--teal-soft);border-color:var(--teal-border)">
+            <span class="slider-label" style="color:#0C4A6E">pH del agua a clorar</span>
+            <div class="slider-row">
+              <input type="range" id="inp-ph" min="6.0" max="9.5" step="0.1" value="7.0" style="accent-color:var(--teal)">
+              <div class="slider-val-badge" style="color:var(--teal);border-color:var(--teal-border)"><span id="ph-display">7.0</span></div>
             </div>
-          </div>
-          <div class="field">
-            <label>Ácido Sulfhídrico H₂S / S²⁻</label>
-            <div class="inline-wrap">
-              <input type="number" id="inp-h2s" placeholder="0.0" min="0" step="any" value="0">
-              <span class="unit-badge">mg/L</span>
-            </div>
+            <div class="slider-limits"><span>6.0 (ácido)</span><span>9.5 (alcalino)</span></div>
           </div>
 
           <div class="sec-label">Cloro residual libre (NOM-127)</div>
@@ -419,9 +425,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
    5. Ca(OCl)₂ 65%: g/h sólido = Masa / 0.65
 ══════════════════════════════════════════════════════════════════ */
 
-var K_FE  = 0.62;
-var K_MN  = 2.00;
-var K_H2S = 3.00;
+var PKA_HOCL = 7.54;   // pKa del HOCl a 25°C
 
 var OXIDANTS = {
   naocl: {
@@ -446,20 +450,22 @@ function flowM3h(){
 }
 
 function calculate(){
-  var Q   = flowM3h();
-  var Fe  = num('inp-fe');
-  var Mn  = num('inp-mn');
-  var H2S = num('inp-h2s');
-  var res = parseFloat(el('inp-residual').value) || 0.5;
-  var ox  = OXIDANTS[el('sel-oxidant').value];
+  var Q    = flowM3h();
+  var dem  = num('inp-demand', 0);
+  var res  = parseFloat(el('inp-residual').value) || 0.5;
+  var pH   = parseFloat(el('inp-ph').value) || 7.0;
+  var ox   = OXIDANTS[el('sel-oxidant').value];
 
   if(!Q || Q<=0){ alert('Ingrese un caudal válido mayor a cero.'); return; }
 
-  var demFe  = Fe  * K_FE;
-  var demMn  = Mn  * K_MN;
-  var demH2S = H2S * K_H2S;
-  var demand = demFe + demMn + demH2S;
-  var dose   = demand + res;
+  /* Fracción HOCl a este pH: HOCl ⇌ H⁺ + OCl⁻  (pKa = 7.54) */
+  var hoClFrac       = 1 / (1 + Math.pow(10, pH - PKA_HOCL));
+  var hoClPct        = hoClFrac * 100;
+  /* Para garantizar `res` mg/L de HOCl libre, el total (HOCl+OCl⁻) debe ser: */
+  var totalResidual  = res / hoClFrac;
+  var oclMinus       = totalResidual - res;          // porción OCl⁻ (no germicida)
+  /* Dosis total = demanda del agua + residual total corregido por pH */
+  var dose   = dem + totalResidual;
   var pureGh = dose * Q;
 
   var hours = num('inp-hours', 24);
@@ -506,38 +512,53 @@ function calculate(){
     tankResult = {concVolL, solidG, waterVolL, injWorkLh, injWorkMlMin, dailyWorkL, refillDays, pumpPct, workConcPct, pumpMaxMlMin, tankL};
   }
 
-  renderResults({Q,Fe,Mn,H2S,res,hours,ox,oxKey:el('sel-oxidant').value,
-    demFe,demMn,demH2S,demand,dose,pureGh,
+  renderResults({Q,dem,res,pH,hours,ox,oxKey:el('sel-oxidant').value,
+    hoClFrac,hoClPct,totalResidual,oclMinus,dose,pureGh,
     injLh,injMlMin,injGh,dailyL,dailyKg,monthlyL,monthlyKg,yearlyL,yearlyKg,
     tankResult});
 }
 
 function renderResults(r){
-  el('chip-demand').textContent = fmtN(r.demand,2)+' mg/L';
-  el('chip-dose').textContent   = fmtN(r.dose,2)+' mg/L';
+  el('chip-demand').textContent = fmtN(r.dose,2)+' mg/L';
+  el('chip-dose').textContent   = fmtN(r.hoClPct,0)+'% HOCl';
   el('chip-pump').textContent   = r.injMlMin!==null ? fmtN(r.injMlMin,1)+' mL/min' : fmtN(r.injGh,0)+' g/h';
   el('chip-daily').textContent  = r.dailyL!==null ? fmtN(r.dailyL,1)+' L/día' : fmtN(r.dailyKg,3)+' kg/día';
 
-  var demPct = r.dose>0 ? (r.demand/r.dose*100).toFixed(1) : 0;
-  var resPct = r.dose>0 ? (r.res/r.dose*100).toFixed(1) : 0;
+  var demPct  = r.dose>0 ? (r.dem/r.dose*100).toFixed(1) : 0;
+  var resPct  = r.dose>0 ? (r.totalResidual/r.dose*100).toFixed(1) : 0;
+  var hoClPct = r.hoClPct.toFixed(0);
+  var oclPct  = (100-r.hoClPct).toFixed(0);
 
-  /* Card 1: Demanda */
+  var hoClBadgeClass = r.hoClPct >= 70 ? 'good' : r.hoClPct >= 40 ? 'warn' : 'bad';
+  var hoClBadgeText  = r.hoClPct >= 70 ? '✓ Buena eficacia' : r.hoClPct >= 40 ? '⚠ Eficacia reducida' : '✗ Eficacia muy baja';
+
+  /* Card 1: Demanda corregida por pH */
   var card1 = `
     <div class="kpi-card kpi-teal">
-      <div class="kpi-label">Demanda Total de Cloro</div>
-      <div class="kpi-val">${fmtN(r.dose,2)} <small>mg/L (ppm)</small></div>
-      <div class="kpi-sub">Cloro puro requerido al punto de inyección</div>
+      <div class="kpi-label">Dosis Total · Corregida por pH ${fmtN(r.pH,1)}</div>
+      <div class="kpi-val">${fmtN(r.dose,2)} <small>mg/L</small></div>
+      <div class="kpi-sub">Demanda del agua + residual ajustado para garantizar ${fmtN(r.res,1)} mg/L de HOCl</div>
       <div class="demand-bar">
         <div class="seg-demand" style="width:${demPct}%"></div>
         <div class="seg-residual" style="width:${resPct}%"></div>
       </div>
       <div class="demand-bar-legend">
-        <div class="dbl-item"><div class="dbl-dot" style="background:var(--teal)"></div>Oxidación metales: ${fmtN(r.demand,2)} mg/L</div>
-        <div class="dbl-item"><div class="dbl-dot" style="background:var(--brand)"></div>Residual libre: ${fmtN(r.res,1)} mg/L</div>
+        <div class="dbl-item"><div class="dbl-dot" style="background:var(--teal)"></div>Demanda: ${fmtN(r.dem,2)} mg/L</div>
+        <div class="dbl-item"><div class="dbl-dot" style="background:var(--brand)"></div>Residual total: ${fmtN(r.totalResidual,2)} mg/L</div>
       </div>
-      <div class="metric-row" style="margin-top:10px"><span>Fe²⁺ × 0.62</span><strong>${fmtN(r.demFe,3)} mg/L</strong></div>
-      <div class="metric-row"><span>Mn²⁺ × 2.0</span><strong>${fmtN(r.demMn,3)} mg/L</strong></div>
-      <div class="metric-row"><span>H₂S × 3.0</span><strong>${fmtN(r.demH2S,3)} mg/L</strong></div>
+      <div style="margin-top:10px">
+        <div style="font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Fracción germicida del residual (pH ${fmtN(r.pH,1)})</div>
+        <div class="hocl-bar">
+          <div class="seg-hocl" style="width:${hoClPct}%"></div>
+          <div class="seg-ocl" style="width:${oclPct}%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+          <span>HOCl (germicida) ${hoClPct}%</span><span>OCl⁻ (inerte) ${oclPct}%</span>
+        </div>
+        <div class="hocl-badge ${hoClBadgeClass}" style="margin-top:6px">${hoClBadgeText} · ${fmtN(r.res,1)} mg/L HOCl en residual</div>
+      </div>
+      <div class="metric-row" style="margin-top:10px"><span>HOCl libre (germicida)</span><strong>${fmtN(r.res,2)} mg/L</strong></div>
+      <div class="metric-row"><span>OCl⁻ (no germicida)</span><strong>${fmtN(r.oclMinus,2)} mg/L</strong></div>
       <div class="metric-row"><span>Masa pura Cl₂</span><strong>${fmtN(r.pureGh,1)} g/h</strong></div>
     </div>`;
 
@@ -646,6 +667,21 @@ function renderResults(r){
       </div>`
   }
 
+  /* Alert pH — cuando HOCl < 40% */
+  var alertPH = '';
+  if(r.hoClPct < 70){
+    var severity = r.hoClPct < 40 ? 'danger' : 'warn';
+    var pHideal  = r.hoClPct < 40 ? 'Ajuste urgente a pH 6.5–7.5' : 'Se recomienda ajustar a pH 6.5–7.5';
+    alertPH = `
+      <div class="alert ${severity}">
+        <div class="alert-icon">${r.hoClPct < 40 ? '🔴' : '🟡'}</div>
+        <div>
+          <b>pH ${fmtN(r.pH,1)} · Eficacia germicida reducida</b>
+          A pH <strong>${fmtN(r.pH,1)}</strong> solo el <strong>${fmtN(r.hoClPct,0)}%</strong> del cloro libre está en forma de HOCl (ácido hipocloroso, la especie germicida activa). La dosis ya fue corregida para garantizar <strong>${fmtN(r.res,1)} mg/L de HOCl</strong> en el residual, pero se requieren <strong>${fmtN(r.totalResidual,2)} mg/L de cloro libre total</strong>. ${pHideal} para reducir la dosis necesaria y mejorar la eficiencia de desinfección.
+        </div>
+      </div>`;
+  }
+
   /* Alert 1: NOM-201 / OI — siempre visible */
   var alertRO = `
     <div class="alert danger">
@@ -690,6 +726,7 @@ function renderResults(r){
 
   el('results-body').innerHTML = `
     <div class="cards-grid" style="${r.tankResult?'grid-template-columns:repeat(3,1fr)':''}">${card1}${card2}${card3}${tankCard}</div>
+    ${alertPH}
     ${alertRO}
     ${alertTHM}
     ${alertNOM}
@@ -706,20 +743,19 @@ function copyParams(r){
     'Calculadora de Precloración y Demanda de Cloro · '+new Date().toLocaleDateString('es-MX'),
     '═══════════════════════════════════════════════════════════════',
     '',
-    '─── AGUA CRUDA ─────────────────────────────────────────────────',
-    'Caudal:          '+fmtN(r.Q,2)+' m³/h',
-    'Fe²⁺:            '+fmtN(r.Fe,2)+' mg/L',
-    'Mn²⁺:            '+fmtN(r.Mn,2)+' mg/L',
-    'H₂S:             '+fmtN(r.H2S,2)+' mg/L',
+    '─── AGUA ───────────────────────────────────────────────────────',
+    'Caudal:              '+fmtN(r.Q,2)+' m³/h',
+    'Demanda de cloro:    '+fmtN(r.dem,2)+' mg/L',
+    'pH del agua:         '+fmtN(r.pH,1),
     '',
-    '─── ESTEQUIOMETRÍA (Manuales Carbotecnia) ──────────────────────',
-    'Fe²⁺ × 0.62:     '+fmtN(r.demFe,3)+' mg/L Cl₂',
-    'Mn²⁺ × 2.0:      '+fmtN(r.demMn,3)+' mg/L Cl₂',
-    'H₂S  × 3.0:      '+fmtN(r.demH2S,3)+' mg/L Cl₂',
-    'Demanda total:   '+fmtN(r.demand,3)+' mg/L Cl₂',
-    'Residual libre:  '+fmtN(r.res,1)+' mg/L  (NOM-127-SSA1)',
-    'DOSIS TOTAL:     '+fmtN(r.dose,3)+' mg/L',
-    'Masa pura Cl₂:   '+fmtN(r.pureGh,2)+' g/h',
+    '─── CORRECCIÓN POR pH ──────────────────────────────────────────',
+    'HOCl (germicida):    '+fmtN(r.hoClPct,1)+'% del cloro libre a pH '+fmtN(r.pH,1),
+    'Residual HOCl desead:'+fmtN(r.res,2)+' mg/L (NOM-127-SSA1)',
+    'Residual total req.: '+fmtN(r.totalResidual,2)+' mg/L (HOCl + OCl⁻)',
+    '  HOCl (activo):     '+fmtN(r.res,2)+' mg/L',
+    '  OCl⁻ (inerte):     '+fmtN(r.oclMinus,2)+' mg/L',
+    'DOSIS TOTAL:         '+fmtN(r.dose,3)+' mg/L  (demanda + residual corregido)',
+    'Masa pura Cl₂:       '+fmtN(r.pureGh,2)+' g/h',
     '',
     '─── QUÍMICO SELECCIONADO ───────────────────────────────────────',
     'Oxidante:        '+r.ox.label,
@@ -795,7 +831,8 @@ function copyParams(r){
 }
 
 function resetAll(){
-  el('inp-flow').value=''; el('inp-fe').value='0'; el('inp-mn').value='0'; el('inp-h2s').value='0';
+  el('inp-flow').value=''; el('inp-demand').value='0';
+  el('inp-ph').value='7.0'; el('ph-display').textContent='7.0';
   el('inp-residual').value='0.5'; el('residual-display').textContent='0.5';
   el('sel-oxidant').value='naocl';
   el('inp-hours').value='24';
@@ -811,6 +848,9 @@ function resetAll(){
 
 el('inp-residual').addEventListener('input', function(){
   el('residual-display').textContent = parseFloat(this.value).toFixed(1);
+});
+el('inp-ph').addEventListener('input', function(){
+  el('ph-display').textContent = parseFloat(this.value).toFixed(1);
 });
 el('btn-calc').addEventListener('click', calculate);
 el('btn-reset').addEventListener('click', resetAll);
