@@ -178,19 +178,22 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .tank-opt-sub{font-weight:500;font-size:12px}
 
 /* tank kpi card */
-.kpi-card.kpi-tank{background:linear-gradient(135deg,#064E3B,#047857)}
+.kpi-card.kpi-tank{background:var(--green-light);border-color:var(--green-border)}
 .kpi-card.kpi-tank::before{background:linear-gradient(90deg,var(--green-mid),#6EE7B7)}
-.kpi-tank .kpi-label,.kpi-tank .kpi-val small,.kpi-tank .kpi-sub{color:rgba(255,255,255,.6)}
-.kpi-tank .kpi-val{color:#fff}
-.kpi-tank .metric-row{border-bottom-color:rgba(255,255,255,.08);color:#fff}
-.kpi-tank .metric-row strong{color:#6EE7B7}
+.kpi-tank .kpi-label{color:var(--green-dark)}
+.kpi-tank .kpi-val{color:var(--ink)}
+.kpi-tank .kpi-val small{color:var(--green-dark)}
+.kpi-tank .kpi-sub{color:var(--steel)}
+.kpi-tank .metric-row{border-bottom-color:rgba(5,150,105,.12);color:var(--ink)}
+.kpi-tank .metric-row span{color:var(--muted)}
+.kpi-tank .metric-row strong{color:var(--green-dark)}
 
 /* tank mix recipe */
-.tank-recipe{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.tank-recipe{background:var(--surface);border:1px solid var(--green-border);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
 .tank-recipe-item{text-align:center}
-.tr-label{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:700;margin-bottom:4px}
-.tr-val{font-family:var(--font-num);font-weight:700;font-size:22px;color:#fff;line-height:1.1}
-.tr-unit{font-family:var(--font-body);font-size:12px;color:rgba(255,255,255,.65);margin-top:2px}
+.tr-label{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--green-dark);font-weight:700;margin-bottom:4px}
+.tr-val{font-family:var(--font-num);font-weight:700;font-size:22px;color:var(--ink);line-height:1.1}
+.tr-unit{font-family:var(--font-body);font-size:12px;color:var(--muted);margin-top:2px}
 
 /* alerts */
 .alert{border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.55;margin-top:10px}
