@@ -320,9 +320,13 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           <div class="field">
             <label>Oxidante a utilizar</label>
             <select class="full-sel" id="sel-oxidant">
-              <option value="naocl">Hipoclorito de Sodio (NaOCl) — 13% p/p</option>
-              <option value="caocl2_65">Hipoclorito de Calcio Ca(OCl)₂ — 65% (estándar)</option>
-              <option value="caocl2_70">Hipoclorito de Calcio Ca(OCl)₂ — 70% (alta pureza HTH)</option>
+              <optgroup label="── Cloro líquido ──────────────">
+                <option value="naocl">Hipoclorito de Sodio (NaOCl) — 13% p/p</option>
+              </optgroup>
+              <optgroup label="── Cloro granular (sólido) ────">
+                <option value="caocl2_65">Hipoclorito de Calcio Ca(OCl)₂ — 65% estándar</option>
+                <option value="caocl2_70">Hipoclorito de Calcio Ca(OCl)₂ — 70% alta pureza (HTH)</option>
+              </optgroup>
             </select>
           </div>
 
