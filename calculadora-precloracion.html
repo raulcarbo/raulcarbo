@@ -321,7 +321,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             <label>Oxidante a utilizar</label>
             <select class="full-sel" id="sel-oxidant">
               <option value="naocl">Hipoclorito de Sodio (NaOCl) — 13% p/p</option>
-              <option value="caocl2">Hipoclorito de Calcio Ca(OCl)₂ — 65%</option>
+              <option value="caocl2_65">Hipoclorito de Calcio Ca(OCl)₂ — 65% (estándar)</option>
+              <option value="caocl2_70">Hipoclorito de Calcio Ca(OCl)₂ — 70% (alta pureza HTH)</option>
             </select>
           </div>
 
@@ -434,9 +435,13 @@ var OXIDANTS = {
     name:'NaOCl', label:'Hipoclorito de Sodio (NaOCl) 13%',
     isLiquid:true, conc:0.13, dens:1.20
   },
-  caocl2: {
-    name:'Ca(OCl)₂', label:'Hipoclorito de Calcio Ca(OCl)₂ 65%',
+  caocl2_65: {
+    name:'Ca(OCl)₂ 65%', label:'Hipoclorito de Calcio Ca(OCl)₂ 65%',
     isLiquid:false, conc:0.65
+  },
+  caocl2_70: {
+    name:'Ca(OCl)₂ 70%', label:'Hipoclorito de Calcio Ca(OCl)₂ 70% (HTH)',
+    isLiquid:false, conc:0.70
   }
 };
 
@@ -576,10 +581,10 @@ function renderResults(r){
       <div class="metric-row"><span>Dosis total</span><strong>${fmtN(r.dose,2)} mg/L</strong></div>`;
   } else {
     pumpMain = fmtN(r.injGh,0); pumpUnit = 'g/h';
-    pumpSub  = 'Gramos de Ca(OCl)₂ 65% a disolver y dosificar por hora';
+    pumpSub  = 'Gramos de '+r.ox.name+' a disolver y dosificar por hora';
     pumpRows = `
       <div class="metric-row"><span>Equivale en kg/h</span><strong>${fmtN(r.injGh/1000,4)} kg/h</strong></div>
-      <div class="metric-row"><span>Producto</span><strong>Ca(OCl)₂ · 65% sólido</strong></div>
+      <div class="metric-row"><span>Producto</span><strong>${r.ox.name} · ${(r.ox.conc*100).toFixed(0)}% sólido</strong></div>
       <div class="metric-row"><span>Caudal tratado</span><strong>${fmtN(r.Q,2)} m³/h</strong></div>
       <div class="metric-row"><span>Dosis total</span><strong>${fmtN(r.dose,2)} mg/L</strong></div>`;
   }
@@ -603,7 +608,7 @@ function renderResults(r){
       <div class="metric-row"><span>Cl₂ activo diario</span><strong>${fmtN(r.pureGh*r.hours/1000,3)} kg/día</strong></div>`;
   } else {
     opexMain = fmtN(r.monthlyKg,2); opexUnit = 'kg/mes';
-    opexSub  = 'de Ca(OCl)₂ 65% sólido · '+fmtN(r.hours,0)+' h/día';
+    opexSub  = 'de '+r.ox.name+' sólido · '+fmtN(r.hours,0)+' h/día';
     opexRows = `
       <div class="metric-row"><span>Consumo diario</span><strong>${fmtN(r.dailyKg,3)} kg/día</strong></div>
       <div class="metric-row"><span>Consumo mensual</span><strong>${fmtN(r.monthlyKg,2)} kg/mes</strong></div>
@@ -641,7 +646,7 @@ function renderResults(r){
       recipeHtml = `
         <div class="tank-recipe">
           <div class="tank-recipe-item">
-            <div class="tr-label">Ca(OCl)₂ sólido a disolver</div>
+            <div class="tr-label">${r.ox.name} sólido a disolver</div>
             <div class="tr-val">${t.solidG>=1000 ? fmtN(t.solidG/1000,2) : fmtN(t.solidG,0)}</div>
             <div class="tr-unit">${t.solidG>=1000 ? 'kg' : 'g'}</div>
           </div>
@@ -794,7 +799,7 @@ function copyParams(r){
       lines.push('Agregar concentrado:   '+fmtN(t.concVolL,1)+' L de '+r.ox.name+' '+(r.ox.conc*100).toFixed(0)+'%');
       lines.push('Agregar agua limpia:   '+fmtN(t.waterVolL,1)+' L');
     } else {
-      lines.push('Disolver sólido:       '+(t.solidG>=1000?fmtN(t.solidG/1000,2)+' kg':fmtN(t.solidG,0)+' g')+' de Ca(OCl)₂ 65%');
+      lines.push('Disolver sólido:       '+(t.solidG>=1000?fmtN(t.solidG/1000,2)+' kg':fmtN(t.solidG,0)+' g')+' de '+r.ox.name);
       lines.push('Agua en tanque:        '+fmtN(t.waterVolL,0)+' L');
     }
     lines.push('Inyección sol. diluida:'+fmtN(t.injWorkMlMin,1)+' mL/min  ('+fmtN(t.injWorkLh,3)+' L/h)');
