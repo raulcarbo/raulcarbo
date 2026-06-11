@@ -162,6 +162,18 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .btn-copy:hover{transform:translateY(-1px)}
 .btn-copy.ok{background:linear-gradient(135deg,var(--ok),var(--ok-dark))}
 
+/* lsi live badge */
+.lsi-live{margin-top:10px;padding:13px 16px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);display:flex;align-items:center;gap:16px;transition:all .2s}
+.lsi-live .lsi-big{font-family:var(--font-num);font-weight:700;font-size:26px;min-width:58px;line-height:1}
+.lsi-live .lsi-sub{font-family:var(--font-num);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.lsi-live .lsi-interp{flex:1;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.lsi-live.lsi-ok{border-color:var(--ok-border);background:var(--ok-light)}
+.lsi-live.lsi-ok .lsi-big,.lsi-live.lsi-ok .lsi-interp{color:var(--ok-dark)}
+.lsi-live.lsi-warn{border-color:var(--warn-border);background:var(--warn-light)}
+.lsi-live.lsi-warn .lsi-big,.lsi-live.lsi-warn .lsi-interp{color:var(--warn-dark)}
+.lsi-live.lsi-risk{border-color:var(--crit-border);background:var(--crit-light)}
+.lsi-live.lsi-risk .lsi-big,.lsi-live.lsi-risk .lsi-interp{color:var(--crit-dark)}
+
 /* responsive */
 @media(max-width:860px){
   .layout{grid-template-columns:1fr}
@@ -222,6 +234,10 @@ h1,h2,h3,h4{font-family:var(--font-title)}
     <div class="formula-chip">
       <div class="fc-label">Advertencias</div>
       <div class="fc-value" id="chip-warnings">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Índice de Langelier</div>
+      <div class="fc-value" id="chip-lsi">—</div>
     </div>
   </div>
 
@@ -315,6 +331,66 @@ h1,h2,h3,h4{font-family:var(--font-title)}
             <div class="limit-note"><span class="limit-badge">LÍMITE</span>&lt; 0.3 mg/L total (Fe + Mn disueltos)</div>
           </div>
 
+          <div class="sec-label">Índice de Langelier · Incrustación carbonatada</div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>pH del agua de alimentación</label>
+            </div>
+            <div class="inline-wrap" id="wrap-lsi-ph">
+              <input type="number" id="inp-lsi-ph" placeholder="7.0" min="0" max="14" step="0.1">
+              <span class="unit-badge">pH</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Temperatura</label>
+            </div>
+            <div class="inline-wrap" id="wrap-lsi-temp">
+              <input type="number" id="inp-lsi-temp" placeholder="25" min="0" max="100" step="1">
+              <span class="unit-badge">°C</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Dureza cálcica (como CaCO₃)</label>
+            </div>
+            <div class="inline-wrap" id="wrap-lsi-ca">
+              <input type="number" id="inp-lsi-ca" placeholder="150" min="0" step="1">
+              <span class="unit-badge">mg/L CaCO₃</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Alcalinidad total (M-alcalinidad)</label>
+            </div>
+            <div class="inline-wrap" id="wrap-lsi-alk">
+              <input type="number" id="inp-lsi-alk" placeholder="100" min="0" step="1">
+              <span class="unit-badge">mg/L CaCO₃</span>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:0">
+            <div class="field-label-row">
+              <label>Sólidos disueltos totales (SDT / TDS)</label>
+            </div>
+            <div class="inline-wrap" id="wrap-lsi-tds">
+              <input type="number" id="inp-lsi-tds" placeholder="500" min="0" step="1">
+              <span class="unit-badge">mg/L</span>
+            </div>
+          </div>
+
+          <div class="lsi-live" id="lsi-live">
+            <div>
+              <div class="lsi-big" id="lsi-big">—</div>
+              <div class="lsi-sub">LSI</div>
+            </div>
+            <div class="lsi-interp" id="lsi-interp">Completa los 5 campos para calcular el Índice de Saturación de Langelier</div>
+          </div>
+
           <div class="btn-row">
             <button type="button" class="btn-primary" id="btn-eval">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;margin-top:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -389,6 +465,49 @@ function el(id){ return document.getElementById(id); }
 function num(id){ var v=parseFloat(el(id).value); return isFinite(v)?v:null; }
 function fmtVal(v, unit){ return v + (unit?' '+unit:''); }
 
+function calcLSI(pH, tempC, caHard, alk, tds){
+  var A = (Math.log10(Math.max(tds, 1)) - 1) / 10;
+  var B = -13.12 * Math.log10(tempC + 273.15) + 34.55;
+  var C = Math.log10(Math.max(caHard, 0.01)) - 0.4;
+  var D = Math.log10(Math.max(alk, 0.01));
+  var pHs = (9.3 + A + B) - (C + D);
+  return { lsi: pH - pHs, pHs: pHs };
+}
+
+function getLSIStatus(lsi){
+  if(lsi <= 0)   return { cls:'lsi-ok',   chipCls:'ok',   badge:'SIN RIESGO', interp:'Tendencia disolvente — el agua no precipitará CaCO₃ en la membrana.' };
+  if(lsi <= 0.5) return { cls:'lsi-warn', chipCls:'warn', badge:'PRECAUCIÓN', interp:'Ligera tendencia incrustante — se recomienda antiincrustante preventivo.' };
+  return             { cls:'lsi-risk', chipCls:'crit', badge:'INCRUSTACIÓN', interp:'Tendencia alta a precipitar CaCO₃ — antiincrustante obligatorio antes de la OI.' };
+}
+
+function updateLSI(){
+  var pH  = num('inp-lsi-ph');
+  var tmp = num('inp-lsi-temp');
+  var ca  = num('inp-lsi-ca');
+  var alk = num('inp-lsi-alk');
+  var tds = num('inp-lsi-tds');
+  var live = el('lsi-live');
+  var bigEl = el('lsi-big');
+  var interpEl = el('lsi-interp');
+  var chip = el('chip-lsi');
+
+  if([pH, tmp, ca, alk, tds].some(function(v){ return v === null; })){
+    live.className = 'lsi-live';
+    bigEl.textContent = '—';
+    interpEl.textContent = 'Completa los 5 campos para calcular el Índice de Saturación de Langelier';
+    chip.textContent = '—'; chip.className = 'fc-value';
+    return;
+  }
+
+  var r  = calcLSI(pH, tmp, ca, alk, tds);
+  var st = getLSIStatus(r.lsi);
+  live.className    = 'lsi-live ' + st.cls;
+  bigEl.textContent = (r.lsi >= 0 ? '+' : '') + r.lsi.toFixed(2);
+  interpEl.textContent = 'pHs = ' + r.pHs.toFixed(2) + ' · ' + st.interp;
+  chip.textContent = (r.lsi >= 0 ? '+' : '') + r.lsi.toFixed(2);
+  chip.className = 'fc-value ' + st.chipCls;
+}
+
 function updateDot(param){
   var val = num('inp-'+param.id);
   var dot  = el('dot-'+param.id);
@@ -421,6 +540,20 @@ function evaluate(){
 
   if(results.length===0){ alert('Ingrese al menos un valor del análisis para evaluar.'); return; }
 
+  /* LSI */
+  var lsiResult = null;
+  var pH  = num('inp-lsi-ph');
+  var tmp = num('inp-lsi-temp');
+  var ca  = num('inp-lsi-ca');
+  var alk = num('inp-lsi-alk');
+  var tds = num('inp-lsi-tds');
+  if(![pH,tmp,ca,alk,tds].some(function(v){ return v===null; })){
+    var r   = calcLSI(pH, tmp, ca, alk, tds);
+    var st  = getLSIStatus(r.lsi);
+    if(r.lsi > 0.5) warnCount++;
+    lsiResult = { lsi:r.lsi, pHs:r.pHs, status:st, pH:pH, temp:tmp, ca:ca, alk:alk, tds:tds };
+  }
+
   el('chip-count').textContent = entered+' / '+PARAMS.length;
   el('chip-count').className   = 'fc-value';
 
@@ -430,10 +563,10 @@ function evaluate(){
   el('chip-warnings').textContent = warnCount;
   el('chip-warnings').className   = 'fc-value'+(warnCount>0?' warn':'');
 
-  renderResults(results, critCount, warnCount);
+  renderResults(results, critCount, warnCount, lsiResult);
 }
 
-function renderResults(results, critCount, warnCount){
+function renderResults(results, critCount, warnCount, lsiResult){
   /* Global card */
   var globalCard;
   if(critCount===0 && warnCount===0){
@@ -501,6 +634,45 @@ function renderResults(results, critCount, warnCount){
     </div>`;
   }).join('');
 
+  /* LSI card */
+  var lsiCard = '';
+  if(lsiResult){
+    var l = lsiResult;
+    var st = l.status;
+    var lsiSign = l.lsi >= 0 ? '+' : '';
+    var cardClass = l.lsi <= 0 ? 'pass' : (l.lsi <= 0.5 ? 'fail-warn' : 'fail-warn');
+    var iconChar  = l.lsi <= 0 ? '✓' : '!';
+    var badgeClass = l.lsi <= 0 ? 'b-ok' : 'b-warn';
+    var lsiMsg = l.lsi <= 0
+      ? 'El agua tiene tendencia disolvente: no precipitará carbonato de calcio sobre la membrana. '
+        + 'Índice ligeramente negativo es lo ideal para membranas de OI.'
+      : l.lsi <= 0.5
+        ? 'Tendencia leve a la precipitación de CaCO₃. El riesgo es manejable con un antiincrustante genérico. '
+          + 'Verificar que el programa químico cubra la dureza cálcica y la alcalinidad del agua.'
+        : 'Alta tendencia a precipitar carbonato de calcio sobre la superficie activa de la membrana. '
+          + 'En el concentrado el LSI será aún mayor (factor de concentración 3–4×). Imprescindible un antiincrustante específico y validar la dosis con el proveedor.';
+    var lsiSol = l.lsi <= 0 ? ''
+      : '<div class="param-card-body"><div class="param-fail-title">RIESGO DE INCRUSTACIÓN CARBONATADA (CaCO₃)</div>'
+        + '<div class="param-fail-msg">'+lsiMsg+'</div>'
+        + '<div class="param-solution"><span class="solution-label">Solución requerida</span>'
+        + 'Dosificar antiincrustante aprobado para membranas de OI (ej. Genesys SI, Vitec 3000, Permatreat PC-191 o equivalente). '
+        + 'Ajustar pH de alimentación a 7.0–7.5 para reducir la alcalinidad efectiva. '
+        + 'Si el agua tiene alta dureza, evaluar ablandamiento previo (zeolitas de intercambio iónico) para bajar la dureza cálcica y reducir el LSI desde la fuente.'
+        + '</div></div>';
+    lsiCard = `<div class="param-card ${cardClass}">
+      <div class="param-card-head">
+        <div class="param-status-icon">${iconChar}</div>
+        <div class="param-info">
+          <span class="param-name">Índice de Saturación de Langelier (LSI)</span>
+          <span class="param-val-row">
+            <span class="param-val-actual">LSI = ${lsiSign}${l.lsi.toFixed(2)}</span>
+            &nbsp;·&nbsp; pHs = ${l.pHs.toFixed(2)} &nbsp;·&nbsp; pH entrada = ${l.pH} &nbsp;·&nbsp; ${l.temp}°C
+          </span>
+        </div>
+        <span class="param-badge ${badgeClass}">${st.badge}</span>
+      </div>${lsiSol}</div>`;
+  }
+
   var actionRow=`<div class="action-row">
     <button type="button" class="btn-copy" id="btn-copy">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -508,11 +680,11 @@ function renderResults(results, critCount, warnCount){
     </button>
   </div>`;
 
-  el('results-body').innerHTML = globalCard + paramCards + actionRow;
-  el('btn-copy').addEventListener('click', function(){ copyDiagnosis(results, critCount, warnCount); });
+  el('results-body').innerHTML = globalCard + paramCards + lsiCard + actionRow;
+  el('btn-copy').addEventListener('click', function(){ copyDiagnosis(results, critCount, warnCount, lsiResult); });
 }
 
-function copyDiagnosis(results, critCount, warnCount){
+function copyDiagnosis(results, critCount, warnCount, lsiResult){
   var lines=[];
   lines.push('═══════════════════════════════════════════════════════');
   lines.push('  DIAGNÓSTICO DE PRETRATAMIENTO — ÓSMOSIS INVERSA');
@@ -544,6 +716,19 @@ function copyDiagnosis(results, critCount, warnCount){
       lines.push('  Solución:         '+p.solution);
     }
   });
+  if(lsiResult){
+    var l = lsiResult;
+    var sign = l.lsi >= 0 ? '+' : '';
+    lines.push('');
+    lines.push(l.status.badge + ' · Índice de Saturación de Langelier (LSI)');
+    lines.push('  LSI =         ' + sign + l.lsi.toFixed(2) + ' (pHs = ' + l.pHs.toFixed(2) + ')');
+    lines.push('  pH entrada:   ' + l.pH);
+    lines.push('  Temperatura:  ' + l.temp + ' °C');
+    lines.push('  Dureza Ca:    ' + l.ca  + ' mg/L CaCO₃');
+    lines.push('  Alcalinidad:  ' + l.alk + ' mg/L CaCO₃');
+    lines.push('  TDS:          ' + l.tds + ' mg/L');
+    lines.push('  Interpretación: ' + l.status.interp);
+  }
   lines.push('');
   lines.push('───────────────────────────────────────────────────────');
   lines.push('Generado con Carbotecnia · Validador de Pretratamiento OI');
@@ -562,9 +747,15 @@ function resetAll(){
     el('dot-'+p.id).className='param-dot';
     el('wrap-'+p.id).className='inline-wrap';
   });
-  ['chip-count','chip-critical','chip-warnings'].forEach(function(id){
+  ['lsi-ph','lsi-temp','lsi-ca','lsi-alk','lsi-tds'].forEach(function(id){
+    el('inp-'+id).value='';
+  });
+  ['chip-count','chip-critical','chip-warnings','chip-lsi'].forEach(function(id){
     el(id).textContent='—'; el(id).className='fc-value';
   });
+  el('lsi-live').className='lsi-live';
+  el('lsi-big').textContent='—';
+  el('lsi-interp').textContent='Completa los 5 campos para calcular el Índice de Saturación de Langelier';
   el('results-body').innerHTML='<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><div>Ingrese los valores del análisis de agua cruda<br>para evaluar la viabilidad del pretratamiento para OI.</div></div>';
 }
 
@@ -573,6 +764,10 @@ el('btn-reset').addEventListener('click', resetAll);
 PARAMS.forEach(function(p){
   el('inp-'+p.id).addEventListener('input', function(){ updateDot(p); });
   el('inp-'+p.id).addEventListener('keydown', function(e){ if(e.key==='Enter') evaluate(); });
+});
+['lsi-ph','lsi-temp','lsi-ca','lsi-alk','lsi-tds'].forEach(function(id){
+  el('inp-'+id).addEventListener('input', updateLSI);
+  el('inp-'+id).addEventListener('keydown', function(e){ if(e.key==='Enter') evaluate(); });
 });
 </script>
 </body>
