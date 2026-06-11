@@ -73,15 +73,29 @@ CARD_CSS = """<style>
     align-content: center;
     gap: 6px;
     opacity: 0.85;
+    overflow: hidden;
   }
   .cbt-card .cbt-media span { font-size: 11px; font-weight: 500; opacity: 0.75; }
+  /* La imagen NUNCA puede crecer más que su recuadro, aunque el tema
+     o un plugin de lazy-load intenten poner height:auto */
   .cbt-card .cbt-img {
-    width: 112px;
-    height: 112px;
+    width: 112px !important;
+    height: 112px !important;
+    max-width: 112px !important;
+    max-height: 112px !important;
     flex-shrink: 0;
     border-radius: 8px;
-    object-fit: cover;
+    object-fit: cover !important;
     display: block;
+    margin: 0 !important;
+  }
+  /* Si la imagen quedó dentro del recuadro .cbt-media, que lo llene exacto */
+  .cbt-card .cbt-media:has(.cbt-img) { border: none; background: none; opacity: 1; }
+  .cbt-card .cbt-media .cbt-img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
   }
   .cbt-card ul.cbt-lista {
     list-style: none;
@@ -119,7 +133,14 @@ CARD_CSS = """<style>
   }
   @media (max-width: 480px) {
     .cbt-card .cbt-card-body { flex-direction: column; }
-    .cbt-card .cbt-media, .cbt-card .cbt-img { width: 100%; height: 96px; }
+    .cbt-card .cbt-media { width: 100%; height: 96px; }
+    .cbt-card .cbt-img {
+      width: 100% !important;
+      height: 96px !important;
+      max-width: 100% !important;
+      max-height: 96px !important;
+    }
+    .cbt-card .cbt-media .cbt-img { height: 100% !important; max-height: 100% !important; }
   }
 </style>"""
 
