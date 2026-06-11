@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antiincrustante para OI · Índice de Saturación en el Concentrado | Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#E11D48;--brand-dark:#9F1239;--brand-mid:#FB7185;
+  --brand-light:#FFF1F2;--brand-border:#FECDD3;
+  --ok:#059669;--ok-dark:#047857;--ok-light:#ECFDF5;--ok-border:#A7F3D0;
+  --crit:#DC2626;--crit-dark:#991B1B;--crit-light:#FEF2F2;--crit-border:#FECACA;
+  --warn:#D97706;--warn-dark:#92400E;--warn-light:#FFFBEB;--warn-border:#FCD34D;
+  --ink:#1A0E14;--steel:#44384A;--muted:#9B6E7A;
+  --line:#F0DCE1;--surface:#FFFFFF;--paper:#FDF5F7;
+  --shadow:0 1px 3px rgba(26,14,20,.05),0 8px 24px rgba(26,14,20,.07);
+  --shadow-sm:0 1px 3px rgba(26,14,20,.06);
+  --radius:16px;--radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'Roboto Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+.shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* brand bar */
+.brand-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:var(--surface);border:1px solid var(--brand-border);border-radius:18px;margin-bottom:16px;flex-wrap:wrap;gap:12px;box-shadow:var(--shadow-sm)}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--brand-mid),var(--brand-dark));color:#fff;display:grid;place-items:center;font-family:var(--font-title);font-weight:700;font-size:12px;box-shadow:0 4px 12px rgba(225,29,72,.28);letter-spacing:-.02em;text-align:center;line-height:1.1;padding:3px}
+.brand-name{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--brand-dark)}
+.brand-name span{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:400}
+.brand-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand-tag b{color:var(--brand);font-weight:600}
+
+/* hero */
+.calc-header{background:linear-gradient(135deg,#3D0117 0%,#881337 50%,#BE185D 100%);border-radius:var(--radius-lg);padding:28px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.calc-header::after{content:"";position:absolute;inset:auto -80px -120px auto;width:340px;height:340px;border-radius:50%;border:52px solid rgba(255,255,255,.06);pointer-events:none}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:end}
+.calc-header h1{font-size:clamp(20px,2.6vw,34px);line-height:1.05;letter-spacing:-.04em;color:#fff !important;font-weight:800;margin-bottom:10px}
+.calc-header h1 em{font-style:normal;color:rgba(255,255,255,.78)}
+.calc-header p{color:rgba(255,255,255,.72);font-size:13.5px;line-height:1.6;margin:0}
+.hero-note{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);border-radius:16px;padding:18px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:13px;line-height:1.6}
+
+/* formula bar */
+.formula-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.formula-chip{background:var(--brand-light);border:1px solid var(--brand-border);border-radius:14px;padding:11px 18px;flex:1;min-width:130px;box-shadow:var(--shadow-sm)}
+.fc-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.fc-value{font-family:var(--font-num);font-weight:700;font-size:15px;color:var(--brand)}
+.fc-value.ok{color:var(--ok)}
+.fc-value.crit{color:var(--crit)}
+.fc-value.warn{color:var(--warn)}
+
+/* layout */
+.layout{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px;min-width:0}
+.results-col{min-width:0;display:grid;gap:12px}
+
+/* panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.panel-head h2{font-size:15px;color:var(--brand-dark);font-weight:700}
+.step-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.panel-body{padding:20px}
+
+/* fields */
+.field{margin-bottom:14px}
+.field-label-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.field-label-row label{font-weight:700;font-size:13px;color:var(--steel);font-family:var(--font-title);flex:1}
+.inline-wrap{display:flex;gap:0;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);transition:border-color .2s,box-shadow .2s}
+.inline-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(225,29,72,.10)}
+.inline-wrap input{flex:1;border:0;padding:10px 14px;min-width:0;background:transparent;font-family:var(--font-num);font-size:14px;color:var(--ink)}
+.inline-wrap input:focus{outline:none}
+.unit-badge{padding:0 14px;display:flex;align-items:center;font-family:var(--font-num);font-size:13px;color:var(--muted);border-left:1.5px solid var(--line);background:var(--paper);white-space:nowrap}
+.limit-note{margin-top:4px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;line-height:1.4}
+.sec-label{font-family:var(--font-num);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin:18px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--brand-border)}
+
+/* slider */
+.slider-wrap{margin-bottom:14px}
+.slider-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.slider-head label{font-weight:700;font-size:13px;color:var(--steel);font-family:var(--font-title)}
+.slider-val{font-family:var(--font-num);font-weight:700;font-size:17px;color:var(--brand)}
+.slider-val span{font-size:11px;font-weight:400;color:var(--muted);margin-left:2px}
+input[type=range]{width:100%;height:5px;border-radius:4px;accent-color:var(--brand);cursor:pointer;background:linear-gradient(to right,var(--brand) 0%,var(--brand) var(--fill,58.18%),var(--line) var(--fill,58.18%),var(--line) 100%)}
+
+/* buttons */
+.btn-row{display:flex;gap:10px;margin-top:20px}
+.btn-primary{flex:1;border:0;border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:14px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 8px 20px rgba(225,29,72,.22);transition:transform .12s,box-shadow .12s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(225,29,72,.32)}
+.btn-reset{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 18px;font-weight:600;cursor:pointer;color:var(--muted);font-family:var(--font-title);font-size:13px;transition:border-color .12s}
+.btn-reset:hover{border-color:var(--muted);color:var(--steel)}
+
+/* empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--muted);gap:14px;background:var(--paper);border-radius:var(--radius-lg);border:1px dashed var(--brand-border)}
+.empty-state svg{opacity:.3}
+.empty-state div{font-size:13.5px;line-height:1.6}
+
+/* concentration table card */
+.comp-card{background:var(--surface);border:1px solid var(--brand-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.comp-card-head{background:linear-gradient(135deg,var(--brand-light),#FFF8FA);padding:16px 20px;border-bottom:1px solid var(--brand-border);display:flex;align-items:center;gap:14px}
+.comp-cf-badge{background:var(--brand);color:#fff;font-family:var(--font-num);font-weight:700;font-size:18px;padding:6px 16px;border-radius:10px;line-height:1;white-space:nowrap}
+.comp-cf-sub{font-family:var(--font-num);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.comp-title{font-family:var(--font-title);font-weight:700;font-size:14px;color:var(--brand-dark)}
+.comp-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.comp-table{width:100%;border-collapse:collapse}
+.comp-table th{padding:10px 16px;font-family:var(--font-num);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;border-bottom:1px solid var(--line);background:var(--paper)}
+.comp-table th:not(:first-child){text-align:right}
+.comp-table td{padding:11px 16px;font-family:var(--font-num);font-size:13px;border-bottom:1px solid var(--line);color:var(--steel)}
+.comp-table td:not(:first-child){text-align:right}
+.comp-table td.conc-val{font-weight:700;color:var(--ink)}
+.comp-table td.conc-val.over{color:var(--crit-dark)}
+.comp-table td.conc-val.near{color:var(--warn-dark)}
+.comp-table tr:last-child td{border-bottom:0}
+.comp-table .param-name{font-family:var(--font-body);font-size:13px;color:var(--steel)}
+
+/* semaphore cards (reuse from validator pattern) */
+.param-card{border-radius:14px;border:1px solid;overflow:hidden}
+.param-card.pass{background:var(--ok-light);border-color:var(--ok-border)}
+.param-card.fail-crit{background:var(--crit-light);border-color:var(--crit-border)}
+.param-card.fail-warn{background:var(--warn-light);border-color:var(--warn-border)}
+.param-card-head{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.param-status-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:900;flex-shrink:0;line-height:1}
+.pass .param-status-icon{background:var(--ok);color:#fff}
+.fail-crit .param-status-icon{background:var(--crit);color:#fff}
+.fail-warn .param-status-icon{background:var(--warn);color:#fff}
+.param-info{flex:1;min-width:0}
+.param-name{font-family:var(--font-title);font-weight:700;font-size:13.5px;color:var(--ink);display:block}
+.param-val-row{font-family:var(--font-num);font-size:11.5px;color:var(--muted);margin-top:2px}
+.param-val-actual{font-weight:700}
+.pass .param-val-actual{color:var(--ok-dark)}
+.fail-crit .param-val-actual{color:var(--crit-dark)}
+.fail-warn .param-val-actual{color:var(--warn-dark)}
+.param-badge{font-family:var(--font-num);font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:3px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+.param-badge.b-ok{background:var(--ok);color:#fff}
+.param-badge.b-crit{background:var(--crit);color:#fff}
+.param-badge.b-warn{background:var(--warn);color:#fff}
+.param-card-body{padding:0 16px 16px 64px}
+.param-fail-title{font-family:var(--font-title);font-weight:800;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.fail-crit .param-fail-title{color:var(--crit-dark)}
+.fail-warn .param-fail-title{color:var(--warn-dark)}
+.param-fail-msg{font-size:12.5px;line-height:1.6;margin-bottom:10px}
+.fail-crit .param-fail-msg{color:#7F1D1D}
+.fail-warn .param-fail-msg{color:#78350F}
+.param-solution{background:rgba(255,255,255,.78);border-radius:10px;padding:11px 13px;font-size:12.5px;line-height:1.55;border:1px solid rgba(0,0,0,.06)}
+.solution-label{display:block;font-family:var(--font-num);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.fail-crit .solution-label{color:var(--crit-dark)}
+.fail-warn .solution-label{color:var(--warn-dark)}
+.fail-crit .param-solution{color:#7F1D1D}
+.fail-warn .param-solution{color:#78350F}
+
+/* dose recipe card */
+.dose-card{background:linear-gradient(135deg,var(--brand-light),#FFF8FA);border:1px solid var(--brand-border);border-radius:var(--radius-lg);padding:22px 24px}
+.dose-card-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.dose-icon{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--brand-mid),var(--brand-dark));color:#fff;display:grid;place-items:center;font-size:20px;flex-shrink:0}
+.dose-title{font-family:var(--font-title);font-weight:800;font-size:15px;color:var(--brand-dark)}
+.dose-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.dose-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.dose-box{background:var(--surface);border:1px solid var(--brand-border);border-radius:12px;padding:14px 16px}
+.dose-box-label{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.dose-range{font-family:var(--font-num);font-weight:800;font-size:24px;color:var(--brand-dark);line-height:1}
+.dose-unit{font-family:var(--font-num);font-size:12px;color:var(--muted);margin-top:3px}
+.dose-note{background:rgba(255,255,255,.7);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.6;color:var(--steel);border:1px solid rgba(225,29,72,.12)}
+.dose-note b{color:var(--brand-dark)}
+.dose-risk-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-num);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;margin-left:auto;flex-shrink:0}
+.dose-risk-badge.low{background:var(--ok-light);color:var(--ok-dark);border:1px solid var(--ok-border)}
+.dose-risk-badge.moderate{background:var(--warn-light);color:var(--warn-dark);border:1px solid var(--warn-border)}
+.dose-risk-badge.high{background:var(--crit-light);color:var(--crit-dark);border:1px solid var(--crit-border)}
+
+/* action row */
+.action-row{display:flex;justify-content:flex-end;margin-top:4px}
+.btn-copy{border:0;border-radius:999px;padding:10px 22px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:13px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 6px 16px rgba(225,29,72,.22);display:flex;align-items:center;gap:8px;transition:transform .12s}
+.btn-copy:hover{transform:translateY(-1px)}
+.btn-copy.ok{background:linear-gradient(135deg,var(--ok),var(--ok-dark))}
+
+/* responsive */
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-note{display:none}
+  .dose-grid{grid-template-columns:1fr}
+}
+
+/* print */
+@media print{
+  .input-panel,.formula-bar,.brand-bar,.btn-row,.action-row{display:none!important}
+  .layout{display:block}
+  .calc-header{background:#3D0117!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- brand bar -->
+  <div class="brand-bar">
+    <div class="brand-mark">
+      <div class="brand-icon">CBT</div>
+      <div class="brand-name">Carbotecnia
+        <span>Water Treatment Tools</span>
+      </div>
+    </div>
+    <span class="brand-tag">Ósmosis Inversa · <b>Antiincrustante</b></span>
+  </div>
+
+  <!-- hero -->
+  <div class="calc-header">
+    <div class="hero-grid">
+      <div>
+        <h1>Antiincrustante para OI · <em>Índice de Saturación en el Concentrado</em></h1>
+        <p>Calcula el factor de concentración de tu sistema, el LSI y la saturación de sílice<br>
+        en el agua de rechazo, y obtén una recomendación de dosis de antiincrustante.</p>
+      </div>
+      <div class="hero-note">
+        <b>¿Por qué evaluar el concentrado y no la alimentación?</b>
+        <span>En OI, el agua se concentra 3–5× en el lado del rechazo. Un agua de alimentación "segura" puede generar incrustaciones severas de CaCO₃, CaSO₄ o sílice amorfa en el concentrado. El LSI y el SSI del concentrado son los verdaderos indicadores de riesgo.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- formula chips -->
+  <div class="formula-bar">
+    <div class="formula-chip">
+      <div class="fc-label">Factor de Concentración</div>
+      <div class="fc-value" id="chip-cf">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">LSI Concentrado</div>
+      <div class="fc-value" id="chip-lsi">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">SiO₂ Concentrado</div>
+      <div class="fc-value" id="chip-sio2">— mg/L</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">SSI Sílice</div>
+      <div class="fc-value" id="chip-ssi">—</div>
+    </div>
+  </div>
+
+  <!-- layout -->
+  <div class="layout">
+
+    <!-- input panel -->
+    <div class="input-panel">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Análisis de agua de alimentación</h2>
+          <span class="step-tag">Agua de entrada al equipo</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="sec-label" style="margin-top:0">Química del agua</div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>pH</label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-ph" placeholder="7.2" min="5" max="10" step="0.1">
+              <span class="unit-badge">pH</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Temperatura</label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-temp" placeholder="25" min="5" max="50" step="1">
+              <span class="unit-badge">°C</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Dureza cálcica (como CaCO₃)</label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-ca" placeholder="150" min="0" step="1">
+              <span class="unit-badge">mg/L CaCO₃</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Alcalinidad total (M-alcalinidad)</label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-alk" placeholder="100" min="0" step="1">
+              <span class="unit-badge">mg/L CaCO₃</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Sílice (SiO₂)</label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-sio2" placeholder="15" min="0" step="0.1">
+              <span class="unit-badge">mg/L</span>
+            </div>
+            <div class="limit-note">Sílice amorfa soluble: ~120 mg/L a 25 °C, pH 7</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Sólidos disueltos totales (TDS)</label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-tds" placeholder="500" min="0" step="10">
+              <span class="unit-badge">mg/L</span>
+            </div>
+          </div>
+
+          <div class="sec-label">Sistema de OI</div>
+
+          <div class="slider-wrap">
+            <div class="slider-head">
+              <label>Porcentaje de recuperación</label>
+              <div class="slider-val"><span id="rec-display">65</span><span>%</span></div>
+            </div>
+            <input type="range" id="inp-rec" min="30" max="85" value="65" step="1">
+            <div class="limit-note">Rango típico: 60–75 % · Mayor recuperación = mayor concentración</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Caudal de alimentación <em style="font-weight:400;color:var(--muted)">(opcional)</em></label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-flow" placeholder="5.0" min="0" step="0.5">
+              <span class="unit-badge">m³/h</span>
+            </div>
+            <div class="limit-note">Para calcular dosis en mL/h de bomba dosificadora</div>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-primary" id="btn-calc">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;margin-top:-2px"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+              Calcular riesgo de incrustación
+            </button>
+            <button type="button" class="btn-reset" id="btn-reset">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- results -->
+    <div class="results-col">
+      <div id="results-body">
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v4l3 3"/></svg>
+          <div>Ingresa el análisis del agua de alimentación<br>y el porcentaje de recuperación del sistema.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+function el(id){ return document.getElementById(id); }
+function num(id){ var v = parseFloat(el(id).value); return isFinite(v) ? v : null; }
+
+/* ── LSI (Langelier Saturation Index) ── */
+function calcLSI(pH, tempC, caHard, alk, tds){
+  var A = (Math.log10(Math.max(tds, 1)) - 1) / 10;
+  var B = -13.12 * Math.log10(tempC + 273.15) + 34.55;
+  var C = Math.log10(Math.max(caHard, 0.01)) - 0.4;
+  var D = Math.log10(Math.max(alk, 0.01));
+  var pHs = (9.3 + A + B) - (C + D);
+  return { lsi: pH - pHs, pHs: pHs };
+}
+
+/* ── SiO₂ amorphous solubility ── */
+function solubilitySiO2(tempC, pH){
+  var s0 = 120 * (1 + 0.02 * (tempC - 25));
+  var pHf = 1;
+  if(pH > 9.0)       pHf = 2.7 + 3.0 * (pH - 9.0);
+  else if(pH > 8.0)  pHf = 1.2 + 1.5 * (pH - 8.0);
+  else if(pH > 7.5)  pHf = 1.0 + 0.4 * (pH - 7.5);
+  return s0 * Math.max(pHf, 1);
+}
+
+/* ── Dose recommendation ── */
+function getDose(lsiConc, ssi, rec){
+  var score = 0;
+  if(lsiConc > 0.5)  score++;
+  if(lsiConc > 1.5)  score++;
+  if(ssi > 0.8)      score++;
+  if(ssi > 1.0)      score++;
+  if(rec > 80)       score++;
+  if(score === 0)  return { risk:'bajo',     riskCls:'low',      min:1, max:3 };
+  if(score <= 2)   return { risk:'moderado', riskCls:'moderate', min:3, max:6 };
+  return               { risk:'alto',     riskCls:'high',     min:6, max:10 };
+}
+
+/* ── update recovery slider display ── */
+el('inp-rec').addEventListener('input', function(){
+  el('rec-display').textContent = this.value;
+  var pct = (this.value - 30) / (85 - 30) * 100;
+  this.style.setProperty('--fill', pct.toFixed(1) + '%');
+  liveUpdate();
+});
+
+/* ── live update chips ── */
+function liveUpdate(){
+  var rec  = parseFloat(el('inp-rec').value);
+  var CF   = 1 / (1 - rec / 100);
+  el('chip-cf').textContent = CF.toFixed(2) + '×';
+  el('chip-cf').className   = 'fc-value';
+
+  var pH   = num('inp-ph');
+  var temp = num('inp-temp');
+  var ca   = num('inp-ca');
+  var alk  = num('inp-alk');
+  var sio2 = num('inp-sio2');
+  var tds  = num('inp-tds');
+
+  /* SiO2 chip — only needs sio2 + rec */
+  if(sio2 !== null){
+    var sio2c = sio2 * CF;
+    el('chip-sio2').textContent = sio2c.toFixed(1) + ' mg/L';
+    el('chip-sio2').className = 'fc-value';
+  } else {
+    el('chip-sio2').textContent = '— mg/L';
+    el('chip-sio2').className = 'fc-value';
+  }
+
+  /* LSI + SSI chips — need all parameters */
+  if([pH, temp, ca, alk, sio2, tds].some(function(v){ return v === null; })){
+    el('chip-lsi').textContent = '—';
+    el('chip-lsi').className = 'fc-value';
+    el('chip-ssi').textContent = '—';
+    el('chip-ssi').className = 'fc-value';
+    return;
+  }
+
+  var pH_c  = pH + 0.2;
+  var Ca_c  = ca  * CF;
+  var Alk_c = alk * CF;
+  var TDS_c = tds * CF;
+  var sio2c = sio2 * CF;
+
+  var r   = calcLSI(pH_c, temp, Ca_c, Alk_c, TDS_c);
+  var lsi = r.lsi;
+  var sign = lsi >= 0 ? '+' : '';
+  el('chip-lsi').textContent = sign + lsi.toFixed(2);
+  el('chip-lsi').className = 'fc-value ' + (lsi <= 0 ? 'ok' : lsi <= 0.5 ? 'warn' : 'crit');
+
+  var Ssat = solubilitySiO2(temp, pH_c);
+  var ssi  = sio2c / Ssat;
+  el('chip-ssi').textContent = ssi.toFixed(2);
+  el('chip-ssi').className = 'fc-value ' + (ssi <= 0.8 ? 'ok' : ssi <= 1.0 ? 'warn' : 'crit');
+}
+
+/* ── main calculate ── */
+function calculate(){
+  var pH   = num('inp-ph');
+  var temp = num('inp-temp');
+  var ca   = num('inp-ca');
+  var alk  = num('inp-alk');
+  var sio2 = num('inp-sio2');
+  var tds  = num('inp-tds');
+  var rec  = parseFloat(el('inp-rec').value);
+  var flow = num('inp-flow');
+
+  if([pH, temp, ca, alk, sio2, tds].some(function(v){ return v === null; })){
+    alert('Completa todos los campos del análisis de agua para calcular.'); return;
+  }
+
+  var CF    = 1 / (1 - rec / 100);
+  var pH_c  = pH + 0.2;
+  var Ca_c  = ca  * CF;
+  var Alk_c = alk * CF;
+  var SiO2c = sio2 * CF;
+  var TDS_c = tds  * CF;
+
+  var lsiRes = calcLSI(pH_c, temp, Ca_c, Alk_c, TDS_c);
+  var lsi    = lsiRes.lsi;
+  var pHs    = lsiRes.pHs;
+
+  var Ssat   = solubilitySiO2(temp, pH_c);
+  var ssi    = SiO2c / Ssat;
+
+  var dose   = getDose(lsi, ssi, rec);
+
+  renderResults({
+    pH, temp, ca, alk, sio2, tds, rec, flow,
+    CF, pH_c, Ca_c, Alk_c, SiO2c, TDS_c,
+    lsi, pHs, Ssat, ssi, dose
+  });
+}
+
+/* ── render ── */
+function renderResults(d){
+  /* ── composition table ── */
+  var rows = [
+    { name:'pH', feed: d.pH.toFixed(1),  conc: '~'+d.pH_c.toFixed(1), note:'estimado', over:false, near:false },
+    { name:'Dureza Ca (mg/L CaCO₃)', feed: d.ca.toFixed(0),  conc: d.Ca_c.toFixed(0),  note:'', over:d.Ca_c>600, near:d.Ca_c>400 },
+    { name:'Alcalinidad (mg/L CaCO₃)', feed: d.alk.toFixed(0), conc: d.Alk_c.toFixed(0), note:'', over:d.Alk_c>500, near:d.Alk_c>300 },
+    { name:'SiO₂ (mg/L)', feed: d.sio2.toFixed(1), conc: d.SiO2c.toFixed(1), note:'', over:d.SiO2c>d.Ssat, near:d.SiO2c>d.Ssat*0.8 },
+    { name:'TDS (mg/L)', feed: d.tds.toFixed(0),  conc: d.TDS_c.toFixed(0),  note:'', over:false, near:false }
+  ];
+
+  var tableRows = rows.map(function(r){
+    var cls = r.over ? 'conc-val over' : (r.near ? 'conc-val near' : 'conc-val');
+    return '<tr>'
+      + '<td class="param-name">'+r.name+'</td>'
+      + '<td>'+r.feed+'</td>'
+      + '<td class="'+cls+'">'+r.conc+(r.note?' <small style="font-weight:400;color:var(--muted);">('+r.note+')</small>':'')+'</td>'
+      + '</tr>';
+  }).join('');
+
+  var compCard = `<div class="comp-card">
+    <div class="comp-card-head">
+      <div>
+        <div class="comp-cf-badge">×${d.CF.toFixed(2)}</div>
+        <div class="comp-cf-sub">Factor de concentración</div>
+      </div>
+      <div>
+        <div class="comp-title">Composición del agua de rechazo (concentrado)</div>
+        <div class="comp-sub">Recuperación ${d.rec}% · pH en concentrado estimado con +0.2 por equilibrio de carbonatos</div>
+      </div>
+    </div>
+    <table class="comp-table">
+      <thead><tr>
+        <th>Parámetro</th>
+        <th>Alimentación</th>
+        <th>Concentrado</th>
+      </tr></thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+  </div>`;
+
+  /* ── LSI card ── */
+  var lsiSign = d.lsi >= 0 ? '+' : '';
+  var lsiClass, lsiIcon, lsiBadge, lsiMsg, lsiSol;
+  if(d.lsi <= 0){
+    lsiClass='pass'; lsiIcon='✓'; lsiBadge='b-ok';
+    lsiMsg=''; lsiSol='';
+  } else if(d.lsi <= 0.5){
+    lsiClass='fail-warn'; lsiIcon='!'; lsiBadge='b-warn';
+    lsiMsg='Ligera tendencia a precipitar CaCO₃ en el concentrado. Manejable con un antiincrustante para carbonatos.';
+    lsiSol='<div class="param-card-body"><div class="param-fail-title">TENDENCIA DE INCRUSTACIÓN CARBONATADA</div>'
+      +'<div class="param-fail-msg">'+lsiMsg+'</div>'
+      +'<div class="param-solution"><span class="solution-label">Solución</span>'
+      +'Dosificar antiincrustante de base fosfonato o poliacrilato (ej. Permatreat PC-191, Vitec 3000). '
+      +'Ajustar pH de alimentación a 7.0–7.2 para reducir la alcalinidad efectiva. Confirmar dosis por jar test con el producto específico.</div></div>';
+  } else {
+    lsiClass='fail-crit'; lsiIcon='✕'; lsiBadge='b-crit';
+    lsiMsg='Alta tendencia a precipitar CaCO₃. Sin antiincrustante, las membranas se incrustarán en semanas. El LSI en el concentrado es el principal indicador de incrustación carbonatada.';
+    lsiSol='<div class="param-card-body"><div class="param-fail-title">ALTO RIESGO DE INCRUSTACIÓN CARBONATADA</div>'
+      +'<div class="param-fail-msg">'+lsiMsg+'</div>'
+      +'<div class="param-solution"><span class="solution-label">Solución urgente</span>'
+      +'1) Reducir pH de alimentación a 6.8–7.0 con ácido sulfúrico o clorhídrico (neutralizar alcalinidad). '
+      +'2) Dosificar antiincrustante de amplio espectro. '
+      +'3) Si LSI > 2.0, considerar reducir la recuperación del sistema para bajar el factor de concentración.</div></div>';
+  }
+
+  var lsiCard = `<div class="param-card ${lsiClass}">
+    <div class="param-card-head">
+      <div class="param-status-icon">${lsiIcon}</div>
+      <div class="param-info">
+        <span class="param-name">Índice de Langelier en el concentrado (LSI)</span>
+        <span class="param-val-row">
+          <span class="param-val-actual">LSI = ${lsiSign}${d.lsi.toFixed(2)}</span>
+          &nbsp;·&nbsp; pHs = ${d.pHs.toFixed(2)} &nbsp;·&nbsp; pH concentrado ≈ ${d.pH_c.toFixed(1)}
+        </span>
+      </div>
+      <span class="param-badge ${lsiBadge}">${d.lsi<=0?'ESTABLE':d.lsi<=0.5?'PRECAUCIÓN':'INCRUSTANTE'}</span>
+    </div>${lsiSol}</div>`;
+
+  /* ── SSI card ── */
+  var ssiClass, ssiIcon, ssiBadge, ssiSol;
+  var ssiLbl = d.ssi.toFixed(2);
+  if(d.ssi <= 0.8){
+    ssiClass='pass'; ssiIcon='✓'; ssiBadge='b-ok'; ssiSol='';
+  } else if(d.ssi <= 1.0){
+    ssiClass='fail-warn'; ssiIcon='!'; ssiBadge='b-warn';
+    ssiSol='<div class="param-card-body"><div class="param-fail-title">SÍLICE CERCA DEL LÍMITE DE SATURACIÓN</div>'
+      +'<div class="param-fail-msg">SiO₂ concentrado ('+d.SiO2c.toFixed(1)+' mg/L) está al '+Math.round(d.ssi*100)+'% de la solubilidad de sílice amorfa ('+d.Ssat.toFixed(0)+' mg/L a '+d.temp+'°C, pH '+d.pH_c.toFixed(1)+'). Riesgo manejable con antiincrustante específico para sílice.</div>'
+      +'<div class="param-solution"><span class="solution-label">Solución</span>'
+      +'Seleccionar antiincrustante con inhibidores de sílice (no todos los productos los incluyen — verificar ficha técnica). Genesys SI o ARGO GUARD SiO₂ son opciones específicas. Mantener pH concentrado < 8.0 para no aumentar la solubilidad requerida.</div></div>';
+  } else {
+    ssiClass='fail-crit'; ssiIcon='✕'; ssiBadge='b-crit';
+    ssiSol='<div class="param-card-body"><div class="param-fail-title">SÍLICE SOBRE-SATURADA EN EL CONCENTRADO</div>'
+      +'<div class="param-fail-msg">SiO₂ concentrado ('+d.SiO2c.toFixed(1)+' mg/L) supera la solubilidad de sílice amorfa ('+d.Ssat.toFixed(0)+' mg/L). La sílice precipitará como gel amorfo sobre la membrana, formando una capa muy difícil de limpiar incluso con CIP.</div>'
+      +'<div class="param-solution"><span class="solution-label">Solución urgente</span>'
+      +'1) Reducir recuperación del sistema para bajar el factor de concentración. '
+      +'2) Aumentar pH de alimentación a >8.0 eleva la solubilidad de la sílice en el concentrado (a pH 8.5 la solubilidad es ~1.7× mayor). '
+      +'3) Dosificar antiincrustante específico de sílice en dosis alta, validado por el proveedor para la concentración actual.</div></div>';
+  }
+
+  var ssiCard = `<div class="param-card ${ssiClass}">
+    <div class="param-card-head">
+      <div class="param-status-icon">${ssiIcon}</div>
+      <div class="param-info">
+        <span class="param-name">Índice de Saturación de Sílice (SSI)</span>
+        <span class="param-val-row">
+          <span class="param-val-actual">SSI = ${ssiLbl}</span>
+          &nbsp;·&nbsp; SiO₂ conc = ${d.SiO2c.toFixed(1)} mg/L &nbsp;·&nbsp; Solubilidad = ${d.Ssat.toFixed(0)} mg/L
+        </span>
+      </div>
+      <span class="param-badge ${ssiBadge}">${d.ssi<=0.8?'ESTABLE':d.ssi<=1.0?'PRECAUCIÓN':'SATURADA'}</span>
+    </div>${ssiSol}</div>`;
+
+  /* ── dose card ── */
+  var riskLabel = {bajo:'RIESGO BAJO',moderado:'RIESGO MODERADO',alto:'RIESGO ALTO'}[d.dose.risk];
+  var doseNoteHigh = d.dose.risk==='alto'
+    ? '<br><b>Nota:</b> Con riesgo alto considerar también reducir el % de recuperación para disminuir el factor de concentración.'
+    : '';
+  var flowBoxHTML = '';
+  if(d.flow !== null && d.flow > 0){
+    var minMlh = (d.flow * 1000 * d.dose.min / (1.1 * 1000)).toFixed(1);
+    var maxMlh = (d.flow * 1000 * d.dose.max / (1.1 * 1000)).toFixed(1);
+    flowBoxHTML = `<div class="dose-box">
+      <div class="dose-box-label">Bomba dosificadora · ${d.flow} m³/h</div>
+      <div class="dose-range">${minMlh} – ${maxMlh}</div>
+      <div class="dose-unit">mL/h (producto dens. ~1.1 g/mL)</div>
+    </div>`;
+  }
+
+  var doseCard = `<div class="dose-card">
+    <div class="dose-card-head">
+      <div class="dose-icon">💧</div>
+      <div>
+        <div class="dose-title">Recomendación de antiincrustante</div>
+        <div class="dose-sub">Dosis en agua de alimentación · Ajustar según producto y jar test</div>
+      </div>
+      <span class="dose-risk-badge ${d.dose.riskCls}">${riskLabel}</span>
+    </div>
+    <div class="dose-grid">
+      <div class="dose-box">
+        <div class="dose-box-label">Dosis estimada del producto</div>
+        <div class="dose-range">${d.dose.min} – ${d.dose.max}</div>
+        <div class="dose-unit">mg/L de agua de alimentación</div>
+      </div>
+      ${flowBoxHTML || '<div class="dose-box"><div class="dose-box-label">Para calcular mL/h</div><div style="font-size:12px;color:var(--muted);padding-top:8px;line-height:1.5">Ingresa el caudal de alimentación en el campo opcional del panel izquierdo.</div></div>'}
+    </div>
+    <div class="dose-note">
+      <b>Importante:</b> Este rango es una guía preliminar basada en LSI y SSI del concentrado.
+      La dosis exacta depende del producto específico (fosfonatos, poliacrilatos, inhibidores de sílice),
+      la dureza total, sulfatos y temperatura real del sistema.
+      Solicitar a tu proveedor la dosificación recomendada con base en el análisis completo.${doseNoteHigh}
+    </div>
+  </div>`;
+
+  var actionRow = `<div class="action-row">
+    <button type="button" class="btn-copy" id="btn-copy">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar reporte de incrustación
+    </button>
+  </div>`;
+
+  el('results-body').innerHTML = compCard + lsiCard + ssiCard + doseCard + actionRow;
+  el('btn-copy').addEventListener('click', function(){ copyReport(d); });
+}
+
+/* ── copy report ── */
+function copyReport(d){
+  var sign = d.lsi >= 0 ? '+' : '';
+  var lines = [];
+  lines.push('═══════════════════════════════════════════════════════');
+  lines.push('  REPORTE DE INCRUSTACIÓN — ANTIINCRUSTANTE PARA OI');
+  lines.push('  Carbotecnia · Water Treatment Tools');
+  lines.push('  Fecha: '+new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'}));
+  lines.push('═══════════════════════════════════════════════════════');
+  lines.push('');
+  lines.push('─── PARÁMETROS DEL SISTEMA ───────────────────────────');
+  lines.push('  Recuperación:           '+d.rec+' %');
+  lines.push('  Factor de concentración: ×'+d.CF.toFixed(2));
+  if(d.flow) lines.push('  Caudal de alimentación: '+d.flow+' m³/h');
+  lines.push('');
+  lines.push('─── AGUA DE ALIMENTACIÓN vs. CONCENTRADO ─────────────');
+  lines.push('  Parámetro          Alimentación   Concentrado');
+  lines.push('  pH                 '+d.pH.toFixed(1)+'           ~'+d.pH_c.toFixed(1)+' (estimado)');
+  lines.push('  Dureza Ca (CaCO₃)  '+d.ca.toFixed(0)+' mg/L      '+d.Ca_c.toFixed(0)+' mg/L');
+  lines.push('  Alcalinidad        '+d.alk.toFixed(0)+' mg/L      '+d.Alk_c.toFixed(0)+' mg/L');
+  lines.push('  SiO₂               '+d.sio2.toFixed(1)+' mg/L     '+d.SiO2c.toFixed(1)+' mg/L');
+  lines.push('  TDS                '+d.tds.toFixed(0)+' mg/L      '+d.TDS_c.toFixed(0)+' mg/L');
+  lines.push('  Temperatura        '+d.temp+' °C');
+  lines.push('');
+  lines.push('─── ÍNDICES DE SATURACIÓN ────────────────────────────');
+  lines.push('  LSI concentrado:    '+sign+d.lsi.toFixed(2)+' (pHs = '+d.pHs.toFixed(2)+')');
+  lines.push('    '+( d.lsi<=0?'✓ ESTABLE — sin riesgo de incrustación CaCO₃':d.lsi<=0.5?'! PRECAUCIÓN — tendencia leve':'✕ INCRUSTANTE — acción inmediata requerida'));
+  lines.push('');
+  lines.push('  SSI sílice:         '+d.ssi.toFixed(2)+' (SiO₂ conc = '+d.SiO2c.toFixed(1)+' mg/L / Ssat = '+d.Ssat.toFixed(0)+' mg/L)');
+  lines.push('    '+(d.ssi<=0.8?'✓ ESTABLE — bajo riesgo de incrustación de sílice':d.ssi<=1.0?'! PRECAUCIÓN — cerca de saturación':'✕ SOBRE-SATURADA — precipitación de sílice esperada'));
+  lines.push('');
+  lines.push('─── RECOMENDACIÓN DE ANTIINCRUSTANTE ─────────────────');
+  lines.push('  Riesgo global:   '+d.dose.risk.toUpperCase());
+  lines.push('  Dosis estimada:  '+d.dose.min+' – '+d.dose.max+' mg/L de agua de alimentación');
+  if(d.flow){
+    var minMlh = (d.flow*1000*d.dose.min/(1.1*1000)).toFixed(1);
+    var maxMlh = (d.flow*1000*d.dose.max/(1.1*1000)).toFixed(1);
+    lines.push('  Bomba ('+d.flow+' m³/h): '+minMlh+' – '+maxMlh+' mL/h (producto dens. ~1.1 g/mL)');
+  }
+  lines.push('  NOTA: Confirmar dosis con el proveedor del antiincrustante mediante jar test.');
+  lines.push('');
+  lines.push('───────────────────────────────────────────────────────');
+  lines.push('Generado con Carbotecnia · Calculadora de Antiincrustante OI');
+
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
+    var btn = el('btn-copy'), orig = btn.innerHTML;
+    btn.textContent = '✓ Reporte copiado';
+    btn.classList.add('ok');
+    setTimeout(function(){ btn.innerHTML = orig; btn.classList.remove('ok'); }, 2500);
+  });
+}
+
+/* ── reset ── */
+function resetAll(){
+  ['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-tds','inp-flow'].forEach(function(id){
+    el(id).value = '';
+  });
+  el('inp-rec').value = 65;
+  el('rec-display').textContent = '65';
+  el('inp-rec').style.setProperty('--fill', '63.6%');
+  ['chip-cf','chip-lsi','chip-sio2','chip-ssi'].forEach(function(id){
+    el(id).className = 'fc-value';
+  });
+  el('chip-cf').textContent  = '—';
+  el('chip-lsi').textContent = '—';
+  el('chip-sio2').textContent= '— mg/L';
+  el('chip-ssi').textContent = '—';
+  el('results-body').innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v4l3 3"/></svg><div>Ingresa el análisis del agua de alimentación<br>y el porcentaje de recuperación del sistema.</div></div>';
+}
+
+el('btn-calc').addEventListener('click', calculate);
+el('btn-reset').addEventListener('click', resetAll);
+['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-tds'].forEach(function(id){
+  el(id).addEventListener('input', liveUpdate);
+  el(id).addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+});
+el('inp-flow').addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+
+/* init slider fill */
+(function(){
+  var pct = (65 - 30) / (85 - 30) * 100;
+  el('inp-rec').style.setProperty('--fill', pct.toFixed(1)+'%');
+  el('chip-cf').textContent = (1/(1-65/100)).toFixed(2)+'×';
+})();
+</script>
+</body>
+</html>
