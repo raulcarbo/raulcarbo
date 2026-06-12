@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Limpieza CIP para OI · Procedimiento de Lavado Químico | Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#0D9488;--brand-dark:#0F766E;--brand-mid:#2DD4BF;
+  --brand-light:#F0FDFA;--brand-border:#99F6E4;
+  --ok:#059669;--ok-dark:#047857;--ok-light:#ECFDF5;--ok-border:#A7F3D0;
+  --crit:#DC2626;--crit-dark:#991B1B;--crit-light:#FEF2F2;--crit-border:#FECACA;
+  --warn:#D97706;--warn-dark:#92400E;--warn-light:#FFFBEB;--warn-border:#FCD34D;
+  --acid-bg:#FFF7ED;--acid-border:#FED7AA;--acid-text:#C2410C;--acid-dark:#9A3412;
+  --alk-bg:#EFF6FF;--alk-border:#BFDBFE;--alk-text:#1D4ED8;--alk-dark:#1E3A8A;
+  --sil-bg:#FAF5FF;--sil-border:#DDD6FE;--sil-text:#7C3AED;--sil-dark:#4C1D95;
+  --ink:#0D1B1A;--steel:#1F4741;--muted:#5F8A86;
+  --line:#CCFBF1;--surface:#FFFFFF;--paper:#F0FDFA;
+  --shadow:0 1px 3px rgba(13,26,26,.05),0 8px 24px rgba(13,26,26,.07);
+  --shadow-sm:0 1px 3px rgba(13,26,26,.06);
+  --radius:16px;--radius-lg:22px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'Roboto Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff;color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+.shell{width:min(1360px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* brand bar */
+.brand-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:var(--surface);border:1px solid var(--brand-border);border-radius:18px;margin-bottom:16px;flex-wrap:wrap;gap:12px;box-shadow:var(--shadow-sm)}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--brand-mid),var(--brand-dark));color:#fff;display:grid;place-items:center;font-family:var(--font-title);font-weight:700;font-size:12px;box-shadow:0 4px 12px rgba(13,148,136,.3);letter-spacing:-.02em;text-align:center;line-height:1.1;padding:3px}
+.brand-name{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--brand-dark)}
+.brand-name span{display:block;font-family:var(--font-num);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:400}
+.brand-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand-tag b{color:var(--brand);font-weight:600}
+
+/* hero */
+.calc-header{background:linear-gradient(135deg,#042F2E 0%,#0F766E 55%,#0D9488 100%);border-radius:var(--radius-lg);padding:28px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.calc-header::after{content:"";position:absolute;inset:auto -80px -120px auto;width:340px;height:340px;border-radius:50%;border:52px solid rgba(255,255,255,.06);pointer-events:none}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:end}
+.calc-header h1{font-size:clamp(20px,2.6vw,34px);line-height:1.05;letter-spacing:-.04em;color:#fff !important;font-weight:800;margin-bottom:10px}
+.calc-header h1 em{font-style:normal;color:rgba(255,255,255,.78)}
+.calc-header p{color:rgba(255,255,255,.72);font-size:13.5px;line-height:1.6;margin:0}
+.hero-note{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);border-radius:16px;padding:18px;backdrop-filter:blur(16px)}
+.hero-note b{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;color:rgba(255,255,255,.80);font-family:var(--font-title)}
+.hero-note span{color:rgba(255,255,255,.73);font-size:13px;line-height:1.6}
+
+/* formula chips */
+.formula-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.formula-chip{background:var(--brand-light);border:1px solid var(--brand-border);border-radius:14px;padding:11px 18px;flex:1;min-width:130px;box-shadow:var(--shadow-sm)}
+.fc-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.fc-value{font-family:var(--font-num);font-weight:700;font-size:15px;color:var(--brand)}
+.fc-value.acid{color:var(--acid-text)}
+.fc-value.alk{color:var(--alk-text)}
+.fc-value.sil{color:var(--sil-text)}
+.fc-value.warn{color:var(--warn-dark)}
+.fc-value.crit{color:var(--crit)}
+
+/* layout */
+.layout{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+.input-panel{position:sticky;top:20px;min-width:0}
+.results-col{min-width:0;display:grid;gap:12px}
+
+/* panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.panel-head h2{font-size:15px;color:var(--brand-dark);font-weight:700}
+.step-tag{font-family:var(--font-num);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.panel-body{padding:20px}
+
+/* fields */
+.field{margin-bottom:14px}
+.field-label-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.field-label-row label{font-weight:700;font-size:13px;color:var(--steel);font-family:var(--font-title);flex:1}
+.inline-wrap{display:flex;gap:0;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);transition:border-color .2s,box-shadow .2s}
+.inline-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,148,136,.10)}
+.inline-wrap input,.inline-wrap select{flex:1;border:0;padding:10px 14px;min-width:0;background:transparent;font-family:var(--font-num);font-size:14px;color:var(--ink)}
+.inline-wrap input:focus,.inline-wrap select:focus{outline:none}
+.inline-wrap select{-webkit-appearance:none;appearance:none;cursor:pointer}
+.unit-badge{padding:0 14px;display:flex;align-items:center;font-family:var(--font-num);font-size:13px;color:var(--muted);border-left:1.5px solid var(--line);background:var(--paper);white-space:nowrap}
+.limit-note{margin-top:4px;font-size:11px;color:var(--muted);line-height:1.4}
+.sec-label{font-family:var(--font-num);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin:18px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--brand-border)}
+
+/* select wrap with arrow */
+.select-wrap{position:relative}
+.select-wrap select{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px 38px 10px 14px;background:var(--surface);font-family:var(--font-body);font-size:14px;color:var(--ink);cursor:pointer;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+.select-wrap select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,148,136,.10)}
+.select-arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:12px}
+
+/* volume inline */
+.vol-row{display:flex;gap:8px;align-items:stretch}
+.vol-row .inline-wrap{flex:1}
+.vol-unit-sel{flex-shrink:0}
+.vol-unit-sel select{height:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--paper);font-family:var(--font-num);font-size:13px;color:var(--steel);cursor:pointer;-webkit-appearance:none;appearance:none}
+.vol-unit-sel select:focus{outline:none;border-color:var(--brand)}
+
+/* buttons */
+.btn-row{display:flex;gap:10px;margin-top:22px}
+.btn-primary{flex:1;border:0;border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:14px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 8px 20px rgba(13,148,136,.22);transition:transform .12s,box-shadow .12s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(13,148,136,.32)}
+.btn-reset{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 18px;font-weight:600;cursor:pointer;color:var(--muted);font-family:var(--font-title);font-size:13px;transition:border-color .12s}
+.btn-reset:hover{border-color:var(--muted);color:var(--steel)}
+
+/* empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--muted);gap:14px;background:var(--paper);border-radius:var(--radius-lg);border:1px dashed var(--brand-border)}
+.empty-state svg{opacity:.3}
+.empty-state div{font-size:13.5px;line-height:1.6}
+
+/* ── DIAGNOSIS CARD ── */
+.diag-card{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.diag-card.acid{background:var(--acid-bg);border:1px solid var(--acid-border)}
+.diag-card.alk{background:var(--alk-bg);border:1px solid var(--alk-border)}
+.diag-card.sil{background:var(--sil-bg);border:1px solid var(--sil-border)}
+.diag-head{display:flex;align-items:center;gap:16px;padding:20px 22px 16px}
+.diag-icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:24px;flex-shrink:0}
+.acid .diag-icon{background:linear-gradient(135deg,#F97316,#C2410C)}
+.alk .diag-icon{background:linear-gradient(135deg,#60A5FA,#1D4ED8)}
+.sil .diag-icon{background:linear-gradient(135deg,#C084FC,#7C3AED)}
+.diag-type-badge{font-family:var(--font-num);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;display:inline-block;margin-bottom:5px}
+.acid .diag-type-badge{background:var(--acid-text);color:#fff}
+.alk .diag-type-badge{background:var(--alk-text);color:#fff}
+.sil .diag-type-badge{background:var(--sil-text);color:#fff}
+.diag-title{font-family:var(--font-title);font-weight:800;font-size:17px;line-height:1.1}
+.acid .diag-title{color:var(--acid-dark)}
+.alk .diag-title{color:var(--alk-dark)}
+.sil .diag-title{color:var(--sil-dark)}
+.diag-subtitle{font-size:12.5px;margin-top:3px}
+.acid .diag-subtitle{color:var(--acid-text)}
+.alk .diag-subtitle{color:var(--alk-text)}
+.sil .diag-subtitle{color:var(--sil-text)}
+.diag-body{padding:0 22px 20px}
+.diag-params{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.diag-param{background:rgba(255,255,255,.75);border-radius:12px;padding:12px 14px;border:1px solid rgba(0,0,0,.06)}
+.diag-param-label{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.diag-param-value{font-family:var(--font-num);font-weight:700;font-size:14px;line-height:1.2}
+.acid .diag-param-value{color:var(--acid-dark)}
+.alk .diag-param-value{color:var(--alk-dark)}
+.sil .diag-param-value{color:var(--sil-dark)}
+.diag-param-value.temp-critical{color:var(--crit-dark)}
+.diag-mech{background:rgba(255,255,255,.65);border-radius:12px;padding:14px 16px;font-size:12.5px;line-height:1.6;border:1px solid rgba(0,0,0,.06)}
+.diag-mech-label{font-family:var(--font-num);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.acid .diag-mech-label{color:var(--acid-dark)}
+.alk .diag-mech-label{color:var(--alk-dark)}
+.sil .diag-mech-label{color:var(--sil-dark)}
+.diag-warning{background:var(--crit-light);border:1px solid var(--crit-border);border-radius:12px;padding:12px 16px;margin-top:12px;display:flex;gap:10px;align-items:flex-start}
+.diag-warning-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.diag-warning-text{font-size:12.5px;line-height:1.6;color:var(--crit-dark)}
+.diag-warning-text b{display:block;font-family:var(--font-num);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.diag-tip{background:rgba(255,255,255,.5);border-radius:10px;padding:10px 13px;margin-top:10px;font-size:12px;line-height:1.5;color:var(--steel);display:flex;gap:8px;align-items:flex-start;border:1px solid rgba(0,0,0,.05)}
+
+/* ── RECIPE CARD ── */
+.recipe-card{background:linear-gradient(135deg,var(--brand-light),#fff);border:1px solid var(--brand-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.recipe-head{padding:18px 22px 14px;border-bottom:1px solid var(--brand-border);display:flex;align-items:center;gap:14px}
+.recipe-head-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--brand-mid),var(--brand-dark));color:#fff;display:grid;place-items:center;font-size:20px;flex-shrink:0}
+.recipe-head-title{font-family:var(--font-title);font-weight:800;font-size:15px;color:var(--brand-dark)}
+.recipe-head-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.recipe-body{padding:20px 22px}
+.recipe-main{background:var(--brand-dark);border-radius:14px;padding:20px;margin-bottom:16px;color:#fff}
+.recipe-main-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:8px}
+.recipe-main-amount{font-family:var(--font-num);font-weight:800;font-size:36px;line-height:1;color:#fff}
+.recipe-main-unit{font-family:var(--font-num);font-size:14px;font-weight:400;color:rgba(255,255,255,.7);margin-left:6px}
+.recipe-main-conc{font-size:12px;color:rgba(255,255,255,.65);margin-top:6px}
+.recipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.recipe-box{background:var(--surface);border:1px solid var(--brand-border);border-radius:12px;padding:13px 15px}
+.recipe-box-label{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.recipe-box-value{font-family:var(--font-num);font-weight:700;font-size:15px;color:var(--ink)}
+.recipe-box-value.highlight{color:var(--brand-dark)}
+.recipe-box-value.critical{color:var(--crit-dark)}
+.recipe-steps-label{font-family:var(--font-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--brand-border)}
+.recipe-steps-list{list-style:none;display:grid;gap:6px}
+.recipe-steps-list li{font-size:13px;line-height:1.55;padding:8px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;gap:10px;align-items:flex-start;color:var(--steel)}
+.recipe-step-num{font-family:var(--font-num);font-weight:700;font-size:11px;color:var(--brand);flex-shrink:0;width:18px;height:18px;background:var(--brand-light);border-radius:50%;display:grid;place-items:center;margin-top:1px}
+
+/* ── PROCEDURE (BITÁCORA) CARD ── */
+.proc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.proc-head{padding:18px 22px 14px;background:linear-gradient(135deg,var(--paper),var(--surface));border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}
+.proc-head-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#475569,#1E293B);color:#fff;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.proc-head-title{font-family:var(--font-title);font-weight:800;font-size:15px;color:var(--ink)}
+.proc-head-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.proc-body{padding:20px 22px}
+.proc-step{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px}
+.proc-step:last-child{margin-bottom:0}
+.proc-step-head{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--paper)}
+.proc-step-num{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-family:var(--font-title);font-weight:800;font-size:16px;color:#fff;flex-shrink:0}
+.step-1 .proc-step-num{background:linear-gradient(135deg,#0D9488,#0F766E)}
+.step-2 .proc-step-num{background:linear-gradient(135deg,#0891B2,#0E7490)}
+.step-3 .proc-step-num{background:linear-gradient(135deg,#7C3AED,#4C1D95)}
+.step-4 .proc-step-num{background:linear-gradient(135deg,#059669,#047857)}
+.proc-step-info{flex:1}
+.proc-step-title{font-family:var(--font-title);font-weight:700;font-size:14px;color:var(--ink)}
+.proc-step-meta{font-family:var(--font-num);font-size:10.5px;color:var(--muted);margin-top:2px}
+.proc-step-badge{font-family:var(--font-num);font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid}
+.step-1 .proc-step-badge{color:var(--brand-dark);border-color:var(--brand-border);background:var(--brand-light)}
+.step-2 .proc-step-badge{color:#0E7490;border-color:#A5F3FC;background:#ECFEFF}
+.step-3 .proc-step-badge{color:var(--sil-dark);border-color:var(--sil-border);background:var(--sil-bg)}
+.step-4 .proc-step-badge{color:var(--ok-dark);border-color:var(--ok-border);background:var(--ok-light)}
+.proc-step-body{padding:14px 16px 16px;background:var(--surface)}
+.proc-instructions{list-style:none;display:grid;gap:5px;margin-bottom:10px}
+.proc-instructions li{font-size:13px;line-height:1.6;padding:7px 12px 7px 10px;border-radius:9px;background:var(--paper);border:1px solid var(--line);display:flex;gap:9px;align-items:flex-start;color:var(--steel)}
+.proc-bullet{width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0;margin-top:6px}
+.proc-step-critical{background:var(--crit-light);border:1px solid var(--crit-border);border-radius:10px;padding:10px 13px;margin-top:8px;font-size:12.5px;color:var(--crit-dark);display:flex;gap:8px;align-items:flex-start;line-height:1.55}
+.proc-step-tip{background:var(--warn-light);border:1px solid var(--warn-border);border-radius:10px;padding:10px 13px;margin-top:8px;font-size:12px;color:var(--warn-dark);display:flex;gap:8px;align-items:flex-start;line-height:1.55}
+.proc-control{background:var(--brand-light);border:1px solid var(--brand-border);border-radius:10px;padding:10px 13px;margin-top:8px;font-size:12px;color:var(--brand-dark);display:flex;gap:8px;align-items:flex-start;line-height:1.55}
+
+/* ── LEGAL CARD ── */
+.legal-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 20px;font-size:12px;line-height:1.6;color:var(--muted)}
+.legal-card b{color:var(--steel)}
+
+/* ── ACTION ROW ── */
+.action-row{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+.btn-print{border:0;border-radius:999px;padding:12px 24px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:13px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 6px 16px rgba(13,148,136,.22);display:flex;align-items:center;gap:8px;transition:transform .12s}
+.btn-print:hover{transform:translateY(-1px)}
+.btn-print.ok{background:linear-gradient(135deg,var(--ok),var(--ok-dark))}
+
+/* ── PRINT STYLES ── */
+@media print{
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .no-print,.brand-bar,.calc-header,.formula-bar,.input-panel,.action-row{display:none!important}
+  .layout{display:block}
+  .results-col{display:block;width:100%}
+  .shell{padding:0;width:100%}
+  body{font-size:11pt;background:#fff}
+  .print-header{display:block!important}
+  .print-meta{display:table!important}
+  .print-fill{border-bottom:1px solid #000;min-width:140px;display:inline-block;vertical-align:bottom;margin:0 4px}
+  .proc-step{break-inside:avoid}
+  .recipe-card,.diag-card,.proc-card{break-inside:avoid;margin-bottom:14pt;box-shadow:none!important;border:1pt solid #ccc!important}
+  .recipe-main{background:#1F4741!important;color:#fff!important}
+  .recipe-main-amount,.recipe-main-label,.recipe-main-conc{color:#fff!important}
+  .proc-step-body{background:#fff!important}
+  h1,h2,h3{page-break-after:avoid}
+}
+
+/* print-only elements (hidden on screen) */
+.print-header{display:none;margin-bottom:20pt;padding-bottom:12pt;border-bottom:2pt solid #0F766E}
+.print-logo-row{display:flex;align-items:center;gap:14pt;margin-bottom:12pt}
+.print-logo-box{width:42pt;height:42pt;border-radius:8pt;background:#0F766E;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:13pt;display:flex;align-items:center;justify-content:center}
+.print-main-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:18pt;color:#042F2E;letter-spacing:-.02em}
+.print-sub-title{font-size:9pt;color:#666;font-family:'DM Sans',sans-serif;margin-top:2pt}
+.print-meta{display:none;border-collapse:collapse;width:100%;margin-top:10pt;font-size:10pt}
+.print-meta td{padding:5pt 8pt;border:1pt solid #ccc;vertical-align:middle}
+.print-meta td:nth-child(odd){font-weight:700;background:#f5fffe;width:20%;color:#0F766E;white-space:nowrap}
+.print-meta td:nth-child(even){width:30%}
+
+/* responsive */
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .input-panel{position:static}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-note{display:none}
+  .diag-params{grid-template-columns:1fr 1fr}
+  .recipe-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- PRINT HEADER (hidden on screen) -->
+  <div class="print-header">
+    <div class="print-logo-row">
+      <div class="print-logo-box">CBT</div>
+      <div>
+        <div class="print-main-title">BITÁCORA DE LAVADO QUÍMICO CIP</div>
+        <div class="print-sub-title">Procedimiento de Limpieza de Membranas · Ósmosis Inversa · Carbotecnia Water Treatment Tools</div>
+      </div>
+    </div>
+    <table class="print-meta" id="print-meta-table">
+      <tr>
+        <td>Fecha:</td>
+        <td id="print-fecha"><span class="print-fill" style="min-width:160px">&nbsp;</span></td>
+        <td>Operador:</td>
+        <td><span class="print-fill" style="min-width:160px">&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td>Planta / Equipo:</td>
+        <td colspan="3"><span class="print-fill" style="min-width:400px">&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td>Tipo de incrustación:</td>
+        <td id="print-tipo-inc">&nbsp;</td>
+        <td>Modelo de membrana:</td>
+        <td id="print-membrana">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Volumen CIP:</td>
+        <td id="print-volumen">&nbsp;</td>
+        <td>Síntoma:</td>
+        <td id="print-sintoma">&nbsp;</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- brand bar -->
+  <div class="brand-bar no-print">
+    <div class="brand-mark">
+      <div class="brand-icon">CBT</div>
+      <div class="brand-name">Carbotecnia
+        <span>Water Treatment Tools</span>
+      </div>
+    </div>
+    <span class="brand-tag">Ósmosis Inversa · <b>Limpieza CIP</b></span>
+  </div>
+
+  <!-- hero -->
+  <div class="calc-header no-print">
+    <div class="hero-grid">
+      <div>
+        <h1>Limpieza CIP para OI · <em>Procedimiento de Lavado Químico</em></h1>
+        <p>Diagnostica el tipo de incrustación, selecciona el limpiador adecuado,<br>
+        calcula la dosificación exacta y genera la bitácora de procedimiento paso a paso.</p>
+      </div>
+      <div class="hero-note">
+        <b>¿Cuándo hacer un CIP?</b>
+        <span>Cuando el flujo de permeado cae más de 15% o la presión diferencial sube más de 15% respecto a los valores normalizados iniciales. También como mantenimiento preventivo cada 3–6 meses para extender la vida útil de las membranas.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- formula chips -->
+  <div class="formula-bar no-print">
+    <div class="formula-chip">
+      <div class="fc-label">pH Objetivo</div>
+      <div class="fc-value" id="chip-ph">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Temperatura</div>
+      <div class="fc-value" id="chip-temp">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Tiempo de Remojo</div>
+      <div class="fc-value" id="chip-soak">—</div>
+    </div>
+    <div class="formula-chip">
+      <div class="fc-label">Concentración</div>
+      <div class="fc-value" id="chip-conc">—</div>
+    </div>
+  </div>
+
+  <!-- layout -->
+  <div class="layout">
+
+    <!-- input panel -->
+    <div class="input-panel no-print">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Diagnóstico del sistema</h2>
+          <span class="step-tag">Datos de entrada</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="sec-label" style="margin-top:0">Síntoma y tipo de ensuciamiento</div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Síntoma principal</label>
+            </div>
+            <div class="select-wrap">
+              <select id="inp-symptom">
+                <option value="">— Seleccionar —</option>
+                <option value="corrective">Caída de flujo o aumento de presión &gt; 15%</option>
+                <option value="preventive">Mantenimiento preventivo programado</option>
+              </select>
+              <span class="select-arrow">▾</span>
+            </div>
+            <div class="limit-note">Determina la concentración del limpiador (1% preventivo · 2% correctivo)</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Tipo de incrustación detectada / sospechada</label>
+            </div>
+            <div class="select-wrap">
+              <select id="inp-fouling">
+                <option value="">— Seleccionar —</option>
+                <option value="carbonate">Carbonatos de calcio y Metales (Fe, Mn)</option>
+                <option value="biofouling">Biofouling (limo, bacterias, biopelícula)</option>
+                <option value="silica">Sílice o Sulfatos pesados (CaSO₄, BaSO₄)</option>
+              </select>
+              <span class="select-arrow">▾</span>
+            </div>
+            <div class="limit-note">Si no estás seguro: carbonatos es la causa más común en agua de red · biofouling en agua superficial o pozos</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Modelo de membrana instalada</label>
+            </div>
+            <div class="select-wrap">
+              <select id="inp-membrane">
+                <option value="">— Seleccionar —</option>
+                <option value="cpa">Hydranautics CPA / LG SW (alta presión)</option>
+                <option value="espa">Hydranautics ESPA / LG BW (baja energía)</option>
+              </select>
+              <span class="select-arrow">▾</span>
+            </div>
+            <div class="limit-note">Importante para limpieza de sílice: las membranas ESPA/BW tienen límite de pH 12.0</div>
+          </div>
+
+          <div class="sec-label">Tanque CIP</div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Volumen del tanque de lavado</label>
+            </div>
+            <div class="vol-row">
+              <div class="inline-wrap">
+                <input type="number" id="inp-volume" placeholder="200" min="1" step="1">
+              </div>
+              <div class="vol-unit-sel">
+                <select id="inp-unit">
+                  <option value="L">Litros</option>
+                  <option value="gal">Galones</option>
+                </select>
+              </div>
+            </div>
+            <div class="limit-note">Ingresa el volumen real de la solución que preparas, no la capacidad total del tanque</div>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-primary" id="btn-calc">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;margin-top:-2px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Generar procedimiento CIP
+            </button>
+            <button type="button" class="btn-reset" id="btn-reset">Limpiar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- results -->
+    <div class="results-col" id="results-body">
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 8v4l3 3"/></svg>
+        <div>Selecciona el tipo de incrustación y el volumen del tanque CIP<br>para generar el procedimiento de lavado químico.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function el(id){ return document.getElementById(id); }
+
+var CHEMICALS = {
+  carbonate: {
+    foulingName: 'Carbonatos de calcio y Metales (Fe, Mn)',
+    chemType: 'acid',
+    chemTypeName: 'Ácido · Bajo pH',
+    chemName: 'Limpiador ácido de bajo pH',
+    pHLabel: '2.4 – 3.8',
+    pHLabelShort: '2.4–3.8',
+    pHMin: 2.4, pHMax: 3.8,
+    tempLabel: 'Ambiente – 45°C',
+    tempIdeal: 35, tempMax: 45,
+    circMinutes: 60,
+    soakLabel: '1 – 2 h',
+    soakHoursMin: 1, soakHoursMax: 2,
+    concSevere_g_per_L: 20, concLight_g_per_L: 10,
+    concPctSevere: '2% p/p', concPctLight: '1% p/p',
+    tempCritical: false,
+    membraneWarning: null,
+    mechanism: 'Disuelve los depósitos de CaCO₃ por reacción ácida directa. Los quelantes incluidos complejan los iones de hierro (Fe²⁺/Fe³⁺) y manganeso (Mn²⁺), haciéndolos solubles y arrastrándolos fuera de la membrana. El buffer propietario mantiene el pH estable durante todo el ciclo de limpieza.',
+    tip: 'La solución puede tornarse marrón-rojiza o naranja durante la limpieza — esto es normal e indica que el hierro se está disolviendo activamente. Si el color es muy oscuro o hay sólidos, deseche 10–15% y reponga.',
+    steps: {
+      prep_extra: 'Verificar que el agua permeada esté libre de cloro residual (Cl₂ = 0). El cloro daña la membrana al contacto con químicos ácidos.',
+      circ_pressure: '60 psi / 4.2 kg/cm² máximo',
+      soak_note: 'Para ensuciamiento severo de hierro, el remojo puede extenderse hasta 6–8 horas.',
+      flush_note: 'Enjuagar hasta que el pH del agua de rechazo sea igual al pH de entrada ± 0.5 unidades. Mínimo 2 enjuagues completos del volumen CIP.'
+    }
+  },
+  biofouling: {
+    foulingName: 'Biofouling (limo, bacterias, biopelícula, orgánicos)',
+    chemType: 'alk',
+    chemTypeName: 'Alcalino · Alto pH',
+    chemName: 'Limpiador alcalino con surfactantes',
+    pHLabel: '10.5 – 11.5',
+    pHLabelShort: '10.5–11.5',
+    pHMin: 10.5, pHMax: 11.5,
+    tempLabel: 'Ambiente – 45°C',
+    tempIdeal: 40, tempMax: 45,
+    circMinutes: 60,
+    soakLabel: '12 – 15 h',
+    soakHoursMin: 12, soakHoursMax: 15,
+    concSevere_g_per_L: 20, concLight_g_per_L: 10,
+    concPctSevere: '2% p/p', concPctLight: '1% p/p',
+    tempCritical: false,
+    membraneWarning: null,
+    mechanism: 'Los surfactantes de baja espuma penetran y emulsifican la biopelícula, liberándola de la superficie de la membrana. El pH alto (10.5–11.5) desnaturaliza las proteínas bacterianas y rompe los polisacáridos. El remojo prolongado (12–15 h) es esencial: el biofilm es multicapa y necesita tiempo para que el químico penetre hasta las capas internas.',
+    tip: 'La solución se tornará marrón oscuro o incluso negra al disolver la materia orgánica y biopelícula. Si está muy turbia y con sólidos, deseche 15% del volumen y reponga con solución fresca para mantener la eficacia.',
+    steps: {
+      prep_extra: 'El calentamiento de la solución a 35–40°C aumenta significativamente la eficacia del surfactante. Si el sistema lo permite, precalentar la solución.',
+      circ_pressure: '60 psi / 4.2 kg/cm² máximo',
+      soak_note: 'El remojo TODA LA NOCHE es la clave para eliminar biofouling severo. No reducir el tiempo de remojo — los surfactantes necesitan tiempo para disolver la biopelícula multi-estrato.',
+      flush_note: 'Enjuagar hasta que el pH del agua de rechazo sea igual al pH de entrada ± 0.5 unidades. Mínimo 3 enjuagues completos del volumen CIP para eliminar completamente el detergente.'
+    }
+  },
+  silica: {
+    foulingName: 'Sílice amorfa o Sulfatos pesados (CaSO₄, BaSO₄)',
+    chemType: 'sil',
+    chemTypeName: 'Alcalino Fuerte · pH muy alto',
+    chemName: 'Limpiador alcalino para sílice',
+    pHLabel: '12.0 – 12.9',
+    pHLabelShort: '12.0–12.9',
+    pHMin: 12.0, pHMax: 12.9,
+    tempLabel: '35 – 45°C (OBLIGATORIO)',
+    tempIdeal: 40, tempMax: 45,
+    circMinutes: 60,
+    soakLabel: '12 – 15 h',
+    soakHoursMin: 12, soakHoursMax: 15,
+    concSevere_g_per_L: 20, concLight_g_per_L: 10,
+    concPctSevere: '2% p/p', concPctLight: '1% p/p',
+    tempCritical: true,
+    membraneWarning: {
+      espa: 'LÍMITE CRÍTICO: Las membranas ESPA/BW toleran un máximo de pH 12.0 durante la limpieza. Usar solo la concentración de 1% p/p y monitorear el pH cada 15 minutos. Si el pH supera 12.0, detener de inmediato y diluir.',
+      cpa: 'Las membranas CPA/SW (alta presión / agua de mar) toleran hasta pH 13 durante limpieza. Puede usar la formulación completa al 2% sin restricción adicional de pH.'
+    },
+    mechanism: 'A pH > 12 la sílice amorfa se ioniza: SiO₂ + 2 OH⁻ → SiO₃²⁻ + H₂O, convirtiéndose en silicato soluble. La temperatura 35–45°C DUPLICA la velocidad de esta reacción — sin calentamiento la limpieza será mínima. Para sulfatos (CaSO₄): el pH alto deshace las costras mediante hidrólisis alcalina. Para BaSO₄: esta incrustación es casi irreversible; el limpiador puede recuperar flujo parcialmente.',
+    tip: 'Si la incrustación de sílice es antigua y muy densa, puede necesitar dos ciclos completos de limpieza. Entre ciclos: enjuagar completamente y preparar solución fresca. Para sulfatos de bario (BaSO₄) severos, considerar que la recuperación puede ser parcial.',
+    steps: {
+      prep_extra: 'CRÍTICO: Calentar la solución a 35–40°C ANTES de recircular. Sin temperatura adecuada la sílice no se disolverá. Usar calentador de tanque CIP o circulación de vapor indirecto.',
+      circ_pressure: '60 psi / 4.2 kg/cm² máximo',
+      soak_note: 'El remojo TODA LA NOCHE a temperatura mantenida (35–40°C) es indispensable para disolver gel de sílice endurecido. Si no puedes mantener la temperatura durante el remojo, el resultado será inferior.',
+      flush_note: 'Enjuagar hasta que el pH del agua de rechazo sea igual al pH de entrada ± 0.5 unidades. Por el pH muy alto (12+), se necesitan mínimo 3–4 enjuagues completos del volumen CIP.'
+    }
+  }
+};
+
+/* ── live update chips on dropdown change ── */
+function liveUpdate(){
+  var fouling = el('inp-fouling').value;
+  var symptom = el('inp-symptom').value;
+
+  if(!fouling){
+    ['chip-ph','chip-temp','chip-soak','chip-conc'].forEach(function(id){
+      el(id).textContent = '—';
+      el(id).className = 'fc-value';
+    });
+    return;
+  }
+
+  var c = CHEMICALS[fouling];
+  var conc = symptom === 'corrective' ? c.concPctSevere : (symptom === 'preventive' ? c.concPctLight : '1–2% p/p');
+
+  el('chip-ph').textContent = c.pHLabel;
+  el('chip-ph').className   = 'fc-value ' + c.chemType;
+  el('chip-temp').textContent = c.tempLabel;
+  el('chip-temp').className   = 'fc-value ' + (c.tempCritical ? 'crit' : c.chemType);
+  el('chip-soak').textContent = c.soakLabel;
+  el('chip-soak').className   = 'fc-value ' + c.chemType;
+  el('chip-conc').textContent = conc;
+  el('chip-conc').className   = 'fc-value ' + c.chemType;
+}
+
+/* ── main calculate ── */
+function calculate(){
+  var symptom  = el('inp-symptom').value;
+  var fouling  = el('inp-fouling').value;
+  var membrane = el('inp-membrane').value;
+  var vol_raw  = parseFloat(el('inp-volume').value);
+  var unit     = el('inp-unit').value;
+
+  if(!symptom || !fouling || !membrane || !vol_raw || vol_raw <= 0){
+    alert('Por favor completa todos los campos antes de generar el procedimiento.'); return;
+  }
+
+  var vol_L = unit === 'gal' ? vol_raw * 3.785 : vol_raw;
+  var severity = symptom === 'corrective' ? 'severe' : 'light';
+  var c = CHEMICALS[fouling];
+  var conc_g_per_L = severity === 'severe' ? c.concSevere_g_per_L : c.concLight_g_per_L;
+  var conc_pct = severity === 'severe' ? c.concPctSevere : c.concPctLight;
+
+  /* For silica + ESPA: force 1% to stay at lower pH end */
+  var memWarn = null;
+  if(fouling === 'silica' && c.membraneWarning){
+    memWarn = membrane === 'espa' ? c.membraneWarning.espa : c.membraneWarning.cpa;
+    if(membrane === 'espa' && severity === 'severe'){
+      conc_g_per_L = c.concLight_g_per_L;
+      conc_pct = c.concPctLight + ' (ajustado por límite de membrana)';
+    }
+  }
+
+  var total_g  = vol_L * conc_g_per_L;
+  var membraneName = membrane === 'cpa' ? 'Hydranautics CPA / LG SW (alta presión)' : 'Hydranautics ESPA / LG BW (baja energía)';
+  var symptomName  = symptom === 'corrective' ? 'Caída de flujo / aumento de presión > 15%' : 'Mantenimiento preventivo';
+
+  /* update print meta */
+  el('print-tipo-inc').textContent = c.foulingName;
+  el('print-membrana').textContent = membraneName;
+  el('print-volumen').textContent  = vol_raw + ' ' + unit + (unit === 'gal' ? ' (' + vol_L.toFixed(0) + ' L)' : '');
+  el('print-sintoma').textContent  = symptomName;
+  el('print-fecha').innerHTML      = '<span class="print-fill">' + new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'}) + '</span>';
+
+  renderResults({
+    symptom, fouling, membrane, vol_raw, vol_L, unit,
+    severity, c, conc_g_per_L, conc_pct, total_g,
+    memWarn, membraneName, symptomName
+  });
+}
+
+/* ── render ── */
+function renderResults(d){
+  var c = d.c;
+  var vol_display = d.vol_raw + ' ' + d.unit + (d.unit === 'gal' ? ' (' + d.vol_L.toFixed(0) + ' L)' : '');
+
+  /* amount display */
+  var amount_display, amount_unit;
+  if(d.total_g >= 1000){
+    amount_display = (d.total_g / 1000).toFixed(2);
+    amount_unit = 'kg';
+  } else {
+    amount_display = d.total_g.toFixed(0);
+    amount_unit = 'g';
+  }
+
+  /* ── CARD 1: DIAGNOSIS ── */
+  var warnHtml = '';
+  if(d.memWarn){
+    var warnClass = d.membrane === 'espa' ? 'crit' : 'ok';
+    var warnIcon  = d.membrane === 'espa' ? '⚠️' : 'ℹ️';
+    var warnColor = d.membrane === 'espa' ? 'var(--crit-light)' : 'var(--ok-light)';
+    var warnBorder = d.membrane === 'espa' ? 'var(--crit-border)' : 'var(--ok-border)';
+    var warnText   = d.membrane === 'espa' ? 'var(--crit-dark)' : 'var(--ok-dark)';
+    warnHtml = '<div class="diag-warning" style="background:'+warnColor+';border-color:'+warnBorder+'">'
+      + '<div class="diag-warning-icon">'+warnIcon+'</div>'
+      + '<div class="diag-warning-text" style="color:'+warnText+'"><b>'+(d.membrane==='espa'?'RESTRICCIÓN DE MEMBRANA':'COMPATIBILIDAD DE MEMBRANA')+'</b>'+d.memWarn+'</div>'
+      + '</div>';
+  }
+  var tempValueClass = c.tempCritical ? 'diag-param-value temp-critical' : 'diag-param-value';
+  var diagCard = '<div class="diag-card '+c.chemType+'">'
+    + '<div class="diag-head">'
+    +   '<div class="diag-icon">'+(c.chemType==='acid'?'⚗️':c.chemType==='alk'?'🫧':'🔬')+'</div>'
+    +   '<div>'
+    +     '<span class="diag-type-badge">'+c.chemTypeName+'</span>'
+    +     '<div class="diag-title">'+c.chemName+'</div>'
+    +     '<div class="diag-subtitle">Para: '+c.foulingName+'</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="diag-body">'
+    +   '<div class="diag-params">'
+    +     '<div class="diag-param"><div class="diag-param-label">pH objetivo</div><div class="diag-param-value">'+c.pHLabel+'</div></div>'
+    +     '<div class="diag-param"><div class="diag-param-label">Temperatura</div><div class="'+tempValueClass+'">'+(c.tempCritical?'35 – 45°C ⚠️':c.tempIdeal+'°C ideal')+'</div></div>'
+    +     '<div class="diag-param"><div class="diag-param-label">Tiempo de remojo</div><div class="diag-param-value">'+c.soakLabel+'</div></div>'
+    +   '</div>'
+    +   '<div class="diag-mech">'
+    +     '<div class="diag-mech-label">Mecanismo de acción</div>'
+    +     c.mechanism
+    +   '</div>'
+    +   warnHtml
+    +   '<div class="diag-tip"><span style="flex-shrink:0;margin-top:1px">💡</span><span style="font-size:12px;color:var(--steel);line-height:1.55">'+c.tip+'</span></div>'
+    + '</div>'
+    + '</div>';
+
+  /* ── CARD 2: RECIPE ── */
+  var tempNote = c.tempCritical
+    ? '<div class="recipe-box"><div class="recipe-box-label">Temperatura (obligatorio)</div><div class="recipe-box-value critical">35 – 45°C</div></div>'
+    : '<div class="recipe-box"><div class="recipe-box-label">Temperatura ideal</div><div class="recipe-box-value highlight">'+c.tempIdeal+'°C</div></div>';
+  var recipeCard = '<div class="recipe-card">'
+    + '<div class="recipe-head">'
+    +   '<div class="recipe-head-icon">🧪</div>'
+    +   '<div><div class="recipe-head-title">Receta de preparación del tanque CIP</div>'
+    +     '<div class="recipe-head-sub">Concentración '+d.conc_pct+' · Basado en volumen real de la solución</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="recipe-body">'
+    +   '<div class="recipe-main">'
+    +     '<div class="recipe-main-label">Cantidad de limpiador a agregar al tanque</div>'
+    +     '<div><span class="recipe-main-amount">'+amount_display+'</span><span class="recipe-main-unit">'+amount_unit+' de producto</span></div>'
+    +     '<div class="recipe-main-conc">Para '+d.vol_L.toFixed(0)+' litros de agua permeada · '+d.conc_pct+' · pH objetivo '+c.pHLabel+'</div>'
+    +   '</div>'
+    +   '<div class="recipe-grid">'
+    +     '<div class="recipe-box"><div class="recipe-box-label">Volumen de agua permeada</div><div class="recipe-box-value highlight">'+d.vol_L.toFixed(0)+' litros</div></div>'
+    +     '<div class="recipe-box"><div class="recipe-box-label">pH esperado de la solución</div><div class="recipe-box-value">'+c.pHLabel+'</div></div>'
+    +     tempNote
+    +     '<div class="recipe-box"><div class="recipe-box-label">Presión máx. de circulación</div><div class="recipe-box-value">60 psi / 4.2 kg/cm²</div></div>'
+    +   '</div>'
+    +   '<div class="recipe-steps-label">Preparación de la solución</div>'
+    +   '<ul class="recipe-steps-list">'
+    +     '<li><span class="recipe-step-num">1</span>Llenar el tanque CIP con <b>'+d.vol_L.toFixed(0)+' L de agua permeada de OI</b> (libre de cloro, conductividad &lt; 10 µS/cm). No usar agua de alimentación directa.</li>'
+    +     '<li><span class="recipe-step-num">2</span>Encender el mezclador o bomba de recirculación del tanque. Agregar lentamente <b>'+amount_display+' '+amount_unit+'</b> del limpiador, vertiéndolo sobre el agua en movimiento. Nunca al revés.</li>'
+    +     '<li><span class="recipe-step-num">3</span>Mezclar por <b>5–10 minutos</b> hasta disolver completamente. Verificar que la solución sea homogénea y sin grumos.</li>'
+    +     '<li><span class="recipe-step-num">4</span>Medir el pH con medidor calibrado. Debe estar en <b>'+c.pHLabel+'</b>. Si está fuera de rango, agregar producto gradualmente o ajustar según instrucciones del proveedor.</li>'
+    +     (c.tempCritical ? '<li><span class="recipe-step-num">5</span><b style="color:var(--crit-dark)">⚠️ CALENTAR la solución a 35–40°C</b> antes de recircular. Este paso es obligatorio para la disolución de sílice. Sin temperatura adecuada, la limpieza será ineficaz.</li>' : '<li><span class="recipe-step-num">5</span>'+c.steps.prep_extra+'</li>')
+    +   '</ul>'
+    + '</div>'
+    + '</div>';
+
+  /* ── CARD 3: PROCEDURE (BITÁCORA) ── */
+  var step3Note = c.soakHoursMax >= 12
+    ? '<div class="proc-step-critical"><span style="flex-shrink:0">⚠️</span><span><b>Remojo prolongado obligatorio:</b> '+c.steps.soak_note+'</span></div>'
+    : '<div class="proc-step-tip"><span style="flex-shrink:0">💡</span><span>'+c.steps.soak_note+'</span></div>';
+  var tempWarningStep2 = c.tempCritical
+    ? '<div class="proc-step-critical"><span style="flex-shrink:0">🌡️</span><span><b>Mantener temperatura 35–40°C durante toda la recirculación.</b> La temperatura es esencial para la disolución de sílice. Verificar con termómetro.</span></div>'
+    : '';
+  var procCard = '<div class="proc-card">'
+    + '<div class="proc-head">'
+    +   '<div class="proc-head-icon">📋</div>'
+    +   '<div><div class="proc-head-title">Bitácora de procedimiento CIP</div>'
+    +     '<div class="proc-head-sub">Seguir en orden estricto — Registrar hora y pH en cada paso</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="proc-body">'
+
+    /* STEP 1 */
+    + '<div class="proc-step step-1">'
+    +   '<div class="proc-step-head">'
+    +     '<div class="proc-step-num">1</div>'
+    +     '<div class="proc-step-info"><div class="proc-step-title">Preparación de la solución</div><div class="proc-step-meta">Tiempo estimado: 15 – 20 min</div></div>'
+    +     '<span class="proc-step-badge">INICIO</span>'
+    +   '</div>'
+    +   '<div class="proc-step-body">'
+    +     '<ul class="proc-instructions">'
+    +       '<li><span class="proc-bullet"></span>Inspeccionar el tanque CIP, mangueras y filtros de cartucho. Enjuagar o reemplazar si hay suciedad residual de limpiezas anteriores.</li>'
+    +       '<li><span class="proc-bullet"></span>Llenar con <b>'+d.vol_L.toFixed(0)+' L de agua permeada de OI</b> (sin cloro). Activar el mezclador o bomba de recirculación del tanque.</li>'
+    +       '<li><span class="proc-bullet"></span>Agregar <b>'+amount_display+' '+amount_unit+'</b> del limpiador ácido/alcalino lentamente con mezclado continuo. Usar equipo de protección: lentes y guantes.</li>'
+    +       '<li><span class="proc-bullet"></span>Mezclar 5–10 minutos. Medir el pH: debe estar en el rango <b>'+c.pHLabel+'</b>. Anotar el pH medido en la bitácora.</li>'
+    +     '</ul>'
+    +     (c.tempCritical ? '<div class="proc-step-critical"><span style="flex-shrink:0">🌡️</span><span><b>CALENTAR A 35–40°C:</b> Activar calentador del tanque CIP. Verificar temperatura antes de comenzar la recirculación. Sin temperatura, la sílice no se disuelve.</span></div>' : '')
+    +     '<div class="proc-control"><span style="flex-shrink:0">✓</span><span><b>Punto de control:</b> pH de la solución en rango '+c.pHLabel+' · Temperatura OK · Sin grumos visibles en solución.</span></div>'
+    +   '</div>'
+    + '</div>'
+
+    /* STEP 2 */
+    + '<div class="proc-step step-2">'
+    +   '<div class="proc-step-head">'
+    +     '<div class="proc-step-num">2</div>'
+    +     '<div class="proc-step-info"><div class="proc-step-title">Recirculación a baja presión</div><div class="proc-step-meta">Mínimo '+c.circMinutes+' minutos por etapa del sistema</div></div>'
+    +     '<span class="proc-step-badge">ACTIVO</span>'
+    +   '</div>'
+    +   '<div class="proc-step-body">'
+    +     '<ul class="proc-instructions">'
+    +       '<li><span class="proc-bullet"></span>Bombear la solución a través de las vasijas a <b>presión máxima '+c.steps.circ_pressure+'</b>. Baja presión evita que el agua sea forzada a través de la membrana durante el lavado.</li>'
+    +       '<li><span class="proc-bullet"></span>Recircular por cada etapa del sistema de OI <b>una a la vez</b>, comenzando por la primera etapa. Mínimo <b>60 minutos por etapa</b>.</li>'
+    +       '<li><span class="proc-bullet"></span>Caudal de recirculación recomendado: <b>38 LPM por vasija de 4" · 152 LPM por vasija de 8"</b>. No sobrepasar para evitar daños.</li>'
+    +       '<li><span class="proc-bullet"></span>Monitorear el pH y color de la solución cada 15 minutos. Si la solución se enturbia o decolora excesivamente, desechar 10–15% del volumen y reponer con solución fresca del mismo pH.</li>'
+    +     '</ul>'
+    +     tempWarningStep2
+    +     '<div class="proc-control"><span style="flex-shrink:0">✓</span><span><b>Punto de control:</b> pH estable en rango '+c.pHLabel+' · Presión de circulación ≤ 60 psi · '+( c.tempCritical ? 'Temperatura mantenida 35–40°C · ' : '')+'Tiempo completado por etapa.</span></div>'
+    +   '</div>'
+    + '</div>'
+
+    /* STEP 3 */
+    + '<div class="proc-step step-3">'
+    +   '<div class="proc-step-head">'
+    +     '<div class="proc-step-num">3</div>'
+    +     '<div class="proc-step-info"><div class="proc-step-title">Remojo (soaking)</div><div class="proc-step-meta">'+c.soakLabel+' · Dejar membranas en reposo en el químico</div></div>'
+    +     '<span class="proc-step-badge">REMOJO</span>'
+    +   '</div>'
+    +   '<div class="proc-step-body">'
+    +     '<ul class="proc-instructions">'
+    +       '<li><span class="proc-bullet"></span>Apagar la bomba de proceso y cerrar las válvulas. Dejar la solución química dentro de las vasijas y tuberías.</li>'
+    +       '<li><span class="proc-bullet"></span>Remojo mínimo: <b>'+c.soakHoursMin+' horas</b> · Remojo recomendado: <b>'+c.soakHoursMax+' horas</b> (mayor tiempo = mejor resultado).</li>'
+    +       '<li><span class="proc-bullet"></span>Opcional: durante el remojo, realizar <b>recirculaciones cortas de 5 minutos cada 60 minutos</b> para renovar la solución en contacto con la membrana.</li>'
+    +       '<li><span class="proc-bullet"></span>Verificar y registrar el pH al inicio y al final del remojo. Si el pH cambia significativamente, la membrana absorbió el químico o la incrustación lo consumió.</li>'
+    +     '</ul>'
+    +     step3Note
+    +     '<div class="proc-control"><span style="flex-shrink:0">✓</span><span><b>Punto de control:</b> Tiempo de remojo completado · pH registrado al inicio y al final del remojo · Temperatura'+( c.tempCritical ? ' mantenida' : '' )+' anotada.</span></div>'
+    +   '</div>'
+    + '</div>'
+
+    /* STEP 4 */
+    + '<div class="proc-step step-4">'
+    +   '<div class="proc-step-head">'
+    +     '<div class="proc-step-num">4</div>'
+    +     '<div class="proc-step-info"><div class="proc-step-title">Enjuague final (flushing)</div><div class="proc-step-meta">Con agua permeada de OI hasta normalización del pH</div></div>'
+    +     '<span class="proc-step-badge">FINALIZAR</span>'
+    +   '</div>'
+    +   '<div class="proc-step-body">'
+    +     '<ul class="proc-instructions">'
+    +       '<li><span class="proc-bullet"></span>Vaciar el tanque CIP. Llenar nuevamente con <b>agua permeada limpia</b>.</li>'
+    +       '<li><span class="proc-bullet"></span>Recircular agua permeada por todas las vasijas, desviando el agua de rechazo al drenaje (no al tanque de producto limpio).</li>'
+    +       '<li><span class="proc-bullet"></span>Continuar enjuagando hasta que el <b>pH del agua de rechazo sea igual al pH del agua de entrada ± 0.5 unidades</b>. Medir en el mismo punto.</li>'
+    +       '<li><span class="proc-bullet"></span>'+d.c.steps.flush_note+'</li>'
+    +       '<li><span class="proc-bullet"></span>Una vez normalizado el pH, poner el sistema en operación. Durante las primeras 2–4 horas, <b>desviar el permeado al drenaje</b> como precaución adicional.</li>'
+    +     '</ul>'
+    +     '<div class="proc-control"><span style="flex-shrink:0">✓</span><span><b>Punto de control final:</b> pH del rechazo igual a pH de entrada ± 0.5 · Sin espuma visible en el rechazo · Conductividad del permeado estabilizada · Registrar flujo post-limpieza para comparar con baseline.</span></div>'
+    +   '</div>'
+    + '</div>'
+
+    + '</div></div>'; /* end proc-body + proc-card */
+
+  /* ── LEGAL CARD ── */
+  var legalCard = '<div class="legal-card">'
+    + '<b>⚖️ Aviso legal y de seguridad:</b> Este procedimiento es referencial y está basado en parámetros técnicos estándar de la industria. '
+    + 'La eficacia depende del grado, antigüedad y tipo exacto de incrustación. '
+    + '<b>Si el equipo operó con la válvula de rechazo totalmente cerrada, con presión de rechazo cero, o sin flujo por períodos prolongados, '
+    + 'la concentración extrema del agua puede haber generado incrustaciones irreversibles que no responden a ningún procedimiento de limpieza.</b> '
+    + 'Consulte con el equipo técnico de Carbotecnia para casos de incrustación severa o antes de realizar el procedimiento por primera vez. '
+    + 'Siempre use equipo de protección personal (EPP) al manejar productos químicos: lentes de seguridad, guantes resistentes a químicos y delantal. '
+    + 'Consulte la ficha de datos de seguridad (SDS) del producto antes de su uso.'
+    + '</div>';
+
+  /* ── ACTION ROW ── */
+  var actionRow = '<div class="action-row no-print">'
+    + '<button type="button" class="btn-print" id="btn-print">'
+    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>'
+    + 'Imprimir Bitácora de Lavado CIP'
+    + '</button>'
+    + '</div>';
+
+  el('results-body').innerHTML = diagCard + recipeCard + procCard + legalCard + actionRow;
+  el('btn-print').addEventListener('click', function(){ window.print(); });
+}
+
+/* ── reset ── */
+function resetAll(){
+  ['inp-symptom','inp-fouling','inp-membrane'].forEach(function(id){ el(id).value = ''; });
+  el('inp-volume').value = '';
+  el('inp-unit').value = 'L';
+  ['chip-ph','chip-temp','chip-soak','chip-conc'].forEach(function(id){
+    el(id).textContent = '—';
+    el(id).className = 'fc-value';
+  });
+  el('results-body').innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 8v4l3 3"/></svg><div>Selecciona el tipo de incrustación y el volumen del tanque CIP<br>para generar el procedimiento de lavado químico.</div></div>';
+}
+
+/* ── event listeners ── */
+el('btn-calc').addEventListener('click', calculate);
+el('btn-reset').addEventListener('click', resetAll);
+el('inp-fouling').addEventListener('change', liveUpdate);
+el('inp-symptom').addEventListener('change', liveUpdate);
+['inp-symptom','inp-fouling','inp-membrane','inp-volume'].forEach(function(id){
+  el(id).addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+});
+</script>
+</body>
+</html>
