@@ -219,6 +219,9 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .btn-print{border:0;border-radius:999px;padding:12px 24px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:13px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 6px 16px rgba(37,99,235,.28);display:flex;align-items:center;gap:8px;transition:transform .12s}
 .btn-print:hover{transform:translateY(-1px)}
 .btn-print.ok{background:linear-gradient(135deg,var(--ok),var(--ok-dark))}
+.btn-copy{border:1.5px solid var(--brand-border);border-radius:999px;padding:12px 22px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:13px;background:var(--brand-light);color:var(--brand-dark);display:flex;align-items:center;gap:8px;transition:transform .12s,background .12s}
+.btn-copy:hover{background:var(--brand-border);transform:translateY(-1px)}
+.btn-copy.ok{background:var(--ok-light);border-color:var(--ok-border);color:var(--ok-dark)}
 
 /* ── PRINT STYLES ── */
 @media print{
@@ -801,14 +804,93 @@ function renderResults(d){
 
   /* ── ACTION ROW ── */
   var actionRow = '<div class="action-row no-print">'
+    + '<button type="button" class="btn-copy" id="btn-copy">'
+    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
+    + 'Copiar resumen'
+    + '</button>'
     + '<button type="button" class="btn-print" id="btn-print">'
     + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>'
-    + 'Imprimir Bitácora de Lavado CIP'
+    + 'Imprimir Bitácora CIP'
     + '</button>'
     + '</div>';
 
   el('results-body').innerHTML = diagCard + recipeCard + procCard + legalCard + actionRow;
   el('btn-print').addEventListener('click', function(){ window.print(); });
+  el('btn-copy').addEventListener('click', function(){ copyReport(d); });
+}
+
+/* ── copy report ── */
+function copyReport(d){
+  var c = d.c;
+  var amount_display, amount_unit;
+  if(d.total_g >= 1000){ amount_display = (d.total_g/1000).toFixed(2); amount_unit = 'kg'; }
+  else { amount_display = d.total_g.toFixed(0); amount_unit = 'g'; }
+  var vol_display = d.vol_L.toFixed(0) + ' L' + (d.unit === 'gal' ? ' ('+d.vol_raw+' gal)' : '');
+
+  var lines = [];
+  lines.push('═══════════════════════════════════════════════════════');
+  lines.push('  BITÁCORA DE LAVADO QUÍMICO CIP — MEMBRANAS OI');
+  lines.push('  Carbotecnia · Water Treatment Tools');
+  lines.push('  Fecha: '+new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'}));
+  lines.push('═══════════════════════════════════════════════════════');
+  lines.push('');
+  lines.push('─── DIAGNÓSTICO ───────────────────────────────────────');
+  lines.push('  Síntoma:            '+d.symptomName);
+  lines.push('  Incrustación:       '+c.foulingName);
+  lines.push('  Membrana:           '+d.membraneName);
+  lines.push('  Tipo de limpiador:  '+c.chemTypeName);
+  if(d.memWarn) lines.push('  ⚠ '+d.memWarn);
+  lines.push('');
+  lines.push('─── RECETA DE PREPARACIÓN ─────────────────────────────');
+  lines.push('  Volumen CIP:        '+vol_display);
+  lines.push('  Concentración:      '+d.conc_pct);
+  lines.push('  Limpiador a añadir: '+amount_display+' '+amount_unit);
+  lines.push('  pH objetivo:        '+c.pHLabel);
+  lines.push('  Temperatura:        '+(c.tempCritical ? '35 – 45°C (OBLIGATORIO)' : c.tempIdeal+'°C ideal · máx '+c.tempMax+'°C'));
+  lines.push('  Presión máx. circ.: 60 psi / 4.2 kg/cm²');
+  lines.push('');
+  lines.push('─── PROCEDIMIENTO ─────────────────────────────────────');
+  lines.push('  PASO 1 · Preparación (~15–20 min)');
+  lines.push('    □ Llenar tanque con '+d.vol_L.toFixed(0)+' L de agua permeada (sin cloro)');
+  lines.push('    □ Agregar '+amount_display+' '+amount_unit+' de limpiador con mezclado continuo');
+  lines.push('    □ Verificar pH en rango '+c.pHLabel+(c.tempCritical?' · Calentar a 35–40°C':''));
+  lines.push('');
+  lines.push('  PASO 2 · Recirculación a baja presión (mín. '+c.circMinutes+' min/etapa)');
+  lines.push('    □ Presión máx: 60 psi · Flujo: 38 LPM (4") / 152 LPM (8")');
+  lines.push('    □ Una etapa a la vez · Monitorear pH y color de solución');
+  if(c.tempCritical) lines.push('    □ Mantener temperatura 35–40°C durante recirculación');
+  lines.push('');
+  lines.push('  PASO 3 · Remojo ('+c.soakLabel+')');
+  lines.push('    □ Apagar bomba · Dejar solución en vasijas');
+  lines.push('    □ Opcional: recircular 5 min cada 60 min');
+  lines.push('    □ Registrar pH al inicio y al final del remojo');
+  lines.push('');
+  lines.push('  PASO 4 · Enjuague final');
+  lines.push('    □ Vaciar tanque · Llenar con agua permeada limpia');
+  lines.push('    □ Enjuagar hasta que pH rechazo = pH entrada ± 0.5');
+  lines.push('    □ Mínimo '+(c.pHMax >= 12 ? '3–4' : '2')+' enjuagues completos del volumen CIP');
+  lines.push('    □ Desviar permeado al drenaje las primeras 2–4 h de operación');
+  lines.push('');
+  lines.push('─── RESULTADO ─────────────────────────────────────────');
+  lines.push('  Flujo antes del lavado:   _______ LPH / GPH');
+  lines.push('  Flujo después del lavado: _______ LPH / GPH');
+  lines.push('  Presión diferencial antes: _______ psi');
+  lines.push('  Presión diferencial después: _______ psi');
+  lines.push('  Resultado: □ Exitoso  □ Parcial  □ Sin recuperación');
+  lines.push('');
+  lines.push('  Operador: _________________________  Firma: _________');
+  lines.push('');
+  lines.push('───────────────────────────────────────────────────────');
+  lines.push('Generado con Carbotecnia · Calculadora de Limpieza CIP para OI');
+  lines.push('AVISO: Procedimiento referencial. Consulte al equipo técnico de');
+  lines.push('Carbotecnia para casos de incrustación severa o irreversible.');
+
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
+    var btn = el('btn-copy'), orig = btn.innerHTML;
+    btn.textContent = '✓ Resumen copiado';
+    btn.classList.add('ok');
+    setTimeout(function(){ btn.innerHTML = orig; btn.classList.remove('ok'); }, 2500);
+  });
 }
 
 /* ── reset ── */
