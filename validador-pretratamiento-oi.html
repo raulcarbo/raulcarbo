@@ -436,14 +436,14 @@ var PARAMS = [
     limit:3.0, limitLabel:'< 3.0', severity:'warn',
     failTitle:'ENSUCIAMIENTO COLOIDAL ELEVADO',
     failMsg:'El SDI alto indica elevada carga de partículas coloidales y materia orgánica en suspensión que taparán progresivamente los espaciadores y la superficie de la membrana. Un SDI > 3 causa ensuciamiento acelerado, aumento sostenido de presión diferencial (ΔP) y caída de flujo de permeado que acorta la vida útil del elemento.',
-    solution:'Revisar y mejorar la filtración multimedia (arena-antracita). Instalar prefiltros de cartucho absoluto o nominal de 1 a 5 µm antes de la bomba de alta presión. Optimizar coagulación-floculación. Para SDI consistentemente > 5, considerar ultrafiltración (UF) como pretratamiento previo a la OI.'
+    solution:'Revisar y mejorar la etapa de filtración de pretratamiento: filtración multimedia (arena-antracita), filtración de discos automática o lecho profundo son opciones efectivas según el caudal y la calidad del agua cruda. Instalar un postfiltro pulidor de cartucho 5 µm (absoluto) como última barrera de protección inmediatamente antes de la bomba de alta presión del equipo de OI. Optimizar coagulación-floculación si aplica. Para SDI consistentemente > 5, considerar ultrafiltración (UF) como pretratamiento previo a la OI.'
   },
   {
     id:'turbidity', label:'Turbidez', unit:'NTU',
     limit:5.0, limitLabel:'< 5.0 NTU', severity:'warn',
     failTitle:'TAPONAMIENTO FÍSICO POR SÓLIDOS EN SUSPENSIÓN',
     failMsg:'Turbidez elevada indica partículas que colmatarán la membrana rápidamente. El incremento en la presión diferencial (ΔP) entre alimentación y concentrado acorta drásticamente la vida útil y puede causar daño mecánico por telescopismo del elemento espiral (desplazamiento físico de las hojas de membrana).',
-    solution:'Mejorar la etapa de filtración multimedia. Instalar prefiltros de cartucho de 5 µm (absoluto) antes del equipo. Revisar el sistema de coagulación-floculación-sedimentación previo. Asegurar que los retrolavados del filtro multimedia no generen picos de turbidez que lleguen al equipo de OI.'
+    solution:'Mejorar la etapa de filtración de pretratamiento: filtración multimedia (arena-antracita), filtración de discos o lecho profundo. Instalar un postfiltro pulidor de cartucho 5 µm absoluto como última línea de defensa antes del equipo de OI. Revisar el sistema de coagulación-floculación-sedimentación previo. Asegurar que los retrolavados del filtro no generen picos de turbidez que lleguen a la membrana.'
   },
   {
     id:'silica', label:'Sílice (SiO₂)', unit:'mg/L',
@@ -655,9 +655,9 @@ function renderResults(results, critCount, warnCount, lsiResult){
       : '<div class="param-card-body"><div class="param-fail-title">RIESGO DE INCRUSTACIÓN CARBONATADA (CaCO₃)</div>'
         + '<div class="param-fail-msg">'+lsiMsg+'</div>'
         + '<div class="param-solution"><span class="solution-label">Solución requerida</span>'
-        + 'Dosificar antiincrustante aprobado para membranas de OI (ej. Genesys SI, Vitec 3000, Permatreat PC-191 o equivalente). '
+        + 'Dosificar antiincrustante aprobado para membranas de OI. '
         + 'Ajustar pH de alimentación a 7.0–7.5 para reducir la alcalinidad efectiva. '
-        + 'Si el agua tiene alta dureza, evaluar ablandamiento previo (zeolitas de intercambio iónico) para bajar la dureza cálcica y reducir el LSI desde la fuente.'
+        + 'Para aguas con dureza cálcica alta (> 250 mg/L CaCO₃), instalar un suavizador por intercambio iónico (resina catiónica) previo al equipo de OI: reduce directamente el calcio de alimentación y baja el LSI desde la fuente, complementando o reduciendo la dosis de antiincrustante necesaria.'
         + '</div></div>';
     lsiCard = `<div class="param-card ${cardClass}">
       <div class="param-card-head">
