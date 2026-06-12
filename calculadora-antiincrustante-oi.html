@@ -248,6 +248,10 @@ input[type=range]{width:100%;height:5px;border-radius:4px;accent-color:var(--bra
       <div class="fc-label">SI Sulfato de Calcio</div>
       <div class="fc-value" id="chip-sicaso4">—</div>
     </div>
+    <div class="formula-chip">
+      <div class="fc-label">SI Sulfato de Bario</div>
+      <div class="fc-value" id="chip-sibaso4">—</div>
+    </div>
   </div>
 
   <!-- layout -->
@@ -323,7 +327,18 @@ input[type=range]{width:100%;height:5px;border-radius:4px;accent-color:var(--bra
               <input type="number" id="inp-so4" placeholder="80" min="0" step="1">
               <span class="unit-badge">mg/L</span>
             </div>
-            <div class="limit-note">Necesario para calcular incrustación de CaSO₄ en el concentrado</div>
+            <div class="limit-note">Para calcular SI de CaSO₄ y BaSO₄ en el concentrado</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Bario (Ba²⁺) <em style="font-weight:400;color:var(--muted)">(opcional)</em></label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-ba" placeholder="0.05" min="0" step="0.01">
+              <span class="unit-badge">mg/L</span>
+            </div>
+            <div class="limit-note">Incluso trazas de Ba pueden causar SI BaSO₄ alto en el concentrado</div>
           </div>
 
           <div class="field">
@@ -356,6 +371,17 @@ input[type=range]{width:100%;height:5px;border-radius:4px;accent-color:var(--bra
               <span class="unit-badge">m³/h</span>
             </div>
             <div class="limit-note">Para calcular dosis en mL/h de bomba dosificadora</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Densidad del producto <em style="font-weight:400;color:var(--muted)">(opcional)</em></label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-dens" placeholder="1.10" min="0.9" max="1.3" step="0.01">
+              <span class="unit-badge">g/mL</span>
+            </div>
+            <div class="limit-note">Estándar: 1.00–1.10 · Superconcentrado: 1.15–1.20 · Ver ficha técnica</div>
           </div>
 
           <div class="field">
@@ -418,6 +444,16 @@ function calcSICaSO4(Ca_CaCO3, SO4_mgL, tempC){
   return Math.log10((Ca_mol * SO4_mol) / Ksp);
 }
 
+/* ── BaSO₄ Saturation Index ── */
+function calcSIBaSO4(Ba_mgL, SO4_mgL, tempC){
+  var Ba_mol  = Ba_mgL  / 137330;  /* Ba MW = 137.33 */
+  var SO4_mol = SO4_mgL / 96060;
+  if(Ba_mol <= 0 || SO4_mol <= 0) return null;
+  /* Ksp(BaSO₄) at 25°C = 1.1×10⁻¹⁰ — ~450,000× less soluble than CaSO₄ */
+  var Ksp = 1.1e-10 * Math.pow(10, -0.001 * (tempC - 25));
+  return Math.log10((Ba_mol * SO4_mol) / Ksp);
+}
+
 /* ── SiO₂ amorphous solubility ── */
 function solubilitySiO2(tempC, pH){
   var s0 = 120 * (1 + 0.02 * (tempC - 25));
@@ -429,13 +465,15 @@ function solubilitySiO2(tempC, pH){
 }
 
 /* ── Dose recommendation ── */
-function getDose(lsiConc, ssi, rec){
+function getDose(lsiConc, ssi, rec, siBaSO4){
   var score = 0;
-  if(lsiConc > 0.5)  score++;
-  if(lsiConc > 1.5)  score++;
-  if(ssi > 0.8)      score++;
-  if(ssi > 1.0)      score++;
-  if(rec > 80)       score++;
+  if(lsiConc > 0.5)                   score++;
+  if(lsiConc > 1.5)                   score++;
+  if(ssi > 0.8)                       score++;
+  if(ssi > 1.0)                       score++;
+  if(rec > 80)                        score++;
+  if(siBaSO4 !== null && siBaSO4 > 0) score++;   /* BaSO₄ muy insoluble — cualquier SI+ es relevante */
+  if(siBaSO4 !== null && siBaSO4 > 1) score++;
   if(score === 0)  return { risk:'bajo',     riskCls:'low',      min:1, max:3 };
   if(score <= 2)   return { risk:'moderado', riskCls:'moderate', min:3, max:6 };
   return               { risk:'alto',     riskCls:'high',     min:6, max:10 };
@@ -511,6 +549,19 @@ function liveUpdate(){
     el('chip-sicaso4').textContent = '—';
     el('chip-sicaso4').className = 'fc-value';
   }
+
+  /* BaSO₄ — needs Ba + SO₄ */
+  var ba = num('inp-ba');
+  if(ba !== null && so4 !== null && temp !== null){
+    var SI_ba = calcSIBaSO4(ba * CF, so4 * CF, temp);
+    if(SI_ba !== null){
+      el('chip-sibaso4').textContent = (SI_ba >= 0 ? '+' : '') + SI_ba.toFixed(2);
+      el('chip-sibaso4').className = 'fc-value ' + (SI_ba <= 0 ? 'ok' : SI_ba <= 1.0 ? 'warn' : 'crit');
+    }
+  } else {
+    el('chip-sibaso4').textContent = '—';
+    el('chip-sibaso4').className = 'fc-value';
+  }
 }
 
 /* ── main calculate ── */
@@ -524,6 +575,8 @@ function calculate(){
   var rec  = parseFloat(el('inp-rec').value);
   var flow  = num('inp-flow');
   var so4   = num('inp-so4');
+  var ba    = num('inp-ba');
+  var dens  = num('inp-dens') || 1.10;
   var price = num('inp-price');
 
   if([pH, temp, ca, alk, sio2, tds].some(function(v){ return v === null; })){
@@ -544,15 +597,17 @@ function calculate(){
   var Ssat   = solubilitySiO2(temp, pH_c);
   var ssi    = SiO2c / Ssat;
 
-  var SO4_c  = so4 !== null ? so4 * CF : null;
+  var SO4_c   = so4 !== null ? so4 * CF : null;
+  var Ba_c    = ba  !== null ? ba  * CF : null;
   var siCaSO4 = (so4 !== null) ? calcSICaSO4(Ca_c, SO4_c, temp) : null;
+  var siBaSO4 = (ba !== null && so4 !== null) ? calcSIBaSO4(Ba_c, SO4_c, temp) : null;
 
-  var dose   = getDose(lsi, ssi, rec);
+  var dose = getDose(lsi, ssi, rec, siBaSO4);
 
   renderResults({
-    pH, temp, ca, alk, sio2, tds, so4, rec, flow, price,
-    CF, pH_c, Ca_c, Alk_c, SiO2c, TDS_c, SO4_c,
-    lsi, pHs, Ssat, ssi, siCaSO4, dose
+    pH, temp, ca, alk, sio2, tds, so4, ba, rec, flow, dens, price,
+    CF, pH_c, Ca_c, Alk_c, SiO2c, TDS_c, SO4_c, Ba_c,
+    lsi, pHs, Ssat, ssi, siCaSO4, siBaSO4, dose
   });
 }
 
@@ -565,6 +620,7 @@ function renderResults(d){
     { name:'Alcalinidad (mg/L CaCO₃)', feed: d.alk.toFixed(0), conc: d.Alk_c.toFixed(0), note:'', over:d.Alk_c>500, near:d.Alk_c>300 },
     { name:'SiO₂ (mg/L)', feed: d.sio2.toFixed(1), conc: d.SiO2c.toFixed(1), note:'', over:d.SiO2c>d.Ssat, near:d.SiO2c>d.Ssat*0.8 },
     d.so4 !== null ? { name:'SO₄²⁻ (mg/L)', feed: d.so4.toFixed(0), conc: d.SO4_c.toFixed(0), note:'', over:d.siCaSO4>0.3, near:d.siCaSO4>0 } : null,
+    d.ba  !== null ? { name:'Ba²⁺ (mg/L)',  feed: d.ba.toFixed(3),  conc: d.Ba_c.toFixed(3),  note:'', over:d.siBaSO4>1.0, near:d.siBaSO4>0 } : null,
     { name:'TDS (mg/L)', feed: d.tds.toFixed(0),  conc: d.TDS_c.toFixed(0),  note:'', over:false, near:false }
   ];
 
@@ -709,19 +765,73 @@ function renderResults(d){
       </div>${cBody}</div>`;
   }
 
+  /* ── BaSO₄ card ── */
+  var baSO4Card = '';
+  if(d.siBaSO4 !== null){
+    var sib = d.siBaSO4;
+    var sibSign = sib >= 0 ? '+' : '';
+    var bClass, bIcon, bBadge, bBody;
+    if(sib <= 0){
+      bClass='pass'; bIcon='✓'; bBadge='b-ok'; bBody='';
+    } else if(sib <= 1.0){
+      bClass='fail-warn'; bIcon='!'; bBadge='b-warn';
+      bBody='<div class="param-card-body"><div class="param-fail-title">TENDENCIA A LA INCRUSTACIÓN DE BaSO₄ EN EL CONCENTRADO</div>'
+        +'<div class="param-fail-msg">El sulfato de bario (BaSO₄) es extremadamente insoluble — su Ksp es ~450,000 veces menor que el del CaSO₄. Incluso concentraciones de bario tan bajas como 0.05 mg/L pueden generar precipitación en el concentrado. El BaSO₄ precipita como una costra dura de color blanco-crema que no responde a limpiezas ácidas convencionales.</div>'
+        +'<div class="param-solution"><span class="solution-label">Solución</span>'
+        +'Dosificar antiincrustante de amplio espectro que incluya inhibición de BaSO₄ (verificar en la ficha técnica del producto que BaSO₄ esté listado). Algunos fosfonatos y poliacrilatos son efectivos. Verificar que la dosis sea suficiente para el SI calculado.</div></div>';
+    } else {
+      bClass='fail-crit'; bIcon='✕'; bBadge='b-crit';
+      bBody='<div class="param-card-body"><div class="param-fail-title">ALTO RIESGO DE INCRUSTACIÓN DE BaSO₄ — INSOLUBLE E IRREVERSIBLE</div>'
+        +'<div class="param-fail-msg">SI BaSO₄ = '+sibSign+sib.toFixed(2)+'. Con Ba = '+d.Ba_c.toFixed(3)+' mg/L y SO₄ = '+d.SO4_c.toFixed(0)+' mg/L en el concentrado, la precipitación es prácticamente inevitable sin antiincrustante específico. El BaSO₄ precipitado forma costras extremadamente duras que no se remueven con HCl ni NaOH — requieren agentes quelantes (EDTA) y pueden obligar al reemplazo de elementos.</div>'
+        +'<div class="param-solution"><span class="solution-label">Solución urgente</span>'
+        +'1) Confirmar concentración de Ba con análisis de laboratorio (ICP). '
+        +'2) Seleccionar antiincrustante específico con inhibición probada de BaSO₄ y SrSO₄. '
+        +'3) Dosificar a la dosis alta del rango recomendado. '
+        +'4) Si el SI supera +2.5, evaluar reducción de recuperación. '
+        +'Un programa de antiincrustante bien formulado puede proteger con SI BaSO₄ hasta ~3 en el concentrado.</div></div>';
+    }
+    baSO4Card = `<div class="param-card ${bClass}">
+      <div class="param-card-head">
+        <div class="param-status-icon">${bIcon}</div>
+        <div class="param-info">
+          <span class="param-name">Índice de Saturación de BaSO₄ en el concentrado</span>
+          <span class="param-val-row">
+            <span class="param-val-actual">SI = ${sibSign}${sib.toFixed(2)}</span>
+            &nbsp;·&nbsp; Ba conc = ${d.Ba_c.toFixed(3)} mg/L &nbsp;·&nbsp; SO₄ conc = ${d.SO4_c.toFixed(0)} mg/L
+          </span>
+        </div>
+        <span class="param-badge ${bBadge}">${sib<=0?'ESTABLE':sib<=1.0?'PRECAUCIÓN':'INCRUSTANTE'}</span>
+      </div>${bBody}</div>`;
+  }
+
   /* ── dose card ── */
   var riskLabel = {bajo:'RIESGO BAJO',moderado:'RIESGO MODERADO',alto:'RIESGO ALTO'}[d.dose.risk];
   var doseNoteHigh = d.dose.risk==='alto'
     ? '<br><b>Nota:</b> Con riesgo alto considerar también reducir el % de recuperación para disminuir el factor de concentración.'
     : '';
+
+  /* cost box — must be built before doseCard template literal */
+  var costHTML = '';
+  if(d.price !== null && d.flow !== null && d.flow > 0){
+    var costDayMin = (0.024 * d.price * d.flow * d.dose.min).toFixed(2);
+    var costDayMax = (0.024 * d.price * d.flow * d.dose.max).toFixed(2);
+    var costMoMin  = (0.024 * d.price * d.flow * d.dose.min * 30).toFixed(0);
+    var costMoMax  = (0.024 * d.price * d.flow * d.dose.max * 30).toFixed(0);
+    costHTML = `<div class="dose-box" style="grid-column:1/-1">
+      <div class="dose-box-label">Costo operativo estimado (a $${d.price}/kg)</div>
+      <div class="dose-range" style="font-size:18px">$${costDayMin} – $${costDayMax} <span style="font-size:13px;font-weight:400;color:var(--muted)">USD/día</span></div>
+      <div class="dose-unit">$${costMoMin} – $${costMoMax} USD/mes (30 días)</div>
+    </div>`;
+  }
+
   var flowBoxHTML = '';
   if(d.flow !== null && d.flow > 0){
-    var minMlh = (d.flow * 1000 * d.dose.min / (1.1 * 1000)).toFixed(1);
-    var maxMlh = (d.flow * 1000 * d.dose.max / (1.1 * 1000)).toFixed(1);
+    var minMlh = (d.flow * 1000 * d.dose.min / (d.dens * 1000)).toFixed(1);
+    var maxMlh = (d.flow * 1000 * d.dose.max / (d.dens * 1000)).toFixed(1);
     flowBoxHTML = `<div class="dose-box">
       <div class="dose-box-label">Bomba dosificadora · ${d.flow} m³/h</div>
       <div class="dose-range">${minMlh} – ${maxMlh}</div>
-      <div class="dose-unit">mL/h (producto dens. ~1.1 g/mL)</div>
+      <div class="dose-unit">mL/h (densidad ${d.dens.toFixed(2)} g/mL)</div>
     </div>`;
   }
 
@@ -751,21 +861,6 @@ function renderResults(d){
     </div>
   </div>`;
 
-  /* ── cost in dose card ── */
-  var costHTML = '';
-  if(d.price !== null && d.flow !== null && d.flow > 0){
-    /* Costo/día = 0.024 × precio($/kg) × Q(m³/h) × D(mg/L)   [equivalente métrico de la fórmula ASTM] */
-    var costDayMin = (0.024 * d.price * d.flow * d.dose.min).toFixed(2);
-    var costDayMax = (0.024 * d.price * d.flow * d.dose.max).toFixed(2);
-    var costMoMin  = (0.024 * d.price * d.flow * d.dose.min * 30).toFixed(0);
-    var costMoMax  = (0.024 * d.price * d.flow * d.dose.max * 30).toFixed(0);
-    costHTML = `<div class="dose-box" style="grid-column:1/-1">
-      <div class="dose-box-label">Costo operativo estimado (a $${d.price}/kg)</div>
-      <div class="dose-range" style="font-size:18px">$${costDayMin} – $${costDayMax} <span style="font-size:13px;font-weight:400;color:var(--muted)">USD/día</span></div>
-      <div class="dose-unit">$${costMoMin} – $${costMoMax} USD/mes (30 días)</div>
-    </div>`;
-  }
-
   var actionRow = `<div class="action-row">
     <button type="button" class="btn-copy" id="btn-copy">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -773,7 +868,7 @@ function renderResults(d){
     </button>
   </div>`;
 
-  el('results-body').innerHTML = compCard + lsiCard + ssiCard + caSO4Card + doseCard + actionRow;
+  el('results-body').innerHTML = compCard + lsiCard + ssiCard + caSO4Card + baSO4Card + doseCard + actionRow;
   el('btn-copy').addEventListener('click', function(){ copyReport(d); });
 }
 
@@ -813,14 +908,20 @@ function copyReport(d){
     lines.push('  SI CaSO₄:           '+si4sign+d.siCaSO4.toFixed(2)+' (SO₄²⁻ conc = '+d.SO4_c.toFixed(0)+' mg/L)');
     lines.push('    '+(d.siCaSO4<=0?'✓ ESTABLE':d.siCaSO4<=0.3?'! PRECAUCIÓN — yeso cerca de saturación':'✕ INCRUSTANTE — riesgo de yeso en el concentrado'));
   }
+  if(d.siBaSO4 !== null){
+    var sibsign = d.siBaSO4 >= 0 ? '+' : '';
+    lines.push('');
+    lines.push('  SI BaSO₄:           '+sibsign+d.siBaSO4.toFixed(2)+' (Ba conc = '+d.Ba_c.toFixed(3)+' mg/L / SO₄ conc = '+d.SO4_c.toFixed(0)+' mg/L)');
+    lines.push('    '+(d.siBaSO4<=0?'✓ ESTABLE':d.siBaSO4<=1.0?'! PRECAUCIÓN — BaSO₄ tendencia a precipitar':'✕ INCRUSTANTE — alta probabilidad de incrustación de BaSO₄'));
+  }
   lines.push('');
   lines.push('─── RECOMENDACIÓN DE ANTIINCRUSTANTE ─────────────────');
   lines.push('  Riesgo global:   '+d.dose.risk.toUpperCase());
   lines.push('  Dosis estimada:  '+d.dose.min+' – '+d.dose.max+' mg/L de agua de alimentación');
   if(d.flow){
-    var minMlh = (d.flow*1000*d.dose.min/(1.1*1000)).toFixed(1);
-    var maxMlh = (d.flow*1000*d.dose.max/(1.1*1000)).toFixed(1);
-    lines.push('  Bomba ('+d.flow+' m³/h): '+minMlh+' – '+maxMlh+' mL/h (producto dens. ~1.1 g/mL)');
+    var minMlh = (d.flow*1000*d.dose.min/(d.dens*1000)).toFixed(1);
+    var maxMlh = (d.flow*1000*d.dose.max/(d.dens*1000)).toFixed(1);
+    lines.push('  Bomba ('+d.flow+' m³/h): '+minMlh+' – '+maxMlh+' mL/h (densidad '+d.dens.toFixed(2)+' g/mL)');
   }
   if(d.price && d.flow){
     var cd_min = (0.024*d.price*d.flow*d.dose.min).toFixed(2);
@@ -842,30 +943,31 @@ function copyReport(d){
 
 /* ── reset ── */
 function resetAll(){
-  ['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-so4','inp-tds','inp-flow','inp-price'].forEach(function(id){
+  ['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-so4','inp-ba','inp-tds','inp-flow','inp-dens','inp-price'].forEach(function(id){
     el(id).value = '';
   });
   el('inp-rec').value = 65;
   el('rec-display').textContent = '65';
   el('inp-rec').style.setProperty('--fill', '63.6%');
-  ['chip-cf','chip-lsi','chip-sio2','chip-ssi','chip-sicaso4'].forEach(function(id){
+  ['chip-cf','chip-lsi','chip-sio2','chip-ssi','chip-sicaso4','chip-sibaso4'].forEach(function(id){
     el(id).className = 'fc-value';
   });
-  el('chip-cf').textContent      = '—';
-  el('chip-lsi').textContent     = '—';
-  el('chip-sio2').textContent    = '— mg/L';
-  el('chip-ssi').textContent     = '—';
-  el('chip-sicaso4').textContent = '—';
+  el('chip-cf').textContent       = '—';
+  el('chip-lsi').textContent      = '—';
+  el('chip-sio2').textContent     = '— mg/L';
+  el('chip-ssi').textContent      = '—';
+  el('chip-sicaso4').textContent  = '—';
+  el('chip-sibaso4').textContent  = '—';
   el('results-body').innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v4l3 3"/></svg><div>Ingresa el análisis del agua de alimentación<br>y el porcentaje de recuperación del sistema.</div></div>';
 }
 
 el('btn-calc').addEventListener('click', calculate);
 el('btn-reset').addEventListener('click', resetAll);
-['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-so4','inp-tds'].forEach(function(id){
+['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-so4','inp-ba','inp-tds'].forEach(function(id){
   el(id).addEventListener('input', liveUpdate);
   el(id).addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
 });
-['inp-flow','inp-price'].forEach(function(id){
+['inp-flow','inp-dens','inp-price'].forEach(function(id){
   el(id).addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
 });
 
