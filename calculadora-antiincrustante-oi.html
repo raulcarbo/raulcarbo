@@ -244,6 +244,10 @@ input[type=range]{width:100%;height:5px;border-radius:4px;accent-color:var(--bra
       <div class="fc-label">SSI Sílice</div>
       <div class="fc-value" id="chip-ssi">—</div>
     </div>
+    <div class="formula-chip">
+      <div class="fc-label">SI Sulfato de Calcio</div>
+      <div class="fc-value" id="chip-sicaso4">—</div>
+    </div>
   </div>
 
   <!-- layout -->
@@ -313,6 +317,17 @@ input[type=range]{width:100%;height:5px;border-radius:4px;accent-color:var(--bra
 
           <div class="field">
             <div class="field-label-row">
+              <label>Sulfatos (SO₄²⁻)</label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-so4" placeholder="80" min="0" step="1">
+              <span class="unit-badge">mg/L</span>
+            </div>
+            <div class="limit-note">Necesario para calcular incrustación de CaSO₄ en el concentrado</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
               <label>Sólidos disueltos totales (TDS)</label>
             </div>
             <div class="inline-wrap">
@@ -341,6 +356,17 @@ input[type=range]{width:100%;height:5px;border-radius:4px;accent-color:var(--bra
               <span class="unit-badge">m³/h</span>
             </div>
             <div class="limit-note">Para calcular dosis en mL/h de bomba dosificadora</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <label>Precio del antiincrustante <em style="font-weight:400;color:var(--muted)">(opcional)</em></label>
+            </div>
+            <div class="inline-wrap">
+              <input type="number" id="inp-price" placeholder="4.50" min="0" step="0.1">
+              <span class="unit-badge">$/kg</span>
+            </div>
+            <div class="limit-note">Para estimar costo operativo diario de dosificación</div>
           </div>
 
           <div class="btn-row">
@@ -379,6 +405,17 @@ function calcLSI(pH, tempC, caHard, alk, tds){
   var D = Math.log10(Math.max(alk, 0.01));
   var pHs = (9.3 + A + B) - (C + D);
   return { lsi: pH - pHs, pHs: pHs };
+}
+
+/* ── CaSO₄ (gypsum) Saturation Index ── */
+function calcSICaSO4(Ca_CaCO3, SO4_mgL, tempC){
+  /* Ca from as-CaCO3 to mol/L: Ca²⁺ MW=40, CaCO3 MW=100 → Ca_mol = Ca_CaCO3/100000 */
+  var Ca_mol  = Ca_CaCO3 / 100000;
+  var SO4_mol = SO4_mgL  / 96000;
+  if(Ca_mol <= 0 || SO4_mol <= 0) return null;
+  /* Ksp gypsum (CaSO4·2H2O) ≈ 4.93×10⁻⁵ at 25°C; decreases slightly with T */
+  var Ksp = 4.93e-5 * Math.pow(10, -0.002 * (tempC - 25));
+  return Math.log10((Ca_mol * SO4_mol) / Ksp);
 }
 
 /* ── SiO₂ amorphous solubility ── */
@@ -461,6 +498,19 @@ function liveUpdate(){
   var ssi  = sio2c / Ssat;
   el('chip-ssi').textContent = ssi.toFixed(2);
   el('chip-ssi').className = 'fc-value ' + (ssi <= 0.8 ? 'ok' : ssi <= 1.0 ? 'warn' : 'crit');
+
+  /* CaSO₄ — needs SO₄ input */
+  var so4 = num('inp-so4');
+  if(so4 !== null){
+    var SI_c = calcSICaSO4(ca * CF, so4 * CF, temp);
+    if(SI_c !== null){
+      el('chip-sicaso4').textContent = (SI_c >= 0 ? '+' : '') + SI_c.toFixed(2);
+      el('chip-sicaso4').className = 'fc-value ' + (SI_c <= 0 ? 'ok' : SI_c <= 0.3 ? 'warn' : 'crit');
+    }
+  } else {
+    el('chip-sicaso4').textContent = '—';
+    el('chip-sicaso4').className = 'fc-value';
+  }
 }
 
 /* ── main calculate ── */
@@ -472,7 +522,9 @@ function calculate(){
   var sio2 = num('inp-sio2');
   var tds  = num('inp-tds');
   var rec  = parseFloat(el('inp-rec').value);
-  var flow = num('inp-flow');
+  var flow  = num('inp-flow');
+  var so4   = num('inp-so4');
+  var price = num('inp-price');
 
   if([pH, temp, ca, alk, sio2, tds].some(function(v){ return v === null; })){
     alert('Completa todos los campos del análisis de agua para calcular.'); return;
@@ -492,12 +544,15 @@ function calculate(){
   var Ssat   = solubilitySiO2(temp, pH_c);
   var ssi    = SiO2c / Ssat;
 
+  var SO4_c  = so4 !== null ? so4 * CF : null;
+  var siCaSO4 = (so4 !== null) ? calcSICaSO4(Ca_c, SO4_c, temp) : null;
+
   var dose   = getDose(lsi, ssi, rec);
 
   renderResults({
-    pH, temp, ca, alk, sio2, tds, rec, flow,
-    CF, pH_c, Ca_c, Alk_c, SiO2c, TDS_c,
-    lsi, pHs, Ssat, ssi, dose
+    pH, temp, ca, alk, sio2, tds, so4, rec, flow, price,
+    CF, pH_c, Ca_c, Alk_c, SiO2c, TDS_c, SO4_c,
+    lsi, pHs, Ssat, ssi, siCaSO4, dose
   });
 }
 
@@ -509,9 +564,11 @@ function renderResults(d){
     { name:'Dureza Ca (mg/L CaCO₃)', feed: d.ca.toFixed(0),  conc: d.Ca_c.toFixed(0),  note:'', over:d.Ca_c>600, near:d.Ca_c>400 },
     { name:'Alcalinidad (mg/L CaCO₃)', feed: d.alk.toFixed(0), conc: d.Alk_c.toFixed(0), note:'', over:d.Alk_c>500, near:d.Alk_c>300 },
     { name:'SiO₂ (mg/L)', feed: d.sio2.toFixed(1), conc: d.SiO2c.toFixed(1), note:'', over:d.SiO2c>d.Ssat, near:d.SiO2c>d.Ssat*0.8 },
+    d.so4 !== null ? { name:'SO₄²⁻ (mg/L)', feed: d.so4.toFixed(0), conc: d.SO4_c.toFixed(0), note:'', over:d.siCaSO4>0.3, near:d.siCaSO4>0 } : null,
     { name:'TDS (mg/L)', feed: d.tds.toFixed(0),  conc: d.TDS_c.toFixed(0),  note:'', over:false, near:false }
   ];
 
+  rows = rows.filter(function(r){ return r !== null; });
   var tableRows = rows.map(function(r){
     var cls = r.over ? 'conc-val over' : (r.near ? 'conc-val near' : 'conc-val');
     return '<tr>'
@@ -614,6 +671,44 @@ function renderResults(d){
       <span class="param-badge ${ssiBadge}">${d.ssi<=0.8?'ESTABLE':d.ssi<=1.0?'PRECAUCIÓN':'SATURADA'}</span>
     </div>${ssiSol}</div>`;
 
+  /* ── CaSO₄ card ── */
+  var caSO4Card = '';
+  if(d.siCaSO4 !== null){
+    var si = d.siCaSO4;
+    var siSign = si >= 0 ? '+' : '';
+    var cClass, cIcon, cBadge, cBody;
+    if(si <= 0){
+      cClass='pass'; cIcon='✓'; cBadge='b-ok'; cBody='';
+    } else if(si <= 0.3){
+      cClass='fail-warn'; cIcon='!'; cBadge='b-warn';
+      cBody='<div class="param-card-body"><div class="param-fail-title">TENDENCIA A LA INCRUSTACIÓN DE CaSO₄ (YESO)</div>'
+        +'<div class="param-fail-msg">El sulfato de calcio (yeso) está cerca de la saturación en el concentrado. El CaSO₄ tiene cinética de cristalización más lenta que el CaCO₃, pero una vez precipitado es difícil de remover con limpiezas CIP convencionales.</div>'
+        +'<div class="param-solution"><span class="solution-label">Solución</span>'
+        +'Dosificar antiincrustante de base polímero (poliacrilato o polimaleato) con efecto sobre sulfato de calcio. Verificar con el proveedor que el producto cubra CaSO₄. Si la dureza es alta y el pH no permite acidificación, considerar reducir recuperación.</div></div>';
+    } else {
+      cClass='fail-crit'; cIcon='✕'; cBadge='b-crit';
+      cBody='<div class="param-card-body"><div class="param-fail-title">ALTO RIESGO DE INCRUSTACIÓN DE CaSO₄ EN EL CONCENTRADO</div>'
+        +'<div class="param-fail-msg">El producto iónico [Ca²⁺][SO₄²⁻] supera el Ksp del yeso en el concentrado. El CaSO₄ precipitará progresivamente reduciendo el flujo de permeado y aumentando la presión diferencial. A diferencia del CaCO₃, la incrustación por yeso no se disuelve con ácido y requiere limpiezas alcalinas especiales (EDTA, NaOH).</div>'
+        +'<div class="param-solution"><span class="solution-label">Solución urgente</span>'
+        +'1) Reducir recuperación del sistema para bajar el factor de concentración. '
+        +'2) Dosificar antiincrustante específico para sulfato de calcio a dosis alta. '
+        +'3) Evaluar acidificación parcial (reduce la dureza efectiva sin impacto en SO₄). '
+        +'4) Para aguas con sulfatos muy altos, considerar ablandamiento con intercambio iónico previo.</div></div>';
+    }
+    caSO4Card = `<div class="param-card ${cClass}">
+      <div class="param-card-head">
+        <div class="param-status-icon">${cIcon}</div>
+        <div class="param-info">
+          <span class="param-name">Índice de Saturación de CaSO₄ en el concentrado</span>
+          <span class="param-val-row">
+            <span class="param-val-actual">SI = ${siSign}${si.toFixed(2)}</span>
+            &nbsp;·&nbsp; SO₄²⁻ conc = ${d.SO4_c.toFixed(0)} mg/L &nbsp;·&nbsp; Ca conc = ${d.Ca_c.toFixed(0)} mg/L CaCO₃
+          </span>
+        </div>
+        <span class="param-badge ${cBadge}">${si<=0?'ESTABLE':si<=0.3?'PRECAUCIÓN':'INCRUSTANTE'}</span>
+      </div>${cBody}</div>`;
+  }
+
   /* ── dose card ── */
   var riskLabel = {bajo:'RIESGO BAJO',moderado:'RIESGO MODERADO',alto:'RIESGO ALTO'}[d.dose.risk];
   var doseNoteHigh = d.dose.risk==='alto'
@@ -646,6 +741,7 @@ function renderResults(d){
         <div class="dose-unit">mg/L de agua de alimentación</div>
       </div>
       ${flowBoxHTML || '<div class="dose-box"><div class="dose-box-label">Para calcular mL/h</div><div style="font-size:12px;color:var(--muted);padding-top:8px;line-height:1.5">Ingresa el caudal de alimentación en el campo opcional del panel izquierdo.</div></div>'}
+      ${costHTML}
     </div>
     <div class="dose-note">
       <b>Importante:</b> Este rango es una guía preliminar basada en LSI y SSI del concentrado.
@@ -655,6 +751,21 @@ function renderResults(d){
     </div>
   </div>`;
 
+  /* ── cost in dose card ── */
+  var costHTML = '';
+  if(d.price !== null && d.flow !== null && d.flow > 0){
+    /* Costo/día = 0.024 × precio($/kg) × Q(m³/h) × D(mg/L)   [equivalente métrico de la fórmula ASTM] */
+    var costDayMin = (0.024 * d.price * d.flow * d.dose.min).toFixed(2);
+    var costDayMax = (0.024 * d.price * d.flow * d.dose.max).toFixed(2);
+    var costMoMin  = (0.024 * d.price * d.flow * d.dose.min * 30).toFixed(0);
+    var costMoMax  = (0.024 * d.price * d.flow * d.dose.max * 30).toFixed(0);
+    costHTML = `<div class="dose-box" style="grid-column:1/-1">
+      <div class="dose-box-label">Costo operativo estimado (a $${d.price}/kg)</div>
+      <div class="dose-range" style="font-size:18px">$${costDayMin} – $${costDayMax} <span style="font-size:13px;font-weight:400;color:var(--muted)">USD/día</span></div>
+      <div class="dose-unit">$${costMoMin} – $${costMoMax} USD/mes (30 días)</div>
+    </div>`;
+  }
+
   var actionRow = `<div class="action-row">
     <button type="button" class="btn-copy" id="btn-copy">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -662,7 +773,7 @@ function renderResults(d){
     </button>
   </div>`;
 
-  el('results-body').innerHTML = compCard + lsiCard + ssiCard + doseCard + actionRow;
+  el('results-body').innerHTML = compCard + lsiCard + ssiCard + caSO4Card + doseCard + actionRow;
   el('btn-copy').addEventListener('click', function(){ copyReport(d); });
 }
 
@@ -696,6 +807,12 @@ function copyReport(d){
   lines.push('');
   lines.push('  SSI sílice:         '+d.ssi.toFixed(2)+' (SiO₂ conc = '+d.SiO2c.toFixed(1)+' mg/L / Ssat = '+d.Ssat.toFixed(0)+' mg/L)');
   lines.push('    '+(d.ssi<=0.8?'✓ ESTABLE — bajo riesgo de incrustación de sílice':d.ssi<=1.0?'! PRECAUCIÓN — cerca de saturación':'✕ SOBRE-SATURADA — precipitación de sílice esperada'));
+  if(d.siCaSO4 !== null){
+    var si4sign = d.siCaSO4 >= 0 ? '+' : '';
+    lines.push('');
+    lines.push('  SI CaSO₄:           '+si4sign+d.siCaSO4.toFixed(2)+' (SO₄²⁻ conc = '+d.SO4_c.toFixed(0)+' mg/L)');
+    lines.push('    '+(d.siCaSO4<=0?'✓ ESTABLE':d.siCaSO4<=0.3?'! PRECAUCIÓN — yeso cerca de saturación':'✕ INCRUSTANTE — riesgo de yeso en el concentrado'));
+  }
   lines.push('');
   lines.push('─── RECOMENDACIÓN DE ANTIINCRUSTANTE ─────────────────');
   lines.push('  Riesgo global:   '+d.dose.risk.toUpperCase());
@@ -704,6 +821,11 @@ function copyReport(d){
     var minMlh = (d.flow*1000*d.dose.min/(1.1*1000)).toFixed(1);
     var maxMlh = (d.flow*1000*d.dose.max/(1.1*1000)).toFixed(1);
     lines.push('  Bomba ('+d.flow+' m³/h): '+minMlh+' – '+maxMlh+' mL/h (producto dens. ~1.1 g/mL)');
+  }
+  if(d.price && d.flow){
+    var cd_min = (0.024*d.price*d.flow*d.dose.min).toFixed(2);
+    var cd_max = (0.024*d.price*d.flow*d.dose.max).toFixed(2);
+    lines.push('  Costo estimado:  $'+cd_min+' – $'+cd_max+' USD/día  (a $'+d.price+'/kg)');
   }
   lines.push('  NOTA: Confirmar dosis con el proveedor del antiincrustante mediante jar test.');
   lines.push('');
@@ -720,29 +842,32 @@ function copyReport(d){
 
 /* ── reset ── */
 function resetAll(){
-  ['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-tds','inp-flow'].forEach(function(id){
+  ['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-so4','inp-tds','inp-flow','inp-price'].forEach(function(id){
     el(id).value = '';
   });
   el('inp-rec').value = 65;
   el('rec-display').textContent = '65';
   el('inp-rec').style.setProperty('--fill', '63.6%');
-  ['chip-cf','chip-lsi','chip-sio2','chip-ssi'].forEach(function(id){
+  ['chip-cf','chip-lsi','chip-sio2','chip-ssi','chip-sicaso4'].forEach(function(id){
     el(id).className = 'fc-value';
   });
-  el('chip-cf').textContent  = '—';
-  el('chip-lsi').textContent = '—';
-  el('chip-sio2').textContent= '— mg/L';
-  el('chip-ssi').textContent = '—';
+  el('chip-cf').textContent      = '—';
+  el('chip-lsi').textContent     = '—';
+  el('chip-sio2').textContent    = '— mg/L';
+  el('chip-ssi').textContent     = '—';
+  el('chip-sicaso4').textContent = '—';
   el('results-body').innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v4l3 3"/></svg><div>Ingresa el análisis del agua de alimentación<br>y el porcentaje de recuperación del sistema.</div></div>';
 }
 
 el('btn-calc').addEventListener('click', calculate);
 el('btn-reset').addEventListener('click', resetAll);
-['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-tds'].forEach(function(id){
+['inp-ph','inp-temp','inp-ca','inp-alk','inp-sio2','inp-so4','inp-tds'].forEach(function(id){
   el(id).addEventListener('input', liveUpdate);
   el(id).addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
 });
-el('inp-flow').addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+['inp-flow','inp-price'].forEach(function(id){
+  el(id).addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+});
 
 /* init slider fill */
 (function(){
