@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Preguntas frecuentes · Suavizadores de agua · Carbotecnia</title>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  SECCIÓN FAQs · SUAVIZADORES DE AGUA · CARBOTECNIA
+  ════════════════════════════════════════════════════════════════════
+  CÓMO USAR EN WORDPRESS / WPBAKERY PAGE BUILDER:
+  Agrega un elemento "Raw HTML" (o un bloque "HTML personalizado") y
+  pega TODO lo que está entre  INICIO BLOQUE WORDPRESS  y
+  FIN BLOQUE WORDPRESS. El CSS está encapsulado bajo .cbt-faq y no
+  afecta al resto de tu tema. No requiere JavaScript: los acordeones
+  usan <details>/<summary> nativos del navegador.
+
+  CÓMO AGREGAR UNA PREGUNTA:
+  Copia un bloque <details class="cbt-faq-item" ...> completo dentro
+  del grupo que toque y cambia la pregunta (<summary>) y la respuesta
+  (<p>). Usa el mismo name="..." que las demás preguntas del grupo
+  (así dentro de cada grupo solo se abre una a la vez).
+
+  CÓMO AGREGAR UN GRUPO (CLUSTER) NUEVO:
+  Copia un bloque <section class="cbt-faq-grupo"> completo, cambia el
+  título y usa un name nuevo en sus <details> (ej. name="faq-g7").
+  ════════════════════════════════════════════════════════════════════
+-->
+<!-- Si tu tema de WordPress ya carga Outfit e Inter, puedes omitir estas 3 líneas -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0; background:#ffffff;">
+
+<!-- INICIO BLOQUE WORDPRESS -->
+<style>
+  .cbt-faq {
+    --azul: #2e9bf6;          /* azul de acento (botones del sitio) */
+    --tinta: #1d2630;         /* títulos */
+    --texto: #4b5663;         /* cuerpo */
+    --borde: #e4eaf0;         /* bordes suaves */
+    font-family: 'Inter', -apple-system, "Segoe UI", sans-serif;
+    color: var(--texto);
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 20px 56px;
+    box-sizing: border-box;
+  }
+  .cbt-faq *, .cbt-faq *::before, .cbt-faq *::after { box-sizing: border-box; }
+
+  /* ── Encabezado de la sección ── */
+  .cbt-faq .cbt-faq-titulo {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 34px);
+    line-height: 1.15;
+    color: var(--tinta);
+    text-align: center;
+    margin: 0 0 12px;
+  }
+  .cbt-faq .cbt-faq-intro {
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 8px;
+    text-wrap: pretty;
+  }
+
+  /* ── Grupo (cluster) de preguntas ── */
+  .cbt-faq .cbt-faq-grupo { margin-top: 36px; }
+  .cbt-faq .cbt-faq-grupo-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.3;
+    color: var(--tinta);
+    margin: 0 0 14px;
+    padding: 0;
+  }
+  .cbt-faq .cbt-faq-grupo-titulo::before {
+    content: "";
+    width: 4px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background: var(--azul);
+  }
+
+  /* ── Pregunta (acordeón nativo) ── */
+  .cbt-faq .cbt-faq-item {
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    background: #ffffff;
+    margin: 0 0 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .cbt-faq .cbt-faq-item:hover,
+  .cbt-faq .cbt-faq-item[open] { border-color: var(--azul); }
+  .cbt-faq .cbt-faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    list-style: none;
+    cursor: pointer;
+    padding: 15px 18px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 16.5px;
+    line-height: 1.4;
+    color: var(--tinta);
+  }
+  .cbt-faq .cbt-faq-item summary::-webkit-details-marker { display: none; }
+  .cbt-faq .cbt-faq-item[open] summary { color: var(--azul); }
+  .cbt-faq .cbt-faq-item summary::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    background-color: var(--azul);
+    -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>') center / contain no-repeat;
+    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>') center / contain no-repeat;
+    transition: transform 0.2s ease;
+  }
+  .cbt-faq .cbt-faq-item[open] summary::after { transform: rotate(45deg); }
+  .cbt-faq .cbt-faq-item p {
+    margin: 0;
+    padding: 0 18px 16px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--texto);
+  }
+
+  @media (max-width: 480px) {
+    .cbt-faq { padding: 28px 16px 40px; }
+    .cbt-faq .cbt-faq-item summary { padding: 13px 14px; font-size: 15.5px; }
+    .cbt-faq .cbt-faq-item p { padding: 0 14px 14px; }
+  }
+</style>
+
+<div class="cbt-faq">
+
+  <h2 class="cbt-faq-titulo">Preguntas frecuentes sobre suavizadores de agua</h2>
+  <p class="cbt-faq-intro">Resolvemos las dudas más comunes sobre cómo funcionan, cómo elegir, cómo operar y cómo dar mantenimiento a los suavizadores de agua industriales. ¿No encuentras tu pregunta? <a href="https://www.carbotecnia.info/contacto/" style="color:#2e9bf6;">Contáctanos</a>.</p>
+
+  <!-- ═══ GRUPO: Fundamentos y beneficios ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Qué es, cómo funciona y para qué sirve</h3>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Qué es un suavizador de agua?</summary>
+      <p>Un suavizador de agua es un equipo que reduce la dureza del agua, es decir, las sales de calcio y magnesio que forman incrustaciones (sarro). Trabaja por intercambio iónico: el agua pasa por un lecho de resina que captura el calcio y el magnesio y los reemplaza por sodio. El resultado es un agua "blanda" que protege tuberías, calderas, intercambiadores y equipos de proceso. Es una de las tecnologías más usadas en la industria cuando el problema principal del agua es la dureza.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Cómo funciona un sistema de ablandamiento de agua?</summary>
+      <p>El ablandamiento funciona por intercambio iónico. La resina viene cargada con iones de sodio; al pasar el agua dura, la resina atrae el calcio y el magnesio y libera sodio en su lugar. Cuando la resina se satura, deja de remover dureza y debe regenerarse: se hace pasar una solución de salmuera (sal disuelta) que devuelve sodio a la resina y arrastra el calcio y magnesio al drenaje. Después de enjuagar, el suavizador vuelve a estar listo para operar. Este ciclo de servicio y regeneración se repite de forma continua.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Cómo funciona un suavizador de agua y cuáles son sus beneficios?</summary>
+      <p>El suavizador intercambia el calcio y magnesio del agua por sodio mediante una resina, y se regenera periódicamente con salmuera. Sus beneficios principales son evitar incrustaciones en calderas, torres de enfriamiento, intercambiadores y tuberías; mejorar la eficiencia térmica y energética; reducir el consumo de detergentes y químicos; y alargar la vida útil de los equipos. En la industria, suavizar el agua suele traducirse en menos paros por sarro, menor mantenimiento correctivo y procesos más estables.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Cuál es la diferencia entre un suavizador y un filtro de agua?</summary>
+      <p>Un filtro retiene partículas o adsorbe sustancias (sólidos, turbiedad, cloro, olor, orgánicos), mientras que un suavizador no "filtra": intercambia iones para quitar dureza (calcio y magnesio). Es decir, atacan problemas distintos. Un filtro de sedimentos o de carbón no reduce el sarro, y un suavizador no quita turbiedad ni cloro. En muchas plantas se usan juntos y en orden: primero filtración o carbón como pretratamiento y luego el suavizador, porque cada equipo resuelve una parte del tratamiento.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Es seguro beber agua suavizada?</summary>
+      <p>El agua suavizada agrega una pequeña cantidad de sodio, proporcional a la dureza que se removió, por lo que en general es apta para uso común. Las personas con dietas bajas en sodio o con indicación médica deben considerarlo, y para esos casos existe la alternativa de regenerar con cloruro de potasio en lugar de sal. En instalaciones donde se busca agua de bebida con sodio bajo, a veces se suaviza solo el agua de proceso o se combina con otras etapas. Ante una duda de salud, conviene consultar con un especialista.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Cuáles son las señales de que una planta necesita un suavizador de agua?</summary>
+      <p>Las señales típicas son incrustaciones blancas (sarro) en tuberías, calderas e intercambiadores; pérdida de eficiencia térmica o mayor consumo de combustible; fallas frecuentes en boquillas, válvulas y resistencias; y un análisis de agua con dureza elevada. También lo evidencia un alto consumo de detergentes o químicos y manchas en superficies. La forma más confiable de confirmarlo es un análisis de agua que mida la dureza; con ese dato se decide si conviene suavizar y de qué capacidad.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Vale la pena instalar un suavizador de agua en una planta industrial?</summary>
+      <p>Cuando la dureza del agua es alta y hay equipos sensibles al sarro (calderas, torres, intercambiadores, membranas), un suavizador suele pagarse solo: evita incrustaciones que reducen la transferencia de calor, aumentan el consumo de energía y provocan paros y reparaciones. El retorno depende de la dureza, el caudal y el valor de los equipos protegidos. Para valorarlo conviene comparar el costo del suavizador y su operación (sal, resina) contra las pérdidas actuales por sarro y mantenimiento.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Cuál es el impacto ambiental de un suavizador de agua?</summary>
+      <p>El principal impacto es la descarga de salmuera durante la regeneración, que contiene la sal y la dureza removida y debe manejarse conforme a la normatividad de descargas. Por el lado positivo, al evitar incrustaciones el suavizador mejora la eficiencia energética y alarga la vida de los equipos, lo que reduce consumos y residuos. Un buen diseño ajusta la dosis de sal y la frecuencia de regeneración para minimizar el consumo de sal y agua, disminuyendo tanto el costo como la carga al drenaje.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g1") -->
+  </section>
+
+  <!-- ═══ GRUPO: Compra, proveedores y marcas ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Compra, proveedores y marcas</h3>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Dónde comprar suavizadores de agua industriales en México?</summary>
+      <p>Carbotecnia suministra suavizadores de agua industriales, resinas de intercambio iónico, válvulas, sal y refacciones desde Zapopan, Jalisco, con cobertura nacional. Para recomendar el equipo correcto conviene partir de un análisis de agua (dureza), el caudal requerido y las horas de operación, de modo que el suavizador quede bien dimensionado. Si compartes esos datos al cotizar, se puede definir el tamaño del tanque, el volumen de resina y el tipo de válvula adecuados para tu aplicación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Qué marcas de suavizadores de agua tienen mayor reputación en México?</summary>
+      <p>En el segmento industrial, buena parte de la reputación recae en los componentes clave: las válvulas de control (por ejemplo, Clack) y la calidad de la resina de intercambio iónico, más que en una "marca de suavizador" como conjunto. Un equipo confiable combina un tanque adecuado, resina de buena calidad y una válvula robusta y de fácil servicio. Más que elegir por marca, conviene definir el requerimiento técnico —caudal, dureza, automatización— y seleccionar componentes que lo cubran con respaldo de refacciones.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Dónde comprar suavizadores de agua automáticos y eficientes en México?</summary>
+      <p>Carbotecnia ofrece suavizadores automáticos con válvulas de control que gestionan la regeneración por tiempo o por volumen de agua tratada. Los modelos por volumen suelen ser más eficientes porque regeneran solo cuando se agota la capacidad, ahorrando sal y agua. Para elegir el equipo automático adecuado se parte de la dureza, el caudal y el patrón de consumo; con eso se define la válvula y la capacidad. Indicar esos datos al cotizar permite proponer un equipo eficiente y no sobredimensionado.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Qué empresas mexicanas fabrican o distribuyen suavizadores de agua?</summary>
+      <p>Carbotecnia fabrica, arma y distribuye suavizadores de agua para aplicaciones industriales y comerciales, además de suministrar resina, sal, válvulas y refacciones. Al elegir proveedor conviene revisar que ofrezca asesoría técnica para dimensionar, disponibilidad de consumibles a futuro (resina y sal) y soporte para la válvula de control. Eso asegura no solo la compra inicial, sino la continuidad de operación del equipo a lo largo de los años.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Dónde encontrar suavizadores de agua con instalación incluida en México?</summary>
+      <p>El alcance de instalación se define en cada proyecto; conviene consultar a Carbotecnia si necesitas suministro con montaje y puesta en marcha o solo el equipo para que lo instale tu personal. Para cotizar la instalación ayuda describir el sitio: espacio disponible, presión y diámetro de la tubería, punto de conexión al drenaje para la salmuera y suministro eléctrico para la válvula. Con esos datos se aclara qué incluye la instalación y se evitan trabajos no previstos.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Cuáles son los modelos de suavizadores industriales más utilizados en México?</summary>
+      <p>Los más comunes son los suavizadores simples (un tanque) para servicios con horarios definidos, y los suavizadores dúplex o en paralelo (dos o más tanques) cuando se requiere agua suave las 24 horas sin interrupción durante la regeneración. La elección depende del caudal, las horas de operación y de si el proceso tolera o no una pausa al regenerar. Definir el patrón de consumo (continuo o intermitente) es lo que orienta entre un equipo simple, dúplex o múltiple.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Dónde comprar suavizadores de agua industriales en Guadalajara?</summary>
+      <p>Carbotecnia tiene su sede en Zapopan, Jalisco, dentro de la Zona Metropolitana de Guadalajara, y ofrece suavizadores industriales, resina, sal y refacciones, además de envíos al resto del país. Estar en la región facilita la asesoría para dimensionar, el suministro de consumibles y el soporte técnico. Para una recomendación acertada conviene llevar o solicitar un análisis de agua con la dureza, junto con el caudal y las horas de uso de tu planta.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Qué proveedores ofrecen suavizadores para calderas y torres de enfriamiento?</summary>
+      <p>Carbotecnia suministra suavizadores para alimentación de calderas y para reposición de torres de enfriamiento, aplicaciones donde la dureza causa incrustaciones críticas. En calderas, el agua suave protege la transferencia de calor y reduce purgas; en torres, evita el sarro en el relleno y los intercambiadores. El dimensionamiento parte de la dureza, el caudal de reposición o de alimentación y las horas de operación. En sistemas exigentes, el suavizador suele integrarse con otras etapas de tratamiento.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g2") -->
+  </section>
+
+  <!-- ═══ GRUPO: Costos, cotizaciones, certificación y garantía ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Costos, cotizaciones y garantía</h3>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Puedo obtener cotizaciones de empresas que venden suavizadores de agua?</summary>
+      <p>Sí. Carbotecnia prepara cotizaciones de suavizadores industriales según las condiciones de cada proyecto. Para que la propuesta sea precisa conviene enviar la dureza del agua (de un análisis), el caudal de servicio, las horas de operación y si requieres agua suave de forma continua. Con esos datos se define el tamaño del tanque, el volumen de resina, el tipo de válvula y el consumo estimado de sal, de modo que la cotización refleje el equipo correcto y su costo de operación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Cuánto cuesta instalar un suavizador de agua industrial?</summary>
+      <p>El costo depende del tamaño del equipo (caudal y volumen de resina), del tipo de válvula y nivel de automatización, de los materiales del tanque y de las condiciones del sitio para la instalación (plomería, conexión a drenaje, energía). Además del equipo, conviene contemplar la operación: consumo de sal y reemplazo eventual de resina. Para un costo cerrado, lo ideal es cotizar con la dureza, el caudal y una descripción del punto de instalación; así se incluye todo lo necesario sin sorpresas.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Existen suavizadores de agua certificados y con garantía en México?</summary>
+      <p>La garantía y las certificaciones dependen de los componentes (válvula, tanque, resina) y del fabricante, por lo que conviene que Carbotecnia confirme la cobertura, la duración y las condiciones en cada cotización. Por lo general, la garantía exige operar el equipo dentro de sus parámetros de diseño y con el mantenimiento recomendado, incluido el pretratamiento para proteger la resina. Antes de comprar, pregunta qué cubre, por cuánto tiempo y qué condiciones de operación y mantenimiento debes cumplir para conservarla.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Cuáles son los suavizadores industriales con mejor relación entre costo y desempeño?</summary>
+      <p>La mejor relación costo-desempeño no la da un modelo fijo, sino un equipo bien dimensionado: ni corto (que se satura y deja pasar dureza) ni sobrado (que encarece la inversión y el consumo de sal). Los suavizadores automáticos con regeneración por volumen suelen ofrecer buen equilibrio, porque regeneran solo cuando se agota la capacidad y ahorran sal y agua. La clave es partir de la dureza y el consumo reales para elegir el tamaño y la válvula que minimizan el costo total de operación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Dónde solicitar una cotización de suavizadores de agua industriales en México?</summary>
+      <p>Puedes solicitarla directamente a Carbotecnia a través de su sitio web. Para recibir una propuesta rápida y precisa, incluye la dureza del agua, el caudal de servicio, las horas de operación, si necesitas suministro continuo de agua suave y las condiciones del sitio (presión, espacio, drenaje). Cuanta más información proporciones, mejor se podrá dimensionar el equipo, estimar el consumo de sal y proponer la opción con mejor relación costo-beneficio para tu aplicación.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g3") -->
+  </section>
+
+  <!-- ═══ GRUPO: Instalación, mantenimiento y servicio ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Instalación, mantenimiento y servicio técnico</h3>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Existen servicios de instalación profesional para suavizadores de agua en México?</summary>
+      <p>Sí; el alcance se define por proyecto, y conviene consultar a Carbotecnia si requieres suministro con instalación y puesta en marcha o solo el equipo. Una instalación correcta cuida las conexiones de entrada y salida, el bypass, la descarga de salmuera al drenaje y la alimentación eléctrica de la válvula. Para definir el servicio ayuda describir el sitio —espacio, presión, diámetro de tubería, punto de drenaje— y el nivel de apoyo que necesitas según la capacidad de tu personal.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Cuáles son los problemas comunes en los suavizadores de agua?</summary>
+      <p>Los más frecuentes son fuga de dureza (el agua sale dura), bajo nivel o falta de sal en el tanque de salmuera, formación de puentes o bloques de sal, resina agotada o dañada por cloro o hierro, fallas en la válvula de control y regeneraciones mal programadas. La mayoría se previene con pretratamiento adecuado, sal de buena calidad y mantenimiento de la válvula. Medir la dureza a la salida es la forma rápida de detectar si el suavizador está trabajando bien.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Qué mantenimiento requiere un suavizador de agua industrial?</summary>
+      <p>El mantenimiento básico incluye mantener sal en el tanque de salmuera, revisar y limpiar el pozo de salmuera y el inyector, verificar la programación y el funcionamiento de la válvula, comprobar la dureza del agua tratada y, periódicamente, evaluar el estado de la resina. También conviene asegurar el pretratamiento (remoción de cloro y sólidos) que protege la resina. Llevar un registro de consumo de sal y de dureza a la salida ayuda a anticipar ajustes y a detectar problemas a tiempo.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Qué mantenimiento requieren los suavizadores de agua y qué empresas lo ofrecen?</summary>
+      <p>Requieren reposición de sal, limpieza del sistema de salmuera, revisión de la válvula de control, verificación de la dureza de salida y evaluación o reemplazo de la resina cuando pierde capacidad. Carbotecnia ofrece asesoría técnica sobre operación, consumibles y mantenimiento, además del suministro de sal, resina y refacciones. Para recibir apoyo útil conviene describir el equipo, su antigüedad, el agua que trata y los síntomas observados, de modo que se recomiende la acción correctiva o el consumible adecuado.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Existen empresas que ofrecen asesoría para elegir un suavizador de agua?</summary>
+      <p>Sí. Carbotecnia asesora la selección del suavizador a partir del análisis de agua (dureza y otros parámetros), el caudal, las horas de operación y la necesidad o no de suministro continuo. Esta asesoría evita comprar por intuición: un equipo mal dimensionado se satura pronto o consume sal de más. Lo más valioso que puedes aportar es un análisis de agua reciente y el perfil de consumo de tu planta; con eso se define tipo, tamaño, resina y válvula.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Existen servicios de reparación de suavizadores de agua en México?</summary>
+      <p>El soporte de Carbotecnia incluye asesoría para diagnosticar fallas y el suministro de refacciones (partes de válvula, inyectores, distribuidores) y consumibles como resina y sal. Muchas fallas comunes —fuga de dureza, mala regeneración, problemas de salmuera— se resuelven ajustando la programación, limpiando el sistema de salmuera o reemplazando una pieza de la válvula. Para orientar la reparación conviene identificar la marca y modelo de la válvula y describir el síntoma; así se define la refacción o el procedimiento correcto.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>Servicio técnico para suavizadores de agua industriales</summary>
+      <p>Carbotecnia, desde Zapopan, Jalisco, brinda soporte técnico sobre operación, mantenimiento y consumibles de suavizadores industriales, con atención en la Zona Metropolitana de Guadalajara y suministro a otras ciudades. El servicio cubre desde la puesta a punto de la regeneración hasta el reemplazo de resina o partes de la válvula. Para agendar atención conviene tener identificados el equipo, su ubicación en planta y el motivo (instalación, falla, cambio de resina), de modo que el soporte llegue preparado.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Qué requisitos de plomería necesita la instalación de un suavizador?</summary>
+      <p>Una instalación típica requiere conexión de entrada (agua dura) y salida (agua suave), preferentemente con un bypass para poder aislar el equipo sin cortar el suministro; un punto de descarga al drenaje para el agua de regeneración (salmuera); presión y diámetro de tubería acordes al caudal; y una toma eléctrica para la válvula automática. También conviene espacio para el tanque de sal y acceso para mantenimiento. Confirmar estos puntos antes de comprar evita ajustes de obra de última hora.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g4") -->
+  </section>
+
+  <!-- ═══ GRUPO: Selección, dimensionamiento y diseño ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Selección, dimensionamiento y diseño</h3>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Qué tipo de suavizador es adecuado para tratar agua con alta dureza?</summary>
+      <p>Para agua muy dura conviene un suavizador con suficiente volumen de resina y, a menudo, regeneración por volumen para mantener buena capacidad sin fugas de dureza; en servicios continuos suele optarse por un sistema dúplex que garantiza agua suave incluso durante la regeneración. La alta dureza acorta el ciclo de servicio, por lo que el equipo debe dimensionarse con ese dato para no regenerar demasiado seguido. El análisis de agua con la dureza exacta es el punto de partida para elegir el tipo y tamaño.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Qué suavizador es más eficiente para remover calcio y magnesio?</summary>
+      <p>Todos los suavizadores de intercambio iónico remueven calcio y magnesio; la eficiencia la determina el dimensionamiento y la regeneración, no un "tipo mágico". Un equipo con resina de buena calidad, bien dimensionado para la dureza y el caudal, y con regeneración por volumen, aprovecha mejor la sal y entrega dureza baja de forma constante. La eficiencia se optimiza ajustando la dosis de sal por regeneración: más sal da más capacidad por ciclo, pero hay un punto óptimo de costo-beneficio que conviene calcular.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>Comparativa de sistemas de suavización de agua</summary>
+      <p>Los sistemas se comparan principalmente por su esquema de operación: simple (un tanque, con pausa durante la regeneración), dúplex o en paralelo (agua suave continua 24/7) y por su tipo de regeneración (por tiempo o por volumen). Los de volumen ahorran sal y agua; los dúplex aseguran continuidad en procesos críticos. La comparación correcta cruza el caudal, las horas de operación, la necesidad de suministro continuo y el consumo de sal. No hay un sistema "mejor" universal: depende del patrón de consumo de la planta.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Cómo elegir el tamaño adecuado de un suavizador de agua?</summary>
+      <p>El tamaño se elige con tres datos: la dureza del agua, el caudal de servicio (caudal pico en litros por minuto o m³/h) y el volumen de agua a tratar entre regeneraciones. La dureza por el volumen define la carga total de dureza, y con la capacidad de la resina se calcula cuánta resina se necesita y cada cuánto regenerar. El caudal pico define el diámetro del tanque y la válvula para no exceder la velocidad de servicio. Con esos datos se evita un equipo corto (fuga de dureza) o sobrado (costo y sal de más).</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Cuáles son las diferencias entre suavizadores automáticos y manuales?</summary>
+      <p>En un suavizador manual, la regeneración la inicia un operador; en uno automático, una válvula de control la ejecuta sola, por tiempo (programada en días) o por volumen (al tratar cierta cantidad de agua). Los automáticos por volumen son los más eficientes porque regeneran solo cuando se agota la capacidad, evitando desperdicio de sal y agua y reduciendo el riesgo de error humano. Los manuales pueden servir en instalaciones muy sencillas, pero en la industria casi siempre conviene la automatización por consistencia y ahorro.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Dónde solicitar un análisis de agua para dimensionar un suavizador?</summary>
+      <p>El análisis de agua es el punto de partida para dimensionar correctamente: como mínimo se necesita la dureza, y es útil conocer cloro, hierro, manganeso, pH y sólidos, porque afectan el pretratamiento y la vida de la resina. Carbotecnia puede orientarte sobre qué parámetros analizar y cómo interpretarlos para la selección del equipo. Con un análisis confiable y tu perfil de consumo, se define el tamaño del suavizador, el volumen de resina y la frecuencia de regeneración.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Cómo dimensionar un suavizador para una planta industrial?</summary>
+      <p>El dimensionamiento parte de la dureza (en ppm de CaCO₃ o granos), el caudal de servicio y el volumen de agua a suavizar entre regeneraciones. Con dureza × volumen se obtiene la carga total de dureza; dividiéndola entre la capacidad de intercambio de la resina se calcula el volumen de resina necesario y la autonomía. El caudal pico fija el diámetro del tanque para respetar la velocidad de servicio recomendada. También se define si se requiere un sistema dúplex para operación continua. Carbotecnia apoya con este cálculo.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Qué capacidad de resina necesita un suavizador industrial?</summary>
+      <p>La cantidad de resina se calcula a partir de la carga de dureza a remover entre regeneraciones (dureza por volumen de agua) y de la capacidad de intercambio de la resina, que depende de la dosis de sal usada en la regeneración. A mayor dureza o mayor volumen entre regeneraciones, más resina se requiere. También influye la frecuencia de regeneración deseada: regenerar más seguido permite menos resina, pero gasta más sal y agua. El equilibrio óptimo se define con el análisis de agua y el perfil de consumo.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Qué pretratamiento necesita un suavizador industrial?</summary>
+      <p>La resina se daña o se ensucia con ciertos contaminantes, así que el pretratamiento suele incluir remoción de cloro (que oxida y degrada la resina), de hierro y manganeso (que la ensucian y reducen su capacidad) y de sólidos o turbiedad (que la tapan). Según el agua, se anteponen filtros de sedimentos, carbón activado o filtros catalíticos. Un buen pretratamiento alarga mucho la vida de la resina y mantiene el desempeño del suavizador; por eso se diseña a partir del análisis de agua.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Qué válvulas automáticas se recomiendan para suavizadores industriales?</summary>
+      <p>Para suavizadores industriales se recomiendan válvulas de control robustas y de fácil servicio, como las de la línea Clack, que permiten regeneración por tiempo o por volumen y manejan distintos caudales. La elección de la válvula depende del caudal de servicio, del diámetro del tanque y de si se opera en simple o dúplex. Una válvula adecuada y con refacciones disponibles facilita el mantenimiento a largo plazo. Carbotecnia puede recomendar la válvula según el dimensionamiento del equipo.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g5") -->
+  </section>
+
+  <!-- ═══ GRUPO: Operación: sal, resina y regeneración ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Operación: sal, resina y regeneración</h3>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Cada cuánto se debe añadir sal a un suavizador de agua?</summary>
+      <p>No hay un intervalo fijo: el consumo de sal depende de la dureza del agua, del volumen de agua tratada y de la frecuencia de regeneración. La regla práctica es revisar el tanque de salmuera con regularidad y mantener siempre sal por encima del nivel del agua, reponiendo antes de que se agote. En equipos de alto consumo habrá que rellenar más seguido. Llevar un registro del consumo de sal ayuda a estimar el ritmo de reposición y a detectar si el equipo está gastando más de lo esperado.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Qué tipo de sal se debe usar en un suavizador de agua?</summary>
+      <p>Se recomienda sal de alta pureza para suavizadores, en pellets o en grano (sal solar), formulada para regeneración; tiene bajo contenido de impurezas que de otro modo ensuciarían el tanque de salmuera y la resina. Conviene evitar sales con aditivos o de baja pureza, porque dejan residuos y favorecen puentes o lodos en el tanque. Usar la sal correcta reduce el mantenimiento del sistema de salmuera y mantiene una regeneración eficiente. Carbotecnia suministra sal apta para suavizadores.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>Proveedores de sal para suavizadores de agua en México</summary>
+      <p>Carbotecnia suministra sal para suavizadores (alta pureza, en pellets o grano) junto con los equipos, resinas y refacciones, con envíos a nivel nacional. Al abastecer sal conviene calcular el consumo según la dureza y el volumen de agua tratada, para planear las reposiciones y aprovechar compras por volumen. Usar sal de calidad apta para suavizadores evita problemas en el tanque de salmuera y mantiene la eficiencia de regeneración, reduciendo el mantenimiento del equipo.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Cómo calcular la frecuencia de regeneración de un suavizador?</summary>
+      <p>La frecuencia se calcula comparando la capacidad del suavizador (volumen de resina × capacidad de intercambio, según la dosis de sal) con la carga de dureza que recibe (dureza × volumen de agua tratada). Cuando el agua tratada acumula la dureza que el equipo puede manejar, toca regenerar. En las válvulas por volumen, esto se programa según los metros cúbicos tratados; en las de tiempo, según los días estimados. Conocer la dureza y el consumo diario permite ajustar la frecuencia para no regenerar de más ni dejar pasar dureza.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Cuánta sal consume un suavizador industrial?</summary>
+      <p>El consumo de sal depende del volumen de resina, de la dosis de sal por regeneración y de la frecuencia con que se regenera, que a su vez dependen de la dureza y del volumen de agua tratada. Una dosis de sal más alta por regeneración da más capacidad por ciclo, pero gasta más sal; una más baja ahorra sal pero rinde menos por ciclo. El consumo óptimo se ajusta buscando el mejor balance entre sal usada y capacidad obtenida. Por eso conviene dimensionar y programar el equipo con datos reales del agua.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Qué dureza debe tener el agua después de un suavizador?</summary>
+      <p>Un suavizador bien operado entrega agua con dureza muy baja, prácticamente cercana a cero, lo que se considera agua blanda. El valor objetivo concreto depende de la aplicación: la alimentación de calderas o ciertos procesos exige durezas mínimas, mientras que otros usos toleran un poco más. Si la dureza a la salida sube por encima de lo esperado, suele indicar fuga de dureza por resina agotada, regeneración deficiente o canalización. Medir periódicamente la dureza de salida es la mejor forma de verificar el desempeño.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Qué causa la fuga de dureza en un suavizador?</summary>
+      <p>La fuga de dureza (agua que sale dura) suele deberse a regeneración insuficiente —poca sal o salmuera mal preparada—, resina agotada o dañada por cloro o hierro, canalización del agua dentro del lecho, caudal por encima del de diseño, o fallas en la válvula de control. También influye un tanque de salmuera sin sal o con puentes que impiden formar salmuera. El diagnóstico parte de revisar la sal, la programación de la válvula y el estado de la resina; corregir la causa restablece el agua suave.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Cómo seleccionar la resina de intercambio iónico para un suavizador?</summary>
+      <p>Para suavización se usa resina catiónica de ácido fuerte en forma sódica, que es el estándar para remover dureza. La selección considera la calidad y el grado de entrecruzamiento de la resina (un mayor entrecruzamiento resiste mejor el cloro y la oxidación), y la compatibilidad con el agua a tratar. Si el agua trae cloro, hierro o mucha materia orgánica, conviene reforzar el pretratamiento o elegir una resina más resistente. Carbotecnia puede recomendar la resina adecuada según el análisis de agua y la aplicación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Cuándo se debe cambiar la resina de un suavizador de agua?</summary>
+      <p>La resina se cambia cuando pierde capacidad de forma permanente: el suavizador regenera bien pero ya no entrega agua suave, o el ciclo de servicio se acorta cada vez más. Esto ocurre por oxidación (cloro), ensuciamiento (hierro, orgánicos) o desgaste tras años de uso. Una resina bien protegida con pretratamiento puede durar varios años; sin pretratamiento, mucho menos. La señal práctica es la fuga de dureza persistente pese a una regeneración correcta; ahí conviene evaluar y reemplazar la resina.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Se puede usar cloruro de potasio en lugar de sal en un suavizador?</summary>
+      <p>Sí. El cloruro de potasio (KCl) puede sustituir a la sal común (cloruro de sodio) para regenerar, y es la opción cuando se quiere evitar aportar sodio al agua, por motivos de salud o de proceso. Suele requerir un pequeño ajuste en la dosificación y tiene mayor costo que la sal, además de necesitar buena calidad para no ensuciar el sistema. Si te interesa esta alternativa, conviene confirmar la dosis adecuada y la compatibilidad con tu equipo para mantener el desempeño.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g6") -->
+  </section>
+
+  <!-- ➕ Para un grupo nuevo: copia un <section class="cbt-faq-grupo">...</section>
+       completo, cambia el título y usa un name nuevo en sus <details>
+       (ej. name="faq-g7"). -->
+
+</div>
+<!-- FIN BLOQUE WORDPRESS -->
+
+</body>
+</html>
