@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Preguntas frecuentes · Filtros de agua industriales · Carbotecnia</title>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  SECCIÓN FAQs · FILTROS DE AGUA INDUSTRIALES · CARBOTECNIA
+  ════════════════════════════════════════════════════════════════════
+  CÓMO USAR EN WPBAKERY PAGE BUILDER:
+  En el editor de la página, agrega un elemento "Raw HTML" (o "Texto
+  sin formato / Raw HTML") y pega TODO lo que está entre
+  INICIO BLOQUE WORDPRESS  y  FIN BLOQUE WORDPRESS.
+  (También sirve en un bloque "HTML personalizado" del editor de
+  bloques.) Todo el CSS está encapsulado bajo .cbt-faq, no afecta al
+  resto de tu tema. No requiere JavaScript: los acordeones usan
+  <details>/<summary> nativos del navegador.
+
+  CÓMO AGREGAR UNA PREGUNTA:
+  Copia un bloque <details class="cbt-faq-item" ...> completo dentro
+  del grupo que toque y cambia la pregunta (<summary>) y la respuesta
+  (<p>). Hay comentarios ➕ marcando el lugar exacto. Usa el mismo
+  name="..." que las demás preguntas del grupo (así dentro de cada
+  grupo solo se abre una a la vez).
+
+  CÓMO AGREGAR UN GRUPO (CLUSTER) NUEVO:
+  Copia un bloque <section class="cbt-faq-grupo"> completo, cambia el
+  título y usa un name nuevo en sus <details> (ej. name="faq-g8").
+  ════════════════════════════════════════════════════════════════════
+-->
+<!-- Si tu tema de WordPress ya carga Outfit e Inter, puedes omitir estas 3 líneas -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0; background:#ffffff;">
+
+<!-- INICIO BLOQUE WORDPRESS -->
+<style>
+  .cbt-faq {
+    --azul: #2e9bf6;          /* azul de acento (botones del sitio) */
+    --tinta: #1d2630;         /* títulos */
+    --texto: #4b5663;         /* cuerpo */
+    --borde: #e4eaf0;         /* bordes suaves */
+    font-family: 'Inter', -apple-system, "Segoe UI", sans-serif;
+    color: var(--texto);
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 20px 56px;
+    box-sizing: border-box;
+  }
+  .cbt-faq *, .cbt-faq *::before, .cbt-faq *::after { box-sizing: border-box; }
+
+  /* ── Encabezado de la sección ── */
+  .cbt-faq .cbt-faq-titulo {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 34px);
+    line-height: 1.15;
+    color: var(--tinta);
+    text-align: center;
+    margin: 0 0 12px;
+  }
+  .cbt-faq .cbt-faq-intro {
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 8px;
+    text-wrap: pretty;
+  }
+
+  /* ── Grupo (cluster) de preguntas ── */
+  .cbt-faq .cbt-faq-grupo { margin-top: 36px; }
+  .cbt-faq .cbt-faq-grupo-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.3;
+    color: var(--tinta);
+    margin: 0 0 14px;
+    padding: 0;
+  }
+  .cbt-faq .cbt-faq-grupo-titulo::before {
+    content: "";
+    width: 4px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background: var(--azul);
+  }
+
+  /* ── Pregunta (acordeón nativo) ── */
+  .cbt-faq .cbt-faq-item {
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    background: #ffffff;
+    margin: 0 0 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .cbt-faq .cbt-faq-item:hover,
+  .cbt-faq .cbt-faq-item[open] { border-color: var(--azul); }
+  .cbt-faq .cbt-faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    list-style: none;
+    cursor: pointer;
+    padding: 15px 18px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 16.5px;
+    line-height: 1.4;
+    color: var(--tinta);
+  }
+  .cbt-faq .cbt-faq-item summary::-webkit-details-marker { display: none; }
+  .cbt-faq .cbt-faq-item[open] summary { color: var(--azul); }
+  .cbt-faq .cbt-faq-item summary::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    background-color: var(--azul);
+    -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>') center / contain no-repeat;
+    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>') center / contain no-repeat;
+    transition: transform 0.2s ease;
+  }
+  .cbt-faq .cbt-faq-item[open] summary::after { transform: rotate(45deg); }
+  .cbt-faq .cbt-faq-item p {
+    margin: 0;
+    padding: 0 18px 16px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--texto);
+  }
+
+  @media (max-width: 480px) {
+    .cbt-faq { padding: 28px 16px 40px; }
+    .cbt-faq .cbt-faq-item summary { padding: 13px 14px; font-size: 15.5px; }
+    .cbt-faq .cbt-faq-item p { padding: 0 14px 14px; }
+  }
+</style>
+
+<div class="cbt-faq">
+
+  <h2 class="cbt-faq-titulo">Preguntas frecuentes sobre filtros de agua industriales</h2>
+  <p class="cbt-faq-intro">Todo lo que necesitas saber sobre selección, compra, costos, instalación y mantenimiento de filtros y sistemas de filtración de agua para la industria. ¿No encuentras tu pregunta? <a href="https://www.carbotecnia.info/contacto/" style="color:#2e9bf6;">Contáctanos</a>.</p>
+
+  <!-- ═══ GRUPO: Compra, proveedores y distribución ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Compra, proveedores y distribución</h3>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Dónde comprar filtros de agua industriales con envío rápido en México?</summary>
+      <p>Carbotecnia suministra filtros, equipos, medios filtrantes y refacciones desde Zapopan, Jalisco, con envíos nacionales. El tiempo depende del inventario, configuración y destino.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Dónde comprar sistemas de filtración industrial en México?</summary>
+      <p>Carbotecnia ofrece sistemas para tratamiento de agua industrial y asesora en la selección del equipo según análisis de agua, caudal y calidad requerida.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Dónde encontrar proveedores confiables de filtros de agua industriales en México?</summary>
+      <p>Carbotecnia atiende proyectos B2B de tratamiento de agua, aire y otros fluidos. Ofrece asesoría técnica, equipos, medios filtrantes, consumibles y refacciones.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>Proveedores de refacciones para filtros industriales en CDMX</summary>
+      <p>Carbotecnia distribuye válvulas, cartuchos, bolsas, medios filtrantes y componentes con envío a Ciudad de México. La compatibilidad debe revisarse antes de comprar.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Cuáles son las marcas más recomendadas de filtros de agua industriales para uso comercial?</summary>
+      <p>Carbotecnia maneja marcas especializadas como AZUD para discos, Clack para válvulas y otras marcas industriales de cartuchos, membranas y componentes.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Puedo alquilar filtros de agua industriales para proyectos temporales?</summary>
+      <p>El alquiler no aparece como una modalidad estándar. Conviene consultar a Carbotecnia para evaluar una solución temporal o un equipo dimensionado para el proyecto.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>Alquiler de equipos de filtración de agua para eventos industriales</summary>
+      <p>Carbotecnia no presenta el alquiler para eventos como servicio estándar. Se debe consultar la disponibilidad de una solución temporal.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Dónde comparar reseñas y opiniones sobre filtros de agua industriales?</summary>
+      <p>Conviene revisar referencias técnicas, casos de aplicación, fichas del fabricante y experiencia del proveedor. Una reseña comercial no sustituye una evaluación técnica.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>Catálogo de productos para filtración de agua a gran escala</summary>
+      <p>Carbotecnia cuenta con filtros de discos, lecho profundo, carbón activado, suavizadores, válvulas, cartuchos, bolsas, UV y sistemas de ósmosis inversa.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>Representantes de venta de equipos de tratamiento de agua en Monterrey</summary>
+      <p>Carbotecnia atiende proyectos en Monterrey y otras ciudades mediante su equipo comercial y envíos desde Zapopan. La atención se solicita en su sitio web.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>Demostraciones de equipos de filtración industrial</summary>
+      <p>La disponibilidad de demostraciones, pruebas o visitas técnicas debe solicitarse al equipo comercial de Carbotecnia.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g1") -->
+  </section>
+
+  <!-- ═══ GRUPO: Tipos y selección de filtros ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Tipos de filtros y cómo elegir</h3>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Cuáles son los mejores filtros de agua industriales para empresas en México?</summary>
+      <p>El mejor filtro depende del contaminante y del objetivo. Carbotecnia ofrece filtros de discos, lecho profundo, carbón activado, suavizadores, UV y ósmosis inversa para distintas necesidades industriales.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>Tipos de filtros de agua para uso industrial</summary>
+      <p>Los principales son filtros de discos y mallas, cartuchos, bolsas, lecho profundo, carbón activado, suavizadores, filtros catalíticos, ultrafiltración y ósmosis inversa.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Qué tipos de filtros de agua industriales existen y cuál es el más eficiente?</summary>
+      <p>No existe un filtro universal. Los discos retienen sólidos, el carbón activado adsorbe compuestos orgánicos, los suavizadores eliminan dureza y la ósmosis inversa reduce sales disueltas.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Cómo elegir un filtro de agua industrial adecuado para una planta de producción?</summary>
+      <p>Se requieren análisis del agua, caudal máximo, horas de operación, presión disponible, contaminantes y calidad objetivo. Con estos datos se define la tecnología y el tamaño.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Cómo elegir un sistema de filtración industrial adecuado?</summary>
+      <p>Primero se identifica el contaminante. Después se calcula el caudal, la carga, el tiempo de operación y la calidad requerida a la salida.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Existen filtros de agua industriales compatibles con sistemas de purificación existentes?</summary>
+      <p>Sí. Se pueden integrar filtros, válvulas, medios filtrantes, cartuchos y membranas a instalaciones existentes tras revisar caudal, presión, conexiones y calidad del agua.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g2") -->
+  </section>
+
+  <!-- ═══ GRUPO: Costos, cotizaciones y financiamiento ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Costos, cotizaciones y financiamiento</h3>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>Costo promedio de un filtro de agua industrial</summary>
+      <p>El costo depende del caudal, presión, material del tanque, automatización, medio filtrante y calidad del agua. Carbotecnia prepara cotizaciones según las condiciones del proyecto.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>Comparativa de costos entre diferentes filtros de agua industriales para empresas mexicanas</summary>
+      <p>Los cartuchos tienen menor inversión inicial y mayor consumo de repuestos. Los filtros de discos y lecho profundo requieren más inversión, pero permiten limpieza o retrolavado.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Dónde solicitar cotizaciones de filtros de agua industriales para grandes volúmenes?</summary>
+      <p>Se pueden solicitar directamente a Carbotecnia. Conviene enviar análisis de agua, caudal, presión, horas de operación y calidad requerida.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>Precios de cartuchos filtrantes industriales al mayoreo</summary>
+      <p>El precio depende de la marca, longitud, diámetro, micraje, material, eficiencia y volumen solicitado. Carbotecnia cotiza cartuchos y filtros bolsa para aplicaciones industriales.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Se pueden comprar filtros de agua industriales con financiamiento o crédito en México?</summary>
+      <p>Las condiciones de pago o crédito se revisan directamente con el área comercial de Carbotecnia según el proyecto y el perfil del cliente.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>Financiamiento para adquirir filtros industriales de alto costo</summary>
+      <p>El cliente debe consultar con Carbotecnia las opciones de pago, crédito o condiciones comerciales disponibles para cada proyecto.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Qué empresas ofrecen filtros de agua industriales con garantía extendida?</summary>
+      <p>La garantía depende del fabricante y del equipo. Carbotecnia debe confirmar la cobertura, duración y condiciones aplicables en cada cotización.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>Solicitar presupuesto para instalación y mantenimiento de filtros de agua industriales en México</summary>
+      <p>Envíe a Carbotecnia el análisis de agua, caudal, ubicación, presión, horas de operación, calidad objetivo y alcance requerido.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g3") -->
+  </section>
+
+  <!-- ═══ GRUPO: Instalación, mantenimiento y soporte técnico ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Instalación, mantenimiento y soporte técnico</h3>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>Empresas instaladoras de plantas de tratamiento de agua industrial</summary>
+      <p>Carbotecnia suministra equipos y soluciones para plantas industriales. El alcance de instalación y puesta en marcha debe definirse en cada proyecto.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Existen servicios de instalación de filtros de agua industriales en México?</summary>
+      <p>Sí existen. Carbotecnia puede revisar los requerimientos técnicos y definir el alcance del suministro, instalación y soporte requerido.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>Mantenimiento requerido para filtros de agua en fábricas</summary>
+      <p>Incluye retrolavados, limpieza, cambio de cartuchos, revisión de válvulas, medición de presión diferencial y reemplazo periódico del medio filtrante.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Ofrecen mantenimiento y soporte técnico para filtros de agua industriales en México?</summary>
+      <p>Carbotecnia brinda asesoría técnica sobre selección, operación, consumibles y mantenimiento. El alcance del servicio se define según el equipo y la ubicación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>Servicio técnico para filtros de agua industriales en Guadalajara</summary>
+      <p>Carbotecnia tiene su sede en Zapopan, Jalisco. Atiende proyectos y necesidades técnicas dentro de la Zona Metropolitana de Guadalajara.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>Consultores especializados en tratamiento de agua industrial</summary>
+      <p>Carbotecnia cuenta con experiencia técnica en filtración, carbón activado, suavización, membranas y tratamiento de agua para aplicaciones industriales.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Existen servicios de asesoría para seleccionar filtros de agua industriales en México?</summary>
+      <p>Sí. Carbotecnia asesora con base en análisis de agua, caudal, presión, contaminantes y objetivo de tratamiento.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>Problemas comunes en filtros industriales y cómo resolverlos</summary>
+      <p>Los más frecuentes son pérdida de presión, canalización, retrolavado insuficiente, saturación del medio y ensuciamiento. Se corrigen revisando diseño, operación y mantenimiento.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Cómo realizar el mantenimiento preventivo de filtros de agua industriales?</summary>
+      <p>Se deben registrar presión, caudal y calidad del efluente. También hay que ejecutar retrolavados, limpiar componentes y cambiar consumibles según desempeño.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g4") -->
+  </section>
+
+  <!-- ═══ GRUPO: Diseño, dimensionamiento y tecnologías avanzadas ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Diseño, dimensionamiento y tecnologías avanzadas</h3>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Qué capacidad de filtración necesito para una fábrica mediana?</summary>
+      <p>La capacidad no depende del tamaño de la empresa. Se calcula con el consumo máximo por hora, las horas de operación, los picos de demanda y el proceso alimentado.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Qué se debe considerar al dimensionar un filtro de agua para una planta?</summary>
+      <p>Se consideran caudal de servicio, velocidad de filtración, carga de contaminantes, presión, retrolavado, espacio libre, autonomía y expansión del medio.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Dónde encontrar empresas que diseñen filtros de agua industriales según las necesidades de producción en México?</summary>
+      <p>Carbotecnia diseña y suministra soluciones según el análisis del agua, el caudal, la operación y la calidad que requiere cada proceso industrial.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>Comparativa de sistemas de ósmosis inversa para uso industrial</summary>
+      <p>Se comparan por capacidad, recuperación, rechazo de sales, consumo energético, tipo de membrana, automatización, pretratamiento y calidad del permeado.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Existen filtros de agua industriales con tecnologías avanzadas de purificación?</summary>
+      <p>Sí. Carbotecnia ofrece ósmosis inversa, electrodeionización, ultravioleta, filtración automática y sistemas de discos con limpieza manual o automática.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>Innovaciones en tecnologías de filtración de agua para la industria</summary>
+      <p>Destacan la autolimpieza, monitoreo de presión, automatización, membranas de menor consumo energético y sistemas que reducen agua de retrolavado.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g5") -->
+  </section>
+
+  <!-- ═══ GRUPO: Aplicaciones por industria ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Aplicaciones por industria</h3>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>Tecnologías de filtración de agua para la industria alimentaria</summary>
+      <p>Se emplean filtros multimedia, carbón activado, suavización, cartuchos, membranas de ósmosis inversa y desinfección UV. La selección depende del producto y de la norma aplicable.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>Soluciones de filtración de agua para la industria farmacéutica</summary>
+      <p>Suelen integrar prefiltración, carbón activado, suavización, ósmosis inversa, electrodeionización y desinfección. El diseño depende de la calidad requerida por el proceso.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Existen filtros de agua industriales diseñados para las industrias alimentaria y farmacéutica?</summary>
+      <p>Sí. El sistema se diseña según la calidad del agua requerida, el producto elaborado, los materiales sanitarios y las normas aplicables.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Existen filtros de agua industriales para tratamiento de aguas residuales en plantas?</summary>
+      <p>Sí. Se emplean filtros de sólidos, lecho profundo, carbón activado y membranas para tratamiento terciario, pulimiento y reúso de agua residual.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g6") -->
+  </section>
+
+  <!-- ═══ GRUPO: Beneficios, normatividad e impacto ambiental ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Beneficios, normatividad e impacto ambiental</h3>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>Beneficios de implementar filtros de agua en procesos industriales</summary>
+      <p>Reducen sólidos, dureza, cloro, materia orgánica y sales. También protegen equipos, mejoran la calidad del producto y reducen fallas operativas.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>¿Cuáles son los beneficios de usar filtros de agua en procesos de manufactura?</summary>
+      <p>Protegen calderas, torres, membranas, intercambiadores y líneas de producción. También estabilizan la calidad del agua y reducen paros por ensuciamiento.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>¿Existen filtros de agua industriales que reduzcan los costos de mantenimiento a largo plazo?</summary>
+      <p>Sí. Los filtros lavables, automáticos y bien dimensionados reducen consumibles y paros. La calidad del agua y la operación determinan el ahorro real.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>Normativas mexicanas para la calidad del agua industrial tratada</summary>
+      <p>La norma depende del uso final y del origen del agua. Se deben revisar límites para agua potable, procesos alimentarios, descargas y reúso.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>¿Existen filtros de agua industriales que cumplan con normas ambientales mexicanas?</summary>
+      <p>Los equipos ayudan a cumplir objetivos de tratamiento. El cumplimiento depende del sistema completo, su operación y los límites aplicables al agua tratada o descargada.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>Impacto ambiental del uso de filtros industriales de agua</summary>
+      <p>Un sistema correcto facilita el reúso, reduce descargas y protege procesos. También genera residuos o agua de lavado que deben manejarse adecuadamente.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g7") -->
+  </section>
+
+  <!-- ➕ Para un grupo nuevo: copia un <section class="cbt-faq-grupo">...</section>
+       completo, cambia el título y usa un name nuevo en sus <details>
+       (ej. name="faq-g8"). -->
+
+</div>
+<!-- FIN BLOQUE WORDPRESS -->
+
+</body>
+</html>
