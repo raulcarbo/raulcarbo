@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>El agua baja en sales no causa daños a la salud · Carbotecnia</title>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  ARTÍCULO · "EL AGUA BAJA EN SALES NO CAUSA DAÑOS A LA SALUD" · CARBOTECNIA
+  ════════════════════════════════════════════════════════════════════
+  CÓMO USAR EN WORDPRESS / WPBAKERY PAGE BUILDER:
+  Agrega un elemento "Raw HTML" (o un bloque "HTML personalizado") y
+  pega TODO lo que está entre  INICIO BLOQUE WORDPRESS  y
+  FIN BLOQUE WORDPRESS. El CSS está encapsulado bajo .cbt-art y no
+  afecta al resto de tu tema.
+
+  CÓMO PONER TUS IMÁGENES (las generadas con Canva):
+  Cada figura tiene un comentario 🖼️. Sube tu imagen a la biblioteca de
+  medios de WordPress y reemplaza TODO el bloque de la ilustración
+  (<div class="cbt-fig-ph">...</div>) por:
+      <img class="cbt-fig-img" src="URL-DE-TU-IMAGEN" alt="..." />
+  Las ilustraciones SVG incluidas son solo de relleno temporal.
+  ════════════════════════════════════════════════════════════════════
+-->
+<!-- Si tu tema de WordPress ya carga Outfit e Inter, puedes omitir estas 3 líneas -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0; background:#ffffff;">
+
+<!-- INICIO BLOQUE WORDPRESS -->
+<style>
+  .cbt-art {
+    --azul: #2e9bf6;
+    --azul-suave: #eaf4fe;
+    --tinta: #1d2630;
+    --texto: #3f4b58;
+    --borde: #e4eaf0;
+    font-family: 'Inter', -apple-system, "Segoe UI", sans-serif;
+    color: var(--texto);
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px 56px;
+    box-sizing: border-box;
+  }
+  .cbt-art *, .cbt-art *::before, .cbt-art *::after { box-sizing: border-box; }
+
+  /* ── Encabezado ── */
+  .cbt-art .cbt-art-kicker {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--azul);
+    text-align: center;
+    margin: 0 0 12px;
+  }
+  .cbt-art .cbt-art-titulo {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12;
+    color: var(--tinta);
+    text-align: center;
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+  .cbt-art .cbt-art-lede {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #4b5663;
+    text-align: center;
+    margin: 0 auto 6px;
+    max-width: 640px;
+    text-wrap: pretty;
+  }
+
+  /* ── Nota / disclaimer ── */
+  .cbt-art .cbt-nota {
+    background: var(--azul-suave);
+    border-left: 4px solid var(--azul);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px;
+    margin: 32px 0;
+  }
+  .cbt-art .cbt-nota p { margin: 0 0 10px; font-size: 15px; line-height: 1.6; }
+  .cbt-art .cbt-nota p:last-child { margin-bottom: 0; }
+  .cbt-art .cbt-nota strong { color: var(--tinta); }
+
+  /* ── Cuerpo ── */
+  .cbt-art h2.cbt-seccion {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--azul);
+    margin: 48px 0 4px;
+    padding: 0;
+  }
+  .cbt-art h3.cbt-pregunta {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: clamp(20px, 3vw, 23px);
+    line-height: 1.3;
+    color: var(--tinta);
+    margin: 26px 0 10px;
+    padding: 0;
+    text-wrap: pretty;
+  }
+  .cbt-art p { font-size: 16.5px; line-height: 1.72; margin: 0 0 16px; }
+  .cbt-art p:last-child { margin-bottom: 0; }
+  .cbt-art strong { color: var(--tinta); font-weight: 600; }
+
+  /* ── Dato destacado ── */
+  .cbt-art .cbt-dato {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin: 24px 0;
+    box-shadow: 0 1px 3px rgba(20,30,40,0.05);
+  }
+  .cbt-art .cbt-dato-num {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: clamp(26px, 4vw, 34px);
+    line-height: 1;
+    color: var(--azul);
+    white-space: nowrap;
+  }
+  .cbt-art .cbt-dato-txt { font-size: 15px; line-height: 1.5; margin: 0; }
+
+  /* ── Cita / pull-quote ── */
+  .cbt-art .cbt-cita {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: clamp(20px, 3.2vw, 25px);
+    line-height: 1.4;
+    color: var(--tinta);
+    text-align: center;
+    border-top: 2px solid var(--borde);
+    border-bottom: 2px solid var(--borde);
+    padding: 26px 8px;
+    margin: 36px 0;
+    text-wrap: balance;
+  }
+
+  /* ── Figuras (ilustraciones de subtemas) ── */
+  .cbt-art .cbt-figura { margin: 30px 0; }
+  .cbt-art .cbt-fig-ph {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    border-radius: 14px;
+    background: linear-gradient(140deg, #f3f8fe 0%, #eaf4fe 100%);
+    border: 1px solid #dceafa;
+    overflow: hidden;
+  }
+  .cbt-art .cbt-fig-img {
+    width: 100%;
+    border-radius: 14px;
+    display: block;
+  }
+  .cbt-art .cbt-figura figcaption {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #76828f;
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  /* ── Conclusión ── */
+  .cbt-art .cbt-conclusion {
+    background: var(--tinta);
+    color: #fff;
+    border-radius: 16px;
+    padding: 34px 30px;
+    margin: 44px 0 8px;
+    text-align: center;
+  }
+  .cbt-art .cbt-conclusion .cbt-conclusion-label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--azul);
+    margin: 0 0 10px;
+  }
+  .cbt-art .cbt-conclusion p {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: clamp(22px, 3.4vw, 28px);
+    line-height: 1.35;
+    margin: 0;
+    color: #fff;
+    text-wrap: balance;
+  }
+
+  /* ── Referencias y créditos ── */
+  .cbt-art .cbt-refs { margin-top: 44px; }
+  .cbt-art .cbt-refs h2 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--tinta);
+    margin: 0 0 14px;
+  }
+  .cbt-art .cbt-refs ol { margin: 0; padding-left: 20px; }
+  .cbt-art .cbt-refs li { font-size: 14px; line-height: 1.6; margin-bottom: 10px; color: #5a6573; }
+  .cbt-art .cbt-refs a { color: var(--azul); word-break: break-word; }
+  .cbt-art .cbt-creditos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--borde);
+    font-size: 13.5px;
+    color: #76828f;
+  }
+  .cbt-art .cbt-creditos strong { color: var(--texto); font-weight: 600; }
+
+  @media (max-width: 480px) {
+    .cbt-art { padding: 28px 16px 40px; }
+    .cbt-art p { font-size: 16px; }
+    .cbt-art .cbt-dato { flex-direction: column; gap: 6px; }
+  }
+</style>
+
+<article class="cbt-art">
+
+  <p class="cbt-art-kicker">Divulgación · Calidad del agua</p>
+  <h1 class="cbt-art-titulo">El agua baja en sales no causa daños a la salud</h1>
+  <p class="cbt-art-lede">Después de más de 20 años de actividad profesional en el ramo del agua potable en México, damos respuesta a una pregunta rodeada de mitos.</p>
+
+  <div class="cbt-nota">
+    <p>Este documento <strong>no ha pasado por la criba del rigor científico</strong>. No obstante, es el resultado de una honesta búsqueda por dar respuesta a la pregunta que lo titula. Nos hemos basado en el acceso que todos tenemos al pensamiento analítico, a la razonabilidad, a las evidencias de lo que experimentamos y a los avances del conocimiento científico.</p>
+    <p>Nuestra actividad profesional en el ramo del agua potable ha sido importante, y subrayamos que siempre ha sido en México. La búsqueda nos tomó más de 20 años debido a la diversidad de posturas respecto al tema. Independientemente de nuestra sincera convicción ética, como empresa <strong>no nos beneficia una respuesta o la otra</strong>.</p>
+  </div>
+
+  <!-- ══════════ SECCIÓN 1 ══════════ -->
+  <h2 class="cbt-seccion">Conceptos básicos</h2>
+
+  <h3 class="cbt-pregunta">¿Qué diferencia hay entre las sales disueltas y los minerales disueltos en el agua potable?</h3>
+  <p>Ambos términos son sinónimos. Se trata de compuestos inorgánicos. La mayoría de ellos se disocian al disolverse en el agua; a los que se disocian se les llama <strong>electrolitos</strong>. Desmineralizar un agua es lo mismo que disminuir la concentración de las sales disueltas en ella.</p>
+
+  <h3 class="cbt-pregunta">¿Por qué la mayoría de quienes estudian carreras relacionadas con la química tienen la idea de que beber agua desmineralizada es dañino?</h3>
+  <p>A los estudiantes de dichas carreras siempre se les ha advertido que no deben beber el agua desmineralizada que se utiliza en el laboratorio. Se les han dado diversas razones para no hacerlo: que causa diarrea; que roba minerales al cuerpo; que provoca acidez, hinchamiento celular…</p>
+  <p>Si se considera que el agua desmineralizada para uso en el laboratorio ha sido bastante más costosa que el agua potable, la advertencia ha rendido frutos.</p>
+
+  <!-- ══════════ SECCIÓN 2 ══════════ -->
+  <h2 class="cbt-seccion">La historia del agua embotellada</h2>
+
+  <h3 class="cbt-pregunta">¿Cuándo aparecieron masivamente en el mercado las aguas embotelladas bajas en sales?</h3>
+  <p>Durante décadas se vendieron diversas marcas de agua embotellada, con orígenes muy diversos: un cuerpo de agua natural superficial —río o lago—, un pozo somero o uno profundo. El contenido de minerales era muy variable; si el agua procedía de lluvia o de deshielo, el contenido era muy bajo. Sin embargo, su mercado no era grande y el tema no llamaba mucho la atención.</p>
+  <p>En la década de 1990, Coca, Pepsi y otras grandes empresas, como Grupo Danone, empezaron a vender agua embotellada cuyo contenido de minerales era bajo. Fue en este momento que el tema cobró importancia.</p>
+
+  <h3 class="cbt-pregunta">¿Por qué estas empresas internacionales ofrecieron agua embotellada baja en sales?</h3>
+  <p>Por ser empresas internacionales, era importante <strong>estandarizar el sabor</strong>. No es cierto que el agua sea insípida: dos aguas totalmente potables pueden diferir enormemente en sabor, y ello depende del tipo y la concentración de sales disueltas en cada una. Estas empresas lograron la estandarización del sabor mediante la disminución del contenido de sales disueltas. Desconocemos si hubo otra razón, pero la mencionada es muy importante.</p>
+
+  <!-- ═══ FIGURA 1: Ósmosis inversa ═══ -->
+  <!-- 🖼️ Sube tu imagen de Canva a WordPress y reemplaza TODO el <div class="cbt-fig-ph">...</div>
+       por:  <img class="cbt-fig-img" src="URL-DE-TU-IMAGEN" alt="Ósmosis inversa separando sales del agua" /> -->
+  <figure class="cbt-figura">
+    <div class="cbt-fig-ph">
+      <svg width="80%" height="80%" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="55" width="120" height="70" rx="8" fill="#ffffff" stroke="#2e9bf6" stroke-width="2"/>
+        <line x1="140" y1="55" x2="140" y2="125" stroke="#2e9bf6" stroke-width="2" stroke-dasharray="5 5"/>
+        <rect x="140" y="55" width="120" height="70" rx="8" fill="#ffffff" stroke="#2e9bf6" stroke-width="2"/>
+        <circle cx="55" cy="78" r="5" fill="#a8632e"/><circle cx="95" cy="100" r="5" fill="#a8632e"/><circle cx="72" cy="112" r="5" fill="#0e7d76"/><circle cx="115" cy="72" r="5" fill="#0e7d76"/><circle cx="40" cy="105" r="5" fill="#a8632e"/>
+        <path d="M150 90 h60" stroke="#2e9bf6" stroke-width="2" stroke-linecap="round"/>
+        <path d="M202 82 l10 8 -10 8" stroke="#2e9bf6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="80" y="150" font-family="Outfit, sans-serif" font-size="12" fill="#5a6573" text-anchor="middle">Agua con sales</text>
+        <text x="200" y="150" font-family="Outfit, sans-serif" font-size="12" fill="#5a6573" text-anchor="middle">Agua osmotizada</text>
+      </svg>
+    </div>
+    <figcaption>Ósmosis inversa: la membrana retiene las sales disueltas y deja pasar el agua. Reemplaza esta ilustración por tu imagen de Canva.</figcaption>
+  </figure>
+
+  <h3 class="cbt-pregunta">¿Qué tecnología utilizaron estas empresas para disminuir la concentración de sales disueltas?</h3>
+  <p>Utilizaron <strong>ósmosis inversa</strong>, un proceso que empezó a aplicarse en la década de 1970 y que se había mejorado sustancialmente durante los últimos años.</p>
+
+  <h3 class="cbt-pregunta">¿Qué concentración de sales tenía el agua embotellada que ofrecieron?</h3>
+  <p>La concentración de sales disueltas en el agua se mide con el parámetro llamado <strong>sólidos disueltos totales (SDT)</strong>. Las primeras marcas que estas empresas ofrecieron en el mercado mexicano tenían SDT de 70 mg/L. Un equipo de ósmosis inversa produce un agua osmotizada con SDT de alrededor de 10 mg/L; por lo tanto, para obtener 70 mg/L había que mezclar agua osmotizada con "agua cruda" —sin osmotizar— en las proporciones adecuadas.</p>
+
+  <div class="cbt-dato">
+    <span class="cbt-dato-num">100–400 mg/L</span>
+    <p class="cbt-dato-txt">Es común que el agua procedente de lagos, ríos y pozos tenga este rango de SDT, frente a los ~10 mg/L de un agua totalmente osmotizada.</p>
+  </div>
+
+  <h3 class="cbt-pregunta">¿Qué hicieron las embotelladoras más pequeñas en México?</h3>
+  <p>Muy pronto, las embotelladoras de agua más pequeñas siguieron los mismos pasos que las grandes: empezaron a osmotizar el agua. Lo hicieron porque la población empezó a asociar el sabor de las aguas bajas en sales con la idea de que eran potables. Esto es erróneo, ya que un agua potable puede contener muy diversas concentraciones de SDT, pero era una realidad a la que era difícil oponerse.</p>
+
+  <h3 class="cbt-pregunta">¿Por qué muchas empresas disminuyeron aún más el contenido de sales?</h3>
+  <p>Algunas de las empresas pequeñas, por desconocimiento, embotellaron el agua directamente obtenida del equipo de ósmosis, con SDT de entre 5 y 10 mg/L. Si el agua baja en sales hubiese sido dañina, muchos de sus clientes habrían sufrido desde malestares hasta daños en la salud, pero no fue así. De hecho, algunas de las empresas internacionales empezaron a vender su agua embotellada con SDT igualmente bajos.</p>
+
+  <h3 class="cbt-pregunta">Considerando que no es dañina, ¿un agua baja en sales puede tener alguna ventaja para la salud?</h3>
+  <p>Así como hay quienes han afirmado que las aguas bajas en sales son dañinas, también hay quienes han afirmado que son fuente de beneficios —por ejemplo, que hidratan mejor o que ayudan a desintoxicar—. Es probable que esto tampoco sea cierto.</p>
+  <p>La única ventaja de un agua totalmente osmotizada es que <strong>disminuye enormemente la probabilidad</strong> de que estén presentes compuestos o microorganismos que podrían ocasionar daños a la salud, porque no permean las membranas de ósmosis inversa. Una empresa que no osmotiza la totalidad del agua —porque mezcla agua cruda con osmotizada— puede producir un agua perfectamente potable, pero tendrá un mayor reto en garantizar la ausencia de contaminantes en el agua cruda.</p>
+
+  <!-- ══════════ SECCIÓN 3 ══════════ -->
+  <h2 class="cbt-seccion">¿Qué dice la evidencia?</h2>
+
+  <h3 class="cbt-pregunta">¿Por qué han aparecido en internet tantas publicaciones que alertan sobre lo dañino del agua baja en sales?</h3>
+  <p>Internet no es una plataforma que facilite o garantice encontrar conocimientos científicos válidos. Cualquiera publica lo que sea, y esto lo convierte en un campo de batalla de afirmaciones cuyo criterio no siempre es científico ni ético. Para tener acceso al conocimiento hay que acudir a las fuentes adecuadas: una de ellas son las publicaciones científicas; otra es el análisis de los hechos desde el sentido común o lo razonable.</p>
+
+  <h3 class="cbt-pregunta">¿Qué dicen las publicaciones científicas y las autoridades sanitarias?</h3>
+  <p>No faltan publicaciones científicas relacionadas con los efectos que puede tener en la salud el agua potable baja en sales, pero no ha habido contundencia a favor o en contra de este tipo de agua. Tanto la comunidad científica como la médica coinciden en la importancia de la hidratación y de la pureza del agua, pero no hay unanimidad en cuanto a los beneficios o perjuicios que pudiera ocasionar un agua baja en sales.</p>
+  <p>La Organización Mundial de la Salud (OMS) ha señalado la importancia de los minerales en la nutrición, pero menciona que no necesariamente deben proceder del agua que se bebe. Ni la OMS ni las autoridades sanitarias de los países más desarrollados —como la FDA de Estados Unidos— han emitido alertas o prohibiciones respecto al consumo de agua baja en sales. De hecho, <strong>las normas de potabilidad no establecen límites mínimos para los SDT</strong>. Actualmente se comercializan muchas marcas de purificadores —de empresas reconocidas— que se instalan en cocinas o despachadores y que osmotizan la totalidad del agua que entregan.</p>
+
+  <!-- ═══ FIGURA 2: Sentido común — agua de lluvia/deshielo ═══ -->
+  <!-- 🖼️ Reemplaza TODO el <div class="cbt-fig-ph">...</div> por tu imagen de Canva:
+       <img class="cbt-fig-img" src="URL-DE-TU-IMAGEN" alt="Comunidades que beben agua de lluvia o deshielo" /> -->
+  <figure class="cbt-figura">
+    <div class="cbt-fig-ph">
+      <svg width="80%" height="80%" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40 140 L110 60 L150 105 L195 55 L280 140 Z" fill="#ffffff" stroke="#2e9bf6" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M92 82 L110 60 L128 82 Z" fill="#dceafa" stroke="#2e9bf6" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M177 76 L195 55 L213 76 Z" fill="#dceafa" stroke="#2e9bf6" stroke-width="2" stroke-linejoin="round"/>
+        <line x1="70" y1="30" x2="66" y2="44" stroke="#2e9bf6" stroke-width="2" stroke-linecap="round"/>
+        <line x1="100" y1="28" x2="96" y2="42" stroke="#2e9bf6" stroke-width="2" stroke-linecap="round"/>
+        <line x1="135" y1="30" x2="131" y2="44" stroke="#2e9bf6" stroke-width="2" stroke-linecap="round"/>
+        <text x="160" y="165" font-family="Outfit, sans-serif" font-size="12" fill="#5a6573" text-anchor="middle">Lluvia y deshielo · SDT ≈ 5 mg/L</text>
+      </svg>
+    </div>
+    <figcaption>Muchos grupos humanos beben agua de lluvia o deshielo, con SDT igual o menor al de un agua osmotizada. Reemplaza por tu imagen de Canva.</figcaption>
+  </figure>
+
+  <h3 class="cbt-pregunta">¿Qué puede decir el sentido común respecto al agua baja en sales como bebida?</h3>
+  <p>Un argumento indirecto y de mucho peso es que muchos grupos humanos beben agua que proviene exclusivamente de la lluvia o del deshielo. El contenido de SDT de estas fuentes es el mismo o incluso más bajo que el de un agua osmotizada, y estos grupos no presentan menor esperanza de vida ni alguna morbilidad o mortalidad que se haya asociado con el contenido de minerales del agua que beben.</p>
+  <p>Otro argumento que refuerza al anterior es que el agua baja en sales que se vende embotellada de manera masiva desde hace más de dos décadas no ha sido causa de daño alguno registrado. Empresas como Coca y Pepsi cuentan con recursos sobrados para investigar lo que ofrecen y para no poner en riesgo a su empresa.</p>
+  <p>Algunos no darán valor a esta afirmación; quizás señalarán que los refrescos de esas empresas han ocasionado daños a la salud. No obstante, este no puede considerarse un juicio definitivo: el daño que han causado los refrescos radica en la cantidad que cada individuo consume, y tampoco puede culparse al azúcar refinada, que desde el punto de vista logístico ha sido esencial en la vida urbana de las grandes ciudades.</p>
+
+  <!-- ══════════ SECCIÓN 4 ══════════ -->
+  <h2 class="cbt-seccion">La fisiología del cuerpo</h2>
+
+  <!-- ═══ FIGURA 3: Equilibrio osmótico celular ═══ -->
+  <!-- 🖼️ Reemplaza TODO el <div class="cbt-fig-ph">...</div> por tu imagen de Canva:
+       <img class="cbt-fig-img" src="URL-DE-TU-IMAGEN" alt="Equilibrio osmótico en la célula" /> -->
+  <figure class="cbt-figura">
+    <div class="cbt-fig-ph">
+      <svg width="80%" height="80%" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="160" cy="90" r="58" fill="#ffffff" stroke="#2e9bf6" stroke-width="2.5"/>
+        <circle cx="160" cy="90" r="20" fill="#dceafa" stroke="#2e9bf6" stroke-width="2"/>
+        <path d="M70 90 h28" stroke="#0e7d76" stroke-width="2" stroke-linecap="round"/>
+        <path d="M90 83 l9 7 -9 7" stroke="#0e7d76" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M250 90 h-28" stroke="#0e7d76" stroke-width="2" stroke-linecap="round"/>
+        <path d="M230 83 l-9 7 9 7" stroke="#0e7d76" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="160" y="170" font-family="Outfit, sans-serif" font-size="12" fill="#5a6573" text-anchor="middle">Osmolalidad ≈ 9 g/L dentro y fuera de la célula</text>
+      </svg>
+    </div>
+    <figcaption>Las membranas celulares son permeables al agua; las fuerzas osmóticas mantienen el equilibrio. Reemplaza por tu imagen de Canva.</figcaption>
+  </figure>
+
+  <h3 class="cbt-pregunta">¿Qué ocurre desde la fisiología del equilibrio hídrico en las células?</h3>
+  <p>Las membranas celulares son permeables al agua. Las fuerzas osmóticas impulsan al agua hacia el interior o el exterior de las células para mantener el equilibrio osmótico. Aunque la composición del líquido intracelular es muy distinta a la del extracelular, ambos tienen la misma osmolalidad —es decir, la misma concentración total de solutos—, de alrededor de <strong>9 gramos por litro</strong>. Cuando una solución tiene esta concentración se le llama isotónica; si es mayor, hipertónica, y si es menor, hipotónica.</p>
+  <p>Si el fluido extracelular fuese muy hipotónico, la cantidad de agua que ingresaría a la célula sería muy grande y la dañaría. No obstante, debemos recordar que <strong>el agua potable es prácticamente tan hipotónica como un agua totalmente desmineralizada</strong>.</p>
+
+  <div class="cbt-dato">
+    <span class="cbt-dato-num">0 – 1 g/L</span>
+    <p class="cbt-dato-txt">Rango de sales disueltas del agua potable (la norma mexicana permite hasta 1000 mg/L). En todo ese rango el agua es muy hipotónica respecto a los líquidos corporales: para efectos prácticos, un agua desmineralizada diluye el plasma casi igual que la de mayor salinidad permitida.</p>
+  </div>
+
+  <h3 class="cbt-pregunta">¿Un agua baja en sales puede aportar menos minerales de los que requiere el cuerpo?</h3>
+  <p>Mientras la alimentación sea adecuada, las comunidades que beben aguas muy bajas en sales no han mostrado deficiencia en algún mineral en particular. Un análisis del contenido de minerales en los alimentos muestra que, si se tiene acceso a una alimentación adecuada, estos aportan una cantidad sustancialmente mayor que la que puede aportar el agua. Por otro lado, si no se tiene acceso a una buena alimentación, es imposible suplir la deficiencia de minerales con los que pueda aportar el agua.</p>
+
+  <!-- ═══ FIGURA 4: Minerales de los alimentos vs agua ═══ -->
+  <!-- 🖼️ Reemplaza TODO el <div class="cbt-fig-ph">...</div> por tu imagen de Canva:
+       <img class="cbt-fig-img" src="URL-DE-TU-IMAGEN" alt="Los alimentos aportan la mayoría de los minerales" /> -->
+  <figure class="cbt-figura">
+    <div class="cbt-fig-ph">
+      <svg width="80%" height="80%" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="60" y="40" width="60" height="100" rx="6" fill="#2e9bf6"/>
+        <rect x="200" y="124" width="60" height="16" rx="6" fill="#dceafa" stroke="#2e9bf6" stroke-width="2"/>
+        <text x="90" y="32" font-family="Outfit, sans-serif" font-weight="700" font-size="16" fill="#1d2630" text-anchor="middle">94%</text>
+        <text x="230" y="116" font-family="Outfit, sans-serif" font-weight="700" font-size="16" fill="#1d2630" text-anchor="middle">≤6%</text>
+        <text x="90" y="158" font-family="Outfit, sans-serif" font-size="12" fill="#5a6573" text-anchor="middle">Alimentos</text>
+        <text x="230" y="158" font-family="Outfit, sans-serif" font-size="12" fill="#5a6573" text-anchor="middle">Agua</text>
+      </svg>
+    </div>
+    <figcaption>Estadísticamente, el agua no proporciona más del 6% de los minerales que el cuerpo requiere. Reemplaza por tu imagen de Canva.</figcaption>
+  </figure>
+
+  <div class="cbt-cita">"Estadísticamente, el agua no proporciona más del 6% de los minerales requeridos para mantener la salud."</div>
+
+  <h3 class="cbt-pregunta">El agua desmineralizada absorbe CO₂ del aire y se acidifica. ¿Esa acidez puede dañar la salud?</h3>
+  <p>Un agua desmineralizada es ávida en disolver compuestos; por esa avidez absorbe dióxido de carbono (CO₂) del aire, que forma ácido carbónico (H₂CO₃) y acidifica el agua. Un agua totalmente pura tiene un pH de 7.0; al disolver el CO₂ del aire, el pH puede disminuir a valores cercanos a 5.5. Este valor corresponde a un <strong>ácido débil</strong> y no se compara con la acidez del estómago, rico en ácido clorhídrico (HCl), que provoca un pH de entre 1.0 y 3.0.</p>
+
+  <div class="cbt-dato">
+    <span class="cbt-dato-num">5.5 vs 1.0–3.0</span>
+    <p class="cbt-dato-txt">El pH del agua acidificada por CO₂ (ácido débil) frente al pH del ácido fuerte del estómago. La diferencia es enorme.</p>
+  </div>
+
+  <!-- ══════════ CONCLUSIÓN ══════════ -->
+  <div class="cbt-conclusion">
+    <p class="cbt-conclusion-label">¿Qué puede concluirse?</p>
+    <p>Beber agua baja en sales no causa daños a la salud.</p>
+  </div>
+
+  <!-- ══════════ REFERENCIAS ══════════ -->
+  <div class="cbt-refs">
+    <h2>Referencias bibliográficas</h2>
+    <ol>
+      <li>World Health Organization, <em>Nutrients in drinking water</em>, Ginebra, 2005. <a href="https://www.who.int/water_sanitation_health/dwq/nutrientsindw.pdf" target="_blank" rel="noopener">who.int</a></li>
+      <li>Gómez-Esteban, Pedro. Blog <em>El Tamiz</em>, "Falacias – Es peligroso beber agua destilada", 2007. <a href="https://eltamiz.com/2007/09/23/falacias-es-peligroso-beber-agua-destilada/" target="_blank" rel="noopener">eltamiz.com</a></li>
+      <li>Norma Oficial Mexicana NOM-127-SSA1-1995, <em>Salud ambiental, agua para uso y consumo humano — Límites permisibles de calidad y tratamientos a que debe someterse el agua para su potabilización.</em></li>
+      <li>Norma Oficial Mexicana NOM-201-SSA1-2015, <em>Productos y servicios. Agua y hielo para consumo humano, envasados y a granel. Especificaciones sanitarias.</em></li>
+    </ol>
+    <div class="cbt-creditos">
+      <span><strong>Elaboró:</strong> GGC · 17 feb 2021</span>
+      <span><strong>Revisó:</strong> GGC · 12 jun 2026</span>
+    </div>
+  </div>
+
+</article>
+<!-- FIN BLOQUE WORDPRESS -->
+
+</body>
+</html>
