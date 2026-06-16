@@ -351,11 +351,11 @@ h1,h2,h3,h4{font-family:var(--font-title)}
     <div class="hero-inner">
       <div>
         <h2>Dimensionamiento de<br><em>cartuchos absolutos</em> Parker</h2>
-        <p>Seleccione la serie según su aplicación, calcule TIE (Equivalentes de 10"), estime la vida útil con base en la carga real de sólidos y proyecte el OPEX mensual. Metodología basada en MIP Parker · Carbotecnia.</p>
+        <p>Seleccione la serie según su aplicación, calcule TIE (Equivalentes de 10") y compare configuraciones de cartuchos según la longitud disponible en su instalación. Metodología basada en fichas técnicas Parker · Carbotecnia.</p>
       </div>
       <div class="hero-note">
         <b>Estándares de referencia</b>
-        <span>NSF/ANSI 61 · FDA · USP Class VI · ISO 4548 · Límite masa MIP: 0.01%</span>
+        <span>NSF/ANSI 61 · FDA · USP Class VI · ISO 4548</span>
       </div>
     </div>
   </div>
@@ -364,10 +364,8 @@ h1,h2,h3,h4{font-family:var(--font-title)}
   <div class="formula-strip">
     <span>Metodología TIE:</span>
     <code>TIE = Q(GPM) ÷ GPM/TIE</code>
-    <code>SST = NTU × 1.5 mg/L</code>
-    <code>Vida = Cap_total(g) ÷ Carga(g/día)</code>
-    <code>OPEX = Cambios/mes × Piezas × Costo</code>
     <code>10"=1TIE · 20"=2TIE · 30"=3TIE · 40"=4TIE</code>
+    <code>Cartuchos = ceil(TIE requeridos ÷ TIE por longitud elegida)</code>
   </div>
 
   <!-- Serie selector -->
@@ -382,28 +380,28 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         <span class="serie-icon">🏭</span>
         <div class="serie-name">MegaBond Absolute</div>
         <div class="serie-desc">Agua industrial / turbidez alta / NSF 61</div>
-        <div class="serie-specs">1.0 GPM/TIE · 150 g/TIE · 0.5–75 µm</div>
+        <div class="serie-specs">5.0 GPM/TIE (verificado en ficha) · 0.5–75 µm</div>
       </div>
       <div class="serie-card" data-serie="absomate" onclick="parSelectSerie(this,'absomate')">
         <div class="serie-dot"></div>
         <span class="serie-icon">🍺</span>
         <div class="serie-name">Abso-Mate / Peplyn Plus</div>
         <div class="serie-desc">Alimentos y bebidas / filtración absoluta / FDA</div>
-        <div class="serie-specs">3.0 GPM/TIE · 80 g/TIE · 0.2–70 µm</div>
+        <div class="serie-specs">10.0 GPM/TIE (verificado en ficha) · 0.2–70 µm</div>
       </div>
       <div class="serie-card" data-serie="bevpor" onclick="parSelectSerie(this,'bevpor')">
         <div class="serie-dot"></div>
         <span class="serie-icon">💊</span>
         <div class="serie-name">BEVPOR</div>
         <div class="serie-desc">Grado estéril final / farmacéutica / membranas</div>
-        <div class="serie-specs">1.5 GPM/TIE · 40 g/TIE · 0.2–1.0 µm</div>
+        <div class="serie-specs">1.5 GPM/TIE (estimado, sin ficha de respaldo) · 0.2–1.0 µm</div>
       </div>
       <div class="serie-card" data-serie="parmax" onclick="parSelectSerie(this,'parmax')">
         <div class="serie-dot"></div>
         <span class="serie-icon">⚡</span>
         <div class="serie-name">ParMax RCP</div>
         <div class="serie-desc">Flujos masivos · cartuchos de 6" de diámetro</div>
-        <div class="serie-specs">100 GPM/cart. 20" · 1,000 g/10" · 1–90 µm</div>
+        <div class="serie-specs">50 GPM/TIE (100 GPM/20", verificado) · 1–90 µm</div>
       </div>
     </div>
   </div>
@@ -436,15 +434,6 @@ h1,h2,h3,h4{font-family:var(--font-title)}
             <div class="err-msg">Ingrese un valor válido mayor a cero.</div>
           </div>
 
-          <div class="field">
-            <label>Horas de operación por día <span class="opt">opcional</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="par-op-hours" value="24" min="1" max="24" step="1">
-              <span class="unit">h/día</span>
-            </div>
-            <div class="hint">Para proyectar carga diaria de sólidos y OPEX mensual</div>
-          </div>
-
           <div class="field-group">Serie y micraje</div>
 
           <div class="field">
@@ -460,17 +449,15 @@ h1,h2,h3,h4{font-family:var(--font-title)}
             <div class="hint" id="par-micron-hint">Seleccione una serie para ver micrajes disponibles.</div>
           </div>
 
-          <div class="field-group">Calidad del líquido y condiciones</div>
-
-          <div class="field" id="par-f-turb">
-            <label>Turbidez aproximada <span class="req">*</span></label>
-            <div class="inline-wrap">
-              <input type="number" id="par-turb" placeholder="Ej. 2" min="0" step="any">
-              <span class="unit">NTU</span>
+          <div class="field" id="par-f-length">
+            <label>Longitud de cartucho a utilizar <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="par-length"></select>
             </div>
-            <div class="hint">Para estimar SST y vida útil · validar con prueba piloto</div>
-            <div class="err-msg">Ingrese un valor válido mayor a cero.</div>
+            <div class="hint" id="par-length-hint">Elija la longitud disponible en su instalación. El resultado también sugiere longitudes mayores por si desea reducir el número de piezas.</div>
           </div>
+
+          <div class="field-group">Condiciones de operación</div>
 
           <div class="field" id="par-f-pres">
             <label>Presión disponible <span class="req">*</span></label>
@@ -493,7 +480,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
               <input type="number" id="par-cart-cost" placeholder="Ej. 350" min="0" step="any">
               <span class="unit">MXN</span>
             </div>
-            <div class="hint" id="par-cost-hint">Precio por pieza física. El OPEX se calcula sobre la configuración recomendada.</div>
+            <div class="hint" id="par-cost-hint">Precio por pieza física. Se calcula el costo total de la configuración elegida.</div>
           </div>
 
           <div class="btn-row">
@@ -511,7 +498,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
       <div class="empty-state" id="par-empty">
         <div class="empty-icon">🔵</div>
         <h3>Seleccione la serie y configure los parámetros</h3>
-        <p>Complete los datos de flujo, turbidez y presión,<br>luego presione <strong>Dimensionar sistema</strong>.</p>
+        <p>Complete el flujo, elija la longitud de cartucho y la presión,<br>luego presione <strong>Dimensionar sistema</strong>.</p>
       </div>
 
       <div class="results-panel" id="par-results">
@@ -524,12 +511,12 @@ h1,h2,h3,h4{font-family:var(--font-title)}
             <div class="kpi-sub" id="par-kpi1-sub">—</div>
           </div>
           <div class="kpi">
-            <div class="kpi-lbl">Vida útil estimada</div>
+            <div class="kpi-lbl">Cartuchos físicos</div>
             <div class="kpi-val" id="par-kpi2-val">—</div>
             <div class="kpi-sub" id="par-kpi2-sub">—</div>
           </div>
           <div class="kpi">
-            <div class="kpi-lbl">OPEX mensual</div>
+            <div class="kpi-lbl">Costo total de la configuración</div>
             <div class="kpi-val" id="par-kpi3-val">—</div>
             <div class="kpi-sub" id="par-kpi3-sub">—</div>
           </div>
@@ -546,7 +533,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
             </div>
             <div class="rh-divider"></div>
             <div>
-              <div class="rh-lbl" id="par-rh-lbl2">Vida útil estimada</div>
+              <div class="rh-lbl" id="par-rh-lbl2">TIE instalados</div>
               <div class="rh-val" id="par-rh-life">—</div>
               <div class="rh-sub" id="par-rh-sub2">—</div>
             </div>
@@ -574,20 +561,11 @@ h1,h2,h3,h4{font-family:var(--font-title)}
           <ul class="detail-list" id="par-alt-list"></ul>
         </div>
 
-        <!-- Solids card -->
-        <div class="card" id="par-solids-card">
-          <div class="card-title">
-            <h3>Sólidos y vida útil</h3>
-            <span class="badge-pill">04 · Carga</span>
-          </div>
-          <ul class="detail-list" id="par-solids-list"></ul>
-        </div>
-
         <!-- Cost card (optional) -->
         <div class="card" id="par-cost-card" style="display:none">
           <div class="card-title">
-            <h3>Costo operativo mensual</h3>
-            <span class="badge-pill">05 · OPEX</span>
+            <h3>Costo de la configuración</h3>
+            <span class="badge-pill">04 · Costo</span>
           </div>
           <ul class="detail-list" id="par-cost-list"></ul>
         </div>
@@ -599,8 +577,10 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         </div>
         <div class="notice tech">
           <b>Notas de ingeniería</b>
-          Vida útil determinada por prueba piloto con fluido real. Estimación SST es orientativa (NTU × 1.5).
-          Reemplazo por ΔP máxima, tiempo fijo o validación de calidad. O-Ring: NBR, EPDM o FKM según compatibilidad
+          La vida útil real depende de la carga de sólidos del fluido y solo puede determinarse con una prueba piloto
+          de escalabilidad a flujo constante (curva de presión diferencial vs. volumen filtrado). Esta herramienta no
+          estima vida útil ni costo de cambios; solo dimensiona la hidráulica del sistema (TIE y configuración de
+          cartuchos). Reemplazo por ΔP máxima o validación de calidad. O-Ring: NBR, EPDM o FKM según compatibilidad
           química, temperatura y presión. Para aplicaciones FDA/farmacéutica: silicón o EPDM grado FDA.
         </div>
 
@@ -621,13 +601,14 @@ h1,h2,h3,h4{font-family:var(--font-title)}
   <!-- Footer -->
   <div class="footer">
     <strong>Parker Hannifin · Filtros de cartucho absolutos industriales</strong><br>
-    Pre-dimensionamiento orientativo basado en MIP Parker · Carbotecnia. Metodología TIE: GPM por TIE según serie y longitud del cartucho.
-    Vida útil calculada sobre SST estimado (NTU × 1.5 mg/L) y capacidad de retención orientativa. Para diseños finales se requieren
-    pruebas piloto con el fluido real. Cambio de cartuchos por ΔP diferencial máxima (criterio MIP), tiempo fijo o validación de calidad.
+    Pre-dimensionamiento hidráulico orientativo basado en fichas técnicas Parker · Carbotecnia. Metodología TIE: GPM por TIE
+    según serie y longitud del cartucho. No estima vida útil ni costo de cambios: estos requieren una prueba piloto de
+    escalabilidad con el fluido real (ver MIP Parker, sección de dimensionamiento de procesos). Cambio de cartuchos por
+    ΔP diferencial máxima, tiempo fijo o validación de calidad.
   </div>
   <div class="bottom-bar">
     <span>© Carbotecnia · Zapopan, Jalisco · Mexico</span>
-    <span>Parker Hannifin · Distribuidor autorizado · v1.2</span>
+    <span>Parker Hannifin · Distribuidor autorizado · v1.3</span>
   </div>
 
 </div><!-- /shell -->
@@ -639,37 +620,41 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 var PAR_SERIES = {
   megabond:{
     label:'MegaBond Absolute', subtitle:'Profundidad melt-blown · NSF 61 · FDA',
-    desc:'Cartucho de profundidad gradual melt-blown de polipropileno. Alta capacidad de retención de suciedad y larga vida útil. Grado absoluto 99.98%. Ideal para agua industrial, agua potable y prefiltración con cargas medias-altas de sólidos.',
-    specs:'TIPO: Profundidad · EFIC: 99.98% (Absoluto) · ΔP CAMBIO: 35 psi · NSF/ANSI 61 · FDA',
-    gpmPerTie:1.0, dirtG:150, microns:[0.5,1,5,10,25,50,75],
-    maxDeltaP:35, changePsi:35, certifs:'NSF/ANSI 61 · FDA (DOE)', isParmax:false
+    desc:'Cartucho de profundidad gradual melt-blown de polipropileno. Alta capacidad de retención de suciedad. Grado absoluto 99.98%. Ideal para agua industrial, agua potable y prefiltración con cargas medias-altas de sólidos.',
+    specs:'TIPO: Profundidad · EFIC: 99.98% (Absoluto) · ΔP CAMBIO: 30 psi · ΔP MÁX: 40 psi · NSF/ANSI 61 · FDA',
+    gpmPerTie:5.0, verified:true, microns:[0.5,1,5,10,25,50,75],
+    maxDeltaP:40, changePsi:30, certifs:'NSF/ANSI 61 · FDA (DOE)', isParmax:false,
+    lengths:[10,20,30,40]
   },
   absomate:{
     label:'Abso-Mate / Peplyn Plus', subtitle:'Plisado PP absoluto · FDA · Alimentos y bebidas',
     desc:'Cartuchos plisados de polipropileno para filtración absoluta en aplicaciones de alimentos, bebidas y procesos críticos. Alta área de filtración, baja caída de presión y compatibilidad FDA.',
-    specs:'TIPO: Plisado PP · EFIC: 99.98% (Absoluto) · ΔP CAMBIO: 30 psi · FDA · PP grado alimenticio',
-    gpmPerTie:3.0, dirtG:80, microns:[0.2,0.45,1,5,10,20,30,70],
-    maxDeltaP:30, changePsi:30, certifs:'FDA · PP grado alimenticio', isParmax:false
+    specs:'TIPO: Plisado PP · EFIC: 99.98% (Absoluto) · ΔP CAMBIO: 35 psi · ΔP MÁX: 90 psi @ 21°C · FDA',
+    gpmPerTie:10.0, verified:true, microns:[0.2,0.45,1,5,10,20,30,70],
+    maxDeltaP:90, changePsi:35, certifs:'FDA · PP grado alimenticio', isParmax:false,
+    lengths:[10,20,30,40]
   },
   bevpor:{
     label:'BEVPOR', subtitle:'Membrana PES/Nylon · Grado estéril · FDA',
     desc:'Cartuchos de membrana plisada para filtración estéril y de grado biológico. Membrana de polietersulfona (PES) o Nylon según subcategoría. Aplicaciones: cerveza, vino, agua embotellada, farmacéutica y protección de membranas.',
     specs:'TIPO: Membrana plisada PES/Nylon · EFIC: ≥ 99.9% · ΔP CAMBIO: 30–35 psi · FDA',
-    gpmPerTie:1.5, dirtG:40, microns:[0.2,0.45,0.65,1.0],
-    maxDeltaP:35, changePsi:30, certifs:'FDA · Contact food EU', isParmax:false
+    gpmPerTie:1.5, verified:false, microns:[0.2,0.45,0.65,1.0],
+    maxDeltaP:35, changePsi:30, certifs:'FDA · Contact food EU', isParmax:false,
+    lengths:[10,20,30,40]
   },
   parmax:{
     label:'ParMax RCP', subtitle:'Alto flujo 6" de diámetro · Plisado PP absoluto',
     desc:'Cartuchos de alto flujo con diámetro de 6". Disponibles en 20, 40 y 60 pulgadas. Un módulo de 20" maneja 100 GPM. Instalados en housings Fulflo ParMax horizontales. Filtración absoluta 99.98%.',
-    specs:'TIPO: Plisado PP 6" Ø · EFIC: 99.98% · 100 GPM/20" · ΔP CAMBIO: 35 psi · MÁX: 50 psi',
-    gpmPerTie:50, dirtG:1000, microns:[1,5,10,20,40,90],
-    maxDeltaP:50, changePsi:35, certifs:'NSF/ANSI/CAN 61 (sello EPDM)', isParmax:true
+    specs:'TIPO: Plisado PP 6" Ø · EFIC: 99.98% · 100 GPM/20" (50 GPM/TIE) · ΔP CAMBIO: 35 psi · MÁX: 50 psi',
+    gpmPerTie:50, verified:true, microns:[1,5,10,20,40,90],
+    maxDeltaP:50, changePsi:35, certifs:'NSF/ANSI/CAN 61 (sello EPDM)', isParmax:true,
+    lengths:[20,40,60]
   }
 };
 
 var PAR = {
   GAL_TO_L: 3.78541, LPM_TO_GPM: 1/3.78541, M3H_TO_GPM: 1000/60/3.78541,
-  SST_PER_NTU: 1.5, DAYS_MONTH: 30, PRESSURE_MIN: 35
+  PRESSURE_MIN: 35
 };
 
 var parCurrentSerie = 'megabond';
@@ -681,24 +666,6 @@ var parLastResult   = null;
 function parEl(id){ return document.getElementById(id); }
 function parFmt(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
 function parFmtInt(n){ return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'; }
-
-function parLifeLabel(lifeDays, lifeHrs, solidGpD){
-  if(!isFinite(lifeDays)||solidGpD===0) return '∞';
-  if(lifeDays<1) return parFmt(lifeHrs,1)+' h';
-  if(lifeDays<24){
-    var hh=Math.floor(lifeDays);
-    var mm=Math.round((lifeDays-hh)*24);
-    return hh+'d '+mm+'h';
-  }
-  return parFmt(lifeDays,1)+' días';
-}
-
-function parLifeTagCls(lifeDays, solidGpD){
-  if(!isFinite(lifeDays)||solidGpD===0) return 'tag-ok';
-  if(lifeDays<7) return 'tag-err';
-  if(lifeDays<30) return 'tag-warn';
-  return 'tag-ok';
-}
 
 function parOringNote(key){
   return (key==='bevpor'||key==='absomate')
@@ -718,8 +685,11 @@ function parSelectSerie(card, key){
 
 function parUpdateSerieUI(){
   var s = PAR_SERIES[parCurrentSerie];
+  var verifTag = s.verified
+    ? '<span class="tag tag-ok">GPM/TIE verificado en ficha técnica</span>'
+    : '<span class="tag tag-warn">GPM/TIE estimado · sin ficha de respaldo</span>';
   parEl('par-serie-info').innerHTML =
-    '<b>'+s.label+'</b>'+s.subtitle+'<br>'+s.desc+
+    '<b>'+s.label+'</b>'+s.subtitle+'<br>'+s.desc+' '+verifTag+
     '<div class="specs">'+s.specs+'</div>';
   var sel = parEl('par-micron');
   sel.innerHTML = s.microns.map(function(m){
@@ -728,23 +698,35 @@ function parUpdateSerieUI(){
   }).join('');
   parEl('par-micron-hint').textContent =
     'Disponibles para '+s.label+': '+s.microns.join(', ')+' µm · filtración absoluta ≥ 99.98%';
+  var lenSel = parEl('par-length');
+  lenSel.innerHTML = s.lengths.map(function(l){
+    return '<option value="'+l+'">'+l+'"</option>';
+  }).join('');
+  parEl('par-length-hint').textContent =
+    'Longitudes disponibles para '+s.label+': '+s.lengths.map(function(l){return l+'"';}).join(', ')+'.';
   parEl('par-cost-lbl').innerHTML = parCurrentSerie==='parmax'
     ? 'Costo por módulo <span class="opt">opcional</span>'
     : 'Costo por cartucho <span class="opt">opcional</span>';
   parEl('par-cost-hint').textContent = parCurrentSerie==='parmax'
-    ? 'Ingrese el precio del módulo. El OPEX se multiplica por el número de módulos necesarios.'
-    : 'Ingrese el precio de la pieza. El OPEX se calcula sobre las piezas físicas de la configuración recomendada.';
+    ? 'Ingrese el precio del módulo. Se calcula el costo total de la configuración (una sola vez, no recurrente).'
+    : 'Ingrese el precio de la pieza. Se calcula el costo total de la configuración (una sola vez, no recurrente).';
 }
 
 /* ================================================================
    CONFIGURACIÓN FÍSICA (cartuchos estándar)
-   TIE: 10"=1 · 20"=2 · 30"=3 · 40"=4
+   TIE por longitud: cada 10" = 1 TIE  →  L"/10 = TIE por cartucho
+   chosenLen = longitud elegida por el usuario
    ================================================================ */
-function parPhysConfig(tie){
-  return [[40,4],[30,3],[20,2],[10,1]].map(function(p){
-    var n = Math.ceil(tie / p[1]);
-    return { length:p[0], count:n, tieUsed:n*p[1],
-      label: n+' cartucho'+(n>1?'s':'')+' de '+p[0]+'"' };
+function parPhysConfig(tie, lengths, chosenLen){
+  return lengths.map(function(L){
+    var tiePer = L/10;
+    var n      = Math.ceil(tie / tiePer);
+    return {
+      length:L, tiePer:tiePer, count:n, tieUsed:n*tiePer,
+      flowPerCart: PAR_SERIES[parCurrentSerie].gpmPerTie * tiePer,
+      isChosen: L===chosenLen,
+      label: n+' cartucho'+(n>1?'s':'')+' de '+L+'"'
+    };
   });
 }
 
@@ -753,7 +735,7 @@ function parPhysConfig(tie){
    ================================================================ */
 function parValidate(){
   var ok = true;
-  [['par-f-flow','par-flow'],['par-f-turb','par-turb'],['par-f-pres','par-pres']].forEach(function(pair){
+  [['par-f-flow','par-flow'],['par-f-pres','par-pres']].forEach(function(pair){
     var wrap = parEl(pair[0]), val = parseFloat(parEl(pair[1]).value);
     if(!val||val<=0||isNaN(val)){ wrap.classList.add('has-err'); ok=false; }
     else{ wrap.classList.remove('has-err'); }
@@ -771,11 +753,10 @@ function parNormalize(){
     flowGpm: fGpm,
     flowLpm: fGpm*PAR.GAL_TO_L,
     flowM3h: fGpm*PAR.GAL_TO_L*60/1000,
-    turb:    parseFloat(parEl('par-turb').value),
-    opHours: parseFloat(parEl('par-op-hours').value)||24,
     presPsi: parEl('par-pres-unit').value==='bar'?pRaw*14.5038:pRaw,
     cartCost:parseFloat(parEl('par-cart-cost').value)||0,
-    micron:  parseFloat(parEl('par-micron').value)
+    micron:  parseFloat(parEl('par-micron').value),
+    chosenLen: parseFloat(parEl('par-length').value)
   };
 }
 
@@ -786,199 +767,97 @@ function parCalculate(){
   if(!parValidate()) return;
   var I = parNormalize();
   var s = PAR_SERIES[parCurrentSerie];
-  var sst       = I.turb * PAR.SST_PER_NTU;
-  var flowLpd   = I.flowLpm * 60 * I.opHours;
-  var solidGpD  = flowLpd * sst / 1000;
-  var massFrac  = solidGpD / (flowLpd * 1000);
-  var massExceeded = massFrac > 0.0001;
 
-  if(s.isParmax){
-    parRenderParmax(I, s, sst, flowLpd, solidGpD, massFrac, massExceeded);
-  } else {
-    parRenderStandard(I, s, sst, flowLpd, solidGpD, massFrac, massExceeded);
-  }
+  parRenderStandard(I, s);
 
   parEl('par-empty').style.display   = 'none';
   parEl('par-results').classList.add('visible');
   parEl('par-copy-bar').style.display = '';
 }
 
-/* ── Standard series (MegaBond, Abso-Mate, BEVPOR) ── */
-function parRenderStandard(I, s, sst, flowLpd, solidGpD, massFrac, massExceeded){
+/* ── Render unificado (todas las series) ── */
+function parRenderStandard(I, s){
   var tieFrac  = I.flowGpm / s.gpmPerTie;
   var tie      = Math.ceil(tieFrac);
-  var phys     = parPhysConfig(tie);
-  var best     = phys[0];
-  var totalCap = tie * s.dirtG;
-  var lifeDays = solidGpD>0 ? totalCap/solidGpD : Infinity;
-  var lifeHrs  = lifeDays * I.opHours;
-  var chgMo    = isFinite(lifeDays)&&lifeDays>0 ? PAR.DAYS_MONTH/lifeDays : 0;
-  var opex     = chgMo * best.count * I.cartCost;
-  var lifeStr  = parLifeLabel(lifeDays, lifeHrs, solidGpD);
-  var lifeTag  = parLifeTagCls(lifeDays, solidGpD);
-  var lifeDesc = !isFinite(lifeDays)?'Muy larga':lifeDays<7?'Corta':lifeDays<30?'Moderada':'Adecuada';
+  var phys     = parPhysConfig(tie, s.lengths, I.chosenLen);
+  var chosen   = phys.filter(function(p){ return p.isChosen; })[0] || phys[0];
+  var unitTerm = s.isParmax ? 'módulo' : 'cartucho';
+  var unitTermP= s.isParmax ? 'módulos' : 'cartuchos';
+  var cap      = function(w){ return w.charAt(0).toUpperCase()+w.slice(1); };
   var preOk    = I.presPsi >= PAR.PRESSURE_MIN;
+  var totalCost= chosen.count * I.cartCost;
+  /* longitudes mayores a la elegida (para sugerir cambio) */
+  var larger   = phys.filter(function(p){ return p.length > I.chosenLen; });
 
-  parLastResult = {I:I, s:s, tie:tie, phys:phys, best:best, totalCap:totalCap,
-    lifeDays:lifeDays, lifeHrs:lifeHrs, chgMo:chgMo, opex:opex,
-    sst:sst, solidGpD:solidGpD, massFrac:massFrac, massExceeded:massExceeded,
-    tieFrac:tieFrac, flowLpd:flowLpd};
+  parLastResult = {I:I, s:s, tie:tie, tieFrac:tieFrac, phys:phys, chosen:chosen,
+    larger:larger, totalCost:totalCost, preOk:preOk,
+    unitTerm:unitTerm, unitTermP:unitTermP};
 
   /* KPIs */
   parEl('par-kpi1-lbl').textContent  = 'TIE requeridos';
   parEl('par-kpi1-val').innerHTML    = tie+'<small>de 10"</small>';
   parEl('par-kpi1-sub').textContent  = parFmt(I.flowGpm,1)+' GPM ÷ '+parFmt(s.gpmPerTie,1)+' GPM/TIE';
-  parEl('par-kpi2-val').textContent  = lifeStr;
-  parEl('par-kpi2-sub').textContent  = isFinite(lifeDays)?parFmt(lifeHrs,0)+' h op.':'Carga mínima';
-  parEl('par-kpi3-val').innerHTML    = I.cartCost>0?'$'+parFmtInt(opex)+'<small>MXN</small>':'—';
-  parEl('par-kpi3-sub').textContent  = I.cartCost>0?parFmt(chgMo,1)+' cambios/mes':'Ingrese costo';
+  parEl('par-kpi2-val').innerHTML    = chosen.count+'<small>de '+chosen.length+'"</small>';
+  parEl('par-kpi2-sub').textContent  = chosen.tieUsed+' TIE instalados';
+  parEl('par-kpi3-val').innerHTML    = I.cartCost>0?'$'+parFmtInt(totalCost)+'<small>MXN</small>':'—';
+  parEl('par-kpi3-sub').textContent  = I.cartCost>0?chosen.count+' × $'+parFmt(I.cartCost,2):'Ingrese costo';
 
   /* Hero card */
   var hero = parEl('par-result-hero');
-  hero.className = 'result-hero';
+  hero.className = s.isParmax ? 'result-hero parmax' : 'result-hero';
   parEl('par-rh-tag').textContent    = s.label+' · '+s.certifs+' · '+I.micron+' µm absoluto';
-  parEl('par-rh-config').textContent = best.label;
-  parEl('par-rh-sub1').textContent   = best.tieUsed+' TIE totales · '+I.micron+' µm · absoluto ≥ 99.98%';
-  parEl('par-rh-lbl2').textContent   = 'Vida útil '+lifeDesc;
-  parEl('par-rh-life').textContent   = lifeStr;
-  parEl('par-rh-sub2').textContent   = 'SST '+parFmt(sst,1)+' mg/L · carga '+parFmt(solidGpD,0)+' g/día';
+  parEl('par-rh-config').textContent = chosen.label;
+  parEl('par-rh-sub1').textContent   = 'Longitud elegida: '+chosen.length+'" ('+chosen.tiePer+' TIE c/u) · '+I.micron+' µm absoluto';
+  parEl('par-rh-lbl2').textContent   = 'TIE instalados';
+  parEl('par-rh-life').textContent   = chosen.tieUsed+' TIE';
+  parEl('par-rh-sub2').textContent   = 'Cubre '+parFmt(chosen.flowPerCart*chosen.count,1)+' GPM · '+parFmt(chosen.flowPerCart,1)+' GPM por '+unitTerm;
 
   /* Alerts */
   var alertsHtml = '';
   if(!preOk) alertsHtml += '<div class="alert err"><b>Presión insuficiente</b>La presión disponible ('+parFmt(I.presPsi,1)+' psi) es menor al mínimo de 35 psi. Considere bomba de refuerzo.</div>';
-  if(massExceeded) alertsHtml += '<div class="alert warn"><b>Carga de sólidos elevada</b>Fracción de masa supera el 0.01% (límite MIP Carbotecnia). Se recomienda prefiltración previa o validar con prueba piloto.</div>';
-  else if(isFinite(lifeDays)&&lifeDays<7) alertsHtml += '<div class="alert warn"><b>Vida útil muy corta</b>Los cartuchos se colmatarán en menos de 7 días. Instale prefiltración previa o seleccione una serie de mayor capacidad.</div>';
+  if(!s.verified) alertsHtml += '<div class="alert warn"><b>GPM/TIE estimado</b>El factor GPM/TIE de esta serie no está respaldado por su ficha técnica (que reporta área de filtración y curvas de presión, no GPM/10"). Use el resultado como referencia y valide con la curva de caudal del fabricante.</div>';
   parEl('par-alerts').innerHTML = alertsHtml;
 
   /* Detail */
   parEl('par-detail-title').textContent = 'Hidráulica y selección TIE';
   parEl('par-detail-list').innerHTML =
-    li('TIE calculados','Equivalentes de 10" necesarios.',
+    li('Flujo de diseño','',parFmt(I.flowGpm,1)+' GPM',parFmt(I.flowLpm,1)+' L/min · '+parFmt(I.flowM3h,2)+' m³/h')+
+    li('TIE requeridos','Equivalentes de 10" necesarios para el flujo.',
       tie+' TIE', parFmt(I.flowGpm,2)+' GPM ÷ '+parFmt(s.gpmPerTie,1)+' = '+parFmt(tieFrac,2)+' → '+tie+' TIE')+
-    li('Configuración recomendada','Mayor longitud = menos housings.',
-      best.label, best.tieUsed+' TIE · '+best.count+' cartucho'+(best.count>1?'s':'')+' de '+best.length+'"')+
+    li('Longitud elegida','Seleccionada por el usuario.',
+      chosen.length+'"', chosen.tiePer+' TIE por '+unitTerm+' · '+parFmt(chosen.flowPerCart,1)+' GPM nominal c/u')+
+    li('Configuración','Cantidad de piezas físicas de '+chosen.length+'".',
+      chosen.label, chosen.tieUsed+' TIE instalados ('+chosen.count+' × '+chosen.tiePer+')')+
     li('Presión disponible','',
       parFmt(I.presPsi,1)+' psi '+(preOk?'<span class="tag tag-ok">OK</span>':'<span class="tag tag-err">Bajo</span>'),
-      parFmt(I.presPsi/14.5038,2)+' bar · cambio a '+s.changePsi+' psi ΔP');
+      parFmt(I.presPsi/14.5038,2)+' bar · cambio a '+s.changePsi+' psi ΔP · máx '+s.maxDeltaP+' psi');
 
-  /* Alternatives */
-  parEl('par-alt-list').innerHTML =
-    li(best.label,'<span style="color:var(--accent);font-weight:700">✓ Recomendado</span>',
-      best.tieUsed+' TIE', best.count+' cart. de '+best.length+'"')+
-    phys.slice(1).map(function(p){
-      return li(p.count+' cartucho'+(p.count>1?'s':'')+' de '+p.length+'"', p.tieUsed+' TIE totales',
-        p.count+' × '+p.length+'"', p.tieUsed+' TIE');
-    }).join('');
+  /* Alternativas: configuración elegida + todas las longitudes (resaltando mayores) */
+  var altHtml = phys.map(function(p){
+    var tag;
+    if(p.isChosen)      tag = '<span style="color:var(--accent);font-weight:700">✓ Longitud elegida</span>';
+    else if(p.length>I.chosenLen) tag = 'Longitud mayor · menos piezas';
+    else                tag = 'Longitud menor · más piezas';
+    return li(p.count+' '+(p.count>1?unitTermP:unitTerm)+' de '+p.length+'"', tag,
+      parFmt(p.flowPerCart,1)+' GPM c/u', p.tieUsed+' TIE instalados · '+p.count+' × '+p.length+'"');
+  }).join('');
+  parEl('par-alt-list').innerHTML = altHtml;
+  parEl('par-alt-card').style.display = '';
 
-  /* Solids */
-  parEl('par-solids-list').innerHTML =
-    li('SST estimados','',parFmt(sst,1)+' mg/L', parFmt(I.turb,1)+' NTU × 1.5')+
-    li('Carga diaria de sólidos','',parFmt(solidGpD,0)+' g/día', parFmt(flowLpd/1000,1)+' m³/día')+
-    li('Capacidad total del sistema',tie+' TIE × '+s.dirtG+' g/TIE.',parFmt(totalCap,0)+' g','')+
-    li('Fracción de masa','Límite MIP: 0.01%.',
-      parFmt(massFrac*100,4)+' % '+(massExceeded?'<span class="tag tag-err">Excede</span>':'<span class="tag tag-ok">OK</span>'), '');
-
-  /* Cost */
+  /* Costo total de la configuración (una sola compra) */
   if(I.cartCost>0){
     parEl('par-cost-card').style.display = '';
     parEl('par-cost-list').innerHTML =
-      li('Cambios al mes','',parFmt(chgMo,1)+' cambios/mes',
-        best.count+' cartucho'+(best.count>1?'s':'')+' de '+best.length+'" por cambio')+
-      li('OPEX mensual',best.count+' cartucho'+(best.count>1?'s':'')+' de '+best.length+'" a $'+parFmt(I.cartCost,2)+' c/u.',
-        '$'+parFmtInt(opex)+' MXN', '$'+parFmt(opex*12/1000,1)+'k MXN/año');
+      li(cap(unitTermP)+' requeridos','',chosen.count+' '+(chosen.count>1?unitTermP:unitTerm)+' de '+chosen.length+'"',
+        chosen.count+' × $'+parFmt(I.cartCost,2)+' MXN')+
+      li('Costo total de la configuración','Compra inicial del juego completo de cartuchos.',
+        '$'+parFmtInt(totalCost)+' MXN','');
   } else {
     parEl('par-cost-card').style.display = 'none';
   }
 
   /* Notice */
   parEl('par-notice-text').textContent = s.label+' · '+s.certifs+'. '+s.desc+' '+parOringNote(parCurrentSerie);
-
-  /* Alt card: show only for standard */
-  parEl('par-alt-card').style.display = '';
-}
-
-/* ── ParMax series ── */
-function parRenderParmax(I, s, sst, flowLpd, solidGpD, massFrac, massExceeded){
-  var n20    = Math.ceil(I.flowGpm / 100);
-  var n60    = Math.floor(n20/3), rem=n20%3;
-  var n40    = Math.floor(rem/2), n20r=rem%2;
-  var parts  = [];
-  if(n60>0) parts.push(n60+' cart. de 60"');
-  if(n40>0) parts.push(n40+' cart. de 40"');
-  if(n20r>0) parts.push(n20r+' cart. de 20"');
-  var configLabel = parts.join(' + ');
-  var physCount   = n60+n40+n20r;
-  var totalCap    = n20 * s.dirtG * 2;
-  var lifeDays    = solidGpD>0 ? totalCap/solidGpD : Infinity;
-  var lifeHrs     = lifeDays * I.opHours;
-  var chgMo       = isFinite(lifeDays)&&lifeDays>0 ? PAR.DAYS_MONTH/lifeDays : 0;
-  var opex        = chgMo * n20 * I.cartCost;
-  var lifeStr     = parLifeLabel(lifeDays, lifeHrs, solidGpD);
-
-  parLastResult = {I:I, s:s, n20:n20, n60:n60, n40:n40, n20r:n20r,
-    configLabel:configLabel, physCount:physCount, totalCap:totalCap,
-    lifeDays:lifeDays, lifeHrs:lifeHrs, chgMo:chgMo, opex:opex,
-    sst:sst, solidGpD:solidGpD, massFrac:massFrac, massExceeded:massExceeded, flowLpd:flowLpd};
-
-  /* KPIs */
-  parEl('par-kpi1-lbl').textContent  = 'Equiv. 20" requeridos';
-  parEl('par-kpi1-val').innerHTML    = n20+'<small>mód.</small>';
-  parEl('par-kpi1-sub').textContent  = parFmt(I.flowGpm,1)+' GPM ÷ 100 = '+parFmt(I.flowGpm/100,2)+' → '+n20;
-  parEl('par-kpi2-val').textContent  = lifeStr;
-  parEl('par-kpi2-sub').textContent  = parFmtInt(totalCap)+' g cap. total';
-  parEl('par-kpi3-val').innerHTML    = I.cartCost>0?'$'+parFmtInt(opex)+'<small>MXN</small>':'—';
-  parEl('par-kpi3-sub').textContent  = I.cartCost>0?parFmt(chgMo,1)+' cambios/mes':'Ingrese costo';
-
-  /* Hero card (gold) */
-  var hero = parEl('par-result-hero');
-  hero.className = 'result-hero parmax';
-  parEl('par-rh-tag').textContent    = 'ParMax RCP · Alto flujo 6" Ø · '+I.micron+' µm absoluto · '+s.certifs;
-  parEl('par-rh-config').textContent = configLabel||n20+' equiv. 20"';
-  parEl('par-rh-sub1').textContent   = physCount+' cartucho'+(physCount>1?'s':'')+' físico'+(physCount>1?'s':'')+' · housing Fulflo ParMax horizontal';
-  parEl('par-rh-lbl2').textContent   = 'Flujo por equiv. 20"';
-  parEl('par-rh-life').textContent   = parFmt(I.flowGpm/n20,1)+' GPM';
-  parEl('par-rh-sub2').textContent   = 'Máx: 100 GPM/20" · vida útil: '+lifeStr;
-
-  /* Alerts */
-  var alertsHtml = massExceeded ?
-    '<div class="alert warn"><b>Verificar carga</b>Concentración supera 0.01% en masa. Confirmar con ingeniería Carbotecnia.</div>' : '';
-  parEl('par-alerts').innerHTML = alertsHtml;
-
-  /* Detail */
-  parEl('par-detail-title').textContent = 'Dimensionamiento ParMax RCP';
-  parEl('par-detail-list').innerHTML =
-    li('Flujo de diseño','',parFmt(I.flowGpm,1)+' GPM',parFmt(I.flowLpm,1)+' L/min · '+parFmt(I.flowM3h,2)+' m³/h')+
-    li('Módulos equivalentes de 20"','',n20+' equiv.',parFmt(I.flowGpm,1)+' ÷ 100 = '+parFmt(I.flowGpm/100,2)+' → '+n20)+
-    li('Configuración física','Optimizada para usar longitudes mayores.',
-      configLabel||n20+' módulos','60"=3 · 40"=2 · 20"=1 módulo equiv.')+
-    li('Equivalencia con estándar','1 ParMax 20" = 50 cart. estándar de 40" en retención.',
-      (n20*50)+' cart. equiv.','')+
-    li('ΔP máxima permisible','',s.maxDeltaP+' psi','Cambio a '+s.changePsi+' psi');
-
-  /* Alt card: hidden for ParMax */
-  parEl('par-alt-card').style.display = 'none';
-
-  /* Solids */
-  parEl('par-solids-list').innerHTML =
-    li('SST estimados','',parFmt(sst,1)+' mg/L',parFmt(I.turb,1)+' NTU × 1.5')+
-    li('Carga diaria de sólidos','',parFmt(solidGpD,0)+' g/día',parFmt(flowLpd/1000,1)+' m³/día')+
-    li('Capacidad total del sistema',n20+' módulos × '+s.dirtG+' g × 2.',parFmtInt(totalCap)+' g','')+
-    li('Fracción de masa','Límite MIP: 0.01%.',
-      parFmt(massFrac*100,4)+' % '+(massExceeded?'<span class="tag tag-err">Excede</span>':'<span class="tag tag-ok">OK</span>'), '');
-
-  /* Cost */
-  if(I.cartCost>0){
-    parEl('par-cost-card').style.display = '';
-    parEl('par-cost-list').innerHTML =
-      li('Cambios al mes','',parFmt(chgMo,1)+' cambios/mes',n20+' módulo'+(n20>1?'s':'')+' por cambio')+
-      li('OPEX mensual',n20+' módulos a $'+parFmt(I.cartCost,2)+' MXN c/u.',
-        '$'+parFmtInt(opex)+' MXN','$'+parFmt(opex*12/1000,1)+'k MXN/año');
-  } else {
-    parEl('par-cost-card').style.display = 'none';
-  }
-
-  /* Notice */
-  parEl('par-notice-text').textContent = s.label+' · '+s.certifs+'. '+s.desc+' '+parOringNote('parmax');
 }
 
 /* helper: build <li> */
@@ -995,34 +874,37 @@ function li(name, sub, val, valSub){
 function parCopySummary(){
   var r = parLastResult;
   if(!r) return;
-  var I=r.I, s=r.s;
+  var I=r.I, s=r.s, c=r.chosen;
   var lines = [
     '══════════════════════════════════════════════════',
     '  DIMENSIONAMIENTO FILTROS PARKER ABSOLUTOS',
-    '  Carbotecnia · v1.2',
+    '  Carbotecnia · v1.3',
     '══════════════════════════════════════════════════','',
-    'SERIE:    '+s.label,
+    'SERIE:    '+s.label+(s.verified?'':' (GPM/TIE estimado, sin ficha)'),
     'MICRAJE:  '+I.micron+' µm (absoluto ≥ 99.98%)',
-    'FLUJO:    '+parFmt(I.flowGpm,1)+' GPM ('+parFmt(I.flowLpm,1)+' L/min)',
-    'TURBIDEZ: '+parFmt(I.turb,1)+' NTU · SST est.: '+parFmt(r.sst,1)+' mg/L',
-    'PRESIÓN:  '+parFmt(I.presPsi,1)+' psi',
-    ''
+    'FLUJO:    '+parFmt(I.flowGpm,1)+' GPM ('+parFmt(I.flowLpm,1)+' L/min · '+parFmt(I.flowM3h,2)+' m³/h)',
+    'PRESIÓN:  '+parFmt(I.presPsi,1)+' psi'+(r.preOk?'':'  ⚠ menor al mínimo de 35 psi'),
+    '',
+    'TIE REQUERIDOS: '+r.tie+'  ('+parFmt(I.flowGpm,2)+' ÷ '+parFmt(s.gpmPerTie,1)+' = '+parFmt(r.tieFrac,2)+')',
+    'LONGITUD ELEGIDA: '+c.length+'" ('+c.tiePer+' TIE c/u)',
+    'CONFIGURACIÓN: '+c.label+'  ('+c.tieUsed+' TIE instalados)',
+    'COBERTURA: '+parFmt(c.flowPerCart*c.count,1)+' GPM ('+parFmt(c.flowPerCart,1)+' GPM por '+r.unitTerm+')'
   ];
-  if(s.isParmax){
-    lines.push('CONFIGURACIÓN: '+r.configLabel);
-    lines.push('MÓDULOS 20" EQUIV.: '+r.n20);
-  } else {
-    lines.push('CONFIGURACIÓN: '+r.best.label);
-    lines.push('TIE REQUERIDOS: '+r.tie);
+  if(r.larger.length){
+    lines.push('','ALTERNATIVAS DE MAYOR LONGITUD (menos piezas):');
+    r.larger.forEach(function(p){
+      lines.push('  · '+p.count+' '+(p.count>1?r.unitTermP:r.unitTerm)+' de '+p.length+'"  ('+parFmt(p.flowPerCart,1)+' GPM c/u · '+p.tieUsed+' TIE)');
+    });
   }
-  var lifeStr = parLifeLabel(r.lifeDays, r.lifeHrs, r.solidGpD);
-  lines.push('VIDA ÚTIL EST.: '+lifeStr);
-  if(I.cartCost>0) lines.push('OPEX MENSUAL: $'+parFmtInt(r.opex)+' MXN ('+parFmt(r.chgMo,1)+' cambios/mes)');
-  lines.push('FRACCIÓN MASA: '+parFmt(r.massFrac*100,4)+'% '+(r.massExceeded?'⚠ EXCEDE LÍMITE':'✓ OK'));
+  if(I.cartCost>0){
+    lines.push('','COSTO TOTAL CONFIG.: $'+parFmtInt(r.totalCost)+' MXN  ('+c.count+' × $'+parFmt(I.cartCost,2)+')');
+  }
+  lines.push('','ΔP CAMBIO: '+s.changePsi+' psi · ΔP MÁX: '+s.maxDeltaP+' psi');
   lines.push(parOringNote(parCurrentSerie));
   lines.push('','──────────────────────────────────────────────────');
   lines.push('Carbotecnia · Parker Hannifin · Distribuidor autorizado');
-  lines.push('Pre-dimensionamiento orientativo · Requiere pruebas piloto');
+  lines.push('Dimensionamiento hidráulico orientativo. La vida útil');
+  lines.push('requiere prueba piloto de escalabilidad con el fluido real.');
   lines.push('──────────────────────────────────────────────────');
 
   navigator.clipboard.writeText(lines.join('\n')).then(function(){
@@ -1042,8 +924,7 @@ function parCopySummary(){
    LIMPIAR
    ================================================================ */
 function parClear(){
-  ['par-flow','par-turb','par-pres','par-cart-cost'].forEach(function(id){ parEl(id).value=''; });
-  parEl('par-op-hours').value='24';
+  ['par-flow','par-pres','par-cart-cost'].forEach(function(id){ parEl(id).value=''; });
   parEl('par-flow-unit').value='lpm';
   parEl('par-pres-unit').value='psi';
   document.querySelectorAll('.has-err').forEach(function(e){ e.classList.remove('has-err'); });
@@ -1061,7 +942,7 @@ parEl('par-btn-calc').addEventListener('click', parCalculate);
 parEl('par-btn-clear').addEventListener('click', parClear);
 parEl('par-btn-print').addEventListener('click', function(){ window.print(); });
 parEl('par-btn-copy').addEventListener('click', parCopySummary);
-['par-flow','par-turb','par-pres'].forEach(function(id){
+['par-flow','par-pres'].forEach(function(id){
   parEl(id).addEventListener('keydown', function(e){ if(e.key==='Enter') parCalculate(); });
 });
 
