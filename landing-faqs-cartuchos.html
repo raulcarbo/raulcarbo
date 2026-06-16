@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Preguntas frecuentes · Filtros de cartucho industriales · Carbotecnia</title>
+<meta name="description" content="Preguntas frecuentes sobre filtros de cartucho industriales: tipos y funcionamiento, selección de micraje, aplicaciones, mantenimiento, lavables vs desechables, costos, marcas y dónde comprar en México." />
+<!--
+  ════════════════════════════════════════════════════════════════════
+  SECCIÓN FAQs · FILTROS DE CARTUCHO INDUSTRIALES · CARBOTECNIA
+  ════════════════════════════════════════════════════════════════════
+  CÓMO USAR EN WORDPRESS / WPBAKERY PAGE BUILDER:
+  Agrega un elemento "Raw HTML" (o un bloque "HTML personalizado") y
+  pega TODO lo que está entre  INICIO BLOQUE WORDPRESS  y
+  FIN BLOQUE WORDPRESS. El CSS está encapsulado bajo .cbt-faq y no
+  afecta al resto de tu tema. Las fuentes se heredan del tema del sitio
+  (no se declaran aquí). No requiere JavaScript: los acordeones usan
+  <details>/<summary> nativos del navegador.
+
+  CÓMO AGREGAR UNA PREGUNTA:
+  Copia un bloque <details class="cbt-faq-item" ...> completo dentro
+  del grupo que toque y cambia la pregunta (<summary>) y la respuesta
+  (<p>). Usa el mismo name="..." que las demás preguntas del grupo.
+
+  CÓMO AGREGAR UN GRUPO (CLUSTER) NUEVO:
+  Copia un bloque <section class="cbt-faq-grupo"> completo, cambia el
+  título y usa un name nuevo en sus <details> (ej. name="faq-g9").
+  ════════════════════════════════════════════════════════════════════
+-->
+</head>
+<body style="margin:0; background:#ffffff;">
+
+<!-- INICIO BLOQUE WORDPRESS -->
+<style>
+  .cbt-faq {
+    --azul: #2e9bf6;
+    --tinta: #1d2630;
+    --texto: #4b5663;
+    --borde: #e4eaf0;
+    /* Las fuentes se heredan del tema de WordPress a propósito. */
+    font-family: inherit;
+    color: var(--texto);
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 20px 56px;
+    box-sizing: border-box;
+  }
+  .cbt-faq *, .cbt-faq *::before, .cbt-faq *::after { box-sizing: border-box; }
+
+  /* ── Encabezado de la sección ── */
+  .cbt-faq .cbt-faq-titulo {
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 34px);
+    line-height: 1.15;
+    color: var(--tinta);
+    text-align: center;
+    margin: 0 0 12px;
+  }
+  .cbt-faq .cbt-faq-intro {
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 8px;
+    text-wrap: pretty;
+  }
+
+  /* ── Grupo (cluster) de preguntas ── */
+  .cbt-faq .cbt-faq-grupo { margin-top: 36px; }
+  .cbt-faq .cbt-faq-grupo-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.3;
+    color: var(--tinta);
+    margin: 0 0 14px;
+    padding: 0;
+  }
+  .cbt-faq .cbt-faq-grupo-titulo::before {
+    content: "";
+    width: 4px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background: var(--azul);
+  }
+
+  /* ── Pregunta (acordeón nativo) ── */
+  .cbt-faq .cbt-faq-item {
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    background: #ffffff;
+    margin: 0 0 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .cbt-faq .cbt-faq-item:hover,
+  .cbt-faq .cbt-faq-item[open] { border-color: var(--azul); }
+  .cbt-faq .cbt-faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    list-style: none;
+    cursor: pointer;
+    padding: 15px 18px;
+    font-weight: 600;
+    font-size: 16.5px;
+    line-height: 1.4;
+    color: var(--tinta);
+  }
+  .cbt-faq .cbt-faq-item summary::-webkit-details-marker { display: none; }
+  .cbt-faq .cbt-faq-item[open] summary { color: var(--azul); }
+  .cbt-faq .cbt-faq-item summary::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    background-color: var(--azul);
+    -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>') center / contain no-repeat;
+    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>') center / contain no-repeat;
+    transition: transform 0.2s ease;
+  }
+  .cbt-faq .cbt-faq-item[open] summary::after { transform: rotate(45deg); }
+  .cbt-faq .cbt-faq-item p {
+    margin: 0;
+    padding: 0 18px 16px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--texto);
+  }
+
+  @media (max-width: 480px) {
+    .cbt-faq { padding: 28px 16px 40px; }
+    .cbt-faq .cbt-faq-item summary { padding: 13px 14px; font-size: 15.5px; }
+    .cbt-faq .cbt-faq-item p { padding: 0 14px 14px; }
+  }
+</style>
+
+<div class="cbt-faq">
+
+  <h2 class="cbt-faq-titulo">Preguntas frecuentes sobre filtros de cartucho industriales</h2>
+  <p class="cbt-faq-intro">Tipos y funcionamiento, selección de micraje, aplicaciones, mantenimiento, costos y dónde comprar filtros de cartucho para agua industrial. ¿No encuentras tu pregunta? <a href="https://www.carbotecnia.info/contacto/" style="color:#2e9bf6;">Contáctanos</a>.</p>
+
+  <!-- ═══ CLÚSTER 1: Tipos y funcionamiento ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Tipos y funcionamiento</h3>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Qué tipo de filtro de cartucho es más eficiente para agua industrial?</summary>
+      <p>No hay un cartucho universal: la eficiencia depende del contaminante y del objetivo. Para sólidos finos con alta exigencia, los cartuchos plegados absolutos retienen un porcentaje garantizado al micraje indicado; para cargas medias, los de profundidad (bobinados o soplados) son económicos; y para cloro, olor y sabor, los de carbón activado. Carbotecnia ayuda a elegir según micraje, caudal, calidad de salida y el equipo que se busca proteger.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Qué tipos de filtros de cartucho existen para uso industrial?</summary>
+      <p>Los principales son los de profundidad (bobinados de hilo y melt-blown o soplados), los plegados (plisados, en versión nominal o absoluta), los de carbón activado (bloque o granular), los de alto flujo y los de membrana para filtración fina. Los filtros de bolsa son una alternativa para cargas altas de sólidos. Cada tipo cubre un rango distinto de micraje y de capacidad; la selección depende del contaminante, el caudal y la calidad requerida.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Cuáles son las diferencias entre filtros de cartucho de profundidad y filtros plegados?</summary>
+      <p>Los de profundidad retienen partículas en todo el espesor del medio, con una estructura de densidad gradual; toleran buena carga de sólidos, suelen ser nominales y son económicos. Los plegados tienen el medio plisado para multiplicar el área filtrante, lo que les da mayor superficie, más vida útil y versiones absolutas con retención garantizada al micraje. En general: profundidad para cargas altas y costo bajo; plegados para retención precisa y mayor duración.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Cómo funciona un filtro de cartucho de alto flujo?</summary>
+      <p>Un cartucho de alto flujo usa un medio plegado de gran diámetro y mucha área filtrante, de modo que maneja caudales elevados con menos cartuchos y menos carcasas. El agua suele fluir de afuera hacia adentro, lo que reduce el número de cambios y el espacio del sistema. Se emplea cuando se requieren grandes caudales con baja caída de presión; Carbotecnia los maneja para aplicaciones industriales de alto volumen.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Qué materiales se usan en los filtros de cartucho industriales?</summary>
+      <p>Los más comunes son polipropileno, poliéster y algodón/celulosa; para filtración fina se usan membranas (PES, PTFE, nylon), y para cloro y orgánicos, carbón activado en bloque o granular. Las carcasas y mallas pueden ser de acero inoxidable o polipropileno. La elección del material depende de la compatibilidad química con el fluido, la temperatura de operación y si se requiere grado alimenticio o sanitario.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g1">
+      <summary>¿Existen filtros de cartucho para filtración ultrafina?</summary>
+      <p>Sí. Para filtración ultrafina se usan cartuchos de membrana con micrajes absolutos de hasta 0.2 micras, empleados en clarificación fina, reducción microbiológica y procesos sensibles. Requieren un buen pretratamiento —cartuchos más gruesos aguas arriba— para no saturarse rápido y encarecer la operación. Carbotecnia orienta la selección según el tamaño de partícula a retener y la calidad de salida requerida.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g1") -->
+  </section>
+
+  <!-- ═══ CLÚSTER 2: Selección y dimensionamiento ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Selección y dimensionamiento</h3>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Cómo seleccionar el micraje adecuado para un filtro de cartucho industrial?</summary>
+      <p>El micraje se elige según la partícula más pequeña que necesitas retener y la protección del equipo aguas abajo. Conviene definir si requieres retención nominal (≈85–90%) o absoluta (garantizada, p. ej. 99.9% al micraje indicado). En trenes de filtración se escalona de mayor a menor micraje para no saturar el cartucho fino. Carbotecnia ayuda a definir el micraje a partir del análisis de agua y del objetivo de filtración.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Qué características debe tener un filtro de cartucho para plantas de manufactura?</summary>
+      <p>Debe ajustarse al caudal, a la calidad de agua que exige el proceso, a la compatibilidad química del medio y a la presión de operación. Importan la vida útil (superficie filtrante), la facilidad de cambio y la disponibilidad de repuestos a futuro. Para procesos con norma sanitaria conviene material de grado alimenticio. Carbotecnia ayuda a definir estas características según la aplicación específica de tu planta.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Qué cartuchos se recomiendan para retener partículas finas?</summary>
+      <p>Para partículas finas se recomiendan cartuchos plegados absolutos o de membrana, con micrajes bajos y retención garantizada. Si la carga de sólidos es alta, conviene anteponer una etapa más gruesa que proteja al cartucho fino y evite cambios frecuentes. La selección exacta depende del tamaño de partícula y de la calidad de salida; Carbotecnia ofrece cartuchos absolutos (por ejemplo, de la línea Parker) para estas aplicaciones.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Existen filtros de cartucho para agua con alta carga de partículas?</summary>
+      <p>Sí, pero con alta carga de sólidos no conviene usar solo cartuchos finos, porque se saturan rápido y encarecen la operación. Lo recomendable es un pretratamiento —filtro de bolsa, de lecho profundo o cartuchos de profundidad de mayor micraje— y dejar el cartucho fino como pulimiento final. Carbotecnia asesora el tren de filtración para equilibrar costo de consumibles y vida útil.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Existen filtros de cartucho aptos para sistemas de alta presión?</summary>
+      <p>Sí. Existen cartuchos y carcasas diseñados para presiones de trabajo elevadas; en estos casos suelen emplearse carcasas de acero inoxidable y cartuchos compatibles. Es importante respetar la presión y la temperatura máximas de diseño y vigilar la presión diferencial. Carbotecnia puede recomendar el conjunto cartucho-carcasa adecuado para tu presión de operación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Dónde solicitar asesoría para elegir un filtro de cartucho industrial?</summary>
+      <p>Puedes solicitarla a Carbotecnia, que asesora con base en el análisis de agua, el caudal, el contaminante, la presión y la calidad objetivo. Tener a la mano estos datos —y el equipo que quieres proteger— permite definir tipo de cartucho, micraje, material y carcasa. La empresa atiende proyectos industriales en México desde Zapopan, Jalisco.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g2">
+      <summary>¿Dónde solicitar asesoría para seleccionar cartuchos industriales?</summary>
+      <p>Carbotecnia ofrece asesoría técnica para seleccionar cartuchos según la aplicación: define micraje (nominal o absoluto), material compatible, dimensiones y configuración de la carcasa. Para una recomendación precisa conviene compartir el tipo de fluido, el caudal, la carga de partículas y el objetivo de filtración. Puedes contactarlos por su sitio web para iniciar la selección.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g2") -->
+  </section>
+
+  <!-- ═══ CLÚSTER 3: Aplicaciones industriales ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Aplicaciones industriales</h3>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Qué problemas del agua de proceso resuelven los filtros de cartucho?</summary>
+      <p>Resuelven principalmente la presencia de sólidos suspendidos, turbiedad, arenas, sedimentos y partículas que dañan o ensucian equipos. Con cartuchos de carbón también reducen cloro, olor y sabor. Protegen bombas, boquillas, membranas e instrumentos, y sirven como pulimiento final. No remueven sales disueltas ni dureza: para eso se usan ósmosis inversa o suavización.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Qué cartuchos se recomiendan para agua potable en aplicaciones industriales?</summary>
+      <p>Para agua de consumo en aplicaciones industriales se usan cartuchos de sedimentos (polipropileno) y de carbón activado para cloro, olor y sabor, con materiales aptos para contacto con agua potable. Según el caso se añade un cartucho fino o de membrana para reducción microbiológica. La selección depende de la calidad de entrada y de la norma aplicable; Carbotecnia orienta la configuración del tren.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Qué cartuchos se usan en el pretratamiento de ósmosis inversa industrial?</summary>
+      <p>En el pretratamiento de ósmosis inversa se usa típicamente un cartucho de sedimentos (comúnmente de 5 micras) para retener sólidos y, cuando hay cloro, carbón activado para proteger las membranas. Este pretratamiento evita el ensuciamiento y la oxidación de las membranas, alargando su vida. Carbotecnia suministra los cartuchos de pretratamiento y asesora el micraje según el agua de alimentación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Dónde comprar cartuchos para pretratamiento de agua industrial?</summary>
+      <p>Carbotecnia suministra cartuchos de sedimentos y de carbón para pretratamiento de ósmosis inversa y otros procesos, desde Zapopan, Jalisco, con envíos nacionales. Para acertar conviene indicar el micraje, las dimensiones del cartucho y el caudal. Si proteges membranas, también ayuda conocer el cloro libre del agua para definir si se requiere una etapa de carbón.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>Distribuidores de filtros de cartucho para sistemas de agua de enfriamiento</summary>
+      <p>Carbotecnia ofrece cartuchos y filtros para sistemas de agua de enfriamiento, donde se controlan sólidos y partículas que ensucian intercambiadores y rellenos de torres. Según la carga, a veces conviene combinarlos con filtros de discos o de lecho. La selección depende del caudal a filtrar, el tipo de partícula y el porcentaje de flujo derivado a filtración; la empresa asesora la mejor opción.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>Comparativa de cartuchos para aplicaciones de agua ultrapura</summary>
+      <p>Para agua ultrapura los cartuchos se comparan por su micraje absoluto, el tipo de membrana, el bajo desprendimiento de partículas del propio medio y la compatibilidad con el proceso. Suelen ser etapas finales de pulimiento después de ósmosis inversa o electrodeionización. Lo decisivo es la retención garantizada y la limpieza del cartucho; Carbotecnia orienta la elección según la calidad final requerida.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Qué filtro de cartucho se recomienda para agua con contaminantes químicos?</summary>
+      <p>Para contaminantes químicos disueltos, los cartuchos de carbón activado adsorben cloro, compuestos orgánicos, olores y sabores; para sólidos, los de sedimentos. Sin embargo, no todos los químicos se remueven con cartucho: algunos requieren ósmosis inversa, resinas o medios específicos. La recomendación depende del contaminante exacto, por lo que conviene partir del análisis de agua para definir la tecnología correcta.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Qué cartuchos sirven para eliminar cloro del agua industrial?</summary>
+      <p>El cloro se remueve con cartuchos de carbón activado (bloque o granular), que lo adsorben y de paso mejoran sabor y olor. Es la etapa típica antes de membranas de ósmosis inversa o resinas sensibles al cloro. La capacidad depende del caudal, la concentración de cloro y el tiempo de contacto; Carbotecnia ofrece cartuchos de carbón y ayuda a dimensionar la frecuencia de reemplazo.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g3">
+      <summary>¿Qué filtros de cartucho ayudan a reducir olores y sabores?</summary>
+      <p>Los cartuchos de carbón activado son los indicados para reducir olores y sabores, ya que adsorben el cloro y los compuestos orgánicos que los causan. Vienen en formato de bloque (mayor retención) o granular. Su vida depende del caudal y de la carga orgánica; cuando el carbón se agota, dejan de retener y deben reemplazarse. Carbotecnia los suministra para aplicaciones industriales.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g3") -->
+  </section>
+
+  <!-- ═══ CLÚSTER 4: Durabilidad y mantenimiento ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Durabilidad y mantenimiento</h3>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Qué filtros de cartucho industriales ofrecen mayor durabilidad?</summary>
+      <p>Los cartuchos con mayor superficie filtrante duran más: los plegados y los de alto flujo ofrecen más área que los de profundidad del mismo tamaño, por lo que retienen más sólidos antes de saturarse. La durabilidad real depende de la carga de partículas del agua y del micraje, y un buen pretratamiento alarga mucho la vida del cartucho fino. Carbotecnia ayuda a elegir el de mejor vida útil para tu caso.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Qué mantenimiento requiere un sistema de filtración por cartuchos?</summary>
+      <p>El mantenimiento principal es vigilar la presión diferencial —la caída de presión entre entrada y salida— y reemplazar el cartucho cuando alcanza el valor recomendado, además de revisar sellos y carcasa. Los cartuchos de profundidad y melt-blown no se lavan: se cambian. Llevar un registro de presión y fechas permite anticipar el cambio y evitar caídas de caudal o fugas.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Qué filtros de cartucho ofrecen mantenimiento sencillo y bajo costo?</summary>
+      <p>Los sistemas con cartuchos estándar, de fácil disponibilidad y cambio rápido, ofrecen el mantenimiento más sencillo: solo se sustituye el elemento al alcanzar la presión diferencial límite. Para bajar el costo conviene dimensionar bien (suficiente superficie filtrante) y usar pretratamiento, reduciendo la frecuencia de cambio. Carbotecnia ayuda a elegir un sistema con consumibles accesibles y buen costo de operación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Cómo influye la filtración por cartucho en la vida útil de los equipos industriales?</summary>
+      <p>Al retener sólidos y partículas, la filtración por cartucho protege bombas, boquillas, válvulas, intercambiadores y membranas de ósmosis inversa del desgaste y el ensuciamiento. Esto reduce paros, mantenimiento correctivo y reemplazos prematuros aguas abajo. En conjunto, una filtración adecuada suele pagarse extendiendo la vida de equipos más costosos y manteniendo estable el proceso.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Dónde encontrar servicios de mantenimiento para sistemas de filtración por cartucho?</summary>
+      <p>Carbotecnia brinda asesoría técnica sobre operación, consumibles y criterios de reemplazo de sistemas de filtración por cartucho, además de suministrar los cartuchos de repuesto. Para un apoyo útil conviene describir el equipo, el caudal, el agua que trata y la frecuencia de cambio actual. La empresa atiende clientes industriales en México desde Zapopan, Jalisco.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g4">
+      <summary>¿Dónde encontrar servicios de instalación de filtros de cartucho industriales?</summary>
+      <p>El alcance de instalación se define por proyecto; conviene consultar a Carbotecnia si requieres suministro con montaje y puesta en marcha o solo el equipo. Una instalación correcta cuida las conexiones, el bypass, la presión de trabajo y el acceso para el cambio de cartuchos. Describir el sitio —espacio, presión y diámetro de tubería— ayuda a definir el alcance del servicio.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g4") -->
+  </section>
+
+  <!-- ═══ CLÚSTER 5: Lavables frente a desechables ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Lavables frente a desechables</h3>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Cuáles son las ventajas de los cartuchos lavables frente a los desechables?</summary>
+      <p>Los cartuchos lavables (algunos plegados de poliéster, mallas o de acero) pueden limpiarse y reutilizarse varias veces, reduciendo consumibles y residuos. Los desechables (profundidad, melt-blown, carbón) se cambian al saturarse y suelen ofrecer filtración más fina o más económica por pieza. La ventaja de los lavables aparece en operaciones de alto consumo, donde la mano de obra de limpieza compensa el ahorro en repuestos.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Convienen más los filtros de cartucho reutilizables o los desechables?</summary>
+      <p>Depende del caudal, la carga de sólidos y el costo de la mano de obra. Los reutilizables convienen cuando el cambio es muy frecuente y limpiarlos resulta más barato que reponerlos; los desechables convienen en caudales bajos o intermitentes y cuando se requiere filtración fina o absoluta. Carbotecnia ayuda a comparar el costo total de operación de cada opción para tu caso.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g5">
+      <summary>¿Cuál es el costo-beneficio de los cartuchos reutilizables en plantas industriales?</summary>
+      <p>En plantas de alto consumo, los cartuchos reutilizables reducen el gasto en repuestos y la generación de residuos, pero suman costo de mano de obra y tiempo de limpieza, y su retención puede ser menos fina que la de un absoluto desechable. El balance se calcula comparando el costo anual de consumibles más mano de obra de cada opción, según el caudal y la frecuencia de saturación.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g5") -->
+  </section>
+
+  <!-- ═══ CLÚSTER 6: Costos y comparación ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Costos y comparación</h3>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>Comparativa de filtros de cartucho para agua industrial</summary>
+      <p>La comparación correcta cruza tipo (profundidad, plegado, carbón, alto flujo), micraje (nominal vs absoluto), superficie filtrante, caudal, vida útil y costo por pieza. Un cartucho barato de profundidad puede salir más caro a la larga si se cambia muy seguido frente a un plegado de mayor vida. Carbotecnia ayuda a comparar opciones según tu caudal y la carga de sólidos del agua.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Qué filtros de cartucho ofrecen mejor relación entre costo y desempeño?</summary>
+      <p>No la da un modelo fijo, sino un cartucho bien dimensionado: con suficiente superficie y el micraje correcto para no saturarse rápido ni dejar pasar lo que debe retener. Los plegados y de alto flujo suelen dar buena relación en caudales altos por su mayor vida; los de profundidad, en cargas medias por su bajo costo. La clave es partir del agua y el caudal reales para elegir.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Cuáles son los precios de los filtros de cartucho industriales en México?</summary>
+      <p>El precio depende de la marca, el tipo (profundidad, plegado, carbón, membrana), las dimensiones, el micraje, el material y el volumen de compra. Un cartucho de profundidad estándar es más económico que uno plegado absoluto o de membrana. Carbotecnia cotiza según el cartucho específico y la cantidad; comprar por volumen suele mejorar el precio unitario.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g6">
+      <summary>¿Cuánto cuestan los cartuchos industriales para remoción de partículas?</summary>
+      <p>Varía según micraje, longitud, diámetro, material y si son nominales o absolutos: los nominales de profundidad son los más económicos y los absolutos plegados cuestan más por su retención garantizada y mayor vida. Para una cifra exacta conviene cotizar con las especificaciones (medidas y micraje) y la cantidad requerida; Carbotecnia cotiza cartuchos y filtros de bolsa industriales.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g6") -->
+  </section>
+
+  <!-- ═══ CLÚSTER 7: Marcas, certificaciones y garantías ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Marcas, certificaciones y garantías</h3>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>¿Cuáles son las mejores marcas de filtros de cartucho para uso industrial en México?</summary>
+      <p>Más que una "mejor marca" universal, conviene elegir por aplicación y por respaldo de refacciones. Carbotecnia maneja cartuchos de marcas industriales reconocidas, incluida la línea Parker (cartuchos absolutos y nominales). La mejor opción depende del micraje, el caudal y la compatibilidad química; lo recomendable es definir primero el requerimiento técnico y luego elegir la marca que lo cubre con disponibilidad de repuestos.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>¿Cuáles son las marcas líderes en filtración por cartucho industrial?</summary>
+      <p>En filtración por cartucho industrial destacan fabricantes especializados en cartuchos de profundidad, plegados absolutos y de alto flujo; Carbotecnia distribuye, entre otras, la línea Parker para aplicaciones industriales. La elección de marca debe atender la retención requerida (nominal o absoluta), el material y la compatibilidad con tu carcasa. La empresa asesora qué línea conviene según tu proceso.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>¿Existen filtros de cartucho con certificaciones de calidad en México?</summary>
+      <p>Sí; muchos cartuchos cuentan con materiales aptos para contacto con agua potable (grado alimenticio o referencias tipo NSF) y se fabrican bajo sistemas de calidad. Para aplicaciones reguladas conviene solicitar la ficha técnica y los certificados disponibles del producto específico. Carbotecnia puede indicar qué documentación respalda cada cartucho según el fabricante.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>¿Existen filtros de cartucho con certificaciones ambientales?</summary>
+      <p>Las certificaciones ambientales son menos comunes en cartuchos que las de calidad o sanitarias; el beneficio ambiental suele venir de reducir consumibles y residuos —cartuchos de mayor vida o lavables— y de optimizar la operación. Si requieres documentación ambiental específica, conviene solicitarla por producto. Carbotecnia puede informar la disponibilidad según el fabricante.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g7">
+      <summary>¿Qué garantías ofrecen los fabricantes de filtros de cartucho industriales?</summary>
+      <p>La garantía depende del fabricante y del producto, y suele cubrir defectos de fabricación siempre que el cartucho se use dentro de sus parámetros de presión, temperatura y compatibilidad química. Por ser consumibles, la vida útil no es objeto de garantía: depende de la carga del agua y de la operación. Conviene confirmar con Carbotecnia la cobertura y las condiciones aplicables en cada cotización.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g7") -->
+  </section>
+
+  <!-- ═══ CLÚSTER 8: Compra, proveedores y soporte ═══ -->
+  <section class="cbt-faq-grupo">
+    <h3 class="cbt-faq-grupo-titulo">Compra, proveedores y soporte</h3>
+
+    <details class="cbt-faq-item" name="faq-g8">
+      <summary>¿Dónde comprar filtros de cartucho para agua industrial en México?</summary>
+      <p>Carbotecnia vende filtros de cartucho para agua industrial, carcasas, medios y refacciones desde Zapopan, Jalisco, con envíos a todo el país. Para acertar en la compra conviene indicar el tipo de cartucho, el micraje, las dimensiones y el caudal. La empresa atiende plantas, integradores, constructoras e ingenierías, y asesora la selección según la aplicación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g8">
+      <summary>Catálogo de filtros de cartucho para agua industrial en México</summary>
+      <p>El catálogo de Carbotecnia incluye cartuchos de profundidad, plegados (nominales y absolutos), de carbón activado, de alto flujo y filtros de bolsa, además de carcasas y refacciones. Para grandes caudales se combinan varios cartuchos o carcasas múltiples. Si compartes tu caudal, micraje y objetivo de filtración, se puede orientar qué productos del catálogo aplican a tu caso.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g8">
+      <summary>¿Dónde encontrar proveedores confiables de filtros de cartucho industriales?</summary>
+      <p>Al evaluar un proveedor de cartuchos conviene revisar su experiencia en aplicaciones similares, la asesoría técnica para dimensionar, la disponibilidad de repuestos a futuro y el soporte posventa. Carbotecnia atiende proyectos industriales B2B en México con asesoría, suministro y refacciones. Pedir fichas técnicas y referencias de casos parecidos ayuda a asegurar la continuidad de la operación.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g8">
+      <summary>Proveedores de filtros de cartucho de alto rendimiento para la industria</summary>
+      <p>Para cartuchos de alto rendimiento (alto flujo, absolutos, larga vida) conviene un proveedor que respalde la selección con criterios de ingeniería y refacciones. Carbotecnia suministra cartuchos de alto desempeño, incluida la línea Parker, para aplicaciones industriales exigentes. La elección depende del caudal, el micraje y la calidad de salida; la empresa asesora la configuración adecuada.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g8">
+      <summary>Empresas especializadas en filtración industrial mediante cartuchos</summary>
+      <p>Carbotecnia es una empresa especializada en tratamiento de agua y filtración industrial —incluida la filtración por cartuchos—, con asesoría técnica, equipos, medios filtrantes y refacciones. Su enfoque es B2B e industrial. Para un proyecto, parte del análisis de agua, el caudal y la calidad objetivo, y sobre eso define el sistema de cartuchos adecuado.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g8">
+      <summary>¿Dónde solicitar una cotización de filtros de cartucho para grandes caudales?</summary>
+      <p>Puedes solicitarla a Carbotecnia. Para grandes caudales conviene enviar el caudal de servicio, el micraje requerido, las dimensiones o el modelo de cartucho y la carga de sólidos del agua; con eso se define el número de cartuchos, el tipo de carcasa (múltiple o de alto flujo) y el consumo estimado. Cuanta más información, más precisa y rápida será la propuesta.</p>
+    </details>
+
+    <details class="cbt-faq-item" name="faq-g8">
+      <summary>¿Qué proveedores ofrecen mejor soporte técnico y servicio posventa en México?</summary>
+      <p>Un buen soporte se nota en la asesoría para dimensionar, la disponibilidad de refacciones y el acompañamiento posventa. Carbotecnia ofrece asesoría técnica sobre selección, operación y reemplazo de cartuchos, con suministro de consumibles en México desde Zapopan, Jalisco. Para un soporte útil conviene tener identificado el equipo, el cartucho actual y el síntoma o la necesidad concreta.</p>
+    </details>
+
+    <!-- ➕ Agrega aquí más preguntas de este grupo (usa name="faq-g8") -->
+  </section>
+
+  <!-- ➕ Para un grupo nuevo: copia un <section class="cbt-faq-grupo">...</section>
+       completo, cambia el título y usa un name nuevo en sus <details>
+       (ej. name="faq-g9"). -->
+
+</div>
+<!-- FIN BLOQUE WORDPRESS -->
+
+</body>
+</html>
