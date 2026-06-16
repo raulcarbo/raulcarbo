@@ -657,7 +657,7 @@ var PAR_SERIES = {
 var PAR = {
   GAL_TO_L: 3.78541, LPM_TO_GPM: 1/3.78541, M3H_TO_GPM: 1000/60/3.78541,
   PRESSURE_MIN: 35,
-  PARMAX_SUGGEST_GPM: 100   /* a partir de 1 módulo ParMax 20" óptimo (100 GPM) conviene evaluar alto flujo */
+  PARMAX_SUGGEST_GPM: 50    /* flujo mínimo para evaluar ParMax (≈ 190 L/min) */
 };
 
 var parCurrentSerie = 'megabond';
@@ -736,8 +736,9 @@ function parPhysConfig(tie, lengths, chosenLen){
 /* ================================================================
    SUGERENCIA ALTO FLUJO (ParMax RCP)
    Evalúa si conviene migrar de una serie estándar 2.5" a ParMax 6".
-   Solo aplica a series de partículas (parmaxSwap) y micraje ≥ 1 µm
-   (el ParMax filtra desde 1 µm; no sustituye membranas estériles).
+   Solo aplica a series de partículas (parmaxSwap) cuando el flujo
+   supera PARMAX_SUGGEST_GPM y la config actual requiere >= 2 piezas.
+   No aplica a BEVPOR (membrana esteril; ParMax filtra desde 1 um).
    ================================================================ */
 function parParmaxSuggestion(flowGpm, micron){
   var pm  = PAR_SERIES.parmax;
@@ -843,17 +844,25 @@ function parRenderStandard(I, s){
   if(!s.verified) alertsHtml += '<div class="alert warn"><b>GPM/TIE estimado</b>El factor GPM/TIE de esta serie no está respaldado por su ficha técnica (que reporta área de filtración y curvas de presión, no GPM/10"). Use el resultado como referencia y valide con la curva de caudal del fabricante.</div>';
 
   /* Sugerencia de migración a ParMax RCP (alto flujo) */
-  if(s.parmaxSwap && I.micron>=1 && I.flowGpm>=PAR.PARMAX_SUGGEST_GPM){
+  /* Sugerencia ParMax: flujo suficiente Y se necesitan ≥ 2 piezas estándar
+     (ParMax va de 1 µm; para membranas estériles BEVPOR no aplica) */
+  if(s.parmaxSwap && I.flowGpm>=PAR.PARMAX_SUGGEST_GPM && chosen.count>=2){
     var pmS = parParmaxSuggestion(I.flowGpm, I.micron);
-    var micTxt = pmS.exactMicron
-      ? I.micron+' µm'
-      : pmS.pmMicron+' µm (rating ParMax más cercano a su '+I.micron+' µm)';
+    var micTxt, micNote='';
+    if(I.micron < 1){
+      micTxt = '1 µm (mínimo disponible en ParMax)';
+      micNote = ' Nota: su micraje actual ('+I.micron+' µm) no existe en ParMax RCP que arranca desde 1 µm — evalúe si ese nivel de retención es estrictamente necesario.';
+    } else if(pmS.exactMicron){
+      micTxt = I.micron+' µm (disponible en ParMax)';
+    } else {
+      micTxt = pmS.pmMicron+' µm (rating ParMax más cercano a su '+I.micron+' µm)';
+    }
     alertsHtml += '<div class="alert tip"><b>💡 A este flujo conviene evaluar ParMax RCP (alto flujo)</b>'
       + 'Con '+parFmt(I.flowGpm,0)+' GPM, un sistema <b>ParMax RCP</b> (cartuchos plisados de 6" Ø) cubriría el caudal con solo '
       + '<b>'+pmS.best.count+' cartucho'+(pmS.best.count>1?'s':'')+' de '+pmS.best.length+'"</b> ('+parFmt(pmS.best.flowPerCart,0)+' GPM c/u) en lugar de '
       + '<b>'+chosen.count+' '+(chosen.count>1?unitTermP:unitTerm)+' de '+chosen.length+'"</b> de la serie actual. '
-      + 'Menos piezas, menos housings y cambios más rápidos en un portafiltro Fulflo ParMax horizontal · '+micTxt+'. '
-      + 'Seleccione la serie <b>ParMax RCP</b> arriba para dimensionarla.</div>';
+      + 'Menos piezas, un solo portafiltro Fulflo ParMax horizontal · micraje sugerido: '+micTxt+'.'+micNote
+      + ' Seleccione la serie <b>ParMax RCP</b> arriba para dimensionarla en detalle.</div>';
   }
   parEl('par-alerts').innerHTML = alertsHtml;
 
