@@ -269,6 +269,8 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .alert b{display:block;font-weight:800;margin-bottom:3px;font-size:12px}
 .alert.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-border)}
 .alert.err{background:var(--err-soft);color:var(--err);border:1px solid var(--err-border)}
+.alert.tip{background:var(--gold-soft);color:var(--gold-dark);border:1px solid var(--gold-border)}
+.alert.tip b{color:var(--gold-dark)}
 .notice{border-radius:12px;padding:13px 16px;font-size:12.5px;line-height:1.6}
 .notice b{display:block;font-family:var(--font-num);font-size:9.5px;letter-spacing:.12em;
   text-transform:uppercase;margin-bottom:5px;font-weight:700}
@@ -624,7 +626,7 @@ var PAR_SERIES = {
     specs:'TIPO: Profundidad · EFIC: 99.98% (Absoluto) · ΔP CAMBIO: 30 psi · ΔP MÁX: 40 psi · NSF/ANSI 61 · FDA',
     gpmPerTie:5.0, verified:true, microns:[0.5,1,5,10,25,50,75],
     maxDeltaP:40, changePsi:30, certifs:'NSF/ANSI 61 · FDA (DOE)', isParmax:false,
-    lengths:[10,20,30,40]
+    lengths:[10,20,30,40], parmaxSwap:true
   },
   absomate:{
     label:'Abso-Mate / Peplyn Plus', subtitle:'Plisado PP absoluto · FDA · Alimentos y bebidas',
@@ -632,7 +634,7 @@ var PAR_SERIES = {
     specs:'TIPO: Plisado PP · EFIC: 99.98% (Absoluto) · ΔP CAMBIO: 35 psi · ΔP MÁX: 90 psi @ 21°C · FDA',
     gpmPerTie:10.0, verified:true, microns:[0.2,0.45,1,5,10,20,30,70],
     maxDeltaP:90, changePsi:35, certifs:'FDA · PP grado alimenticio', isParmax:false,
-    lengths:[10,20,30,40]
+    lengths:[10,20,30,40], parmaxSwap:true
   },
   bevpor:{
     label:'BEVPOR', subtitle:'Membrana PES/Nylon · Grado estéril · FDA',
@@ -654,7 +656,8 @@ var PAR_SERIES = {
 
 var PAR = {
   GAL_TO_L: 3.78541, LPM_TO_GPM: 1/3.78541, M3H_TO_GPM: 1000/60/3.78541,
-  PRESSURE_MIN: 35
+  PRESSURE_MIN: 35,
+  PARMAX_SUGGEST_GPM: 100   /* a partir de 1 módulo ParMax 20" óptimo (100 GPM) conviene evaluar alto flujo */
 };
 
 var parCurrentSerie = 'megabond';
@@ -728,6 +731,28 @@ function parPhysConfig(tie, lengths, chosenLen){
       label: n+' cartucho'+(n>1?'s':'')+' de '+L+'"'
     };
   });
+}
+
+/* ================================================================
+   SUGERENCIA ALTO FLUJO (ParMax RCP)
+   Evalúa si conviene migrar de una serie estándar 2.5" a ParMax 6".
+   Solo aplica a series de partículas (parmaxSwap) y micraje ≥ 1 µm
+   (el ParMax filtra desde 1 µm; no sustituye membranas estériles).
+   ================================================================ */
+function parParmaxSuggestion(flowGpm, micron){
+  var pm  = PAR_SERIES.parmax;
+  var tie = Math.ceil(flowGpm / pm.gpmPerTie);
+  var opts = pm.lengths.map(function(L){
+    var tiePer=L/10, n=Math.ceil(tie/tiePer);
+    return { length:L, tiePer:tiePer, count:n, tieUsed:n*tiePer,
+      flowPerCart: pm.gpmPerTie*tiePer };
+  });
+  /* menor número de piezas (a empate, menor longitud = mejor ajuste) */
+  opts.sort(function(a,b){ return a.count-b.count || a.length-b.length; });
+  /* micraje ParMax igual o más fino disponible */
+  var avail = pm.microns.filter(function(m){ return m<=micron; });
+  var pmMicron = avail.length ? Math.max.apply(null, avail) : pm.microns[0];
+  return { tie:tie, best:opts[0], pmMicron:pmMicron, exactMicron: pm.microns.indexOf(micron)>=0 };
 }
 
 /* ================================================================
@@ -816,6 +841,20 @@ function parRenderStandard(I, s){
   var alertsHtml = '';
   if(!preOk) alertsHtml += '<div class="alert err"><b>Presión insuficiente</b>La presión disponible ('+parFmt(I.presPsi,1)+' psi) es menor al mínimo de 35 psi. Considere bomba de refuerzo.</div>';
   if(!s.verified) alertsHtml += '<div class="alert warn"><b>GPM/TIE estimado</b>El factor GPM/TIE de esta serie no está respaldado por su ficha técnica (que reporta área de filtración y curvas de presión, no GPM/10"). Use el resultado como referencia y valide con la curva de caudal del fabricante.</div>';
+
+  /* Sugerencia de migración a ParMax RCP (alto flujo) */
+  if(s.parmaxSwap && I.micron>=1 && I.flowGpm>=PAR.PARMAX_SUGGEST_GPM){
+    var pmS = parParmaxSuggestion(I.flowGpm, I.micron);
+    var micTxt = pmS.exactMicron
+      ? I.micron+' µm'
+      : pmS.pmMicron+' µm (rating ParMax más cercano a su '+I.micron+' µm)';
+    alertsHtml += '<div class="alert tip"><b>💡 A este flujo conviene evaluar ParMax RCP (alto flujo)</b>'
+      + 'Con '+parFmt(I.flowGpm,0)+' GPM, un sistema <b>ParMax RCP</b> (cartuchos plisados de 6" Ø) cubriría el caudal con solo '
+      + '<b>'+pmS.best.count+' cartucho'+(pmS.best.count>1?'s':'')+' de '+pmS.best.length+'"</b> ('+parFmt(pmS.best.flowPerCart,0)+' GPM c/u) en lugar de '
+      + '<b>'+chosen.count+' '+(chosen.count>1?unitTermP:unitTerm)+' de '+chosen.length+'"</b> de la serie actual. '
+      + 'Menos piezas, menos housings y cambios más rápidos en un portafiltro Fulflo ParMax horizontal · '+micTxt+'. '
+      + 'Seleccione la serie <b>ParMax RCP</b> arriba para dimensionarla.</div>';
+  }
   parEl('par-alerts').innerHTML = alertsHtml;
 
   /* Detail */
