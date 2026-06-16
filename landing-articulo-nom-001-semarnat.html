@@ -91,7 +91,7 @@
 
   /* ── Tablas ── */
   .cbt-art .cbt-tabla-wrap { overflow-x: auto; margin: 22px 0; border-radius: 12px; border: 1px solid var(--borde); }
-  .cbt-art table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 520px; }
+  .cbt-art table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 640px; }
   .cbt-art thead th {
     background: var(--azul); color: #fff; font-weight: 600; text-align: left;
     padding: 11px 14px; line-height: 1.3;
@@ -205,34 +205,45 @@
     <li>Bienes nacionales (zonas federales, playas, zonas costeras).</li>
     <li>Sistemas de alcantarillado municipales (en conjunto con la NOM-002-SEMARNAT).</li>
   </ul>
-  <p>Los parámetros regulados incluyen, entre los más relevantes para la industria:</p>
+  <p>Respecto a la versión de 1996, la NOM-2021 introduce cambios estructurales de fondo que todo responsable de cumplimiento debe conocer:</p>
+
+  <p><strong>Nueva clasificación de cuerpos receptores.</strong> La norma abandona la clasificación por "uso del agua" (agrícola, público urbano, protección de vida acuática) y organiza los límites según el tipo de cuerpo receptor: ríos, arroyos, canales y drenes; embalses, lagos y lagunas; zonas marinas mexicanas; y suelo (subdividido en riego de áreas verdes, infiltración y cárstico).</p>
+
+  <p><strong>Eliminación de la DBO₅.</strong> La Demanda Bioquímica de Oxígeno a 5 días desaparece como parámetro regulado. La norma argumenta que la DBO₅ subestima el nivel real de contaminación porque no detecta compuestos orgánicos no biodegradables ni sustancias tóxicas. En su lugar, se exige la medición de <strong>Demanda Química de Oxígeno (DQO)</strong> o <strong>Carbono Orgánico Total (COT)</strong> —este último aplicable cuando el agua presenta más de 1,000 mg/L de cloruros.</p>
+
+  <p><strong>Nuevo indicador microbiológico.</strong> Los coliformes fecales son sustituidos por patógenos específicos: <strong>Escherichia coli</strong> y <strong>Enterococos fecales</strong>, con un límite general de 250 NMP/100 mL en promedio mensual (y de 50 NMP/100 mL para suelo cárstico, por la sensibilidad del acuífero).</p>
+
+  <p><strong>Incorporación de la toxicidad aguda.</strong> La norma introduce la toxicidad aguda como parámetro integrador, con un límite máximo de <strong>2 Unidades de Toxicidad (UT)</strong> a 15 minutos de exposición para todos los cuerpos receptores. Este parámetro actúa como alerta ante sustancias tóxicas no contempladas individualmente en la norma —una red de seguridad que ninguna lista de parámetros convencionales podía ofrecer.</p>
+
+  <p>Los límites máximos permisibles en promedio mensual (P.M.) para los parámetros básicos, según el tipo de cuerpo receptor, son los siguientes:</p>
 
   <div class="cbt-tabla-wrap">
     <table>
       <thead>
         <tr>
           <th>Parámetro</th>
-          <th>Uso agrícola (mg/L)</th>
-          <th>Uso público urbano (mg/L)</th>
-          <th>Protección vida acuática (mg/L)</th>
+          <th>Ríos, arroyos, canales y drenes</th>
+          <th>Embalses, lagos y lagunas</th>
+          <th>Zonas marinas mexicanas</th>
+          <th>Suelo (riego áreas verdes)</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td>DBO₅</td><td>150</td><td>30</td><td>30</td></tr>
-        <tr><td>DQO</td><td>300</td><td>150</td><td>150</td></tr>
-        <tr><td>SST (sólidos suspendidos totales)</td><td>150</td><td>60</td><td>40</td></tr>
-        <tr><td>Grasas y aceites</td><td>15</td><td>15</td><td>15</td></tr>
-        <tr><td>Coliformes fecales (NMP/100 mL)</td><td>2,000</td><td>240</td><td>240</td></tr>
-        <tr><td>Color real (unidades Pt-Co)</td><td>—</td><td>75</td><td>75</td></tr>
+        <tr><td>DQO (mg/L)</td><td>150</td><td>100</td><td>85</td><td>60</td></tr>
+        <tr><td>SST (mg/L)</td><td>60</td><td>20</td><td>20</td><td>30</td></tr>
+        <tr><td>Grasas y aceites (mg/L)</td><td>15</td><td>15</td><td>15</td><td>15</td></tr>
+        <tr><td><em>E. coli</em> y Enterococos fecales (NMP/100 mL)</td><td>250</td><td>250</td><td>250</td><td>250</td></tr>
+        <tr><td>Color verdadero</td><td colspan="4">Se evalúa por coeficiente de absorción espectral a 436, 525 y 620 nm — no en escala Pt-Co.</td></tr>
+        <tr><td>Toxicidad aguda (UT)</td><td colspan="4">Límite máximo de 2 UT a 15 minutos de exposición para todos los cuerpos receptores.</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="cbt-nota">
-    <p><strong>Nota técnica:</strong> la versión 2021 incorpora parámetros emergentes (como metales pesados con límites más estrictos) y modifica los criterios de mezcla para cuerpos receptores. Consulte siempre el texto vigente en el DOF.</p>
+    <p><strong>Nota técnica:</strong> el parámetro de DQO puede sustituirse por COT cuando el efluente contiene más de 1,000 mg/L de cloruros, ya que la interferencia del ion cloruro invalida el método de DQO. Consulte siempre el texto vigente en el DOF y las condiciones particulares de su título de concesión emitido por CONAGUA.</p>
   </div>
 
-  <p>Cumplir con estos límites, sobre todo en la fracción biológica y en la eliminación de contaminantes traza, es precisamente donde el <strong>tratamiento terciario</strong> resulta determinante.</p>
+  <p>Cumplir con estos límites —en especial los de DQO, SST y toxicidad aguda, que en la nueva norma son significativamente más estrictos que en la versión de 1996— es precisamente donde el <strong>tratamiento terciario</strong> resulta determinante.</p>
 
   <h2 class="cbt-seccion">¿En qué consiste el tratamiento terciario de aguas residuales industriales?</h2>
   <p>El tratamiento terciario es la etapa de <strong>pulido final</strong> del efluente. Recibe el agua ya tratada en los procesos primario (sedimentación, flotación) y secundario (tratamiento biológico aerobio o anaerobio) y la lleva a calidades compatibles con la descarga normada o con el reúso interno. Sus objetivos principales son:</p>
@@ -360,7 +371,7 @@
     <li>No requiere manejo de sustancias químicas peligrosas en planta.</li>
     <li>Eficaz contra Cryptosporidium, resistente al cloro convencional.</li>
   </ul>
-  <p><strong>Cumplimiento normativo:</strong> la NOM-001-SEMARNAT establece límites de coliformes fecales de 240 NMP/100 mL para uso en riego con contacto humano directo y descarga en cuerpos de uso público urbano. Un reactor UV de fluencia adecuada (≥ 40 mJ/cm²) garantiza reducciones ≥ 4 log.</p>
+  <p><strong>Cumplimiento normativo:</strong> la NOM-001-SEMARNAT-2021 establece límites de <em>Escherichia coli</em> y Enterococos fecales de 250 NMP/100 mL en promedio mensual para la mayoría de los cuerpos receptores (y de 50 NMP/100 mL para suelo cárstico). Un reactor UV de fluencia adecuada (≥ 40 mJ/cm²) garantiza reducciones ≥ 4 log para estos indicadores, incluyendo organismos resistentes al cloro como <em>Cryptosporidium</em>.</p>
   <p><strong>Condición crítica:</strong> la eficacia del UV depende de la transmitancia del agua. Es indispensable que la UF o la filtración de profundidad preceda al reactor UV para garantizar SST &lt; 5 mg/L y turbidez &lt; 1 NTU.</p>
 
   <h3 class="cbt-sub">5. Oxidación avanzada (AOPs)</h3>
@@ -388,7 +399,7 @@
   <h2 class="cbt-seccion">¿Cómo cumplir con la NOM-001-SEMARNAT en la práctica?</h2>
   <p>El cumplimiento no es un evento puntual, sino un sistema de gestión continua. El proceso puede estructurarse en las siguientes etapas:</p>
   <ol>
-    <li><strong>Caracterización del efluente.</strong> Antes de diseñar cualquier sistema de tratamiento es imprescindible un análisis fisicoquímico completo del agua a tratar: DBO₅, DQO, SST, metales, parámetros microbiológicos, conductividad y contaminantes específicos de la industria. Sin esta línea base no es posible seleccionar tecnologías con fundamento.</li>
+    <li><strong>Caracterización del efluente.</strong> Antes de diseñar cualquier sistema de tratamiento es imprescindible un análisis fisicoquímico completo del agua a tratar: DQO (o COT cuando la concentración de cloruros supera los 1,000 mg/L), SST, metales, parámetros microbiológicos (<em>E. coli</em>, Enterococos fecales), toxicidad aguda, conductividad y contaminantes específicos de la industria. Sin esta línea base no es posible seleccionar tecnologías con fundamento, ni verificar la brecha real respecto a los límites del cuerpo receptor al que se descargará.</li>
     <li><strong>Identificación del cuerpo receptor y uso declarado.</strong> Los límites de la NOM-001 varían según el tipo de cuerpo receptor (río, lago, zona costera) y su uso declarado. Consulte el título de concesión de descarga emitido por CONAGUA para identificar las condiciones particulares aplicables.</li>
     <li><strong>Selección del tren de tratamiento terciario.</strong> Partiendo de la brecha entre la calidad del efluente secundario y los límites normativos, se seleccionan las tecnologías de pulido necesarias. En la mayoría de los escenarios industriales, la combinación de <strong>GAC + UF + desinfección UV</strong> cubre los requerimientos de la NOM para descarga a cuerpos de agua superficiales. Para reúso de alta pureza o contaminantes emergentes, se añade <strong>OI</strong> o <strong>AOPs</strong>.</li>
     <li><strong>Gestión del plan de monitoreo.</strong> La NOM exige un programa de automonitoreo con frecuencias establecidas según el volumen de descarga y la clasificación del establecimiento. Los resultados deben reportarse a CONAGUA y mantenerse disponibles para inspección de la PROFEPA.</li>
