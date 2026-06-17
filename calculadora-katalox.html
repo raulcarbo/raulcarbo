@@ -1028,7 +1028,8 @@ body {
 const FT3_TO_L = 28.3168466;
 const GPM_PER_M3H = 4.4028675;
 const GPM_PER_LMIN = 0.26417205;
-const TCCV_MIN = 4;
+const GPM_TO_FT3MIN = 0.1337;  /* factor de conversión: 1 GPM = 0.1337 ft³/min */
+const TCCV_DEFAULT = 4;  /* fallback, pero se calcula dinámicamente según C */
 const BW_BY_TEMP = [
   { temp:5,  gpmFt2:12, mh:29 },
   { temp:10, gpmFt2:16, mh:39 },
@@ -1110,6 +1111,15 @@ function toGpm(v, unit) {
   if (unit === 'lmin') return v*GPM_PER_LMIN;
   return v;
 }
+/* Calcula TCCV dinámicamente según carga C = [Fe+2] + 2[Mn+2]
+   Fuente: MIP 260302 - Katalox Light */
+function getTCCV(loadC) {
+  if (loadC < 5) return 4;        /* TCCV 4 min, mín 3 */
+  if (loadC <= 10) return 7;       /* TCCV 7 min, mín 4 */
+  if (loadC <= 30) return 7;       /* Usar 2 tanques con 7 min cada uno */
+  return 7;  /* > 30: requiere análisis — usar 7 como referencia pero avisar */
+}
+
 function getBwRate(tempC) {
   const t = Math.max(5, Math.min(30, tempC));
   for (let i=0; i<BW_BY_TEMP.length-1; i++) {
@@ -1144,11 +1154,11 @@ function tankHydraulics(tank, flowPerTrainGpm, mediaPerVesselFt3, bwRateGpmFt2) 
   const heightOk = requiredHeightIn<=tank.heightIn;
   return { ...tank, velocity, bedDepthIn, bedDepthFt, freeboardIn, requiredHeightIn, heightOk, bedOk, backwashFlowGpm };
 }
-function buildParallelOptions(flowGpm, seriesVessels, bwRateGpmFt2) {
+function buildParallelOptions(flowGpm, seriesVessels, bwRateGpmFt2, tccvMin) {
   return commercialTanks.filter(t=>t.diamIn>=36).map(tank=>{
     const trains=Math.max(2,Math.ceil(flowGpm/(SV_MAX*tank.areaFt2)));
     const fpt=flowGpm/trains;
-    const mft3=fpt*TCCV_MIN;
+    const mft3=fpt*tccvMin*GPM_TO_FT3MIN;
     const h=tankHydraulics(tank,fpt,mft3,bwRateGpmFt2);
     return {...h,trains,seriesVessels,totalVessels:trains*seriesVessels,flowPerTrainGpm:fpt,mediaPerVesselFt3:mft3,totalMediaFt3:mft3*trains*seriesVessels};
   }).filter(o=>o.velocity>=SV_MIN&&o.velocity<=SV_MAX)
@@ -1159,11 +1169,11 @@ function buildParallelOptions(flowGpm, seriesVessels, bwRateGpmFt2) {
       return a.areaFt2*a.trains-b.areaFt2*b.trains;
     }).slice(0,4);
 }
-function selectTank(flowGpm, mediaPerVesselFt3, seriesVessels, bwRateGpmFt2) {
+function selectTank(flowGpm, mediaPerVesselFt3, seriesVessels, bwRateGpmFt2, tccvMin) {
   const minArea=flowGpm/SV_MAX;
   const maxArea=flowGpm/SV_MIN;
   const biggest=commercialTanks[commercialTanks.length-1];
-  const parallelOptions=buildParallelOptions(flowGpm,seriesVessels,bwRateGpmFt2);
+  const parallelOptions=buildParallelOptions(flowGpm,seriesVessels,bwRateGpmFt2,tccvMin||TCCV_DEFAULT);
   if (minArea>biggest.areaFt2 && parallelOptions.length) {
     return {...parallelOptions[0], minArea, isParallel:true, parallelOptions};
   }
@@ -1300,10 +1310,11 @@ function calculate() {
   const flowGpm=toGpm(flowInput,$('flowUnit').value);
   const iron=valueOf('iron'), manganese=valueOf('manganese'), h2s=valueOf('h2s'), ph=valueOf('ph'), temp=valueOf('temp');
   const loadC=iron+2*manganese;
+  const tccvMin=getTCCV(loadC);
   const config=getConfiguration(loadC,iron,manganese);
   const bwRate=getBwRate(temp);
-  const initialMedia=flowGpm*TCCV_MIN;
-  const tank=selectTank(Math.max(flowGpm,0.01),initialMedia,config.vessels,bwRate.gpmFt2);
+  const initialMedia=flowGpm*tccvMin*GPM_TO_FT3MIN;
+  const tank=selectTank(Math.max(flowGpm,0.01),initialMedia,config.vessels,bwRate.gpmFt2,tccvMin);
   const mediaPerTankFt3=tank.mediaPerVesselFt3||initialMedia;
   const mediaTotalFt3=mediaPerTankFt3*config.vessels*tank.trains;
   const realEbct=tank.flowPerTrainGpm>0?mediaPerTankFt3/tank.flowPerTrainGpm:0;
@@ -1323,7 +1334,7 @@ function calculate() {
   const regen = { ox, regenPureG, regenNum, regenUnit, regenFull, contConc, contDens };
   const cycles=calcCycles(mediaTotalFt3,iron,manganese,h2s,flowGpm);
   const dosing=calcDosing(iron,manganese,h2s,flowGpm);
-  lastResult={flowInput,flowUnit:$('flowUnit').options[$('flowUnit').selectedIndex].text,flowGpm,iron,manganese,h2s,ph,temp,loadC,config,mediaPerTankFt3,mediaTotalFt3,realEbct,tank,regen,bwRate,cycles,dosing};
+  lastResult={flowInput,flowUnit:$('flowUnit').options[$('flowUnit').selectedIndex].text,flowGpm,iron,manganese,h2s,ph,temp,loadC,tccvMin,config,mediaPerTankFt3,mediaTotalFt3,realEbct,tank,regen,bwRate,cycles,dosing};
   render(lastResult);
   $('copySummary').disabled=false;
   $('copyFeedback').textContent='';
@@ -1335,7 +1346,7 @@ function render(r) {
   const isParallel=r.tank.trains>1;
   $('formulaLoad').textContent=`${fmt(r.loadC,2)} mg/L`;
   $('formulaFlow').textContent=`${fmt(r.flowGpm,2)} GPM`;
-  $('formulaEbct').textContent=`${fmt(TCCV_MIN,1)} min`;
+  $('formulaEbct').textContent=`${fmt(r.tccvMin,1)} min`;
   $('statusConfig').textContent=isParallel?`${r.tank.trains} trenes`:(r.config.vessels===2?'2 tanques':'1 tanque');
   $('mediaFt3').textContent=fmt(r.mediaPerTankFt3,1);
   $('mediaLiters').textContent=`${fmt(mediaPerTankL,0)} L por tanque`;
@@ -1432,7 +1443,7 @@ function buildSummary(r) {
     `Configuración: ${r.tank.trains>1?`${r.tank.trains} trenes en paralelo × ${r.config.vessels} recipiente(s) en serie`:r.config.label}`,
     `Recipientes totales: ${r.tank.totalVessels}`,
     `Criterio dominante: ${r.config.dominantRule}`,
-    `TCCV aplicado: ${fmt(TCCV_MIN,1)} min`,
+    `TCCV aplicado: ${fmt(r.tccvMin,1)} min`,
     `Volumen Katalox Light por tanque: ${fmt(r.mediaPerTankFt3,1)} ft³ (${fmt(mediaL,0)} L)`,
     `Volumen total: ${fmt(r.mediaTotalFt3,1)} ft³ (${fmt(totalL,0)} L)`,
     `Recipiente sugerido: ${r.tank.tankSize} composite/FRP`,
