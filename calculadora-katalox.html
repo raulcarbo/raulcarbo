@@ -839,6 +839,9 @@ body {
     <!-- Results -->
     <section class="results-column">
 
+      <!-- Alert banner C>30 -->
+      <div class="alert danger" id="highLoadAlert" style="display:none"></div>
+
       <!-- KPI cards 2×3 -->
       <div class="cards-grid">
 
@@ -1120,13 +1123,15 @@ function toGpm(v, unit) {
   if (unit === 'lmin') return v*GPM_PER_LMIN;
   return v;
 }
-/* Calcula TCCV dinámicamente según carga C = [Fe+2] + 2[Mn+2]
-   Fuente: MIP 260302 - Katalox Light */
+/* Calcula TCCV y configuración de series según carga C = [Fe²⁺] + 2[Mn²⁺]
+   Fuente: MIP 260302 Katalox Light — Carbotecnia (revisión post-2023) */
 function getTCCV(loadC) {
-  if (loadC < 5) return 4;        /* TCCV 4 min, mín 3 */
-  if (loadC <= 10) return 7;       /* TCCV 7 min, mín 4 */
-  if (loadC <= 30) return 7;       /* Usar 2 tanques con 7 min cada uno */
-  return 7;  /* > 30: requiere análisis — usar 7 como referencia pero avisar */
+  if (loadC < 5)   return {tccv:4, vessels:1, alerta:null};
+  if (loadC <= 10) return {tccv:7, vessels:1, alerta:null};  /* criterio seguro Carbotecnia */
+  if (loadC <= 30) return {tccv:4, vessels:2,
+    alerta:'C > 10 mg/L: se requieren 2 recipientes en serie (Lead-Lag). TCCV de 4 min por etapa.'};
+  return {tccv:null, vessels:null,
+    alerta:'⚠ C > 30 mg/L: el nivel de contaminación excede el rango de diseño estándar. Se requiere análisis detallado y probablemente un pretratamiento de oxidación y clarificación previo al Katalox Light. Contacte a ingeniería de Carbotecnia.'};
 }
 
 function getBwRate(tempC) {
@@ -1140,11 +1145,11 @@ function getBwRate(tempC) {
   }
   return BW_BY_TEMP[BW_BY_TEMP.length-1];
 }
-function getConfiguration(loadC, iron, manganese) {
-  let vessels=1, dominantRule='C < 5', reasons=[];
-  if (loadC>10) { vessels=2; dominantRule='C > 10'; reasons.push('C > 10'); }
-  if (iron>1) { vessels=2; dominantRule='Fe > 1.0 mg/L'; reasons.push('Fe > 1.0 mg/L'); }
-  if (manganese>iron && manganese>0) { vessels=2; dominantRule='Mn > Fe'; reasons.push('Mn > Fe'); }
+function getConfiguration(loadC, iron, manganese, tccvVessels) {
+  let vessels=tccvVessels||1, dominantRule='C < 5', reasons=[];
+  if (loadC>10) { vessels=Math.max(vessels,2); dominantRule='C > 10 — Lead-Lag'; reasons.push('C > 10'); }
+  if (iron>1)   { vessels=Math.max(vessels,2); dominantRule='Fe > 1.0 mg/L'; reasons.push('Fe > 1.0 mg/L'); }
+  if (manganese>iron && manganese>0) { vessels=Math.max(vessels,2); dominantRule='Mn > Fe'; reasons.push('Mn > Fe'); }
   if (loadC>=5 && loadC<=10 && vessels===1) dominantRule='5 ≤ C ≤ 10';
   return {
     vessels, dominantRule, reasons,
@@ -1319,8 +1324,17 @@ function calculate() {
   const flowGpm=toGpm(flowInput,$('flowUnit').value);
   const iron=valueOf('iron'), manganese=valueOf('manganese'), h2s=valueOf('h2s'), ph=valueOf('ph'), temp=valueOf('temp');
   const loadC=iron+2*manganese;
-  const tccvMin=getTCCV(loadC);
-  const config=getConfiguration(loadC,iron,manganese);
+  const tccvResult=getTCCV(loadC);
+  const alertEl=$('highLoadAlert');
+  if (tccvResult.alerta) {
+    alertEl.textContent=tccvResult.alerta;
+    alertEl.style.display='';
+  } else {
+    alertEl.style.display='none';
+  }
+  if (tccvResult.tccv===null) return;  /* C > 30: no calcular, solo mostrar alerta */
+  const tccvMin=tccvResult.tccv;
+  const config=getConfiguration(loadC,iron,manganese,tccvResult.vessels);
   const bwRate=getBwRate(temp);
   const initialMedia=flowGpm*tccvMin*GPM_TO_FT3MIN;
   const tank=selectTank(Math.max(flowGpm,0.01),initialMedia,config.vessels,bwRate.gpmFt2,tccvMin);
@@ -1343,13 +1357,16 @@ function calculate() {
   const regen = { ox, regenPureG, regenNum, regenUnit, regenFull, contConc, contDens };
   const cycles=calcCycles(mediaTotalFt3,iron,manganese,h2s,flowGpm);
   const dosing=calcDosing(iron,manganese,h2s,flowGpm);
-  lastResult={flowInput,flowUnit:$('flowUnit').options[$('flowUnit').selectedIndex].text,flowGpm,iron,manganese,h2s,ph,temp,loadC,tccvMin,config,mediaPerTankFt3,mediaTotalFt3,realEbct,tank,regen,bwRate,cycles,dosing};
+  lastResult={flowInput,flowUnit:$('flowUnit').options[$('flowUnit').selectedIndex].text,flowGpm,iron,manganese,h2s,ph,temp,loadC,tccvMin,tccvAlerta:tccvResult.alerta,config,mediaPerTankFt3,mediaTotalFt3,realEbct,tank,regen,bwRate,cycles,dosing};
   render(lastResult);
   $('copySummary').disabled=false;
   $('copyFeedback').textContent='';
   markClean();
 }
 function render(r) {
+  const alertEl=$('highLoadAlert');
+  if (r.tccvAlerta) { alertEl.textContent=r.tccvAlerta; alertEl.style.display=''; }
+  else { alertEl.style.display='none'; }
   const mediaPerTankL=r.mediaPerTankFt3*FT3_TO_L;
   const totalL=r.mediaTotalFt3*FT3_TO_L;
   const isParallel=r.tank.trains>1;
@@ -1449,6 +1466,7 @@ function buildSummary(r) {
     `pH: ${fmt(r.ph,1)}`,
     `Temperatura: ${r.temp} °C`,
     `Carga C = Fe + 2·Mn: ${fmt(r.loadC,2)} mg/L`,
+    r.tccvAlerta ? `ALERTA: ${r.tccvAlerta}` : '',
     '',
     'DIMENSIONAMIENTO',
     `Configuración: ${r.tank.trains>1?`${r.tank.trains} trenes en paralelo × ${r.config.vessels} recipiente(s) en serie`:r.config.label}`,
