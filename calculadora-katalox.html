@@ -850,6 +850,7 @@ body {
             <div class="metric"><span>Volumen total</span><strong id="mediaTotal">—</strong></div>
             <div class="metric"><span>Profundidad de cama</span><strong id="bedDepthCheck">—</strong></div>
             <div class="metric"><span>Recipientes</span><strong id="vesselCount">—</strong></div>
+            <div class="metric"><span>Catalizador comercial</span><strong id="catalyzerTankRec">—</strong></div>
           </div>
         </div>
 
@@ -1085,21 +1086,29 @@ const OXIDANTS = {
 };
 
 const commercialTanks = [
-  {tankSize:'9 x 48',  diamIn:9,  heightIn:48,  areaFt2:0.44},
-  {tankSize:'10 x 54', diamIn:10, heightIn:54,  areaFt2:0.55},
-  {tankSize:'12 x 52', diamIn:12, heightIn:52,  areaFt2:0.79},
-  {tankSize:'13 x 54', diamIn:13, heightIn:54,  areaFt2:0.92},
-  {tankSize:'14 x 65', diamIn:14, heightIn:65,  areaFt2:1.07},
-  {tankSize:'16 x 65', diamIn:16, heightIn:65,  areaFt2:1.40},
-  {tankSize:'18 x 65', diamIn:18, heightIn:65,  areaFt2:1.77},
-  {tankSize:'21 x 62', diamIn:21, heightIn:62,  areaFt2:2.41},
-  {tankSize:'24 x 72', diamIn:24, heightIn:72,  areaFt2:3.14},
-  {tankSize:'30 x 72', diamIn:30, heightIn:72,  areaFt2:4.91},
-  {tankSize:'36 x 72', diamIn:36, heightIn:72,  areaFt2:7.07},
-  {tankSize:'42 x 72', diamIn:42, heightIn:72,  areaFt2:9.62},
-  {tankSize:'48 x 72', diamIn:48, heightIn:72,  areaFt2:12.57},
+  {tankSize:'9 x 48',  diamIn:9,  heightIn:48,  areaFt2:0.44,  bedFt3:1},
+  {tankSize:'10 x 54', diamIn:10, heightIn:54,  areaFt2:0.55,  bedFt3:1.5},
+  {tankSize:'12 x 52', diamIn:12, heightIn:52,  areaFt2:0.79,  bedFt3:2},
+  {tankSize:'13 x 54', diamIn:13, heightIn:54,  areaFt2:0.92,  bedFt3:2.5},
+  {tankSize:'14 x 65', diamIn:14, heightIn:65,  areaFt2:1.07,  bedFt3:3},
+  {tankSize:'16 x 65', diamIn:16, heightIn:65,  areaFt2:1.40,  bedFt3:4},
+  {tankSize:'18 x 65', diamIn:18, heightIn:65,  areaFt2:1.77,  bedFt3:5},
+  {tankSize:'21 x 62', diamIn:21, heightIn:62,  areaFt2:2.41,  bedFt3:7},
+  {tankSize:'24 x 72', diamIn:24, heightIn:72,  areaFt2:3.14,  bedFt3:10},
+  {tankSize:'30 x 72', diamIn:30, heightIn:72,  areaFt2:4.91,  bedFt3:15},
+  {tankSize:'36 x 72', diamIn:36, heightIn:72,  areaFt2:7.07,  bedFt3:20},
+  {tankSize:'42 x 72', diamIn:42, heightIn:72,  areaFt2:9.62,  bedFt3:30},
+  {tankSize:'48 x 72', diamIn:48, heightIn:72,  areaFt2:12.57, bedFt3:40},
   {tankSize:'63 x 67', diamIn:63, heightIn:67,  areaFt2:21.65},
 ];
+function findCatalyzerTank(mediaFt3) {
+  const withBed = commercialTanks.filter(t => t.bedFt3 != null);
+  const match = withBed.find(t => t.bedFt3 >= mediaFt3);
+  if (match) return {tank: match, qty: 1};
+  const largest = withBed[withBed.length - 1];
+  if (!largest) return null;
+  return {tank: largest, qty: Math.ceil(mediaFt3 / largest.bedFt3)};
+}
 
 const $ = id => document.getElementById(id);
 function fmt(v, d=2) {
@@ -1355,6 +1364,8 @@ function render(r) {
   const bedOk=bedIn>=BED_DEPTH_MIN_IN, bedOptOk=bedIn>=BED_DEPTH_OPT_IN;
   $('bedDepthCheck').textContent=`${fmt(bedIn,1)} in ${bedOk?(bedOptOk?'✓ óptima':'✓ mín OK'):'⚠ < 29.5 in'}`;
   $('vesselCount').textContent=isParallel?`${r.tank.totalVessels} (${r.tank.trains}×${r.config.vessels})`:String(r.config.vessels);
+  const catRec=findCatalyzerTank(r.mediaPerTankFt3);
+  $('catalyzerTankRec').textContent=catRec?(catRec.qty>1?`${catRec.qty}× ${catRec.tank.tankSize}" (${catRec.tank.bedFt3} ft³ c/u)`:`${catRec.tank.tankSize}" — ${catRec.tank.bedFt3} ft³`):'—';
   $('configCount').textContent=String(r.tank.totalVessels);
   $('configLabel').textContent=isParallel?'recipientes totales':(r.config.vessels===2?'recipientes en serie':'recipiente');
   $('configReason').textContent=isParallel?`${r.tank.trains} trenes en paralelo; cada tren con ${r.config.vessels} recipiente(s) en ${r.config.vessels===2?'serie':'servicio'}.`:(r.config.vessels===2?'Separación de carga oxidativa: 1er tanque precipita Fe²⁺, 2º tanque precipita Mn²⁺.':'Carga baja a moderada; arreglo estándar de un paso.');
@@ -1446,6 +1457,7 @@ function buildSummary(r) {
     `TCCV aplicado: ${fmt(r.tccvMin,1)} min`,
     `Volumen Katalox Light por tanque: ${fmt(r.mediaPerTankFt3,1)} ft³ (${fmt(mediaL,0)} L)`,
     `Volumen total: ${fmt(r.mediaTotalFt3,1)} ft³ (${fmt(totalL,0)} L)`,
+    (()=>{const cr=findCatalyzerTank(r.mediaPerTankFt3);if(!cr)return '';const pfx=cr.qty>1?cr.qty+'× ':'';return `Catalizador comercial recomendado/tanque: ${pfx}${cr.tank.tankSize}" (${cr.tank.bedFt3} ft³)`;})(),
     `Recipiente sugerido: ${r.tank.tankSize} composite/FRP`,
     `Profundidad de cama: ${fmt(r.tank.bedDepthIn,1)} in (mín. requerido: 29.5 in / óptimo: 47 in)`,
     `Espacio libre retrolavado (50%): ${fmt(r.tank.freeboardIn,1)} in`,
