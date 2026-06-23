@@ -1419,70 +1419,73 @@ function renderResults(r) {
         </svg>
         Imprimir / Guardar PDF
       </button>
-      <button class="btn-sm" id="btn-copy">
+      <button class="btn-sm" id="btn-email">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="9" y="9" width="13" height="13" rx="2"/>
-          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M2 7l10 7 10-7"/>
         </svg>
-        Copiar resumen
+        Enviar por correo
       </button>
     </div>
   `;
 
   document.getElementById('results').innerHTML = html;
   document.getElementById('btn-print').addEventListener('click', () => window.print());
-  document.getElementById('btn-copy').addEventListener('click', () => copySummary(r));
+  document.getElementById('btn-email').addEventListener('click', () => sendEmailSummary(r));
   lastResult = r;
 }
 
-function copySummary(r) {
-  const lines = [];
-  lines.push('DIMENSIONAMIENTO DE FILTRO DE LECHO PROFUNDO');
-  lines.push('Carbotecnia · Calculadora técnica');
-  lines.push('');
-  lines.push('DATOS DEL PROYECTO');
-  lines.push(`Flujo a tratar: ${fmt(r.I.flowGpm, 1)} gpm (${fmtInt(r.I.flowLpm)} L/min · ${fmt(r.I.flowM3h, 1)} m³/h)`);
-  lines.push(`Velocidad de filtración seleccionada: ${fmt(r.I.speedGpmFt2, 1)} gpm/ft²`);
-  lines.push(`Tipo de filtro: ${r.I.profile.label}`);
-  lines.push('');
-  lines.push('EQUIPO RECOMENDADO');
-  lines.push(`Tanque: ${r.chosenTank.tankSize}${r.chosenTank.tanksNeeded > 1 ? ` x ${r.chosenTank.tanksNeeded} en paralelo` : ''}`);
-  lines.push(`Área transversal: ${fmt(r.chosenTank.areaFt2, 2)} ft² por tanque (total ${fmt(r.totalAreaFt2, 2)} ft²)`);
-  lines.push(`Velocidad real: ${fmt(r.actualSpeed, 1)} gpm/ft²`);
-  lines.push('');
-  lines.push(`MEDIOS FILTRANTES ${r.chosenTank.tanksNeeded > 1 ? `(TOTAL ${r.chosenTank.tanksNeeded} TANQUES)` : '(POR TANQUE)'}`);
-
-  r.media.forEach(m => {
-    lines.push(`${m.name}: ${fmt(m.totalFt3, 2)} ft³ · ${fmtInt(m.totalKg)} kg`);
-  });
-
+function sendEmailSummary(r) {
   const totalVol = r.media.reduce((s, m) => s + m.totalFt3, 0);
-  const totalKg = r.media.reduce((s, m) => s + m.totalKg, 0);
+  const totalKg  = r.media.reduce((s, m) => s + m.totalKg,  0);
+  const mediaLines = r.media.map(m => `  • ${m.name}: ${fmt(m.totalFt3, 2)} ft³ — ${fmtInt(m.totalKg)} kg`).join('\n');
+  const tanksLabel = r.chosenTank.tanksNeeded > 1
+    ? `${r.chosenTank.tankSize} × ${r.chosenTank.tanksNeeded} unidades en paralelo`
+    : r.chosenTank.tankSize;
 
-  lines.push(`TOTAL: ${fmt(totalVol, 2)} ft³ · ${fmtInt(totalKg)} kg`);
-  lines.push('');
-  lines.push('RETROLAVADO');
-  lines.push(`Velocidad retrolavado: ${r.backwashRate} gpm/ft²`);
-  lines.push(`Flujo por tanque: ${fmt(r.backwashFlowGpm, 1)} gpm (${fmtInt(r.backwashFlowLpm)} L/min)`);
-  lines.push(`Agua por ciclo: ${fmtInt(r.backwashWaterL)} L (${fmtInt(r.backwashWaterGal)} gal · ${CONST.BACKWASH_TIME_MIN} min)`);
-  lines.push('');
-  lines.push('Carbotecnia · carbotecnia.info');
-  lines.push('Pre-dimensionamiento referencial · Validar con análisis de agua');
+  const subject = `Dimensionamiento filtro lecho profundo — ${fmt(r.I.flowGpm, 1)} GPM · ${r.I.profile.label}`;
 
-  const text = lines.join('\n');
+  const body = [
+    'Estimado equipo de Carbotecnia,',
+    '',
+    'Les comparto el pre-dimensionamiento generado con la Calculadora de Filtros de Lecho Profundo:',
+    '',
+    '──────────────────────────────────────',
+    'DATOS DE DISEÑO',
+    '──────────────────────────────────────',
+    `Flujo a tratar : ${fmt(r.I.flowGpm, 1)} gpm  (${fmtInt(r.I.flowLpm)} L/min · ${fmt(r.I.flowM3h, 1)} m³/h)`,
+    `Velocidad selec.: ${fmt(r.I.speedGpmFt2, 1)} gpm/ft²`,
+    `Tipo de filtro  : ${r.I.profile.label}`,
+    '',
+    '──────────────────────────────────────',
+    'EQUIPO RECOMENDADO',
+    '──────────────────────────────────────',
+    `Tanque          : ${tanksLabel}`,
+    `Área transversal: ${fmt(r.chosenTank.areaFt2, 2)} ft²/tanque (total ${fmt(r.totalAreaFt2, 2)} ft²)`,
+    `Velocidad real  : ${fmt(r.actualSpeed, 1)} gpm/ft²`,
+    '',
+    `MEDIOS FILTRANTES ${r.chosenTank.tanksNeeded > 1 ? `— TOTAL ${r.chosenTank.tanksNeeded} TANQUES` : '— POR TANQUE'}`,
+    mediaLines,
+    `  TOTAL: ${fmt(totalVol, 2)} ft³ — ${fmtInt(totalKg)} kg`,
+    '',
+    '──────────────────────────────────────',
+    'RETROLAVADO',
+    '──────────────────────────────────────',
+    `Velocidad       : ${r.backwashRate} gpm/ft²`,
+    `Flujo/tanque    : ${fmt(r.backwashFlowGpm, 1)} gpm (${fmtInt(r.backwashFlowLpm)} L/min)`,
+    `Agua por ciclo  : ${fmtInt(r.backwashWaterL)} L (${fmtInt(r.backwashWaterGal)} gal · ${CONST.BACKWASH_TIME_MIN} min)`,
+    '',
+    '──────────────────────────────────────',
+    'Quedo en espera de su cotización y comentarios.',
+    '',
+    'Saludos,',
+    '',
+    '* Pre-dimensionamiento referencial generado con carbotecnia.info.',
+    '  El diseño final debe validarse con análisis de agua completo.',
+  ].join('\n');
 
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('btn-copy');
-    const orig = btn.innerHTML;
-    btn.classList.add('copied');
-    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Copiado al portapapeles`;
-    setTimeout(() => {
-      btn.classList.remove('copied');
-      btn.innerHTML = orig;
-    }, 2200);
-  }).catch(() => {
-    alert('No se pudo copiar al portapapeles.');
-  });
+  const mailto = `mailto:raul@carbotecnia.com.mx?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
 }
 
 function updateFilterCard() {
