@@ -322,7 +322,6 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
 
         <div class="actions">
           <button class="btn" type="button" id="az-calc">Ver resultado</button>
-          <button class="btn sec" type="button" id="az-copy">✉ Pedir cotización por correo</button>
           <button class="btn sec" type="button" id="az-reset">Restablecer</button>
         </div>
         <div id="az-pending" style="display:none;margin-top:10px;font-size:12px;color:var(--warn);font-weight:700;align-items:center;gap:6px">
@@ -1037,23 +1036,6 @@ el('az-calc').addEventListener('click',function(){
 el('az-print-results').addEventListener('click',function(){ window.print(); });
 
 el('az-email-results').addEventListener('click',function(){
-  var r=calc();
-  var body=[
-    'Estimado equipo de Carbotecnia,',
-    '',
-    'Les comparto la especificación preliminar generada con la Calculadora de Filtros AZUD HELIX Automatic:',
-    '',
-    buildSpec(),
-    '',
-    'Quedo en espera de su cotización y comentarios.',
-    '',
-    'Saludos,'
-  ].join('\n');
-  var subject='Cotización filtros AZUD HELIX — '+(r.ready?fmt(r.flowM3h,2)+' m³/h · '+r.serie.name:'nueva consulta');
-  window.location.href='mailto:ventas@carbotecnia.com.mx?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-});
-
-el('az-copy').addEventListener('click',function(){
   var r=calc();
   var body=[
     'Estimado equipo de Carbotecnia,',
