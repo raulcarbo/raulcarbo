@@ -1100,7 +1100,7 @@ function gacSendEmail(){
   lines.push('  El diseño final debe validarse con análisis de agua completo.');
 
   var subject='Dimensionamiento carbón activado — '+r.flow+' '+(r.flowUnit==='gpm'?'GPM':'m³/h')+' · '+r.carbon.label;
-  var mailto='mailto:raul@carbotecnia.com.mx?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lines.join('\n'));
+  var mailto='mailto:ventas@carbotecnia.com.mx?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lines.join('\n'));
   window.location.href=mailto;
 }
 
