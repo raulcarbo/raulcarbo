@@ -1419,6 +1419,13 @@ function renderResults(r) {
         </svg>
         Imprimir / Guardar PDF
       </button>
+      <button class="btn-sm" id="btn-copy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+        </svg>
+        Copiar resultados
+      </button>
       <button class="btn-sm" id="btn-email">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -1431,8 +1438,48 @@ function renderResults(r) {
 
   document.getElementById('results').innerHTML = html;
   document.getElementById('btn-print').addEventListener('click', () => window.print());
+  document.getElementById('btn-copy').addEventListener('click', () => copyResultsLP(r));
   document.getElementById('btn-email').addEventListener('click', () => sendEmailSummary(r));
   lastResult = r;
+}
+
+function copyResultsLP(r) {
+  const totalVol = r.media.reduce((s, m) => s + m.totalFt3, 0);
+  const totalKg  = r.media.reduce((s, m) => s + m.totalKg,  0);
+  const tanksLabel = r.chosenTank.tanksNeeded > 1
+    ? `${r.chosenTank.tankSize} × ${r.chosenTank.tanksNeeded} en paralelo`
+    : r.chosenTank.tankSize;
+  const lines = [
+    'DIMENSIONAMIENTO — FILTRO DE LECHO PROFUNDO',
+    'Carbotecnia · carbotecnia.info',
+    '',
+    'DATOS DE DISEÑO',
+    `Flujo          : ${fmt(r.I.flowGpm, 1)} gpm (${fmtInt(r.I.flowLpm)} L/min · ${fmt(r.I.flowM3h, 1)} m³/h)`,
+    `Velocidad      : ${fmt(r.I.speedGpmFt2, 1)} gpm/ft²`,
+    `Tipo de filtro : ${r.I.profile.label}`,
+    '',
+    'EQUIPO RECOMENDADO',
+    `Tanque         : ${tanksLabel}`,
+    `Área transv.   : ${fmt(r.chosenTank.areaFt2, 2)} ft²/tanque (total ${fmt(r.totalAreaFt2, 2)} ft²)`,
+    `Velocidad real : ${fmt(r.actualSpeed, 1)} gpm/ft²`,
+    '',
+    `MEDIOS FILTRANTES ${r.chosenTank.tanksNeeded > 1 ? `— TOTAL ${r.chosenTank.tanksNeeded} TANQUES` : '— POR TANQUE'}`,
+    ...r.media.map(m => `  ${m.name}: ${fmt(m.totalFt3, 2)} ft³ — ${fmtInt(m.totalKg)} kg`),
+    `  TOTAL: ${fmt(totalVol, 2)} ft³ — ${fmtInt(totalKg)} kg`,
+    '',
+    'RETROLAVADO',
+    `Velocidad      : ${r.backwashRate} gpm/ft²`,
+    `Flujo/tanque   : ${fmt(r.backwashFlowGpm, 1)} gpm (${fmtInt(r.backwashFlowLpm)} L/min)`,
+    `Agua por ciclo : ${fmtInt(r.backwashWaterL)} L (${fmtInt(r.backwashWaterGal)} gal · ${CONST.BACKWASH_TIME_MIN} min)`,
+    '',
+    'Pre-dimensionamiento referencial · Validar con análisis de agua',
+  ].join('\n');
+  const btn = document.getElementById('btn-copy');
+  navigator.clipboard.writeText(lines).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Copiado ✓';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  }).catch(() => alert('No se pudo copiar al portapapeles.'));
 }
 
 function sendEmailSummary(r) {

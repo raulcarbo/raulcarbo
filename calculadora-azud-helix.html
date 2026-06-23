@@ -440,6 +440,10 @@ footer{margin-top:20px;color:var(--steel);font-size:11px;
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
           Imprimir / PDF
         </button>
+        <button class="btn sec" type="button" id="az-copy-results">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copiar resultados
+        </button>
         <button class="btn" type="button" id="az-email-results">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
           Pedir cotización por correo
@@ -1034,6 +1038,16 @@ el('az-calc').addEventListener('click',function(){
 });
 
 el('az-print-results').addEventListener('click',function(){ window.print(); });
+
+el('az-copy-results').addEventListener('click',function(){
+  var txt=buildSpec();
+  var btn=this;
+  navigator.clipboard.writeText(txt).then(function(){
+    var orig=btn.innerHTML;
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20 6L9 17l-5-5"/></svg> Copiado ✓';
+    setTimeout(function(){ btn.innerHTML=orig; },2000);
+  }).catch(function(){ alert('No se pudo copiar al portapapeles.'); });
+});
 
 el('az-email-results').addEventListener('click',function(){
   var r=calc();

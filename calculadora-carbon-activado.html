@@ -648,6 +648,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
           <span><b>Resumen listo</b> · Cópielo para cotización o bitácora de proyecto.</span>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn sec sm" id="gac-btn-print" type="button">🖨 Imprimir / PDF</button>
+            <button class="btn sec sm" id="gac-btn-copytext" type="button">📋 Copiar resultados</button>
             <button class="btn sm" id="gac-btn-copy" type="button">✉ Pedir cotización por correo</button>
           </div>
         </div>
@@ -1106,7 +1107,56 @@ function gacSendEmail(){
 
 gacBuildVesselTable();
 gacEl('gac-btn-print').addEventListener('click',function(){ window.print(); });
+gacEl('gac-btn-copytext').addEventListener('click',function(){ gacCopyResults(this); });
 gacEl('gac-btn-copy').addEventListener('click',function(){ gacSendEmail(); });
+function gacCopyResults(btn){
+  if(!gacLastResult)return;
+  var r=gacLastResult;
+  var lines=['DIMENSIONAMIENTO — CARBÓN ACTIVADO GRANULAR','Carbotecnia · carbotecnia.info',''];
+  lines.push('DATOS DE DISEÑO');
+  lines.push(r.flowUnit==='gpm'
+    ?'Flujo          : '+r.flow+' GPM ('+gacFmtInt(r.flow*GAC_GAL_TO_L)+' L/min)'
+    :'Flujo          : '+r.flow+' m³/h ('+gacFmt(r.flowGPM,1)+' GPM)');
+  lines.push('TCCV solicitado: '+r.tccv+' min');
+  if(!r.oversize) lines.push('TCCV instalado : '+gacFmt(r.tccvReal,1)+' min');
+  lines.push('Tipo de carbón : '+r.carbon.label);
+  lines.push('Densidad bulk  : '+r.carbon.density+' kg/L');
+  lines.push('');
+  lines.push('EQUIPO RECOMENDADO');
+  lines.push('Volumen req.   : '+gacFmt(r.volFt3,2)+' ft³ ('+gacFmt(r.volM3,3)+' m³ · '+gacFmtInt(r.volL)+' L)');
+  if(!r.oversize){
+    lines.push('Recipiente     : '+r.vsl.vessel+'" composite FRP');
+    lines.push('Volumen comerc.: '+r.vsl.carbonFt3+' ft³');
+    lines.push('Diámetro       : '+r.vsl.diameterIn+' in ('+gacFmt(r.vsl.diameterIn*2.54,1)+' cm)');
+    lines.push('Área transv.   : '+r.vsl.areaFt2+' ft²');
+    lines.push('Velocidad serv.: '+gacFmt(r.svGPM,2)+' GPM/ft² ('+gacFmt(r.svMh,1)+' m/h)');
+    lines.push('Peso carbón    : '+gacFmtInt(r.totalKgInstalled)+' kg');
+    lines.push('Grava soporte  : '+gacFmt(r.gravelFt3,2)+' ft³ — '+gacFmtInt(r.gravelKg)+' kg');
+    lines.push('');
+    lines.push('RETROLAVADO');
+    lines.push('Velocidad      : '+GAC_BW_RATE+' GPM/ft² @ 20 °C');
+    lines.push('Flujo          : '+gacFmt(r.bwGPM,1)+' GPM ('+gacFmtInt(r.bwLpm)+' L/min)');
+    lines.push('Agua por ciclo : '+gacFmtInt(r.bwWaterL)+' L ('+r.bwTime+' min)');
+    lines.push('Expansión esp. : 30–50%');
+    if(r.tccv>=10){
+      lines.push('');
+      lines.push('CONFIGURACIÓN LEAD-LAG (TCCV ≥ 10 min)');
+      lines.push('Arreglo        : 2× '+r.vsl.vessel+'" en serie');
+      lines.push('TCCV total     : '+gacFmt(r.tccvReal*2,1)+' min');
+    }
+  } else {
+    lines.push('Recipiente     : Configuración en paralelo (ver pantalla)');
+    lines.push('Peso mín. req. : '+gacFmtInt(r.totalKgReq)+' kg');
+  }
+  lines.push('');
+  lines.push('Pre-dimensionamiento referencial · Validar con análisis de agua');
+  var text=lines.join('\n');
+  var orig=btn.innerHTML;
+  navigator.clipboard.writeText(text).then(function(){
+    btn.innerHTML='✓ Copiado';
+    setTimeout(function(){ btn.innerHTML=orig; },2000);
+  }).catch(function(){ alert('No se pudo copiar al portapapeles.'); });
+}
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&e.target&&(e.target.id==='gac-flow'||e.target.id==='gac-tccv'||e.target.id==='gac-bw-time')){
     e.preventDefault(); gacCalculate();
