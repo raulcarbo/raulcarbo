@@ -648,7 +648,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
           <span><b>Resumen listo</b> · Cópielo para cotización o bitácora de proyecto.</span>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn sec sm" id="gac-btn-print" type="button">🖨 Imprimir / PDF</button>
-            <button class="btn sm" id="gac-btn-copy" type="button">📋 Copiar resumen</button>
+            <button class="btn sm" id="gac-btn-copy" type="button">✉ Pedir cotización por correo</button>
           </div>
         </div>
 
@@ -1039,66 +1039,74 @@ function gacClear(){
   gacLastResult=null;
 }
 
-function gacCopySummary(btn){
+function gacSendEmail(){
   if(!gacLastResult) return;
   var r=gacLastResult;
   var lines=[];
-  lines.push('═══════════════════════════════════════════════════════');
-  lines.push('  DIMENSIONAMIENTO DE EQUIPO DE CARBÓN ACTIVADO');
-  lines.push('  Carbotecnia · Calculadora técnica v4.0');
-  lines.push('═══════════════════════════════════════════════════════');
+  lines.push('Estimado equipo de Carbotecnia,');
   lines.push('');
-  lines.push('DATOS DEL PROYECTO');
+  lines.push('Les comparto el pre-dimensionamiento generado con la Calculadora de Carbón Activado:');
+  lines.push('');
+  lines.push('──────────────────────────────────────');
+  lines.push('DATOS DE DISEÑO');
+  lines.push('──────────────────────────────────────');
   lines.push(r.flowUnit==='gpm'
-    ?'  Flujo de diseño:         '+r.flow+' GPM ('+gacFmtInt(r.flow*GAC_GAL_TO_L)+' L/min)'
-    :'  Flujo de diseño:         '+r.flow+' m³/h ('+gacFmt(r.flowGPM,1)+' GPM)');
-  lines.push('  TCCV solicitado:         '+r.tccv+' min');
-  if(!r.oversize) lines.push('  TCCV real instalado:     '+gacFmt(r.tccvReal,1)+' min');
-  lines.push('  Tipo de carbón:          '+r.carbon.label);
-  lines.push('  Densidad bulk:           '+r.carbon.density+' kg/L');
+    ?'Flujo de diseño : '+r.flow+' GPM ('+gacFmtInt(r.flow*GAC_GAL_TO_L)+' L/min)'
+    :'Flujo de diseño : '+r.flow+' m³/h ('+gacFmt(r.flowGPM,1)+' GPM)');
+  lines.push('TCCV solicitado : '+r.tccv+' min');
+  if(!r.oversize) lines.push('TCCV instalado  : '+gacFmt(r.tccvReal,1)+' min');
+  lines.push('Tipo de carbón  : '+r.carbon.label);
+  lines.push('Densidad bulk   : '+r.carbon.density+' kg/L');
   lines.push('');
+  lines.push('──────────────────────────────────────');
   lines.push('EQUIPO RECOMENDADO');
-  lines.push('  Volumen requerido:       '+gacFmt(r.volFt3,2)+' ft³ ('+gacFmt(r.volM3,3)+' m³ · '+gacFmtInt(r.volL)+' L)');
+  lines.push('──────────────────────────────────────');
+  lines.push('Volumen requerido: '+gacFmt(r.volFt3,2)+' ft³ ('+gacFmt(r.volM3,3)+' m³ · '+gacFmtInt(r.volL)+' L)');
   if(!r.oversize){
-    lines.push('  Recipiente:              '+r.vsl.vessel+'" (composite FRP)');
-    lines.push('  Volumen comercial:       '+r.vsl.carbonFt3+' ft³');
-    lines.push('  Diámetro:                '+r.vsl.diameterIn+' in ('+gacFmt(r.vsl.diameterIn*2.54,1)+' cm)');
-    lines.push('  Área transversal:        '+r.vsl.areaFt2+' ft²');
-    lines.push('  Velocidad servicio:      '+gacFmt(r.svGPM,2)+' GPM/ft² ('+gacFmt(r.svMh,1)+' m/h)');
-    lines.push('  Peso total del carbón:   '+gacFmtInt(r.totalKgInstalled)+' kg');
-    lines.push('  Grava de soporte (20%):  '+gacFmt(r.gravelFt3,2)+' ft³ · '+gacFmtInt(r.gravelKg)+' kg');
+    lines.push('Recipiente      : '+r.vsl.vessel+'" composite FRP');
+    lines.push('Volumen comercial: '+r.vsl.carbonFt3+' ft³');
+    lines.push('Diámetro        : '+r.vsl.diameterIn+' in ('+gacFmt(r.vsl.diameterIn*2.54,1)+' cm)');
+    lines.push('Área transversal: '+r.vsl.areaFt2+' ft²');
+    lines.push('Velocidad serv. : '+gacFmt(r.svGPM,2)+' GPM/ft² ('+gacFmt(r.svMh,1)+' m/h)');
+    lines.push('Peso carbón     : '+gacFmtInt(r.totalKgInstalled)+' kg');
+    lines.push('Grava soporte   : '+gacFmt(r.gravelFt3,2)+' ft³ — '+gacFmtInt(r.gravelKg)+' kg');
     lines.push('');
+    lines.push('──────────────────────────────────────');
     lines.push('RETROLAVADO');
-    lines.push('  Velocidad estimada:      '+GAC_BW_RATE+' GPM/ft² @ 20 °C');
-    lines.push('  Flujo:                   '+gacFmt(r.bwGPM,1)+' GPM ('+gacFmtInt(r.bwLpm)+' L/min)');
-    lines.push('  Agua por ciclo:          '+gacFmtInt(r.bwWaterL)+' L ('+r.bwTime+' min criterio diseño)');
-    lines.push('  Expansión esperada:      30–50%');
+    lines.push('──────────────────────────────────────');
+    lines.push('Velocidad       : '+GAC_BW_RATE+' GPM/ft² @ 20 °C');
+    lines.push('Flujo           : '+gacFmt(r.bwGPM,1)+' GPM ('+gacFmtInt(r.bwLpm)+' L/min)');
+    lines.push('Agua por ciclo  : '+gacFmtInt(r.bwWaterL)+' L ('+r.bwTime+' min)');
+    lines.push('Expansión esp.  : 30–50%');
     if(r.tccv>=10){
       lines.push('');
-      lines.push('CONFIGURACIÓN LEAD-LAG (recomendada para TCCV ≥ 10 min)');
-      lines.push('  2× '+r.vsl.vessel+'" en serie');
-      lines.push('  TCCV total instalado:    '+gacFmt(r.tccvReal*2,1)+' min');
+      lines.push('──────────────────────────────────────');
+      lines.push('CONFIGURACIÓN LEAD-LAG (TCCV ≥ 10 min)');
+      lines.push('──────────────────────────────────────');
+      lines.push('Arreglo         : 2× '+r.vsl.vessel+'" en serie');
+      lines.push('TCCV total      : '+gacFmt(r.tccvReal*2,1)+' min');
     }
   } else {
-    lines.push('  Recipiente:              Configuración en paralelo (ver pantalla)');
-    lines.push('  Peso mínimo requerido:   '+gacFmtInt(r.totalKgReq)+' kg');
+    lines.push('Recipiente      : Configuración en paralelo (ver pantalla)');
+    lines.push('Peso mínimo req.: '+gacFmtInt(r.totalKgReq)+' kg');
   }
   lines.push('');
-  lines.push('───────────────────────────────────────────────────────');
-  lines.push('Carbotecnia · carbotecnia.info');
-  lines.push('Pre-dimensionamiento referencial · Validar con análisis de agua');
-  lines.push('───────────────────────────────────────────────────────');
-  navigator.clipboard.writeText(lines.join('\n')).then(function(){
-    var orig=btn.innerHTML;
-    btn.classList.add('copied');
-    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Copiado al portapapeles';
-    setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML=orig; },2200);
-  }).catch(function(){ alert('No se pudo copiar al portapapeles.'); });
+  lines.push('──────────────────────────────────────');
+  lines.push('Quedo en espera de su cotización y comentarios.');
+  lines.push('');
+  lines.push('Saludos,');
+  lines.push('');
+  lines.push('* Pre-dimensionamiento referencial generado con carbotecnia.info.');
+  lines.push('  El diseño final debe validarse con análisis de agua completo.');
+
+  var subject='Dimensionamiento carbón activado — '+r.flow+' '+(r.flowUnit==='gpm'?'GPM':'m³/h')+' · '+r.carbon.label;
+  var mailto='mailto:raul@carbotecnia.com.mx?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lines.join('\n'));
+  window.location.href=mailto;
 }
 
 gacBuildVesselTable();
 gacEl('gac-btn-print').addEventListener('click',function(){ window.print(); });
-gacEl('gac-btn-copy').addEventListener('click',function(){ gacCopySummary(this); });
+gacEl('gac-btn-copy').addEventListener('click',function(){ gacSendEmail(); });
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&e.target&&(e.target.id==='gac-flow'||e.target.id==='gac-tccv'||e.target.id==='gac-bw-time')){
     e.preventDefault(); gacCalculate();
