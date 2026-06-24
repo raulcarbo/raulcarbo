@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente de Selección de Carbón Activado | Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ======================================================
+   VARIABLES
+   ====================================================== */
+:root {
+  --steel-deep:  #0c2461;
+  --steel:       #1e40af;
+  --steel-mid:   #2563eb;
+  --steel-soft:  #dbeafe;
+  --steel-xsoft: #eff6ff;
+
+  --ink:         #0b1424;
+  --ink-soft:    #1e293b;
+  --ink-mute:    #475569;
+  --muted:       #64748b;
+
+  --paper:       #f4f6fa;
+  --paper-pure:  #ffffff;
+  --paper-soft:  #eef2f7;
+
+  --rule:        #d6dde7;
+  --rule-soft:   #e6ebf2;
+
+  --ok:          #047857;
+  --ok-soft:     #d1fae5;
+  --warn:        #b45309;
+  --warn-soft:   #fef3c7;
+
+  --shadow:      0 1px 3px rgba(11,20,36,.06), 0 8px 24px rgba(11,20,36,.08);
+  --shadow-lg:   0 4px 12px rgba(11,20,36,.06), 0 20px 48px rgba(11,20,36,.10);
+
+  --radius:      4px;!important
+  --radius-lg:   4px;!important
+  --font-title:  'Poppins', sans-serif;
+  --font-body:   'DM Sans', sans-serif;
+  --font-mono:   'Roboto Mono', monospace;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grid background sutil */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(11,20,36,.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11,20,36,.016) 1px, transparent 1px);
+  background-size: 28px 28px;
+  z-index: 0;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 36px 20px 72px;
+}
+
+/* ======================================================
+   HEADER
+   ====================================================== */
+.brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.brand-mark { display: flex; align-items: center; gap: 12px; }
+.brand-icon {
+  width: 38px; height: 38px;
+  background: var(--steel-deep);
+  color: #fff;
+  display: grid; place-items: center;
+  font-family: var(--font-title);
+  font-weight: 700; font-size: 20px;
+  border-radius: 4px;
+}
+.brand-name {
+  font-family: var(--font-title);
+  font-weight: 500; font-size: 17px;
+  color: var(--ink);
+}
+.brand-name small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+  font-weight: 400; margin-top: 1px;
+}
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--muted);
+}
+.brand-tag b { color: var(--steel); }
+
+/* ======================================================
+   HEADLINE
+   ====================================================== */
+.headline {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.headline h1 {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(26px, 5vw, 40px);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.headline h1 em {
+  font-style: normal;
+  color: var(--steel);
+}
+.headline p {
+  font-size: 15px;
+  color: var(--ink-mute);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ======================================================
+   PROGRESS BAR
+   ====================================================== */
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--rule-soft);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--steel-deep), var(--steel-mid));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.progress-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ======================================================
+   CARD (el panel del wizard)
+   ====================================================== */
+.wizard-card {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.wizard-card-header {
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--rule-soft);
+  background: linear-gradient(180deg, var(--paper-pure) 0%, #fafbfd 100%);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.wizard-card-header h2 {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0;
+  flex: 1;
+}
+.step-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.wizard-body { padding: 28px 28px 24px; }
+@media (max-width: 520px) {
+  .wizard-card-header { padding: 16px 18px 12px; }
+  .wizard-body { padding: 20px 16px 18px; }
+}
+
+/* ======================================================
+   OPCIONES DEL WIZARD
+   ====================================================== */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.option-btn-calc {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 18px 20px;
+  border: 1.5px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper-pure);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+.option-btn-calc::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--steel-xsoft), transparent);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.option-btn-calc:hover {
+  border-color: var(--steel);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(30, 64, 175, 0.14);
+}
+.option-btn-calc:hover::before { opacity: 1; }
+.option-btn-calc:active { transform: translateY(0); }
+
+.option-icon {
+  font-size: 28px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+.option-title {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  position: relative;
+  z-index: 1;
+}
+.option-sub {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--ink-mute);
+  line-height: 1.45;
+  position: relative;
+  z-index: 1;
+}
+
+/* Variante compacta (3-4 opciones) */
+.options-grid.compact .option-btn-calc {
+  flex-direction: row;
+  align-items: center;
+  padding: 14px 18px;
+  gap: 14px;
+}
+.options-grid.compact .option-icon { font-size: 22px; flex-shrink: 0; }
+.options-grid.compact .option-title { font-size: 14px; margin: 0; }
+
+/* Back button */
+.back-btn-calc {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 8px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.15s ease;
+}
+.back-btn-calc:hover { border-color: var(--ink-mute); color: var(--ink); }
+
+/* ======================================================
+   PANTALLA DE RESULTADO
+   ====================================================== */
+.result-screen { display: none; }
+.result-screen.visible { display: block; animation: fadeUp 0.4s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Banner superior del resultado */
+.result-banner {
+  background: linear-gradient(135deg, var(--steel-deep) 0%, #1e3a8a 50%, var(--steel-mid) 100%);
+  color: #fff;
+  border-radius: 8px 8px 0 0;
+  padding: 28px 32px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.result-banner::after {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 220px;
+  height: 220px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+.result-banner-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+.result-banner-title {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(22px, 4vw, 30px);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+.result-banner-breadcrumb {
+  font-size: 13px;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  position: relative;
+  z-index: 1;
+}
+.crumb { opacity: 0.85; }
+.crumb-sep { opacity: 0.45; }
+
+/* Body del resultado */
+.result-body {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* Tarjetas de información del resultado */
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--rule-soft);
+  border-bottom: 1px solid var(--rule-soft);
+}
+@media (max-width: 540px) { .result-grid { grid-template-columns: 1fr; } }
+.result-cell {
+  background: var(--paper-pure);
+  padding: 20px 24px;
+}
+.result-cell-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.result-cell-value {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.result-cell-sub {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--steel);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Productos recomendados */
+.products-section {
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.products-section h3 {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.products-section h3::before {
+  content: '';
+  width: 5px; height: 5px;
+  background: var(--steel);
+  border-radius: 4px;
+  display: inline-block;
+}
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.product-chip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--steel-xsoft);
+  border: 1px solid var(--steel-soft);
+  border-radius: 4px;
+}
+.product-chip.primary { background: var(--steel-soft); border-color: var(--steel); }
+.product-chip.primary .chip-name { color: var(--steel-deep); }
+.chip-star {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.chip-name {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.chip-desc {
+  font-size: 12.5px;
+  color: var(--ink-mute);
+  line-height: 1.45;
+}
+.chip-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-top: 5px;
+  display: inline-block;
+}
+.chip-tag.primera { background: var(--ok-soft); color: var(--ok); }
+.chip-tag.alternativa { background: var(--warn-soft); color: var(--warn); }
+.chip-tag.granulometria { background: var(--steel-soft); color: var(--steel-deep); }
+
+/* Botón "Ver producto" en tarjetas de resultado */
+.chip-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 3px;
+  background: var(--steel-deep);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+.chip-link:hover {
+  background: var(--steel-mid);
+  transform: translateY(-1px);
+}
+
+/* Justificación técnica */
+.justification-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--rule-soft);
+  background: var(--paper-soft);
+}
+.justification-section h3 {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.justification-section p {
+  font-size: 13.5px;
+  color: var(--ink-mute);
+  line-height: 1.65;
+}
+
+/* Alertas técnicas */
+.alert-tech {
+  margin: 0 24px 16px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.alert-tech.warn {
+  background: var(--warn-soft);
+  border: 1px solid #f3d28b;
+  color: #7c4a08;
+}
+.alert-tech b {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Botones de acción del resultado */
+.result-actions {
+  padding: 20px 24px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.btn-restart {
+  padding: 12px 20px;
+  background: var(--steel-deep);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-restart:hover { background: var(--steel-mid); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(30,64,175,0.25); }
+.btn-print {
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--rule);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-print:hover { border-color: var(--ink-mute); color: var(--steel-deep); }
+.btn-back-result {
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--rule);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-back-result:hover { border-color: var(--steel); color: var(--steel-deep); background: var(--steel-xsoft); }
+.btn-copy-result {
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--rule);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-copy-result:hover { border-color: var(--steel); color: var(--steel-deep); background: var(--steel-xsoft); }
+.btn-copy-result.copied { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.btn-email-result {
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--rule);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-email-result:hover { border-color: var(--steel); color: var(--steel-deep); background: var(--steel-xsoft); }
+.mail-picker{position:fixed;background:#fff;border:1px solid #d1d5db;border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,.15);padding:6px;z-index:9999;min-width:230px}
+.mail-picker a{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-radius:7px;text-decoration:none;color:#111827;font-size:13px;font-weight:500}
+.mail-picker a:hover{background:#f3f4f6}
+
+/* ======================================================
+   DISCLAIMER FOOTER
+   ====================================================== */
+.disclaimer {
+  margin-top: 28px;
+  padding: 14px 18px;
+  background: var(--paper-pure);
+  border: 1px solid var(--rule-soft);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.disclaimer b { color: var(--ink-soft); font-weight: 600; }
+
+.page-footer {
+  margin-top: 36px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Animación transición pasos */
+.wizard-step { display: none; }
+.wizard-step.active { display: block; animation: fadeUp 0.3s ease; }
+
+@media print {
+  body::before { display: none; }
+  .wizard-card, .progress-wrap, .back-btn-calc, .btn-restart, .btn-print, .btn-back-result, .btn-copy-result, .btn-email-result { display: none !important; }
+  .chip-link { display: none !important; }
+  .result-screen { display: block !important; }
+  .result-banner { background: var(--steel-deep) !important; -webkit-print-color-adjust: exact; }
+  .disclaimer, .page-footer { font-size: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── Brand bar ── -->
+  <div class="brand-bar">
+    <div class="brand-mark">
+      <div class="brand-icon">C</div>
+      <div class="brand-name">
+        Carbotecnia
+        <small>Tratamiento de agua y fluidos · México</small>
+      </div>
+    </div>
+    <div class="brand-tag">Herramienta técnica · <b>v1.0</b></div>
+  </div>
+
+  <!-- ── Headline ── -->
+  <div class="headline">
+    <h1>Asistente de selección de <em>carbón activado</em></h1>
+    <p>Responda tres preguntas y obtendrá la recomendación de tipo, granulometría y
+       productos Carbotecnia específicos para su aplicación, basada en nuestros
+       manuales de ingeniería de procesos.</p>
+  </div>
+
+  <!-- ── Wizard ── -->
+  <div id="wizard-section">
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+      <div class="progress-label" id="progress-label">Inicio</div>
+    </div>
+
+    <div class="wizard-card">
+      <div class="wizard-card-header">
+        <h2 id="step-title">Paso 1 de 3</h2>
+        <span class="step-badge" id="step-badge">01 · Fluido</span>
+      </div>
+      <div class="wizard-body">
+
+        <!-- ─── PASO 1: Tipo de fluido ─── -->
+        <div class="wizard-step active" id="step-1">
+          <div class="options-grid">
+            <button class="option-btn-calc" onclick="choose('fase', 'gas')">
+              <div class="option-icon">💨</div>
+              <div class="option-title">Gas o vapor</div>
+              <div class="option-sub">Aire, vapor de solvente, gases industriales, biogás, aire comprimido, corrientes gaseosas.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('fase', 'liquido')">
+              <div class="option-icon">💧</div>
+              <div class="option-title">Líquido</div>
+              <div class="option-sub">Agua, soluciones acuosas, bebidas, solventes líquidos, jarabes, aceites, lixiviados.</div>
+            </button>
+          </div>
+          <button class="back-btn-calc" style="visibility:hidden">← Atrás</button>
+        </div>
+
+        <!-- ─── PASO 2A: Aplicación en gas ─── -->
+        <div class="wizard-step" id="step-2a">
+          <div class="options-grid compact">
+            <button class="option-btn-calc" onclick="choose('aplic_gas', 'co2')">
+              <div class="option-icon">🫧</div>
+              <div class="option-title">Purificación de CO₂</div>
+              <div class="option-sub">Dióxido de carbono para uso alimenticio, bebidas o industrial.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_gas', 'solventes')">
+              <div class="option-icon">🧪</div>
+              <div class="option-title">Recuperación de solventes</div>
+              <div class="option-sub">Vapores de solventes orgánicos en corriente de aire o gas inerte.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_gas', 'cov')">
+              <div class="option-icon">🏭</div>
+              <div class="option-title">Vapores orgánicos (COV)</div>
+              <div class="option-sub">Tratamiento de aire, cabinas de pintura, respiradores, campanas, emisiones industriales.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_gas', 'gases_acidos')">
+              <div class="option-icon">⚗️</div>
+              <div class="option-title">Gases ácidos / básicos</div>
+              <div class="option-sub">H₂S, SO₂, HCl, NH₃, amoniaco, aminas, biogás, gas natural, olores.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_gas', 'mercurio')">
+              <div class="option-icon">🌡️</div>
+              <div class="option-title">Vapores de mercurio</div>
+              <div class="option-sub">Respiradores, venteos, fundiciones, plantas de cloro, gas natural con Hg.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_gas', 'aire_comprimido')">
+              <div class="option-icon">🔧</div>
+              <div class="option-title">Aire comprimido / general</div>
+              <div class="option-sub">Purificación de aire comprimido, protección de equipos, control de olores.</div>
+            </button>
+          </div>
+          <button class="back-btn-calc" onclick="goBack()">← Atrás</button>
+        </div>
+
+        <!-- ─── PASO 2B: Aplicación en líquido ─── -->
+        <div class="wizard-step" id="step-2b">
+          <div class="options-grid compact">
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'agua_purificada')">
+              <div class="option-icon">🚰</div>
+              <div class="option-title">Agua purificada o embotellada</div>
+              <div class="option-sub">Decloración, olor, sabor, orgánicos. Agua de consumo humano, purificadoras, vending, ósmosis inversa.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'potabilizacion')">
+              <div class="option-icon">🏞️</div>
+              <div class="option-title">Potabilización de agua superficial o de pozo</div>
+              <div class="option-sub">Materia orgánica natural, color, olor, sabor, pesticidas, PFAS, MIB, geosmina, variaciones estacionales.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'aguas_residuales')">
+              <div class="option-icon">♻️</div>
+              <div class="option-title">Aguas residuales</div>
+              <div class="option-sub">Tratamiento terciario, COD, color, orgánicos recalcitrantes.</div>
+            </button>
+
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'aminas')">
+              <div class="option-icon">🧫</div>
+              <div class="option-title">Purificación de aminas</div>
+              <div class="option-sub">Soluciones de MEA, DEA y otras aminas en procesos de gas natural y refinería.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'bebidas')">
+              <div class="option-icon">🥃</div>
+              <div class="option-title">Bebidas y destilados</div>
+              <div class="option-sub">Tequila, mezcal, whisky, vino, cerveza, aguardientes, alcohol etílico.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'alimentos_ind')">
+              <div class="option-icon">🍯</div>
+              <div class="option-title">Alimentos e industria</div>
+              <div class="option-sub">Azúcar, jarabes, aceites comestibles, biodiesel, jugos, lácteos, hidrocarburos.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'quimicos_solventes')">
+              <div class="option-icon">🧴</div>
+              <div class="option-title">Químicos, solventes y materias primas líquidas</div>
+              <div class="option-sub">Purificación, decoloración o desodorización de solventes, glicerina, ácidos orgánicos, extractos, alcoholes industriales y productos químicos líquidos.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'contaminantes_especificos')">
+              <div class="option-icon">🔬</div>
+              <div class="option-title">Contaminantes específicos en líquidos</div>
+              <div class="option-sub">Fenoles, pesticidas, PFAS, solventes clorados, hidrocarburos, colorantes, olores difíciles o compuestos recalcitrantes en cualquier matriz líquida.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('aplic_liq', 'oro')">
+              <div class="option-icon">🥇</div>
+              <div class="option-title">Recuperación de oro</div>
+              <div class="option-sub">Heap leach, CIP, CIL. Retención de dicianuro de oro en soluciones de lixiviación.</div>
+            </button>
+          </div>
+          <button class="back-btn-calc" onclick="goBack()">← Atrás</button>
+        </div>
+
+        <!-- ─── PASO 3: Proceso (sólo para líquidos generales) ─── -->
+        <div class="wizard-step" id="step-3">
+          <div class="options-grid">
+            <button class="option-btn-calc" onclick="choose('proceso', 'batch')">
+              <div class="option-icon">🧺</div>
+              <div class="option-title">Proceso por lotes (batch)</div>
+              <div class="option-sub">Se agita el carbón con el líquido en un tanque y luego se filtra. Puede ser clarificación con coagulante/floculante, filtro prensa, o lotes con dosis específicas por producto.</div>
+            </button>
+            <button class="option-btn-calc" onclick="choose('proceso', 'continuo')">
+              <div class="option-icon">🔄</div>
+              <div class="option-title">Proceso continuo en columna</div>
+              <div class="option-sub">El líquido fluye a través de una cama fija de carbón activado en un filtro o columna a presión. Requiere retrolavado periódico.</div>
+            </button>
+          </div>
+          <button class="back-btn-calc" onclick="goBack()">← Atrás</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Resultado ── -->
+  <div class="result-screen" id="result-screen">
+    <div class="result-banner">
+      <div class="result-banner-label">Recomendación técnica Carbotecnia</div>
+      <div class="result-banner-title" id="res-titulo">—</div>
+      <div class="result-banner-breadcrumb" id="res-breadcrumb"></div>
+    </div>
+    <div class="result-body">
+      <div class="result-grid">
+        <div class="result-cell">
+          <div class="result-cell-label">Tipo de carbón</div>
+          <div class="result-cell-value" id="res-tipo">—</div>
+          <div class="result-cell-sub" id="res-materia">—</div>
+        </div>
+        <div class="result-cell">
+          <div class="result-cell-label">Presentación y granulometría</div>
+          <div class="result-cell-value" id="res-granulo">—</div>
+          <div class="result-cell-sub" id="res-forma">—</div>
+        </div>
+      </div>
+
+      <div class="products-section">
+        <h3>Productos Carbotecnia recomendados</h3>
+        <div class="products-list" id="res-productos"></div>
+      </div>
+
+      <div class="justification-section">
+        <h3>Justificación técnica</h3>
+        <p id="res-justificacion">—</p>
+      </div>
+
+      <div id="res-alerta" class="alert-tech warn" style="display:none">
+        <b>⚠ Consideración técnica importante</b>
+        <span id="res-alerta-texto"></span>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-back-result" onclick="goBackFromResult()">← Regresar</button>
+        <button class="btn-restart" onclick="restart()">↩ Inicio</button>
+        <button class="btn-print" onclick="window.print()">🖨 Imprimir / PDF</button>
+        <button class="btn-copy-result" id="btn-copy-result" onclick="copyResult()">📋 Copiar resultado</button>
+        <button class="btn-email-result" id="btn-email-result" type="button">✉ Cotizar por correo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <b>Nota:</b> Este asistente ofrece una recomendación preliminar basada en los manuales de ingeniería de procesos de Carbotecnia. El diseño final del sistema debe ser validado por un ingeniero de procesos considerando el análisis completo del fluido, concentración de adsorbatos, temperatura, cinética requerida, caída de presión admisible y condiciones específicas de operación.
+  </div>
+
+  <div class="page-footer">
+    <span>© Carbotecnia · Zapopan, Jalisco · carbotecnia.info</span>
+    <span>Basado en MIP Carbotecnia</span>
+  </div>
+
+</div>
+
+<script>
+/* =================================================================
+   ESTADO DEL WIZARD
+   ================================================================= */
+let state = {};         // Respuestas acumuladas
+let history = [];       // Pila de pasos para retroceder
+let currentStep = '1';  // ID del paso actual
+
+/* =================================================================
+   BASE DE CONOCIMIENTO — ÁRBOL DE DECISIONES
+   (Basada en los MIP de Carbotecnia: formación, solventes, oro, CAP,
+    preguntas técnicas, y el catálogo de productos)
+   ================================================================= */
+const DECISIONS = {
+
+  // ─────────────────────────────────────────────────────────────
+  // FASE GAS — Regla general: NUNCA CAP en gases (MIP CAP)
+  // ─────────────────────────────────────────────────────────────
+
+  gas_co2: {
+    titulo: 'Purificación de CO₂ industrial / alimenticio',
+    tipo: 'Carbón activado pélet o granular para gases orgánicos',
+    materia: 'Mineral bituminoso · alta capacidad de adsorción para gases · baja generación de finos',
+    granulo: 'Pélet 4 mm (preferido) · CAG malla 4×10 o 4×8',
+    forma: 'Pélet 4 mm para menor caída de presión · CAG 4×10 o 4×8 como alternativa',
+    productos: [
+      { nombre: 'Carvapur pélet', desc: 'Carbón activado en pélet de 4 mm o 2 mm de mineral bituminoso. Primera elección para purificación de CO₂ industrial y alimenticio. Alta capacidad de adsorción de gases orgánicos, menor caída de presión que el granular y buena resistencia mecánica para operación continua.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-aire-pelet-organicos-carvapur/' },
+      { nombre: 'Carvapur 40', desc: 'Carbón activado granular malla 4×10. Alternativa al pélet cuando se prefiere granulometría para el diseño de la cama o las condiciones del proceso lo requieren.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-gases-carvapur/' }
+    ],
+    justificacion: 'Para la purificación de CO₂ se utiliza carbón activado pélet de mineral bituminoso porque combina alta capacidad de adsorción de gases orgánicos con baja caída de presión en el lecho. El pélet de 4 mm ofrece mayor resistencia mecánica y menor generación de finos que el granular equivalente, lo que es importante en aplicaciones de CO₂ donde los finos pueden contaminar el gas purificado. El Carvapur 40 en malla 4×10 o 4×8 es la alternativa granular cuando el diseño del equipo así lo requiere.',
+    alerta: null
+  },
+
+  gas_solventes: {
+    titulo: 'Recuperación de solventes orgánicos en corriente de gas',
+    tipo: 'Carbón activado pélet o granular · microporoso · lavado con ácido',
+    materia: 'Concha de coco · microporoso · lavado con ácido · alta resistencia a la abrasión',
+    granulo: 'Pélet 4 mm (preferido) · Pélet 2 mm · CAG malla 4×10, 4×8 o 4×6',
+    forma: 'Pélet 4 mm para velocidades hasta 24 m/min · Pélet 2 mm hasta 18 m/min',
+    productos: [
+      { nombre: 'Carvapur pélet', desc: 'Pélet 4 mm o 2 mm de carbón activado de concha de coco, microporoso y lavado con ácido. Primera elección para recuperación de solventes. Alta resistencia mecánica para los cientos de ciclos de adsorción-desorción con vapor. El lavado con ácido reduce las cenizas y eleva la temperatura de ignición, minimizando el riesgo de incendio de la cama.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-aire-pelet-organicos-carvapur/' },
+      { nombre: 'Carvapur 40', desc: 'Carbón activado granular malla 4×10. Alternativa cuando el diseño de la cama requiere granulometría específica o condiciones de velocidad superficial distintas al pélet.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-gases-carvapur/' }
+    ],
+    justificacion: 'En recuperación de solventes el carbón se somete a cientos de ciclos de adsorción-desorción. El MIP de Carbotecnia establece: (1) Carbón de concha de coco microporoso, pues los solventes tienen moléculas con diámetro de 0.5–0.8 nm que requieren microporos. (2) Lavado con ácido para reducir cenizas y elevar la temperatura de ignición, ya que la adsorción de solventes es altamente exotérmica y la cama puede incendiarse. (3) Alta resistencia a la abrasión para soportar los ciclos. El pélet de 4 mm permite velocidades superficiales de hasta 24 m/min con menor caída de presión que un granular fino; el pélet de 2 mm es adecuado para velocidades de hasta 18 m/min.',
+    alerta: '⚠ RIESGO DE INCENDIO: La adsorción de solventes es exotérmica. Nunca superar el 50% del LEL (límite inferior de explosividad). Enfriar el aire entrante si su temperatura aumentó en el ventilador. Al finalizar cada ciclo de desorción con vapor, secar y enfriar la cama 10–20 min antes de reiniciar la adsorción. Vigilar la humedad relativa: si es mayor al 60%, condensar y volver a calentar antes de entrar al adsorbedor.'
+  },
+
+  gas_cov: {
+    titulo: 'Control de vapores orgánicos (COV) en aire',
+    tipo: 'Carbón activado granular o peletizado impregnado',
+    materia: 'Concha de coco o mineral bituminoso · microporoso',
+    granulo: 'Pélet 4 mm · CAG malla 12×40',
+    forma: 'CAG o pélet según diseño de la cama',
+    productos: [
+      { nombre: 'Carvapur 40', desc: 'Granular o pélet para retención de COVs y vapores orgánicos en aire, cabinas de pintura, respiradores, campanas y aire comprimido.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-gases-carvapur/' },
+      { nombre: 'Carvapox', desc: 'Granular 4×10 o pélet 4 mm. Indicado especialmente para vapores de alcoholes, aldehídos, formaldehído, isopropanol y orgánicos oxidables de bajo peso molecular.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-vapores-carvapox/' }
+    ],
+    justificacion: 'Para COVs en aire, se utiliza carbón microporoso que retiene moléculas orgánicas volátiles por fuerzas de dispersión de London. El carbón de concha de coco con alta área superficial BET es el más eficaz para moléculas de peso molecular bajo-medio. En aplicaciones de cabinas de pintura, respiradores y campanas, la granulometría de pélet o CAG 12×40 ofrece la caída de presión adecuada.',
+    alerta: null
+  },
+
+  gas_gases_acidos: {
+    titulo: 'Control de gases ácidos, básicos y sulfurados',
+    tipo: 'Carbón activado impregnado (CAG o pélet)',
+    materia: 'Mineral o concha de coco con impregnación específica',
+    granulo: 'Pélet 4 mm · CAG malla 4×10 o 12×40',
+    forma: 'Impregnado según el gas objetivo',
+    productos: [
+      { nombre: 'Vapacid', desc: 'Granular 4×10 o pélet 4 mm. Retención de gases ácidos: H₂S, SO₂, HCl, HF. Indicado en biogás, gas natural, respiradores, olores de drenaje y control de corrosión.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-gases-acidos-vapacid/' },
+      { nombre: 'Vapamón', desc: 'Granular 4×10 o pélet 4 mm. Retención específica de amoniaco y aminas de bajo peso molecular. Aplicaciones en PTAR, industria cárnica y pesquera, procesos químicos.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-gases-de-amonicaco-y-aminas-vapamon/' },
+      { nombre: 'Carvacid', desc: 'Granular 4×10 o pélet 4 mm. Retención combinada de vapores orgánicos y gases ácidos. Útil en biogás, gas natural y corrientes mixtas.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-gases-aire-acidos-organicos-carvacid/' }
+    ],
+    justificacion: 'Los gases ácidos y básicos como H₂S, SO₂, NH₃ y aminas de bajo peso molecular requieren carbones activados impregnados, ya que la adsorción puramente física de estos gases en carbón virgen suele ser insuficiente. La impregnación específica promueve una reacción química selectiva. Para H₂S en drenajes y biogás, se usa carbón impregnado con álcalis; para amoniaco y aminas, carbón impregnado con ácido.',
+    alerta: null
+  },
+
+  gas_mercurio: {
+    titulo: 'Control de vapores de mercurio en fase gas',
+    tipo: 'Carbón activado impregnado con azufre (pélet o CAG)',
+    materia: 'Mineral bituminoso · impregnado con azufre elemental',
+    granulo: 'Pélet 4 mm · CAG malla 4×10',
+    forma: 'Impregnado con S elemental para formación de HgS',
+    productos: [
+      { nombre: 'Vapomer', desc: 'Granular 4×10 o pélet 4 mm. Especializado en retención de vapores de mercurio. Aplicaciones en respiradores, venteos, fundiciones, plantas de cloro y tratamiento de gas natural con Hg.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-vapores-de-mercurio/' }
+    ],
+    justificacion: 'El mercurio en fase vapor requiere un carbón impregnado con azufre elemental. La reacción entre Hg y S forma HgS (cinabrio), compuesto estable e insoluble, lo que permite una retención química permanente. La eficiencia del carbón virgen para retener vapor de mercurio es muy baja, por lo que la impregnación es indispensable en esta aplicación.',
+    alerta: null
+  },
+
+  gas_aire_comprimido: {
+    titulo: 'Purificación de aire comprimido y tratamiento general',
+    tipo: 'Carbón activado granular (CAG) o pélet',
+    materia: 'Concha de coco o mineral · microporoso',
+    granulo: 'Granular 12×40 · Pélet 4 mm',
+    forma: 'CAG estándar según diseño del filtro',
+    productos: [
+      { nombre: 'Carvapur pélet', desc: 'Pélet 4 mm o 2 mm para purificación de aire comprimido y tratamiento general de gases. Menor caída de presión que el granular, alta resistencia mecánica y buena capacidad de adsorción de vapores orgánicos, aceites y compuestos que afectan la calidad del aire.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-aire-pelet-organicos-carvapur/' },
+      { nombre: 'Carvapur 40', desc: 'Carbón activado granular malla 4×10. Para retención de COVs y vapores orgánicos en aire comprimido, respiradores y sistemas de control de emisiones.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-gases-carvapur/' }
+    ],
+    justificacion: 'En purificación de aire comprimido, el carbón remueve aceites residuales, vapores orgánicos, olores y compuestos que afectan la calidad del aire en aplicaciones industriales y de proceso. La granulometría 12×40 o pélet 4 mm ofrece la caída de presión adecuada para sistemas de aire comprimido y filtros inline.',
+    alerta: null
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  // FASE LÍQUIDA
+  // ─────────────────────────────────────────────────────────────
+
+  liq_agua_purificada: {
+    titulo: 'Purificación de agua para beber o embotellar',
+    tipo: 'Carbón activado granular (CAG) · proceso continuo',
+    materia: 'Concha de coco · microporoso · alta dureza · baja generación de finos',
+    granulo: 'Granular 12×40 u 8×30 (CAG en columna)',
+    forma: 'CAG · Columna fija con retrolavado periódico',
+    productos: [
+      { nombre: 'Micro 4', desc: 'Granular 12×40 u 8×30. Concha de coco granular certificado NSF/ANSI 61. Primera elección para agua purificada, agua de consumo humano, embotellado, máquinas vending, purificadoras y sistemas de ósmosis inversa como pretratamiento para remover cloro, olor, sabor y compuestos orgánicos de bajo peso molecular.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-purificar-agua/' },
+      { nombre: 'Biostat', desc: 'Granular 20×50, 12×40 u 8×30. Concha de coco impregnado con plata. Alternativa para purificadores domésticos, equipos de laboratorio, cartuchos y puntos de uso donde se busca una función bacteriostática adicional dentro del lecho de carbón.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-filtros-de-agua-bacteriostatico/' },
+      { nombre: 'Micro 10', desc: 'Granular 12×40 u 8×30. Concha de coco granular de menor tamaño de partícula. Alternativa cuando se requiere mayor velocidad de adsorción en equipos compactos, cartuchos o columnas pequeñas para agua purificada.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-micro-k/' },
+      { nombre: 'Gama B', desc: 'Granular 12×40 u 8×30. Carbón activado mineral bituminoso granular. Alternativa cuando el agua de alimentación contiene orgánicos de mayor peso molecular, subproductos de desinfección, pesticidas u otros contaminantes que requieren una distribución de poro más amplia que la del carbón de concha de coco.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-tratamiento-de-agua-mineral/' }
+    ],
+    justificacion: 'Para agua purificada, agua para beber y agua embotellada se prefiere carbón activado granular de concha de coco. Su estructura microporosa favorece la remoción de cloro, olor, sabor y compuestos orgánicos pequeños. También ofrece alta dureza, baja generación de finos y buena vida útil en columnas de operación continua. Micro 4 es la primera opción cuando se requiere carbón certificado NSF/ANSI 61 para agua de consumo humano. Biostat se recomienda cuando se busca una función bacteriostática adicional en cartuchos o puntos de uso.',
+    alerta: 'El carbón activado elimina el cloro libre. Por eso, después del carbón debe cuidarse la higiene del sistema. En agua purificada o embotellada conviene sanitizar periódicamente tuberías, tanques, filtros, llenadoras y puntos muertos. También debe retrolavarse la cama de CAG con flujo suficiente para expandirla y evitar compactación, canalización o crecimiento biológico dentro del lecho.'
+  },
+
+  liq_potabilizacion: {
+    titulo: 'Potabilización de agua superficial o de pozo',
+    tipo: 'Carbón activado granular (CAG) o carbón activado en polvo (CAP)',
+    materia: 'Mineral bituminoso · mesoporoso · madera en polvo para dosificación puntual',
+    granulo: 'CAG granular 8×30 o 12×40 en columna · CAP en dosificación al proceso',
+    forma: 'CAG en columna fija con retrolavado periódico · CAP dosificado en mezcla, coagulación o clarificación',
+    productos: [
+      { nombre: 'Gama B', desc: 'Granular 12×40 u 8×30. Carbón activado mineral bituminoso granular. Recomendado para potabilización de agua superficial o de pozo con materia orgánica natural, color, olor, sabor, subproductos clorados, pesticidas, compuestos orgánicos de distinto peso molecular y contaminantes emergentes como PFAS, cuando el diseño lo justifique.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-tratamiento-de-agua-mineral/' },
+      { nombre: 'Megapol E', desc: 'Polvo malla 200 (proceso por lotes / batch). Carbón activado en polvo de madera. Alternativa para dosificación temporal o continua en plantas potabilizadoras con picos de olor, sabor, color, MIB, geosmina, algotoxinas o variaciones estacionales en la calidad del agua superficial.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-quitar-color-megapol-e/' }
+    ],
+    justificacion: 'En agua superficial o de pozo, la calidad del agua cambia más que en agua purificada. Puede contener materia orgánica natural, color, olor, sabor, pesticidas, compuestos clorados, hidrocarburos, precursores de subproductos de desinfección y contaminantes de mayor tamaño molecular. Para operación continua en columna, Gama B ofrece una distribución de poros más amplia que un carbón de concha de coco. Esto lo hace más adecuado cuando el problema no se limita a cloro, olor y sabor. Megapol E es una alternativa flexible cuando se requiere dosificar carbón activado en polvo durante eventos puntuales, lluvias, floraciones algales o picos de MIB y geosmina.',
+    alerta: 'Antes de seleccionar el carbón se debe revisar el análisis completo del agua: turbidez, sólidos suspendidos, color, TOC, COD, olor, sabor, hierro, manganeso, cloro residual, pesticidas, PFAS si aplica, dureza, pH y microbiología. El carbón activado no sustituye coagulación, filtración, desinfección ni remoción específica de metales. Las camas de CAG deben retrolavarse con expansión suficiente para evitar acumulación de sólidos, canalización y pérdida de capacidad de adsorción. Si se usa CAP, debe validarse dosis, punto de aplicación, tiempo de contacto y remoción posterior del carbón en clarificación o filtración.'
+  },
+
+  liq_aguas_residuales: {
+    titulo: 'Tratamiento terciario de aguas residuales',
+    tipo: 'Carbón activado granular (CAG)',
+    materia: 'Mineral bituminoso o lignítico · mesoporos y macroporos',
+    granulo: 'Granular 8×30 o 12×40 (columna continua)',
+    forma: 'CAG · Columna fija o sistema BAC (Biological Activated Carbon)',
+    productos: [
+      { nombre: 'Gama B', desc: 'Granular 12×40 u 8×30. Mineral bituminoso. Tratamiento terciario de agua residual, eliminación de COD residual, cloro, orgánicos recalcitrantes y PFAS.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-tratamiento-de-agua-mineral/' },
+      { nombre: 'Gama L', desc: 'Mineral lignítico granular malla 8×30. Mayor macroporosidad para retención de colorantes y moléculas grandes en efluentes industriales.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-mineral-lignitico/' }
+    ],
+    justificacion: 'En tratamiento terciario de aguas residuales, las moléculas objetivo suelen tener pesos moleculares mayores que en agua potable. El carbón mineral bituminoso (Gama B) tiene una distribución más amplia de tamaños de poro (micro, meso y macroporos), lo que lo hace más versátil para eliminar contaminantes de distintos tamaños. Para efluentes con alta carga de colorantes y moléculas de alto peso molecular, el carbón lignítico (Gama L) malla 8×30 con mayor macroporosidad puede ser más eficaz.',
+    alerta: null
+  },
+
+  liq_quimicos_solventes: {
+    titulo: 'Químicos, solventes y materias primas líquidas',
+    tipo: 'Carbón activado granular (CAG) o en polvo (CAP) · según proceso',
+    materia: 'Mineral bituminoso · madera · concha de coco · según contaminante y viscosidad',
+    granulo: 'CAG 12×40 u 8×30 en columna · CAP malla 325 o malla 200 en proceso por lotes',
+    forma: 'CAG en columna fija · CAP dosificado con agitación y filtración posterior',
+    productos: [
+      { nombre: 'Gama B', desc: 'Granular 12×40 u 8×30. Carbón activado mineral bituminoso granular. Primera opción para purificación, decoloración y desodorización de solventes, alcoholes industriales, ácidos orgánicos y productos químicos líquidos con contaminantes de distinto peso molecular.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-tratamiento-de-agua-mineral/' },
+      { nombre: 'Megapol 28-4', desc: 'Madera de pino en polvo malla 325. Para decoloración y clarificación por lotes de glicerina, biodiesel, hidrocarburos, aceites y líquidos industriales donde se requiere filtración posterior. Más del 80% pasa malla 325.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/megapol-28-4-carbon-activado-en-polvo-para-decoloracion-de-vinos-azucar/' },
+      { nombre: 'Megapol M', desc: 'Polvo, 75% pasa la malla 325. Madera de pino en polvo. Decoloración de materias primas líquidas en la industria química y alimentaria: extractos, alcoholes, aceites y solventes con carga de color o compuestos de alto peso molecular.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/megapol-m-carbon-activado-en-polvo-de-madera/' },
+      { nombre: 'Micropol 4 200', desc: 'Polvo malla 200 (proceso por lotes / batch). Concha de coco en polvo. Para desodorización y tratamiento de líquidos donde se busca remoción de compuestos orgánicos de bajo peso molecular, olor y sabor en procesos por lotes con filtración.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-agua-en-polvo-micropol/' }
+    ],
+    justificacion: 'En la purificación de solventes, glicerina, alcoholes industriales, ácidos orgánicos y materias primas líquidas, la elección entre CAG y CAP depende del proceso. Si el líquido pasa por filtración prensa, centrífuga o clarificación, el CAP (malla 325 o 200) es más eficaz por su cinética muy superior. Si el proceso es continuo en columna, se prefiere CAG de mineral bituminoso por su distribución de poro más amplia, adecuada para contaminantes de distinto tamaño molecular. La viscosidad del líquido es un factor crítico: a mayor viscosidad, la difusión dentro de los poros se vuelve más lenta y puede requerirse calentamiento previo o un carbón de menor tamaño de partícula.',
+    alerta: 'Validar la viscosidad del líquido antes de seleccionar el carbón. El carbón activado es efectivo en líquidos con viscosidades no muy superiores a 1 cP a temperatura de operación. En líquidos más viscosos puede requerirse calentamiento. Verificar también compatibilidad química entre el solvente o producto y el carbón, y asegurarse de que el proceso de separación del carbón (filtración, centrifugación) sea adecuado para el tipo de carbón elegido.'
+  },
+
+  liq_contaminantes_especificos: {
+    titulo: 'Contaminantes específicos en líquidos',
+    tipo: 'Carbón activado granular (CAG) o en polvo (CAP) · según contaminante y matriz',
+    materia: 'Mineral bituminoso · concha de coco · madera · según tamaño de molécula y tipo de contaminante',
+    granulo: 'CAG 12×40 u 8×30 en columna continua · CAP malla 325 o 200 en proceso por lotes',
+    forma: 'CAG en columna fija con retrolavado · CAP dosificado con agitación y filtración',
+    productos: [
+      { nombre: 'Gama B', desc: 'Granular 12×40 u 8×30. Mineral bituminoso granular. Primera opción para contaminantes de distinto peso molecular: fenoles, pesticidas, solventes clorados, hidrocarburos, PFAS y compuestos recalcitrantes en agua u otras matrices acuosas. Su distribución de poro amplia lo hace versátil para contaminantes de distintos tamaños.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-tratamiento-de-agua-mineral/' },
+      { nombre: 'Micro 4', desc: 'Granular 12×40 u 8×30. Concha de coco granular certificado NSF/ANSI 61. Para remoción de contaminantes de bajo peso molecular en agua de consumo humano: cloro, THM, VOC, olor, sabor y orgánicos pequeños.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-purificar-agua/' },
+      { nombre: 'Megapol E', desc: 'Polvo malla 200 (proceso por lotes / batch). Carbón activado en polvo de madera. Para dosificación puntual en plantas potabilizadoras o procesos industriales con picos de MIB, geosmina, algotoxinas, pesticidas u otros contaminantes estacionales que requieren respuesta rápida.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-quitar-color-megapol-e/' },
+      { nombre: 'Megapol 28-4', desc: 'Madera de pino en polvo malla 325. Para remoción por lotes de colorantes, precursores de color, ácidos húmicos y compuestos de alto peso molecular en líquidos industriales con proceso de filtración posterior.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/megapol-28-4-carbon-activado-en-polvo-para-decoloracion-de-vinos-azucar/' }
+    ],
+    justificacion: 'Cuando el punto de partida es el contaminante y no el sector, la selección del carbón depende principalmente del tamaño de la molécula objetivo, la matriz líquida y el tipo de proceso. Para fenoles, pesticidas y PFAS en agua, el carbón mineral bituminoso (Gama B) con distribución de poro amplia suele ser más eficaz que el de concha de coco. Para compuestos de bajo peso molecular como cloro, THM y VOC, el carbón de concha de coco microporoso (Micro 4) tiene mejor desempeño. Para hidrocarburos y colorantes de alto peso molecular en procesos por lotes, los carbones de madera en polvo (Megapol 28-4, Megapol E) ofrecen mayor macroporosidad y cinética adecuada. En todos los casos se recomienda una prueba de jarras o prueba piloto para validar la dosis y el tipo de carbón antes de escalar.',
+    alerta: 'Para contaminantes como PFAS, pesticidas, solventes clorados y compuestos recalcitrantes, la selección del carbón debe basarse en pruebas de adsorción con el agua o líquido real, ya que la presencia de materia orgánica natural y otros compuestos puede competir por los sitios de adsorción y reducir la eficiencia esperada. Consulte con un ingeniero de procesos para definir dosis, tiempo de contacto y configuración óptima del sistema.'
+  },
+
+  liq_oro: {
+    titulo: 'Recuperación de oro · Heap Leach / CIP / CIL',
+    tipo: 'Carbón activado granular (CAG) · máxima dureza y densidad',
+    materia: 'Concha de coco · microporoso · radio de poro < 1 nm · máxima dureza y densidad',
+    granulo: 'CAG malla 6×16, 6×12 u 8×16',
+    forma: 'Granular grueso · columna con flujo ascendente',
+    productos: [
+      { nombre: 'Carboro', desc: 'Granular 6×12 u 8×16. Diseñado específicamente para recuperación de oro en procesos Heap Leach, CIP y CIL. Concha de coco con la mayor dureza y densidad posible, microporoso para retener el complejo dicianuro de oro.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-para-recuperacion-de-oro-carboro/' }
+    ],
+    justificacion: 'El complejo dicianuro de oro [Au(CN)₂]⁻ tiene un diámetro molecular menor a 1 nm, por lo que requiere carbón microporoso (poros < 1 nm). El MIP de Carbotecnia especifica: (1) MÁXIMA DUREZA para evitar rompimientos en columnas de flujo ascendente, pues los finos arrastran el oro con la solución pobre. (2) MÁXIMA DENSIDAD aparente para soportar cargas hidráulicas de 20–25 gpm/ft² que expandan la cama al menos 40% sin arrastrar el carbón. (3) Granulometría gruesa (6×16, 6×12, 8×16) que permita operar con flujo ascendente. El Carboro de Carbotecnia cumple con todas estas especificaciones.',
+    alerta: 'Preparar el carbón antes de su uso: eliminar finos con flujo ascendente de agua e inundar en agua caliente (60°C durante 20 min o agua a 25°C durante más de 72 h) para expulsar el aire de los poros. Los finos generan pérdidas de oro irrecuperables en la pila pobre. Mantener pH mínimo que no genere desprendimiento de HCN. La cama debe expandirse al menos 40% para evitar taponamiento con sólidos suspendidos.'
+  },
+
+  liq_aminas: {
+    titulo: 'Purificación de soluciones de aminas',
+    tipo: 'Carbón activado granular (CAG) · poros medianos a grandes',
+    materia: 'Mineral bituminoso · mesoporos y macroporos (tipo Amin-Carb)',
+    granulo: 'Granular 8×30 o 12×40',
+    forma: 'CAG · Columna fija con flujo descendente',
+    productos: [
+      { nombre: 'Amin-Carb', desc: 'Granular 8×30. Carbón mineral bituminoso granular con distribución de poro específicamente diseñada para el tratamiento de soluciones de aminas (MEA, DEA, MDEA). Retiene los compuestos de degradación sin adsorber excesivamente las aminas.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/amin-carb-carbon-activado-para-tratamiento-de-aminas/' }
+    ],
+    justificacion: 'Las aminas (MEA, DEA, MDEA) son moléculas de mayor peso molecular que requieren poros medianos a grandes para acceder a los sitios de adsorción. Un carbón microporoso como el de concha de coco no es adecuado, pues su poro es demasiado pequeño para permitir el paso de las moléculas de amina degradadas que se busca remover. El Amin-Carb tiene una distribución de poro específicamente diseñada para este propósito, con una combinación de mesoporosidad que permite la adsorción selectiva de los productos de degradación sin retener excesivamente las aminas puras del proceso.',
+    alerta: null
+  },
+
+  liq_bebidas_batch: {
+    titulo: 'Tratamiento de bebidas y destilados · proceso por lotes',
+    tipo: 'Carbón activado en polvo (CAP)',
+    materia: 'Madera de pino o concha de coco · según molécula objetivo',
+    granulo: 'Malla 325 (≥ 90% pasa 0.044 mm) o malla 200 (≥ 90% pasa 0.074 mm)',
+    forma: 'CAP · Dosificar en agitación, 15–30 min, y filtrar',
+    productos: [
+      { nombre: 'AAM', desc: 'Polvo malla 235. Tequila y bebidas alcohólicas. Reduce color y corrige parámetros asociados a moléculas de alto peso molecular, proteínas y precursores de color.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/aam-carbon-activado-para-eliminar-color-en-tequila-y-otros-destilados/' },
+      { nombre: 'IA-4', desc: 'Polvo malla 200. Tratamiento de tequila y bebidas alcohólicas. Retiene moléculas volátiles que ocasionan olor.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/ia-4-carbon-activado-para-tequila/' },
+      { nombre: 'EBA-9', desc: 'Polvo malla 325. Reduce sustancias de distinta volatilidad y moléculas de distintos pesos moleculares en tequila y destilados.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/eba-9-carbon-activado-para-tratamiento-de-tequila-y-destilados/' }
+    ],
+    justificacion: 'En el tratamiento de bebidas por lotes (batch) se usa CAP porque: (1) La cinética de adsorción aumenta al cuadrado de la disminución del diámetro de partícula — un CAP malla 325 termina su función en ~15 min, mientras un CAG 12×40 tardaría ~142 horas para la misma dosis. (2) El proceso de clarificación/filtración que se aplica después separa eficientemente el carbón del líquido. (3) Cada lote puede requerir una dosis diferente. Para moléculas de alto peso molecular (color, proteínas), se prefiere carbón de madera con mayor macroporosidad. Para moléculas volátiles (aromas), el carbón de coco con mayor microporosidad es más adecuado.',
+    alerta: null
+  },
+
+  liq_bebidas_continuo: {
+    titulo: 'Tratamiento de bebidas y destilados · proceso continuo',
+    tipo: 'Carbón activado granular (CAG)',
+    materia: 'Madera de pino o concha de coco · según molécula objetivo',
+    granulo: 'Granular 12×40 u 8×30 · columna fija',
+    forma: 'CAG · Columna con flujo descendente y retrolavado periódico',
+    productos: [
+      { nombre: 'AA-3', desc: 'Granular 14×35. Madera de pino granular. Primera elección para reducción de color y sabor en tequila, destilados y vinos en proceso continuo. Retiene moléculas grandes.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/aam-carbon-activado-para-purificacion-de-destilados/' },
+      { nombre: 'IA-4', desc: 'Granular 12×40 o polvo malla 200. Cáscara de coco granular. Retención de moléculas volátiles que ocasionan olor en bebidas alcohólicas. Microporoso, mayor cinética para moléculas pequeñas.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/ia-4-carbon-activado-para-tequila/' },
+      { nombre: 'EBA-9', desc: 'Granular 12×40 o polvo malla 325. Mineral bituminoso granular. Para tratamiento de destilados con contaminantes de distinta volatilidad y peso molecular en columna continua.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/eba-9-carbon-activado-para-tratamiento-de-tequila-y-destilados/' }
+    ],
+    justificacion: 'Cuando el proceso de tratamiento de bebidas es continuo en columna, se utiliza CAG porque permite la operación estable durante meses o años antes de requerir sustitución. La granulometría típica (12×40) ofrece buena cinética con caída de presión aceptable. Para color y moléculas de alto peso molecular, se prefiere carbón de madera (AA-3); para aromas y volátiles, carbón de coco (IA-4). El carbón granular puede retrolavarse cuando la caída de presión aumenta, extendiendo su vida útil.',
+    alerta: null
+  },
+
+  liq_alimentos_batch: {
+    titulo: 'Decoloración y clarificación de alimentos e industria · lotes',
+    tipo: 'Carbón activado en polvo (CAP)',
+    materia: 'Madera de pino · macroporos y mesoporos para moléculas grandes',
+    granulo: 'Malla 325 (80% pasa 0.044 mm) · Megapol 28-4',
+    forma: 'CAP · Dosificar con agitación y filtrar (filtro prensa, centrífuga o clarificador)',
+    productos: [
+      { nombre: 'Megapol 28-4', desc: 'Madera de pino en polvo malla 325. Primera elección para decoloración y clarificación de azúcar, jugos, jarabes, aceites comestibles, biodiesel e hidrocarburos. +80% pasa malla 325.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/megapol-28-4-carbon-activado-en-polvo-para-decoloracion-de-vinos-azucar/' },
+      { nombre: 'Megapol M', desc: 'Polvo, 75% pasa la malla 325. Madera de pino en polvo. Decoloración de alimentos y bebidas: jarabes, azúcares, vinos, destilados, aceites comestibles, lácteos y suplementos.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/megapol-m-carbon-activado-en-polvo-de-madera/' },
+      { nombre: 'AAM', desc: 'Polvo malla 235 (proceso por lotes / batch). Madera en polvo. Para líquidos con alta carga de proteínas y precursores de color.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/aam-carbon-activado-para-eliminar-color-en-tequila-y-otros-destilados/' }
+    ],
+    justificacion: 'Los procesos de clarificación de azúcares, aceites, jarabes y bebidas utilizan CAP porque: (1) La cinética debe ser muy rápida — el CAP malla 325 termina en ~15 min. (2) El proceso de filtración prensa o centrifugación que le sigue separa eficientemente el carbón. (3) Los carbones de madera tienen mayor macroporosidad, lo que los hace más eficaces para las moléculas de color y alto peso molecular presentes en azúcares, jarabes y aceites. (4) La dosis puede ajustarse lote a lote según el color o parámetro objetivo.',
+    alerta: null
+  },
+
+  liq_alimentos_continuo: {
+    titulo: 'Decoloración de alimentos e industria · proceso continuo',
+    tipo: 'Carbón activado granular (CAG)',
+    materia: 'Madera de pino o mineral lignítico · meso y macroporos',
+    granulo: 'Granular 8×30, 6×20 u 14×35 · columna fija',
+    forma: 'CAG · Columna continua con retrolavado periódico',
+    productos: [
+      { nombre: 'Mega', desc: 'Granular 6×20 o 14×35. Madera granular. Decoloración de líquidos industriales y alimentarios. Especializado en retención de moléculas grandes asociadas a color.', tag: 'primera', url: 'https://www.carbotecnia.info/producto/carbon-activado-decolorante-de-madera-mega/' },
+      { nombre: 'Gama L', desc: 'Mineral lignítico granular malla 8×30. Mayor macroporosidad. Tratamiento terciario, decoloración y retención de contaminantes orgánicos grandes.', tag: 'alternativa', url: 'https://www.carbotecnia.info/producto/carbon-activado-mineral-lignitico/' }
+    ],
+    justificacion: 'Para procesos continuos de decoloración en la industria alimentaria, el CAG de madera o lignítico es la elección adecuada. Estos carbones tienen meso y macroporos que permiten la difusión y adsorción de moléculas grandes de color (taninos, carotenoides, antocianinas). La operación en columna permite tratar grandes volúmenes de forma eficiente y el carbón puede retrolavarse para extender su vida útil antes de requerir sustitución.',
+    alerta: null
+  }
+};
+
+/* =================================================================
+   FLUJO DEL ÁRBOL DE DECISIONES
+   ================================================================= */
+function choose(key, value) {
+  // Guardar en el estado y en el historial
+  history.push({ step: currentStep, state: { ...state } });
+  state[key] = value;
+
+  // ── Árbol de navegación ──
+  if (key === 'fase') {
+    if (value === 'gas') showStep('2a');
+    else showStep('2b');
+    return;
+  }
+
+  if (key === 'aplic_gas') {
+    // Gases: resolución directa según aplicación
+    const map = {
+      co2:            'gas_co2',
+      solventes:      'gas_solventes',
+      cov:            'gas_cov',
+      gases_acidos:   'gas_gases_acidos',
+      mercurio:       'gas_mercurio',
+      aire_comprimido:'gas_aire_comprimido'
+    };
+    showResult(map[value]);
+    return;
+  }
+
+  if (key === 'aplic_liq') {
+    // Oro, aminas → directos
+    if (value === 'oro')            { showResult('liq_oro');            return; }
+    if (value === 'aminas')         { showResult('liq_aminas');         return; }
+    if (value === 'agua_purificada'){ showResult('liq_agua_purificada'); return; }
+    if (value === 'potabilizacion') { showResult('liq_potabilizacion');  return; }
+    if (value === 'aguas_residuales'){ showResult('liq_aguas_residuales'); return; }
+    if (value === 'quimicos_solventes')       { showResult('liq_quimicos_solventes');       return; }
+    if (value === 'contaminantes_especificos'){ showResult('liq_contaminantes_especificos'); return; }
+    // Bebidas y alimentos → preguntar por proceso
+    if (value === 'bebidas' || value === 'alimentos_ind') {
+      showStep('3');
+      return;
+    }
+  }
+
+  if (key === 'proceso') {
+    const aplic = state.aplic_liq;
+    if (aplic === 'bebidas') {
+      showResult(value === 'batch' ? 'liq_bebidas_batch' : 'liq_bebidas_continuo');
+    } else if (aplic === 'alimentos_ind') {
+      showResult(value === 'batch' ? 'liq_alimentos_batch' : 'liq_alimentos_continuo');
+    }
+  }
+}
+
+function goBack() {
+  if (history.length === 0) return;
+  const prev = history.pop();
+  state = prev.state;
+  showStep(prev.step);
+}
+
+// Regresa al paso anterior desde la pantalla de resultado
+function goBackFromResult() {
+  if (history.length === 0) { restart(); return; }
+  const prev = history.pop();
+  state = prev.state;
+  document.getElementById('result-screen').classList.remove('visible');
+  document.getElementById('wizard-section').style.display = '';
+  showStep(prev.step);
+  document.querySelector('.shell').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* =================================================================
+   NAVEGACIÓN DE PASOS
+   ================================================================= */
+function showStep(id) {
+  currentStep = id;
+
+  // Ocultar todos los pasos y mostrar el correcto
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + id).classList.add('active');
+
+  // Ocultar pantalla de resultado
+  document.getElementById('wizard-section').style.display = '';
+  document.getElementById('result-screen').classList.remove('visible');
+
+  // Actualizar títulos y progreso
+  const configs = {
+    '1':  { title: '¿Qué tipo de fluido deseas tratar?',          badge: '01 · Fluido',       pct: 0 },
+    '2a': { title: '¿Cuál es la aplicación del gas?',             badge: '02 · Aplicación',    pct: 40 },
+    '2b': { title: '¿Cuál es la aplicación del líquido?',         badge: '02 · Aplicación',    pct: 40 },
+    '3':  { title: '¿Cómo es el proceso de tratamiento?',          badge: '03 · Proceso',       pct: 70 }
+  };
+  const c = configs[id] || {};
+  document.getElementById('step-title').textContent = c.title || '';
+  document.getElementById('step-badge').textContent = c.badge || '';
+  document.getElementById('progress-fill').style.width = c.pct + '%';
+  document.getElementById('progress-label').textContent =
+    c.pct === 0 ? 'Inicio' : c.pct + '% completado';
+}
+
+/* =================================================================
+   MOSTRAR RESULTADO
+   ================================================================= */
+function showResult(key) {
+  const d = DECISIONS[key];
+  if (!d) return;
+
+  // Ocultar wizard
+  document.getElementById('wizard-section').style.display = 'none';
+
+  // Progreso al 100%
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('progress-label').textContent = '¡Completado!';
+
+  // Llenar datos
+  document.getElementById('res-titulo').textContent = d.titulo;
+  document.getElementById('res-tipo').textContent = d.tipo;
+  document.getElementById('res-materia').textContent = d.materia;
+  document.getElementById('res-granulo').textContent = d.granulo;
+  document.getElementById('res-forma').textContent = d.forma;
+  document.getElementById('res-justificacion').textContent = d.justificacion;
+
+  // Breadcrumb
+  const crumbs = [];
+  if (state.fase) crumbs.push(state.fase === 'gas' ? '💨 Gas' : '💧 Líquido');
+  if (state.aplic_gas) crumbs.push(getApplicLabel(state.aplic_gas));
+  if (state.aplic_liq) crumbs.push(getApplicLabel(state.aplic_liq));
+  if (state.proceso) crumbs.push(state.proceso === 'batch' ? 'Por lotes (batch)' : 'Continuo en columna');
+  const breadEl = document.getElementById('res-breadcrumb');
+  breadEl.innerHTML = crumbs.map((c,i) =>
+    `<span class="crumb">${c}</span>` + (i < crumbs.length-1 ? '<span class="crumb-sep">›</span>' : '')
+  ).join('');
+
+  // Productos
+  const prodEl = document.getElementById('res-productos');
+  prodEl.innerHTML = d.productos.map(p => `
+    <div class="product-chip ${p.tag === 'primera' ? 'primary' : ''}">
+      <div class="chip-star">${p.tag === 'primera' ? '⭐' : '○'}</div>
+      <div style="flex:1">
+        <div class="chip-name">${p.nombre}</div>
+        <div class="chip-desc">${p.desc}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;">
+          <span class="chip-tag ${p.tag}">${p.tag === 'primera' ? 'Primera opción' : 'Alternativa'}</span>
+          ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener" class="chip-link">Ver producto →</a>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Alerta
+  const alertEl = document.getElementById('res-alerta');
+  const alertTxtEl = document.getElementById('res-alerta-texto');
+  if (d.alerta) {
+    alertEl.style.display = 'block';
+    alertTxtEl.textContent = d.alerta;
+  } else {
+    alertEl.style.display = 'none';
+  }
+
+  // Mostrar pantalla de resultado
+  const resultScreen = document.getElementById('result-screen');
+  resultScreen.classList.add('visible');
+  document.querySelector('.shell').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function getApplicLabel(aplic) {
+  const labels = {
+    co2: 'Purificación de CO₂', solventes: 'Recuperación de solventes',
+    cov: 'Vapores orgánicos', gases_acidos: 'Gases ácidos/básicos',
+    mercurio: 'Vapores de mercurio', aire_comprimido: 'Aire comprimido',
+    agua_purificada: 'Agua purificada / embotellada',
+    quimicos_solventes: 'Químicos y solventes líquidos',
+    contaminantes_especificos: 'Contaminantes específicos', potabilizacion: 'Potabilización superficial/pozo', aguas_residuales: 'Aguas residuales',
+    oro: 'Recuperación de oro', aminas: 'Purificación de aminas',
+    bebidas: 'Bebidas y destilados', alimentos_ind: 'Alimentos e industria'
+  };
+  return labels[aplic] || aplic;
+}
+
+/* =================================================================
+   REINICIO
+   ================================================================= */
+function restart() {
+  state = {};
+  history = [];
+  document.getElementById('result-screen').classList.remove('visible');
+  document.getElementById('wizard-section').style.display = '';
+  showStep('1');
+  document.querySelector('.shell').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* =================================================================
+   COPIAR RESULTADO AL PORTAPAPELES
+   ================================================================= */
+function copyResult() {
+  // Leer los valores ya renderizados en el DOM
+  const titulo       = document.getElementById('res-titulo').textContent;
+  const breadcrumb   = document.getElementById('res-breadcrumb').textContent.trim();
+  const tipo         = document.getElementById('res-tipo').textContent;
+  const materia      = document.getElementById('res-materia').textContent;
+  const granulo      = document.getElementById('res-granulo').textContent;
+  const forma        = document.getElementById('res-forma').textContent;
+  const justif       = document.getElementById('res-justificacion').textContent;
+  const alertaTxt    = document.getElementById('res-alerta-texto').textContent.trim();
+
+  // Extraer productos del DOM
+  const chips = document.querySelectorAll('#res-productos .product-chip');
+  const productosLineas = [];
+  chips.forEach(chip => {
+    const nombre = chip.querySelector('.chip-name')?.textContent || '';
+    const desc   = chip.querySelector('.chip-desc')?.textContent || '';
+    const tag    = chip.querySelector('.chip-tag:first-of-type')?.textContent || '';
+    productosLineas.push(`  ${tag.includes('rimera') ? '★' : '○'} ${nombre}: ${desc}`);
+  });
+
+  const lines = [];
+  lines.push('═══════════════════════════════════════════════════');
+  lines.push('  RECOMENDACIÓN DE CARBÓN ACTIVADO');
+  lines.push('  Carbotecnia · Asistente de selección');
+  lines.push('═══════════════════════════════════════════════════');
+  lines.push('');
+  lines.push('APLICACIÓN');
+  lines.push(`  ${titulo}`);
+  if (breadcrumb) lines.push(`  Ruta: ${breadcrumb}`);
+  lines.push('');
+  lines.push('TIPO DE CARBÓN');
+  lines.push(`  ${tipo}`);
+  lines.push(`  ${materia}`);
+  lines.push('');
+  lines.push('PRESENTACIÓN Y GRANULOMETRÍA');
+  lines.push(`  ${granulo}`);
+  if (forma) lines.push(`  ${forma}`);
+  lines.push('');
+  lines.push('PRODUCTOS RECOMENDADOS');
+  productosLineas.forEach(l => lines.push(l));
+  lines.push('');
+  lines.push('JUSTIFICACIÓN TÉCNICA');
+  // Partir el texto en líneas de ~80 caracteres para legibilidad
+  const words = justif.split(' ');
+  let line = '  ';
+  words.forEach(word => {
+    if ((line + word).length > 80) { lines.push(line.trimEnd()); line = '  ' + word + ' '; }
+    else line += word + ' ';
+  });
+  if (line.trim()) lines.push(line.trimEnd());
+  if (alertaTxt) {
+    lines.push('');
+    lines.push('⚠ CONSIDERACIÓN TÉCNICA');
+    const wA = alertaTxt.split(' ');
+    let lA = '  ';
+    wA.forEach(w => {
+      if ((lA + w).length > 80) { lines.push(lA.trimEnd()); lA = '  ' + w + ' '; }
+      else lA += w + ' ';
+    });
+    if (lA.trim()) lines.push(lA.trimEnd());
+  }
+  lines.push('');
+  lines.push('───────────────────────────────────────────────────');
+  lines.push('Carbotecnia · carbotecnia.info');
+  lines.push('Recomendación preliminar · Validar con ingeniero de procesos');
+  lines.push('───────────────────────────────────────────────────');
+
+  const text = lines.join('\n');
+  const btn = document.getElementById('btn-copy-result');
+
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.classList.add('copied');
+    btn.innerHTML = '✓ Copiado';
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2200);
+  }).catch(() => alert('No se pudo copiar. Su navegador puede no soportar esta función.'));
+}
+
+/* =================================================================
+   CORREO — COTIZAR
+   ================================================================= */
+function showMailPicker(subject, body, anchor) {
+  var existing = document.getElementById('mail-picker-popup');
+  if (existing) { existing.remove(); return; }
+  var enc = encodeURIComponent;
+  var gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=ventas@carbotecnia.com.mx&su=' + enc(subject) + '&body=' + enc(body);
+  var mailtoUrl = 'mailto:ventas@carbotecnia.com.mx?subject=' + enc(subject) + '&body=' + enc(body);
+  var p = document.createElement('div');
+  p.id = 'mail-picker-popup'; p.className = 'mail-picker';
+  p.innerHTML = '<a href="' + gmailUrl + '" target="_blank">📧 Gmail (navegador)</a><a href="' + mailtoUrl + '">📬 Outlook / cliente de correo</a>';
+  document.body.appendChild(p);
+  var rect = anchor.getBoundingClientRect();
+  p.style.top = (rect.bottom + 6) + 'px'; p.style.left = rect.left + 'px';
+  setTimeout(function () {
+    document.addEventListener('click', function close(e) {
+      if (!p.contains(e.target)) { p.remove(); document.removeEventListener('click', close); }
+    });
+    window.addEventListener('scroll', function () { p.remove(); }, { once: true });
+  }, 0);
+  p.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { p.remove(); }); });
+}
+
+document.getElementById('btn-email-result').addEventListener('click', function () {
+  var titulo    = document.getElementById('res-titulo').textContent;
+  var tipo      = document.getElementById('res-tipo').textContent;
+  var granulo   = document.getElementById('res-granulo').textContent;
+  var justif    = document.getElementById('res-justificacion').textContent;
+
+  var chips = document.querySelectorAll('#res-productos .product-chip');
+  var prodLines = [];
+  chips.forEach(function (chip) {
+    var nombre = (chip.querySelector('.chip-name') || {}).textContent || '';
+    var tag    = (chip.querySelector('.chip-tag') || {}).textContent || '';
+    prodLines.push((tag.includes('rimera') ? '★ ' : '○ ') + nombre);
+  });
+
+  var subject = 'Solicitud de cotización — ' + titulo;
+  var body = 'Estimado equipo de Carbotecnia,\n\n' +
+    'Les comparto la recomendación obtenida en el asistente de selección de carbón activado:\n\n' +
+    'Aplicación: ' + titulo + '\n' +
+    'Tipo de carbón: ' + tipo + '\n' +
+    'Granulometría: ' + granulo + '\n' +
+    'Productos recomendados:\n' + prodLines.join('\n') + '\n\n' +
+    'Justificación técnica:\n' + justif + '\n\n' +
+    'Quedo en espera de su propuesta y disponibilidad.\nSaludos,';
+
+  showMailPicker(subject, body, document.getElementById('btn-email-result'));
+});
+
+// Inicializar
+showStep('1');
+</script>
+</body>
+</html>
