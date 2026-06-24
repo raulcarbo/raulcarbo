@@ -321,6 +321,12 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 @media(max-width:540px){
   .bw-grid,.ll-grid{grid-template-columns:1fr}
 }
+.mail-picker{position:fixed;background:#fff;border:1px solid #d1d5db;border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,.15);padding:6px;z-index:9999;min-width:230px}
+.mail-picker a{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-radius:7px;text-decoration:none;color:#111827;font-size:13px;font-weight:500}
+.mail-picker a:hover{background:#f3f4f6}
+
 @media print{
   body{background:#fff}.shell{padding:16px}
   .input-panel,.formula-strip,.btn-row,.copy-bar{display:none !important}
@@ -653,7 +659,8 @@ h1,h2,h3,h4{font-family:var(--font-title)}
           <span><b>Resumen listo</b> · Cópielo para cotización o bitácora de proyecto.</span>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn sec sm" id="sav-btn-print" type="button">🖨 Imprimir / PDF</button>
-            <button class="btn sm" id="sav-btn-copy" type="button">📋 Copiar resumen</button>
+            <button class="btn sec sm" id="sav-btn-copy" type="button">📋 Copiar resultados</button>
+            <button class="btn sm" id="sav-btn-email" type="button">✉ Pedir cotización por correo</button>
           </div>
         </div>
 
@@ -1281,10 +1288,41 @@ savEl('sav-btn-copy').addEventListener('click', function(){
   var btn = savEl('sav-btn-copy');
   navigator.clipboard.writeText(lines.join('\n')).then(function(){
     btn.textContent = '✓ Copiado';
-    setTimeout(function(){
-      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar resumen';
-    }, 2000);
+    setTimeout(function(){ btn.textContent = '📋 Copiar resultados'; }, 2000);
   });
+});
+
+function showMailPicker(subject, body, anchor){
+  var existing = document.getElementById('mail-picker-popup');
+  if(existing){ existing.remove(); return; }
+  var enc = encodeURIComponent;
+  var gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=ventas@carbotecnia.com.mx&su='+enc(subject)+'&body='+enc(body);
+  var mailtoUrl = 'mailto:ventas@carbotecnia.com.mx?subject='+enc(subject)+'&body='+enc(body);
+  var p = document.createElement('div');
+  p.id = 'mail-picker-popup'; p.className = 'mail-picker';
+  p.innerHTML = '<a href="'+gmailUrl+'" target="_blank">📧 Gmail (navegador)</a><a href="'+mailtoUrl+'">📬 Outlook / cliente de correo</a>';
+  document.body.appendChild(p);
+  var rect = anchor.getBoundingClientRect();
+  p.style.top = (rect.bottom + 6)+'px'; p.style.left = rect.left+'px';
+  setTimeout(function(){
+    document.addEventListener('click', function close(e){
+      if(!p.contains(e.target)){ p.remove(); document.removeEventListener('click', close); }
+    });
+    window.addEventListener('scroll', function(){ p.remove(); }, {once:true});
+  }, 0);
+  p.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ p.remove(); }); });
+}
+
+savEl('sav-btn-email').addEventListener('click', function(){
+  var rows = document.querySelectorAll('#sav-results .az-table tbody tr');
+  var lines = [];
+  rows.forEach(function(tr){
+    var tds = tr.querySelectorAll('td');
+    if(tds.length===2) lines.push(tds[0].textContent+': '+tds[1].textContent);
+  });
+  var subject = 'Solicitud de cotización — Suavizador de agua';
+  var body = 'Estimado equipo de Carbotecnia,\n\nLes comparto los resultados obtenidos en la calculadora de suavizadores para su revisión y cotización:\n\n' + lines.join('\n') + '\n\nQuedo en espera de su propuesta.\nSaludos,';
+  showMailPicker(subject, body, savEl('sav-btn-email'));
 });
 
 // Inicialización
