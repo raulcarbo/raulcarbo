@@ -382,7 +382,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             <label>Línea Megapol <span class="req">*</span></label>
             <div class="product-grid">
 
-              <button type="button" class="product-btn" data-prod="284" onclick="selectProduct('284', this)">
+              <button type="button" class="product-btn" data-prod="284">
                 <span class="pb-rank">1</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol 28-4</span>
@@ -391,7 +391,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
                 <span class="pb-yodo">Yodo 1,180</span>
               </button>
 
-              <button type="button" class="product-btn" data-prod="M" onclick="selectProduct('M', this)">
+              <button type="button" class="product-btn" data-prod="M">
                 <span class="pb-rank">2</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol M</span>
@@ -400,7 +400,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
                 <span class="pb-yodo">Yodo 950</span>
               </button>
 
-              <button type="button" class="product-btn" data-prod="C" onclick="selectProduct('C', this)">
+              <button type="button" class="product-btn" data-prod="C">
                 <span class="pb-rank">3</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol C</span>
@@ -414,8 +414,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           </div>
 
           <div class="actions">
-            <button type="button" class="btn btn-primary" id="btn-calc" onclick="calculate()">Calcular receta</button>
-            <button type="button" class="btn btn-ghost" id="btn-reset" onclick="resetForm()">Limpiar</button>
+            <button type="button" class="btn btn-primary" id="btn-calc">Calcular receta</button>
+            <button type="button" class="btn btn-ghost" id="btn-reset">Limpiar</button>
           </div>
 
         </div>
@@ -857,8 +857,11 @@ function showMailPicker(subject, body, anchor) {
   }, 10);
 }
 
-/* ── Wire up all events via JS (avoids WordPress stripping onclick / type issues) ── */
-document.addEventListener('DOMContentLoaded', function() {
+/* ── Wire up all events via JS — se ejecuta inline (igual que retrolavado).
+   No usa DOMContentLoaded porque en WordPress el evento puede haberse
+   disparado YA cuando el bloque HTML se inyecta, dejando los botones muertos.
+   El <script> está al final del <body>, así que los elementos ya existen. ── */
+(function() {
   /* índice como respaldo si WordPress elimina data-prod */
   var PROD_CODES = ['284', 'M', 'C'];
   document.querySelectorAll('.product-btn').forEach(function(btn, i) {
@@ -931,7 +934,7 @@ steps +
     ].join('\n');
     showMailPicker(subject, body, this);
   });
-});
+})();
 </script>
 </body>
 </html>
