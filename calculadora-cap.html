@@ -867,13 +867,15 @@ function showMailPicker(subject, body, anchor) {
   document.querySelectorAll('.product-btn').forEach(function(btn, i) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       selectProduct(btn.getAttribute('data-prod') || PROD_CODES[i], btn);
-    });
+    }, true); /* capture:true — se dispara antes que cualquier listener del artículo o el tema */
   });
   var bc = document.getElementById('btn-calc');
   var br = document.getElementById('btn-reset');
-  if (bc) bc.addEventListener('click', function(e){ e.preventDefault(); calculate(); });
-  if (br) br.addEventListener('click', function(e){ e.preventDefault(); resetForm(); });
+  if (bc) bc.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); calculate(); }, true);
+  if (br) br.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); resetForm(); }, true);
 
   document.getElementById('cap-btn-print').addEventListener('click', function(){ window.print(); });
 
