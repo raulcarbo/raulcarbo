@@ -314,6 +314,12 @@ h1,h2,h3,h4{font-family:var(--font-title)}
   font-family:var(--font-num);font-size:10px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--muted)}
 
+.mail-picker{position:fixed;background:#fff;border:1px solid #d1d5db;border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,.15);padding:6px;z-index:9999;min-width:230px}
+.mail-picker a{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-radius:7px;text-decoration:none;color:#111827;font-size:13px;font-weight:500}
+.mail-picker a:hover{background:#f3f4f6}
+
 @media(max-width:900px){
   .layout{grid-template-columns:1fr}
   .input-panel{position:static}
@@ -593,7 +599,8 @@ h1,h2,h3,h4{font-family:var(--font-title)}
         <span><b>Resumen listo</b> · Cópielo para cotización o bitácora de proyecto.</span>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn sec sm" id="par-btn-print" type="button">🖨 Imprimir / PDF</button>
-          <button class="btn sm" id="par-btn-copy" type="button">📋 Copiar resumen</button>
+          <button class="btn sec sm" id="par-btn-copy" type="button">📋 Copiar resultados</button>
+          <button class="btn sm" id="par-btn-email" type="button">✉ Cotizar por correo</button>
         </div>
       </div>
 
@@ -961,7 +968,7 @@ function parCopySummary(){
     btn.style.background = 'var(--ok-soft)';
     btn.style.color = 'var(--ok)';
     setTimeout(function(){
-      btn.textContent = orig;
+      btn.textContent = '📋 Copiar resultados';
       btn.style.background = '';
       btn.style.color = '';
     }, 2200);
@@ -992,6 +999,45 @@ parEl('par-btn-print').addEventListener('click', function(){ window.print(); });
 parEl('par-btn-copy').addEventListener('click', parCopySummary);
 ['par-flow','par-pres'].forEach(function(id){
   parEl(id).addEventListener('keydown', function(e){ if(e.key==='Enter') parCalculate(); });
+});
+
+function showMailPicker(subject, body, anchor){
+  var existing = document.getElementById('mail-picker-popup');
+  if(existing){ existing.remove(); return; }
+  var enc = encodeURIComponent;
+  var gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=ventas@carbotecnia.com.mx&su='+enc(subject)+'&body='+enc(body);
+  var mailtoUrl = 'mailto:ventas@carbotecnia.com.mx?subject='+enc(subject)+'&body='+enc(body);
+  var p = document.createElement('div');
+  p.id = 'mail-picker-popup'; p.className = 'mail-picker';
+  p.innerHTML = '<a href="'+gmailUrl+'" target="_blank">📧 Gmail (navegador)</a><a href="'+mailtoUrl+'">📬 Outlook / cliente de correo</a>';
+  document.body.appendChild(p);
+  var rect = anchor.getBoundingClientRect();
+  p.style.top = (rect.bottom + 6)+'px'; p.style.left = rect.left+'px';
+  setTimeout(function(){
+    document.addEventListener('click', function close(e){
+      if(!p.contains(e.target)){ p.remove(); document.removeEventListener('click', close); }
+    });
+    window.addEventListener('scroll', function(){ p.remove(); }, {once:true});
+  }, 0);
+  p.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ p.remove(); }); });
+}
+
+parEl('par-btn-email').addEventListener('click', function(){
+  var r = parLastResult;
+  if(!r) return;
+  var I=r.I, s=r.s, c=r.chosen;
+  var subject = 'Solicitud de cotización — Cartuchos Parker '+s.label+' '+I.micron+' µm';
+  var body = 'Estimado equipo de Carbotecnia,\n\n' +
+    'Les comparto los resultados de la calculadora de cartuchos Parker para cotización:\n\n' +
+    'Serie: '+s.label+'\n' +
+    'Micraje: '+I.micron+' µm (absoluto ≥ 99.98%)\n' +
+    'Flujo: '+parFmt(I.flowGpm,1)+' GPM ('+parFmt(I.flowLpm,1)+' L/min)\n' +
+    'Presión disponible: '+parFmt(I.presPsi,1)+' psi\n' +
+    'TIE requeridos: '+r.tie+'\n' +
+    'Configuración: '+c.label+' ('+c.tieUsed+' TIE instalados)\n' +
+    (I.cartCost>0 ? 'Costo total: $'+parFmtInt(r.totalCost)+' MXN\n' : '') +
+    '\nQuedo en espera de su propuesta.\nSaludos,';
+  showMailPicker(subject, body, parEl('par-btn-email'));
 });
 
 parUpdateSerieUI();
