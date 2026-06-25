@@ -382,7 +382,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             <label>Línea Megapol <span class="req">*</span></label>
             <div class="product-grid">
 
-              <button type="button" class="product-btn" data-prod="284" onclick="selectProduct('284')">
+              <button type="button" class="product-btn" data-prod="284" onclick="selectProduct('284', this)">
                 <span class="pb-rank">1</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol 28-4</span>
@@ -391,7 +391,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
                 <span class="pb-yodo">Yodo 1,180</span>
               </button>
 
-              <button type="button" class="product-btn" data-prod="M" onclick="selectProduct('M')">
+              <button type="button" class="product-btn" data-prod="M" onclick="selectProduct('M', this)">
                 <span class="pb-rank">2</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol M</span>
@@ -400,7 +400,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
                 <span class="pb-yodo">Yodo 950</span>
               </button>
 
-              <button type="button" class="product-btn" data-prod="C" onclick="selectProduct('C')">
+              <button type="button" class="product-btn" data-prod="C" onclick="selectProduct('C', this)">
                 <span class="pb-rank">3</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol C</span>
@@ -619,12 +619,32 @@ var PRODUCTS = {
 
 var selectedProduct = '';
 
-function selectProduct(code) {
+function selectProduct(code, clickedBtn) {
   selectedProduct = code;
   document.getElementById('inp-prod').value = code;
+  /* quitar estado activo de todos los botones */
   document.querySelectorAll('.product-btn').forEach(function(b){
-    b.classList.toggle('active', b.dataset.prod === code);
+    b.classList.remove('active');
+    b.style.borderColor = '';
+    b.style.background  = '';
+    b.style.boxShadow   = '';
+    var rank = b.querySelector('.pb-rank');
+    var name = b.querySelector('.pb-name');
+    if (rank) { rank.style.background = ''; rank.style.color = ''; }
+    if (name) { name.style.color = ''; }
   });
+  /* activar el botón clickeado — por referencia directa, sin depender de data-prod */
+  var target = clickedBtn || document.querySelector('[data-prod="'+code+'"]');
+  if (target) {
+    target.classList.add('active');
+    target.style.borderColor = 'var(--brand)';
+    target.style.background  = 'var(--brand-light)';
+    target.style.boxShadow   = '0 0 0 3px rgba(145,0,128,.12)';
+    var rank = target.querySelector('.pb-rank');
+    var name = target.querySelector('.pb-name');
+    if (rank) { rank.style.background = 'var(--brand)'; rank.style.color = '#fff'; }
+    if (name) { name.style.color = 'var(--brand-mid)'; }
+  }
 }
 
 function toLitros(val, unit) {
@@ -839,10 +859,12 @@ function showMailPicker(subject, body, anchor) {
 
 /* ── Wire up all events via JS (avoids WordPress stripping onclick / type issues) ── */
 document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.product-btn').forEach(function(btn) {
+  /* índice como respaldo si WordPress elimina data-prod */
+  var PROD_CODES = ['284', 'M', 'C'];
+  document.querySelectorAll('.product-btn').forEach(function(btn, i) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
-      selectProduct(btn.getAttribute('data-prod'));
+      selectProduct(btn.getAttribute('data-prod') || PROD_CODES[i], btn);
     });
   });
   var bc = document.getElementById('btn-calc');
