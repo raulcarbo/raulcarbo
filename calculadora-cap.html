@@ -226,6 +226,24 @@ select.full-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(145,0,
 .section-title{font-family:var(--font-title);font-weight:600;font-size:14.5px;color:var(--ink);margin:4px 0 10px;display:flex;align-items:center;gap:8px}
 .section-title::before{content:'';width:6px;height:6px;background:var(--brand);border-radius:50%;flex-shrink:0}
 
+/* ── Copy bar ── */
+.copy-bar{display:none;gap:10px;flex-wrap:wrap;margin-top:14px}
+.copy-bar.visible{display:flex}
+.copy-bar .btn{flex:none;border-radius:999px;padding:10px 18px;font-weight:700;cursor:pointer;font-family:var(--font-title);font-size:13px;border:0;transition:transform .12s,box-shadow .12s}
+.copy-bar .btn-sec{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.copy-bar .btn-sec:hover{background:var(--paper-soft)}
+.copy-bar .btn-pri{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 6px 16px rgba(145,0,128,.22)}
+.copy-bar .btn-pri:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(145,0,128,.30)}
+
+/* ── Mail picker ── */
+.mail-picker{position:absolute;z-index:999;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(11,20,36,.13);padding:6px;min-width:200px;display:none}
+.mail-picker.open{display:block}
+.mail-picker a{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:13px;font-weight:600}
+.mail-picker a:hover{background:var(--paper-soft)}
+.mail-picker-wrap{position:relative;display:inline-block}
+
+@media print{.input-panel,.copy-bar,#copy-toast{display:none!important}}
+
 /* ── Copy toast ── */
 #copy-toast{
   position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -364,7 +382,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
             <label>Línea Megapol <span class="req">*</span></label>
             <div class="product-grid">
 
-              <button type="button" class="product-btn" data-prod="284">
+              <button type="button" class="product-btn" data-prod="284" onclick="selectProduct('284')">
                 <span class="pb-rank">1</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol 28-4</span>
@@ -373,7 +391,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
                 <span class="pb-yodo">Yodo 1,180</span>
               </button>
 
-              <button type="button" class="product-btn" data-prod="M">
+              <button type="button" class="product-btn" data-prod="M" onclick="selectProduct('M')">
                 <span class="pb-rank">2</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol M</span>
@@ -382,7 +400,7 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
                 <span class="pb-yodo">Yodo 950</span>
               </button>
 
-              <button type="button" class="product-btn" data-prod="C">
+              <button type="button" class="product-btn" data-prod="C" onclick="selectProduct('C')">
                 <span class="pb-rank">3</span>
                 <span class="pb-texts">
                   <span class="pb-name">Megapol C</span>
@@ -396,8 +414,8 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           </div>
 
           <div class="actions">
-            <button type="button" class="btn btn-primary" id="btn-calc">Calcular receta</button>
-            <button type="button" class="btn btn-ghost" id="btn-reset">Limpiar</button>
+            <button type="button" class="btn btn-primary" id="btn-calc" onclick="calculate()">Calcular receta</button>
+            <button type="button" class="btn btn-ghost" id="btn-reset" onclick="resetForm()">Limpiar</button>
           </div>
 
         </div>
@@ -514,9 +532,6 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
           </div>
           <div class="panel-body">
             <ul class="checklist" id="checklist-body"></ul>
-            <div class="actions" style="margin-top:20px">
-              <button type="button" class="btn btn-copy" id="btn-copy">Copiar receta de lote</button>
-            </div>
           </div>
         </div>
 
@@ -527,6 +542,20 @@ footer{margin-top:20px;color:var(--muted);font-size:11px;display:flex;justify-co
         </div>
 
       </div><!-- /results-wrap -->
+
+      <!-- Copy bar -->
+      <div class="copy-bar" id="cap-copy-bar">
+        <button type="button" class="btn btn-sec" id="cap-btn-print">🖨 Imprimir / PDF</button>
+        <button type="button" class="btn btn-sec" id="cap-btn-copy">📋 Copiar resultados</button>
+        <div class="mail-picker-wrap">
+          <button type="button" class="btn btn-pri" id="cap-btn-email">✉ Cotizar por correo</button>
+          <div class="mail-picker" id="cap-mail-picker">
+            <a id="cap-mail-gmail" href="#" target="_blank">📧 Gmail (web)</a>
+            <a id="cap-mail-mailto" href="#">📨 Outlook / cliente de correo</a>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /results-col -->
   </div><!-- /layout -->
 
@@ -683,6 +712,7 @@ function calculate() {
 
   document.getElementById('empty-state').style.display  = 'none';
   document.getElementById('results-wrap').style.display = 'grid';
+  document.getElementById('cap-copy-bar').classList.add('visible');
 }
 
 function buildChecklist(capKg, faKg, prodName, tiempo, visc, calentamiento) {
@@ -781,8 +811,30 @@ function resetForm() {
   document.getElementById('chip-time').textContent = '—';
   document.getElementById('empty-state').style.display   = 'block';
   document.getElementById('results-wrap').style.display  = 'none';
+  document.getElementById('cap-copy-bar').classList.remove('visible');
   document.getElementById('wrap-vol').style.borderColor  = '';
   document.getElementById('wrap-dosis').style.borderColor = '';
+}
+
+/* ── Mail picker ── */
+function showMailPicker(subject, body, anchor) {
+  var picker = document.getElementById('cap-mail-picker');
+  if (picker.classList.contains('open')) { picker.classList.remove('open'); return; }
+  var g = 'https://mail.google.com/mail/?view=cm&fs=1&to=ventas@carbotecnia.com.mx&su=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  document.getElementById('cap-mail-gmail').href = g;
+  document.getElementById('cap-mail-mailto').href = 'mailto:ventas@carbotecnia.com.mx?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  picker.classList.add('open');
+  function close(e) {
+    if (!picker.contains(e.target) && e.target !== anchor) {
+      picker.classList.remove('open');
+      document.removeEventListener('click', close);
+      document.removeEventListener('scroll', close, true);
+    }
+  }
+  setTimeout(function() {
+    document.addEventListener('click', close);
+    document.addEventListener('scroll', close, true);
+  }, 10);
 }
 
 /* ── Wire up all events via JS (avoids WordPress stripping onclick / type issues) ── */
@@ -797,12 +849,65 @@ document.addEventListener('DOMContentLoaded', function() {
   var br = document.getElementById('btn-reset');
   if (bc) bc.addEventListener('click', function(e){ e.preventDefault(); calculate(); });
   if (br) br.addEventListener('click', function(e){ e.preventDefault(); resetForm(); });
-  /* btn-copy is rendered dynamically; delegate from results column */
-  document.addEventListener('click', function(e) {
-    if (e.target && e.target.id === 'btn-copy') {
-      e.preventDefault();
-      copyRecipe();
-    }
+
+  document.getElementById('cap-btn-print').addEventListener('click', function(){ window.print(); });
+
+  document.getElementById('cap-btn-copy').addEventListener('click', function() {
+    var btn = this;
+    var cap  = document.getElementById('res-cap-kg').textContent;
+    var fa   = document.getElementById('res-fa-kg').textContent;
+    var prod = document.getElementById('res-cap-prod').textContent;
+    var volL = document.getElementById('chip-vol').textContent;
+    var tiem = document.getElementById('chip-time').textContent;
+    var steps = '';
+    document.querySelectorAll('#checklist-body li').forEach(function(li, i) {
+      steps += (i+1) + '. ' + li.querySelector('b').textContent + '\n   ' + li.querySelector('span').textContent + '\n\n';
+    });
+    var text =
+'RECETA DE LOTE — PROCESO BATCH CAP (Carbotecnia)\n' +
+'================================================\n' +
+'Volumen del lote : ' + volL + '\n' +
+'Producto CAP     : ' + prod + '\n' +
+'Masa de CAP      : ' + cap + ' kg\n' +
+'Masa filtroayuda : ' + fa + ' kg  (ratio 1:1 g/g)\n' +
+'Tiempo agitación : ' + tiem + '\n\n' +
+'CHECKLIST DEL OPERADOR\n' +
+'----------------------\n' +
+steps +
+'NOTAS IMPORTANTES\n' +
+'- Evitar agitación violenta (oxida impurezas y dificulta filtración)\n' +
+'- Mantener agitación suave durante vaciado al filtro prensa\n' +
+'- El CAP NUNCA se aplica para tratamiento de gases\n' +
+'- Generado por Optimizador Batch CAP · Carbotecnia';
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = '✅ Copiado';
+      setTimeout(function() { btn.textContent = '📋 Copiar resultados'; }, 2000);
+    });
+  });
+
+  document.getElementById('cap-btn-email').addEventListener('click', function() {
+    var cap  = document.getElementById('res-cap-kg').textContent;
+    var fa   = document.getElementById('res-fa-kg').textContent;
+    var prod = document.getElementById('res-cap-prod').textContent;
+    var volL = document.getElementById('chip-vol').textContent;
+    var tiem = document.getElementById('chip-time').textContent;
+    var subject = 'Solicitud de cotización — ' + prod + ' (CAP Megapol) · ' + volL;
+    var body = [
+      'Hola,',
+      '',
+      'Les comparto los resultados del optimizador batch para cotización.',
+      '',
+      'RECETA DEL LOTE',
+      'Volumen del lote : ' + volL,
+      'Producto CAP     : ' + prod,
+      'Masa de CAP      : ' + cap + ' kg',
+      'Masa filtroayuda : ' + fa + ' kg  (ratio 1:1 g/g — MIP Carbotecnia)',
+      'Tiempo agitación : ' + tiem,
+      '',
+      'Quedo en espera de su cotización.',
+      'Gracias.'
+    ].join('\n');
+    showMailPicker(subject, body, this);
   });
 });
 </script>
