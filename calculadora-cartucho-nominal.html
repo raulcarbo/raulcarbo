@@ -156,7 +156,7 @@ select.cn-select-full:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(3
 
 /* ── Results ── */
 .cn-results-inner{padding:24px}
-.cn-kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+.cn-kpi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
   background:var(--border-soft);border:1px solid var(--border);border-radius:18px;
   overflow:hidden;margin-bottom:20px}
 .cn-kpi{background:var(--surface-card);padding:16px 18px}
@@ -232,6 +232,51 @@ select.cn-select-full:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(3
 .cn-action-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
 .cn-action-btn svg{width:13px;height:13px}
 .cn-action-btn.cn-copied{background:var(--ok-soft);border-color:#6EE7B7;color:var(--ok)}
+.cn-action-btn-primary{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 4px 12px rgba(30,58,138,.22);font-weight:600}
+.cn-action-btn-primary:hover{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 6px 18px rgba(30,58,138,.32);transform:translateY(-1px)}
+
+/* ── Mail picker ── */
+.mail-picker-wrap{position:relative;display:inline-block}
+.mail-picker{position:absolute;z-index:999;bottom:calc(100% + 6px);left:0;background:#fff;
+  border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);padding:6px;
+  min-width:230px;display:none}
+.mail-picker.open{display:block}
+.mail-picker a{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;
+  text-decoration:none;color:var(--text);font-size:13px;font-weight:500}
+.mail-picker a:hover{background:var(--blue-light);color:var(--blue-deeper)}
+
+/* ── Size options (sin jerarquía) ── */
+.cn-size-block{background:var(--blue-ice);border:1px solid var(--border);border-radius:16px;
+  padding:16px 18px;margin-bottom:18px}
+.cn-size-head{font-family:var(--font-num);font-size:9px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--blue);margin-bottom:3px}
+.cn-size-sub{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.45}
+.cn-size-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;
+  padding:11px 12px;border:1px solid var(--border-soft);border-radius:12px;
+  background:#fff;margin-bottom:8px}
+.cn-size-row:last-child{margin-bottom:0}
+.cn-size-len{font-family:var(--font-title);font-weight:700;font-size:15px;color:var(--blue-deeper);
+  min-width:42px}
+.cn-size-desc{font-size:13px;color:var(--text-soft);line-height:1.4}
+.cn-size-desc small{display:block;font-family:var(--font-num);font-size:10.5px;color:var(--faint);margin-top:2px}
+.cn-size-opex{text-align:right;font-family:var(--font-num);font-size:13px;font-weight:600;
+  color:var(--text);white-space:nowrap}
+.cn-size-opex small{display:block;font-size:10px;font-weight:400;color:var(--faint);margin-top:2px}
+
+/* ── Vida útil block ── */
+.cn-life-block{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:16px 18px;margin-bottom:18px}
+.cn-life-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.cn-life-label{font-family:var(--font-num);font-size:9px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted)}
+.cn-life-value{font-family:var(--font-num);font-weight:600;font-size:26px;letter-spacing:-.02em;
+  color:var(--text);line-height:1}
+.cn-life-value small{font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--faint);margin-left:6px}
+.cn-life-legend{font-size:12px;color:var(--muted);line-height:1.55;
+  border-top:1px dashed var(--border);padding-top:10px}
+.cn-life-legend b{color:var(--text-soft);font-weight:600}
 
 /* ── Footer ── */
 .page-footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);
@@ -520,7 +565,7 @@ function cnPopulateMicrons(){
 }
 
 function cnPhysical(tie){
-  return [40, 30, 20, 10].map(function(len){
+  return [10, 20, 30, 40].map(function(len){
     var f = len / 10, c = Math.ceil(tie / f);
     return { length:len, count:c, tieUsed:c*f,
              label:c+' cartucho'+(c>1?'s':'')+' de '+len+'"' };
@@ -623,8 +668,18 @@ function cnRenderResults(r){
                 : r.lifeDays < 1 ? cnFmt(r.lifeHours,1)+' h'
                 : cnFmt(r.lifeDays,1)+' días';
 
-  var altChips = r.phys.slice(1).map(function(p){
-    return '<span class="cn-alt-chip">'+p.label+' ('+p.tieUsed+' TIE)</span>';
+  /* Todas las opciones por tamaño de portafiltros, sin jerarquía (10" → 40") */
+  var sizeRows = r.phys.map(function(p){
+    var opexP = r.chgMo * p.count * I.cartCost;
+    var opexCell = I.cartCost>0
+      ? '<div class="cn-size-opex">$'+cnFmtInt(opexP)+'<small>MXN/mes</small></div>'
+      : '<div class="cn-size-opex" style="color:var(--faint)">—<small>ingrese costo</small></div>';
+    return '<div class="cn-size-row">'+
+      '<div class="cn-size-len">'+p.length+'"</div>'+
+      '<div class="cn-size-desc">'+p.count+' cartucho'+(p.count>1?'s':'')+
+        '<small>'+p.tieUsed+' TIE instalados · '+cnMuLabel(I.micron)+'</small></div>'+
+      opexCell+
+    '</div>';
   }).join('');
 
   var notices = '';
@@ -661,31 +716,33 @@ function cnRenderResults(r){
       '<div class="cn-kpi"><div class="cn-kpi-label">TIE requeridos</div>'+
         '<div class="cn-kpi-value">'+r.tie+'<sup>de 10"</sup></div>'+
         '<div class="cn-kpi-sub">'+cnFmt(I.flowGpm,1)+' GPM ÷ '+cnFmt(r.H.maxGpm,2)+' GPM/TIE</div></div>'+
-      '<div class="cn-kpi"><div class="cn-kpi-label">Vida útil estimada</div>'+
-        '<div class="cn-kpi-value">'+lifeLabel+'</div>'+
-        '<div class="cn-kpi-sub">'+(isFinite(r.lifeDays)?cnFmt(r.lifeHours,0)+' h operación':'Carga mínima')+'</div></div>'+
+      '<div class="cn-kpi"><div class="cn-kpi-label">Micraje · familia</div>'+
+        '<div class="cn-kpi-value">'+cnMuLabel(I.micron)+'</div>'+
+        '<div class="cn-kpi-sub">'+I.product.label.split('·')[0].trim()+'</div></div>'+
       '<div class="cn-kpi"><div class="cn-kpi-label">Cambios al mes</div>'+
         '<div class="cn-kpi-value">'+(r.chgMo>0?cnFmt(r.chgMo,1):'&lt;1')+'</div>'+
-        '<div class="cn-kpi-sub">'+r.best.count+' pieza'+(r.best.count>1?'s':'')+' por cambio</div></div>'+
-      '<div class="cn-kpi"><div class="cn-kpi-label">OPEX mensual</div>'+
-        '<div class="cn-kpi-value">'+(I.cartCost>0?'$'+cnFmtInt(r.opex):'—')+'</div>'+
-        '<div class="cn-kpi-sub">'+(I.cartCost>0?'$'+cnFmt(r.opex*12/1000,1)+'k / año':'Ingrese costo')+'</div></div>'+
+        '<div class="cn-kpi-sub">ciclo del sistema completo</div></div>'+
     '</div>'+
 
-    '<div class="cn-config-row cn-animate">'+
-      '<div style="flex:1;min-width:0">'+
-        '<div class="cn-config-rec-label">Configuración recomendada</div>'+
-        '<div class="cn-config-main">'+r.best.label+'</div>'+
-        '<div class="cn-config-sub">'+r.best.tieUsed+' TIE · '+cnMuLabel(I.micron)+productSubLabel+'</div>'+
-        '<div class="cn-config-alts">'+
-          '<span class="cn-config-alts-label">Alternativas</span>'+
-          altChips+
-        '</div>'+
-      '</div>'+
-      '<div>'+lifeBadge(r.lifeDays)+'</div>'+
+    '<div class="cn-size-block cn-animate">'+
+      '<div class="cn-size-head">Opciones de configuración por tamaño</div>'+
+      '<div class="cn-size-sub">Las cuatro equivalen al mismo desempeño ('+r.tie+' TIE · '+cnMuLabel(I.micron)+productSubLabel+'). '+
+        'Elige según el portafiltros que ya tengas o el espacio disponible — un solo 40" rinde igual que cuatro 10", solo cambia el número de piezas y el manejo.</div>'+
+      sizeRows+
     '</div>'+
 
     notices+
+
+    '<div class="cn-life-block cn-animate">'+
+      '<div class="cn-life-top">'+
+        '<div class="cn-life-label">Vida útil estimada</div>'+
+        '<div class="cn-life-value">'+lifeLabel+(isFinite(r.lifeDays)?'<small>'+cnFmt(r.lifeHours,0)+' h de operación</small>':'')+'</div>'+
+        lifeBadge(r.lifeDays)+
+      '</div>'+
+      '<div class="cn-life-legend"><b>Cómo leer este dato:</b> es una estimación con base en la <b>capacidad nominal de retención</b> del cartucho y agua de buena calidad (relativamente limpia). '+
+        'En la práctica la duración real <b>varía según el contaminante</b> que tengas — tipo y concentración de sólidos, coloides, hierro, materia orgánica, aceites o sílice — además de temperatura y régimen de operación. '+
+        'Úsalo como referencia comparativa, no como garantía. El valor confiable se obtiene con una prueba piloto con el líquido real.</div>'+
+    '</div>'+
 
     '<div class="cn-details cn-animate">'+
       '<div class="cn-detail-group-title">Hidráulica</div>'+
@@ -696,7 +753,7 @@ function cnRenderResults(r){
       '<div class="cn-detail-row"><div class="cn-dl">Presión disponible</div>'+
         '<div class="cn-dv">'+cnFmt(I.presPsi,1)+' psi<small>'+cnFmt(I.presPsi/14.5038,2)+' bar</small></div></div>'+
 
-      '<div class="cn-detail-group-title">Sólidos y vida útil</div>'+
+      '<div class="cn-detail-group-title">Sólidos retenidos</div>'+
       '<div class="cn-detail-row"><div class="cn-dl">SST estimados'+(I.sdi!==null&&I.sdi>4?' (+20% SDI)':'')+'</div>'+
         '<div class="cn-dv">'+cnFmt(r.sst,1)+' mg/L<small>'+cnFmt(I.turb,1)+' NTU × 1.5</small></div></div>'+
       '<div class="cn-detail-row"><div class="cn-dl">Carga diaria de sólidos</div>'+
@@ -705,13 +762,6 @@ function cnRenderResults(r){
         '<div class="cn-dv">'+cnFmt(r.totalCapG,0)+' g<small>'+r.tie+' TIE × '+I.product.dirtCap+' g/TIE</small></div></div>'+
       '<div class="cn-detail-row"><div class="cn-dl">Fracción de masa<small>Límite MIP: 0.01%</small></div>'+
         '<div class="cn-dv">'+cnFmt(r.massFrac*100,4)+' %</div></div>'+
-
-      (I.cartCost>0?
-        '<div class="cn-detail-group-title">Costo operativo</div>'+
-        '<div class="cn-detail-row">'+
-          '<div class="cn-dl">'+r.best.count+' cartucho'+(r.best.count>1?'s':'')+' de '+r.best.length+'" a $'+cnFmt(I.cartCost,2)+' c/u</div>'+
-          '<div class="cn-dv">$'+cnFmtInt(r.opex)+' MXN/mes<small>$'+cnFmt(r.opex*12/1000,1)+'k MXN/año</small></div></div>'
-      : '')+
     '</div>'+
 
     '<div class="cn-result-actions">'+
@@ -723,12 +773,74 @@ function cnRenderResults(r){
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+
           '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>'+
         '</svg>Copiar resumen</button>'+
+      '<div class="mail-picker-wrap">'+
+        '<button class="cn-action-btn cn-action-btn-primary" id="cn-btn-email">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+
+            '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>'+
+          '</svg>Cotizar por correo</button>'+
+        '<div class="mail-picker" id="cn-mail-picker">'+
+          '<a id="cn-mail-gmail" href="#" target="_blank">📧 Gmail (web)</a>'+
+          '<a id="cn-mail-mailto" href="#">📨 Outlook / cliente de correo</a>'+
+        '</div>'+
+      '</div>'+
     '</div>'+
     '</div>';
 
   cnEl('cn-results').innerHTML = html;
   cnEl('cn-btn-print').addEventListener('click', function(){ window.print(); });
   cnEl('cn-btn-copy').addEventListener('click', function(){ cnCopySummary(r); });
+  cnEl('cn-btn-email').addEventListener('click', function(){ cnEmailQuote(r, this); });
+}
+
+function cnShowMailPicker(subject, body, anchor){
+  var picker = cnEl('cn-mail-picker');
+  if(picker.classList.contains('open')){ picker.classList.remove('open'); return; }
+  cnEl('cn-mail-gmail').href = 'https://mail.google.com/mail/?view=cm&fs=1&to=ventas@carbotecnia.com.mx&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  cnEl('cn-mail-mailto').href = 'mailto:ventas@carbotecnia.com.mx?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  picker.classList.add('open');
+  function close(e){
+    if(!picker.contains(e.target) && e.target !== anchor){
+      picker.classList.remove('open');
+      document.removeEventListener('click', close);
+      document.removeEventListener('scroll', close, true);
+    }
+  }
+  setTimeout(function(){ document.addEventListener('click', close); document.addEventListener('scroll', close, true); }, 10);
+}
+
+function cnEmailQuote(r, anchor){
+  var I = r.I;
+  var lifeLabel = !isFinite(r.lifeDays) ? 'Muy larga'
+                : r.lifeDays < 1 ? cnFmt(r.lifeHours,1)+' h'
+                : cnFmt(r.lifeDays,1)+' días';
+  var opts = r.phys.map(function(p){
+    return '  • '+p.length+'": '+p.count+' cartucho'+(p.count>1?'s':'')+' ('+p.tieUsed+' TIE)'+
+           (I.cartCost>0?' — $'+cnFmtInt(r.chgMo*p.count*I.cartCost)+' MXN/mes':'');
+  }).join('\n');
+  var subject = 'Solicitud de cotización — Cartuchos filtrantes '+I.product.label.split('·')[0].trim()+' '+cnMuLabel(I.micron);
+  var body = [
+    'Hola,',
+    '',
+    'Les comparto los datos del dimensionamiento para cotización.',
+    '',
+    'PARÁMETROS',
+    'Flujo: '+cnFmt(I.flowGpm,1)+' GPM ('+cnFmt(I.flowLpm,1)+' L/min · '+cnFmt(I.flowM3h,2)+' m³/h)',
+    'Cartucho: '+I.product.label,
+    'Micraje: '+cnMuLabel(I.micron),
+    'Turbidez: '+cnFmt(I.turb,1)+' NTU · Presión: '+cnFmt(I.presPsi,1)+' psi · '+I.opHours+' h/día',
+    '',
+    'RESULTADO',
+    'TIE requeridos: '+r.tie,
+    'Vida útil estimada: '+lifeLabel+' (referencia con capacidad nominal y agua limpia; varía según contaminante)',
+    'Cambios al mes: '+(r.chgMo>0?cnFmt(r.chgMo,1):'< 1'),
+    '',
+    'OPCIONES POR TAMAÑO DE PORTAFILTROS (mismo desempeño):',
+    opts,
+    '',
+    'Quedo en espera de su cotización.',
+    'Gracias.'
+  ].join('\n');
+  cnShowMailPicker(subject, body, anchor);
 }
 
 function cnCopySummary(r){
@@ -746,13 +858,15 @@ function cnCopySummary(r){
     'Turbidez:      '+cnFmt(I.turb,1)+' NTU → SST '+cnFmt(r.sst,1)+' mg/L',
     'Presión:       '+cnFmt(I.presPsi,1)+' psi · '+I.opHours+' h/día', '',
     'TIE requeridos:  '+r.tie,
-    'Configuración:   '+r.best.label,
     'Caudal/TIE:      '+cnFmt(r.H.maxGpm,2)+' GPM/TIE',
-    'Vida útil:       '+lifeLabel,
-    'Cambios/mes:     '+(r.chgMo>0?cnFmt(r.chgMo,1):'< 1')
+    'Vida útil:       '+lifeLabel+' (ref. capacidad nominal y agua limpia · varía según contaminante)',
+    'Cambios/mes:     '+(r.chgMo>0?cnFmt(r.chgMo,1):'< 1'), '',
+    'OPCIONES POR TAMAÑO (mismo desempeño):'
   ];
-  if(I.cartCost>0)
-    lines.push('OPEX mensual:    $'+cnFmtInt(r.opex)+' MXN ('+r.best.count+' cart. de '+r.best.length+'" × $'+cnFmt(I.cartCost,2)+')');
+  r.phys.forEach(function(p){
+    lines.push('  '+p.length+'": '+p.count+' cart. ('+p.tieUsed+' TIE)'+
+      (I.cartCost>0?' · $'+cnFmtInt(r.chgMo*p.count*I.cartCost)+' MXN/mes':''));
+  });
   lines.push('', '─────────────────────────────────────────────────',
     'Carbotecnia · www.carbotecnia.info',
     'Pre-dimensionamiento referencial · Requiere prueba piloto');
