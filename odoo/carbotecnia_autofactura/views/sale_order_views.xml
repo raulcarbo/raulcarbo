@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Botones en el formulario del pedido de venta -->
+    <record id="view_sale_order_autofactura" model="ir.ui.view">
+        <field name="name">sale.order.autofactura</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Botones en la barra de estado -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_send_autofactura_email"
+                        type="object"
+                        string="Enviar link de facturación"
+                        icon="fa-envelope"
+                        attrs="{'invisible': [('state', 'not in', ['sale', 'done'])]}"
+                        class="oe_stat_button"/>
+            </xpath>
+
+            <!-- Campo URL y opciones en la pestaña de información -->
+            <xpath expr="//page[@name='other_info']" position="inside">
+                <group string="Autofacturación" name="autofactura_group"
+                       attrs="{'invisible': [('state', 'not in', ['sale', 'done'])]}">
+                    <field name="autofactura_habilitada"/>
+                    <field name="autofactura_url" widget="url" readonly="1"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

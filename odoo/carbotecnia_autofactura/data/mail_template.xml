@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mail_template_autofactura" model="mail.template">
+        <field name="name">Autofacturación — Link de facturación</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="subject">Genera tu factura — Pedido {{ object.name }}</field>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.partner_invoice_id.email or object.partner_id.email }}</field>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+
+    <div style="background: #1a3a5c; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 22px;">
+            Genera tu factura en línea
+        </h1>
+    </div>
+
+    <div style="padding: 32px; background: #f9f9f9;">
+
+        <p style="font-size: 16px;">Hola <strong>{{ object.partner_id.name }}</strong>,</p>
+
+        <p>Tu pedido <strong>{{ object.name }}</strong> por
+            <strong>${{ "%.2f" % object.amount_total }} {{ object.currency_id.name }}</strong>
+            está listo para facturar.
+        </p>
+
+        <p>Puedes generar tu CFDI 4.0 directamente desde el siguiente enlace — solo necesitas
+           tus datos fiscales actualizados (RFC, razón social, régimen fiscal y código postal
+           de tu constancia de situación fiscal).</p>
+
+        <div style="text-align: center; margin: 32px 0;">
+            <a href="{{ object.autofactura_url }}"
+               style="background: #1a3a5c; color: #ffffff; padding: 14px 28px;
+                      text-decoration: none; border-radius: 6px; font-size: 16px;
+                      font-weight: bold; display: inline-block;">
+                📄 Generar mi factura
+            </a>
+        </div>
+
+        <p style="font-size: 13px; color: #666;">
+            <strong>Importante:</strong> Este enlace es personal e intransferible.
+            Una vez generado el CFDI, los datos fiscales no se pueden modificar.
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;"/>
+
+        <p style="font-size: 13px; color: #666;">
+            ¿Tienes dudas? Responde este correo o escríbenos a
+            <a href="mailto:ventas@carbotecnia.com.mx">ventas@carbotecnia.com.mx</a>
+        </p>
+
+    </div>
+
+    <div style="background: #333; padding: 16px; text-align: center;">
+        <p style="color: #aaa; font-size: 12px; margin: 0;">
+            Carbotecnia — Calle B No. 2105 Int. A, Zapopan, Jalisco, México
+        </p>
+    </div>
+
+</div>
+        ]]></field>
+        <field name="lang">{{ object.partner_id.lang }}</field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</odoo>

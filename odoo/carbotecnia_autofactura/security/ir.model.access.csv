@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_order_autofactura_public,sale.order autofactura public,sale.model_sale_order,,1,0,0,0
+access_account_move_autofactura_public,account.move autofactura public,account.model_account_move,,1,0,0,0

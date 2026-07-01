@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         FORMULARIO PRINCIPAL — Datos fiscales + generar factura
+    ================================================================ -->
+    <template id="autofactura_form" name="Autofacturación — Carbotecnia">
+        <t t-call="web.layout">
+            <t t-set="head_autofactura">
+                <link rel="stylesheet" href="/carbotecnia_autofactura/static/src/css/autofactura.css"/>
+            </t>
+            <t t-set="additional_title">Autofacturación — <t t-esc="order.name"/></t>
+
+            <div class="af-wrapper">
+                <!-- Header -->
+                <div class="af-header">
+                    <img src="/web/image/website/logo" alt="Carbotecnia" class="af-logo"/>
+                    <h1 class="af-title">Genera tu factura</h1>
+                    <p class="af-subtitle">Pedido <strong t-esc="order.name"/></p>
+                </div>
+
+                <!-- Resumen del pedido -->
+                <div class="af-card af-order-summary">
+                    <h2 class="af-section-title">Resumen del pedido</h2>
+                    <div class="af-summary-grid">
+                        <div class="af-summary-item">
+                            <span class="af-label">Fecha</span>
+                            <span class="af-value">
+                                <t t-esc="order.date_order" t-options='{"widget": "date"}'/>
+                            </span>
+                        </div>
+                        <div class="af-summary-item">
+                            <span class="af-label">Cliente</span>
+                            <span class="af-value" t-esc="order.partner_id.name"/>
+                        </div>
+                        <div class="af-summary-item">
+                            <span class="af-label">Vendedor</span>
+                            <span class="af-value" t-esc="order.user_id.name or '—'"/>
+                        </div>
+                        <div class="af-summary-item af-total">
+                            <span class="af-label">Total</span>
+                            <span class="af-value">
+                                $<t t-esc="'%.2f' % order.amount_total"/>
+                                <t t-esc="order.currency_id.name"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Líneas del pedido -->
+                    <table class="af-lines-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th class="text-center">Cant.</th>
+                                <th class="text-right">Precio unit.</th>
+                                <th class="text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="order.order_line" t-as="line">
+                                <tr t-if="not line.display_type">
+                                    <td t-esc="line.product_id.name"/>
+                                    <td class="text-center">
+                                        <t t-esc="'%.2f' % line.product_uom_qty"/>
+                                        <t t-esc="line.product_uom.name"/>
+                                    </td>
+                                    <td class="text-right">
+                                        $<t t-esc="'%.2f' % line.price_unit"/>
+                                    </td>
+                                    <td class="text-right">
+                                        $<t t-esc="'%.2f' % line.price_subtotal"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right af-label">Subtotal</td>
+                                <td class="text-right">$<t t-esc="'%.2f' % order.amount_untaxed"/></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right af-label">IVA</td>
+                                <td class="text-right">$<t t-esc="'%.2f' % order.amount_tax"/></td>
+                            </tr>
+                            <tr class="af-total-row">
+                                <td colspan="3" class="text-right"><strong>Total</strong></td>
+                                <td class="text-right">
+                                    <strong>$<t t-esc="'%.2f' % order.amount_total"/>
+                                    <t t-esc="order.currency_id.name"/></strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Alerta de error -->
+                <t t-if="error">
+                    <div class="af-alert af-alert-error" t-esc="error"/>
+                </t>
+
+                <!-- Formulario de datos fiscales CFDI 4.0 -->
+                <div class="af-card">
+                    <h2 class="af-section-title">Datos fiscales para tu CFDI 4.0</h2>
+                    <p class="af-hint">
+                        Estos datos deben coincidir <strong>exactamente</strong> con tu constancia de
+                        situación fiscal ante el SAT.
+                    </p>
+
+                    <form t-attf-action="/autofactura/#{order.id}/#{access_token}/generar"
+                          method="POST" id="af-form">
+                        <input type="hidden" name="csrf_token"
+                               t-att-value="request.csrf_token()"/>
+
+                        <div class="af-form-grid">
+
+                            <!-- RFC -->
+                            <div class="af-field af-field-full">
+                                <label for="rfc" class="af-field-label">
+                                    RFC <span class="af-required">*</span>
+                                </label>
+                                <input type="text" id="rfc" name="rfc"
+                                       class="af-input"
+                                       placeholder="XAXX010101000"
+                                       maxlength="13"
+                                       t-att-value="form_values.get('rfc') if form_values else cfdi_values.get('rfc', '')"
+                                       required="required"
+                                       style="text-transform:uppercase"/>
+                                <span class="af-field-hint">12 caracteres (persona moral) o 13 (persona física)</span>
+                            </div>
+
+                            <!-- Razón social -->
+                            <div class="af-field af-field-full">
+                                <label for="razon_social" class="af-field-label">
+                                    Razón social <span class="af-required">*</span>
+                                </label>
+                                <input type="text" id="razon_social" name="razon_social"
+                                       class="af-input"
+                                       placeholder="EMPRESA S.A. DE C.V."
+                                       t-att-value="form_values.get('razon_social') if form_values else partner.name"
+                                       required="required"
+                                       style="text-transform:uppercase"/>
+                                <span class="af-field-hint">Tal como aparece en tu constancia fiscal, sin el régimen societario</span>
+                            </div>
+
+                            <!-- Código postal -->
+                            <div class="af-field">
+                                <label for="cp_receptor" class="af-field-label">
+                                    C.P. del receptor <span class="af-required">*</span>
+                                </label>
+                                <input type="text" id="cp_receptor" name="cp_receptor"
+                                       class="af-input"
+                                       placeholder="44100"
+                                       maxlength="5"
+                                       pattern="[0-9]{5}"
+                                       t-att-value="form_values.get('cp_receptor') if form_values else (partner.zip or '')"
+                                       required="required"/>
+                                <span class="af-field-hint">5 dígitos, de tu constancia fiscal</span>
+                            </div>
+
+                            <!-- Régimen fiscal -->
+                            <div class="af-field">
+                                <label for="regimen_fiscal" class="af-field-label">
+                                    Régimen fiscal <span class="af-required">*</span>
+                                </label>
+                                <select id="regimen_fiscal" name="regimen_fiscal"
+                                        class="af-input af-select" required="required">
+                                    <option value="">— Selecciona —</option>
+                                    <t t-foreach="regimenes_fiscales" t-as="rf">
+                                        <option t-att-value="rf[0]"
+                                                t-att-selected="'selected' if (form_values and form_values.get('regimen_fiscal') == rf[0]) or (not form_values and cfdi_values.get('regimen_fiscal') == rf[0]) else None">
+                                            <t t-esc="rf[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <!-- Uso de CFDI -->
+                            <div class="af-field">
+                                <label for="uso_cfdi" class="af-field-label">
+                                    Uso de CFDI <span class="af-required">*</span>
+                                </label>
+                                <select id="uso_cfdi" name="uso_cfdi"
+                                        class="af-input af-select" required="required">
+                                    <option value="">— Selecciona —</option>
+                                    <t t-foreach="usos_cfdi" t-as="uso">
+                                        <option t-att-value="uso[0]"
+                                                t-att-selected="'selected' if (form_values and form_values.get('uso_cfdi') == uso[0]) or (not form_values and cfdi_values.get('uso_cfdi') == uso[0]) else None">
+                                            <t t-esc="uso[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <!-- Forma de pago -->
+                            <div class="af-field">
+                                <label for="forma_pago" class="af-field-label">
+                                    Forma de pago
+                                </label>
+                                <select id="forma_pago" name="forma_pago"
+                                        class="af-input af-select">
+                                    <t t-foreach="formas_pago" t-as="fp">
+                                        <option t-att-value="fp[0]"
+                                                t-att-selected="'selected' if (form_values and form_values.get('forma_pago') == fp[0]) or fp[0] == '99' else None">
+                                            <t t-esc="fp[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                        </div><!-- /af-form-grid -->
+
+                        <!-- Aviso legal -->
+                        <div class="af-legal">
+                            <label class="af-checkbox-label">
+                                <input type="checkbox" name="acepta_datos" required="required"/>
+                                Confirmo que los datos fiscales capturados son correctos y
+                                corresponden a mi constancia de situación fiscal vigente ante el SAT.
+                                Entiendo que <strong>no se pueden modificar una vez timbrado</strong> el CFDI.
+                            </label>
+                        </div>
+
+                        <!-- Botón de generar -->
+                        <div class="af-actions">
+                            <button type="submit" class="af-btn af-btn-primary" id="btn-generar">
+                                <span class="af-btn-icon">📄</span>
+                                Generar mi factura CFDI
+                            </button>
+                        </div>
+
+                    </form>
+                </div><!-- /card datos fiscales -->
+
+                <!-- Footer -->
+                <div class="af-footer">
+                    <p>¿Tienes dudas? Escríbenos a
+                        <a href="mailto:ventas@carbotecnia.com.mx">ventas@carbotecnia.com.mx</a>
+                    </p>
+                    <p class="af-footer-legal">
+                        Carbotecnia — Calle B No. 2105 Int. A, Zapopan, Jalisco, México
+                    </p>
+                </div>
+
+            </div><!-- /af-wrapper -->
+
+            <!-- Script para UX -->
+            <script>
+                document.getElementById('af-form').addEventListener('submit', function() {
+                    var btn = document.getElementById('btn-generar');
+                    btn.disabled = true;
+                    btn.innerHTML = '⏳ Generando tu factura...';
+                });
+                // Forzar mayúsculas en RFC y razón social
+                ['rfc', 'razon_social'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.addEventListener('input', function() {
+                        var pos = el.selectionStart;
+                        el.value = el.value.toUpperCase();
+                        el.setSelectionRange(pos, pos);
+                    });
+                });
+            </script>
+
+        </t>
+    </template>
+
+    <!-- ================================================================
+         YA TIENE FACTURA
+    ================================================================ -->
+    <template id="ya_facturado" name="Pedido ya facturado">
+        <t t-call="web.layout">
+            <div class="af-wrapper">
+                <div class="af-header">
+                    <img src="/web/image/website/logo" alt="Carbotecnia" class="af-logo"/>
+                </div>
+                <div class="af-card af-card-success">
+                    <div class="af-icon-big">✅</div>
+                    <h2>Este pedido ya fue facturado</h2>
+                    <p>El pedido <strong t-esc="order.name"/> ya tiene
+                        <t t-esc="len(facturas)"/> factura(s) generada(s).</p>
+                    <t t-foreach="facturas" t-as="inv">
+                        <div class="af-invoice-link">
+                            <a t-attf-href="/my/invoices/#{inv.id}?access_token=#{inv.access_token}"
+                               class="af-btn af-btn-secondary">
+                                📄 Ver factura <t t-esc="inv.name"/>
+                            </a>
+                        </div>
+                    </t>
+                    <p class="af-hint mt-3">
+                        ¿Necesitas una factura adicional o corrección?
+                        Contáctanos en
+                        <a href="mailto:ventas@carbotecnia.com.mx">ventas@carbotecnia.com.mx</a>
+                    </p>
+                </div>
+                <div class="af-footer">
+                    <p>Carbotecnia — Zapopan, Jalisco, México</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================================================================
+         ERROR — Pedido no confirmado
+    ================================================================ -->
+    <template id="error_estado" name="Error estado pedido">
+        <t t-call="web.layout">
+            <div class="af-wrapper">
+                <div class="af-header">
+                    <img src="/web/image/website/logo" alt="Carbotecnia" class="af-logo"/>
+                </div>
+                <div class="af-card af-card-error">
+                    <div class="af-icon-big">⚠️</div>
+                    <h2>Factura no disponible</h2>
+                    <p>El pedido <strong t-esc="order.name"/> no está listo para facturar.</p>
+                    <p class="af-hint">Solo se pueden facturar pedidos confirmados y entregados.
+                        Si crees que es un error, contáctanos.</p>
+                    <a href="mailto:ventas@carbotecnia.com.mx" class="af-btn af-btn-secondary">
+                        Contactar a Carbotecnia
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================================================================
+         ERROR — Acceso no válido
+    ================================================================ -->
+    <template id="error_acceso" name="Error acceso">
+        <t t-call="web.layout">
+            <div class="af-wrapper">
+                <div class="af-header">
+                    <img src="/web/image/website/logo" alt="Carbotecnia" class="af-logo"/>
+                </div>
+                <div class="af-card af-card-error">
+                    <div class="af-icon-big">🔒</div>
+                    <h2>Enlace no válido</h2>
+                    <p>El enlace de autofacturación no es válido o ya expiró.</p>
+                    <p class="af-hint">Solicita un nuevo enlace a tu ejecutivo de cuenta
+                        en <a href="mailto:ventas@carbotecnia.com.mx">ventas@carbotecnia.com.mx</a>
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
