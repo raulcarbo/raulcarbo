@@ -10,7 +10,6 @@
         'account',
         'portal',
         'l10n_mx_edi',
-        'l10n_mx_edi_40',
     ],
     'data': [
         'security/ir.model.access.csv',

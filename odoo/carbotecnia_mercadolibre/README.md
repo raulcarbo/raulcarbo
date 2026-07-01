@@ -24,7 +24,7 @@ Cliente compra en ML
 1. Sube este módulo y `carbotecnia_autofactura` al repo conectado a Odoo.sh.
 2. En Odoo: Ajustes → Técnico → Actualizar lista de módulos.
 3. Instala **MercadoLibre → Odoo — Carbotecnia** (instala el autofacturador como dependencia).
-4. Requisitos previos instalados: `l10n_mx_edi`, `l10n_mx_edi_40`, PAC configurado con CSD activo.
+4. Requisitos previos instalados: `l10n_mx_edi` (CFDI 4.0 ya incluido en Odoo 18), PAC configurado con CSD activo.
 
 ## Configuración de la App en MercadoLibre
 
