@@ -106,19 +106,38 @@ class MlAccount(models.Model):
             'target': 'self',
         }
 
+    def _token_request(self, data):
+        """POST al endpoint de token de ML. Devuelve el JSON o lanza un
+        UserError con el mensaje exacto de MercadoLibre si falla."""
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        resp = requests.post(ML_TOKEN, data=data, headers=headers, timeout=TIMEOUT)
+        if resp.status_code >= 400:
+            # ML devuelve {"error": "...", "message": "...", "error_description": "..."}
+            try:
+                body = resp.json()
+                detalle = body.get('message') or body.get('error_description') \
+                    or body.get('error') or resp.text
+            except Exception:
+                detalle = resp.text
+            _logger.error('ML token error %s: %s', resp.status_code, resp.text)
+            raise UserError(_(
+                'MercadoLibre rechazó la conexión (HTTP %(code)s):\n%(detalle)s'
+            ) % {'code': resp.status_code, 'detalle': detalle})
+        return resp.json()
+
     def _exchange_code_for_token(self, code):
         """Intercambia el authorization code por tokens (llamado desde el callback)."""
         self.ensure_one()
-        data = {
+        payload = self._token_request({
             'grant_type': 'authorization_code',
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'code': code,
             'redirect_uri': self.redirect_uri,
-        }
-        resp = requests.post(ML_TOKEN, data=data, timeout=TIMEOUT)
-        resp.raise_for_status()
-        payload = resp.json()
+        })
         self.sudo().write({
             'access_token': payload['access_token'],
             'refresh_token': payload['refresh_token'],
@@ -132,15 +151,12 @@ class MlAccount(models.Model):
         self.ensure_one()
         if not self.refresh_token:
             raise UserError(_('La cuenta ML no está conectada.'))
-        data = {
+        payload = self._token_request({
             'grant_type': 'refresh_token',
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'refresh_token': self.refresh_token,
-        }
-        resp = requests.post(ML_TOKEN, data=data, timeout=TIMEOUT)
-        resp.raise_for_status()
-        payload = resp.json()
+        })
         self.sudo().write({
             'access_token': payload['access_token'],
             'refresh_token': payload['refresh_token'],
