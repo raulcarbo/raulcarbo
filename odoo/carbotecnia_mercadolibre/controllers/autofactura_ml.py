@@ -44,7 +44,7 @@ class AutofacturaML(http.Controller):
             })
 
         order = request.env['sale.order'].sudo().search(
-            [('ml_order_number', '=', ml_number)], limit=1)
+            [('x_studio_nmero_de_venta_ml', '=', ml_number)], limit=1)
 
         if not order:
             return request.render('carbotecnia_mercadolibre.autofactura_buscar', {

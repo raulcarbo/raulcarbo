@@ -195,7 +195,8 @@ class MlAccount(models.Model):
         SaleOrder = self.env['sale.order'].sudo()
 
         # ¿Ya existe?
-        existing = SaleOrder.search([('ml_order_number', '=', str(ml_order_id))], limit=1)
+        existing = SaleOrder.search(
+            [('x_studio_nmero_de_venta_ml', '=', str(ml_order_id))], limit=1)
         if existing:
             _logger.info('ML: pedido %s ya existe en Odoo (%s)', ml_order_id, existing.name)
             return existing
@@ -259,7 +260,7 @@ class MlAccount(models.Model):
         vals = {
             'partner_id': partner.id,
             'warehouse_id': self.warehouse_id.id,
-            'ml_order_number': ml_order_id,
+            'x_studio_nmero_de_venta_ml': ml_order_id,
             'ml_account_id': self.id,
             'origin': f'MercadoLibre {ml_order_id}',
             'order_line': order_lines,
@@ -314,10 +315,10 @@ class MlAccount(models.Model):
         user = self.salesperson_id or order.user_id
         if not user:
             return
-        summary = _('Nuevo pedido MercadoLibre %s') % order.ml_order_number
+        summary = _('Nuevo pedido MercadoLibre %s') % order.x_studio_nmero_de_venta_ml
         note = _('Se creó el pedido %s desde MercadoLibre.') % order.name
         if unmatched:
-            summary = _('⚠️ Pedido ML %s requiere revisión') % order.ml_order_number
+            summary = _('⚠️ Pedido ML %s requiere revisión') % order.x_studio_nmero_de_venta_ml
             note += _(' Hay productos sin match por SKU — revisa antes de surtir.')
         order.activity_schedule(
             'mail.mail_activity_data_todo',
@@ -334,13 +335,13 @@ class MlAccount(models.Model):
         self.ensure_one()
         if not self.send_ml_message:
             return
-        if not order.ml_pack_id and not order.ml_order_number:
+        if not order.ml_pack_id and not order.x_studio_nmero_de_venta_ml:
             return
         try:
             text = self.ml_message_template.format(
-                ml_order_number=order.ml_order_number or '',
+                ml_order_number=order.x_studio_nmero_de_venta_ml or '',
             )
-            pack_id = order.ml_pack_id or order.ml_order_number
+            pack_id = order.ml_pack_id or order.x_studio_nmero_de_venta_ml
             body = {
                 'from': {'user_id': self.seller_id},
                 'to': {'user_id': order.ml_buyer_id or ''},
@@ -350,8 +351,8 @@ class MlAccount(models.Model):
                 f'/messages/packs/{pack_id}/sellers/{self.seller_id}', body)
             order.ml_message_sent = True
             order.message_post(body=_('✅ Mensaje de autofacturación enviado al comprador en ML.'))
-            _logger.info('ML: mensaje autofactura enviado para pedido %s', order.ml_order_number)
+            _logger.info('ML: mensaje autofactura enviado para pedido %s', order.x_studio_nmero_de_venta_ml)
         except Exception as e:
             _logger.error('ML: fallo al enviar mensaje pedido %s: %s',
-                          order.ml_order_number, str(e))
+                          order.x_studio_nmero_de_venta_ml, str(e))
             order.message_post(body=_('⚠️ No se pudo enviar el mensaje de ML: %s') % str(e))

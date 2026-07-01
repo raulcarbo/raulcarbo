@@ -54,8 +54,9 @@ Cliente compra en ML
 - **Match de producto:** el SKU de la publicación de ML (`seller_sku`) debe coincidir con la
   Referencia interna del producto en Odoo. Si no hay match, el pedido se crea sin esa línea
   y el vendedor recibe una alerta en la actividad y en el chatter.
-- **Campo de número de pedido:** este módulo agrega `ml_order_number`. Si ya tenías un campo
-  propio para el número de ML, avísame para mapear la sincronización a ese campo en vez de crear uno nuevo.
+- **Campo de número de pedido:** el módulo usa el campo de Studio existente
+  `x_studio_nmero_de_venta_ml` (sale.order). No crea un campo propio. Ese campo es el que el
+  cliente ingresa en /autofactura para identificar su pedido.
 - **Tokens:** ML expira el access token cada 6 horas; un cron lo refresca cada 5 horas.
 - **Mensajería ML:** el endpoint de mensajes post-venta de ML tiene restricciones y plantillas
   según categoría. Si ML rechaza el envío, queda registrado en el chatter del pedido para envío manual.

@@ -15,7 +15,7 @@ class StockPicking(models.Model):
             if picking.picking_type_code != 'outgoing' or picking.state != 'done':
                 continue
             order = picking.sale_id
-            if not order or not order.ml_order_number or not order.ml_account_id:
+            if not order or not order.x_studio_nmero_de_venta_ml or not order.ml_account_id:
                 continue
             if order.ml_message_sent:
                 continue

@@ -65,7 +65,7 @@
                 <div class="af-card af-card-error">
                     <div class="af-icon-big">📦</div>
                     <h2>Tu factura estará disponible pronto</h2>
-                    <p>Encontramos tu pedido <strong t-esc="order.ml_order_number"/>, pero
+                    <p>Encontramos tu pedido <strong t-esc="order.x_studio_nmero_de_venta_ml"/>, pero
                         aún no ha sido enviado desde nuestro almacén.</p>
                     <p class="af-hint">Podrás generar tu factura una vez que tu producto salga
                         a envío. Te avisaremos por MercadoLibre. Gracias por tu paciencia.</p>

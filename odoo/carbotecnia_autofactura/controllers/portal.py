@@ -167,7 +167,7 @@ class AutofacturaPortal(CustomerPortal):
             return request.render('carbotecnia_autofactura.error_estado', {'order': order})
 
         # Guardia: pedidos de MercadoLibre solo se facturan después del surtido
-        if getattr(order, 'ml_order_number', False):
+        if getattr(order, 'x_studio_nmero_de_venta_ml', False):
             salidas = order.picking_ids.filtered(
                 lambda p: p.picking_type_code == 'outgoing')
             entregado = salidas and all(

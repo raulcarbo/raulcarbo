@@ -7,12 +7,10 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='client_order_ref']" position="after">
-                <field name="ml_order_number" readonly="1"
-                       invisible="not ml_order_number"/>
                 <field name="ml_account_id" readonly="1"
-                       invisible="not ml_order_number"/>
+                       invisible="not x_studio_nmero_de_venta_ml"/>
                 <field name="ml_message_sent" readonly="1"
-                       invisible="not ml_order_number"/>
+                       invisible="not x_studio_nmero_de_venta_ml"/>
                 <field name="ml_pack_id" invisible="1"/>
                 <field name="ml_buyer_id" invisible="1"/>
             </xpath>
@@ -28,7 +26,7 @@
             <filter name="my_sale_orders_filter" position="after">
                 <separator/>
                 <filter name="filter_ml" string="MercadoLibre"
-                        domain="[('ml_order_number', '!=', False)]"/>
+                        domain="[('x_studio_nmero_de_venta_ml', '!=', False)]"/>
             </filter>
         </field>
     </record>
