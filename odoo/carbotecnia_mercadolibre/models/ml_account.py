@@ -1,5 +1,8 @@
 import logging
 import requests
+import hashlib
+import base64
+import secrets
 from datetime import datetime, timedelta
 
 from odoo import models, fields, api, _
@@ -35,6 +38,10 @@ class MlAccount(models.Model):
     refresh_token = fields.Char(string='Refresh Token', readonly=True, groups='base.group_system')
     token_expiration = fields.Datetime(string='Expira el', readonly=True)
     connected = fields.Boolean(string='Conectado', compute='_compute_connected')
+    pkce_code_verifier = fields.Char(
+        string='PKCE code_verifier', readonly=True, groups='base.group_system',
+        help='Temporal: se genera al conectar y se usa una sola vez en el callback.',
+    )
 
     # --- Configuración de sincronización ---
     warehouse_id = fields.Many2one(
@@ -91,14 +98,28 @@ class MlAccount(models.Model):
     # ------------------------------------------------------------------
     # OAuth
     # ------------------------------------------------------------------
+    @staticmethod
+    def _generate_pkce_pair():
+        """Genera (code_verifier, code_challenge) para PKCE con método S256."""
+        verifier = secrets.token_urlsafe(64)  # 43-128 chars, URL-safe
+        challenge = base64.urlsafe_b64encode(
+            hashlib.sha256(verifier.encode('ascii')).digest()
+        ).decode('ascii').rstrip('=')  # base64url sin padding
+        return verifier, challenge
+
     def action_connect(self):
-        """Redirige al usuario a la pantalla de autorización de ML."""
+        """Redirige al usuario a la pantalla de autorización de ML (con PKCE)."""
         self.ensure_one()
+        verifier, challenge = self._generate_pkce_pair()
+        # Guardamos el verifier para usarlo en el callback
+        self.sudo().write({'pkce_code_verifier': verifier})
         auth_url = (
             f'{ML_AUTH}?response_type=code'
             f'&client_id={self.client_id}'
             f'&redirect_uri={self.redirect_uri}'
             f'&state={self.id}'
+            f'&code_challenge={challenge}'
+            f'&code_challenge_method=S256'
         )
         return {
             'type': 'ir.actions.act_url',
@@ -131,18 +152,23 @@ class MlAccount(models.Model):
     def _exchange_code_for_token(self, code):
         """Intercambia el authorization code por tokens (llamado desde el callback)."""
         self.ensure_one()
-        payload = self._token_request({
+        data = {
             'grant_type': 'authorization_code',
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'code': code,
             'redirect_uri': self.redirect_uri,
-        })
+        }
+        # PKCE: incluir el code_verifier generado al conectar
+        if self.pkce_code_verifier:
+            data['code_verifier'] = self.pkce_code_verifier
+        payload = self._token_request(data)
         self.sudo().write({
             'access_token': payload['access_token'],
             'refresh_token': payload['refresh_token'],
             'seller_id': str(payload['user_id']),
             'token_expiration': datetime.now() + timedelta(seconds=payload['expires_in'] - 120),
+            'pkce_code_verifier': False,  # usado una sola vez
         })
         _logger.info('ML: tokens obtenidos para seller %s', payload['user_id'])
 
