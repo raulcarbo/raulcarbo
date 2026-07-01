@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ml_account_form" model="ir.ui.view">
+        <field name="name">ml.account.form</field>
+        <field name="model">ml.account</field>
+        <field name="arch" type="xml">
+            <form string="Cuenta MercadoLibre">
+                <header>
+                    <button name="action_connect" type="object" string="Conectar con MercadoLibre"
+                            class="btn-primary"
+                            invisible="connected"/>
+                    <button name="action_connect" type="object" string="Reconectar"
+                            invisible="not connected"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Conectado" bg_color="text-bg-success"
+                            invisible="not connected"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Cuenta ML"/></h1>
+                    </div>
+                    <group>
+                        <group string="Credenciales de la App (ML Developers)">
+                            <field name="client_id"/>
+                            <field name="client_secret" password="True"/>
+                            <field name="redirect_uri" readonly="1"/>
+                        </group>
+                        <group string="Estado de conexión">
+                            <field name="connected" readonly="1"/>
+                            <field name="seller_id" readonly="1"/>
+                            <field name="token_expiration" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Configuración de sincronización">
+                        <group>
+                            <field name="warehouse_id"/>
+                            <field name="default_partner_id"/>
+                            <field name="team_id"/>
+                            <field name="salesperson_id"/>
+                        </group>
+                        <group>
+                            <field name="pricelist_id"/>
+                            <field name="fiscal_position_id"/>
+                            <field name="auto_confirm"/>
+                            <field name="send_ml_message"/>
+                        </group>
+                    </group>
+                    <group string="Mensaje de autofacturación en ML"
+                           invisible="not send_ml_message">
+                        <field name="ml_message_template" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ml_account_tree" model="ir.ui.view">
+        <field name="name">ml.account.list</field>
+        <field name="model">ml.account</field>
+        <field name="arch" type="xml">
+            <list string="Cuentas MercadoLibre">
+                <field name="name"/>
+                <field name="seller_id"/>
+                <field name="connected"/>
+                <field name="warehouse_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ml_account" model="ir.actions.act_window">
+        <field name="name">Cuentas MercadoLibre</field>
+        <field name="res_model">ml.account</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

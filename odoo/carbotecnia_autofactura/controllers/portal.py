@@ -166,6 +166,16 @@ class AutofacturaPortal(CustomerPortal):
         if order.state not in ('sale', 'done'):
             return request.render('carbotecnia_autofactura.error_estado', {'order': order})
 
+        # Guardia: pedidos de MercadoLibre solo se facturan después del surtido
+        if getattr(order, 'ml_order_number', False):
+            salidas = order.picking_ids.filtered(
+                lambda p: p.picking_type_code == 'outgoing')
+            entregado = salidas and all(
+                p.state in ('done', 'cancel') for p in salidas) and any(
+                p.state == 'done' for p in salidas)
+            if not entregado:
+                return request.render('carbotecnia_autofactura.error_estado', {'order': order})
+
         # Validar datos fiscales del formulario
         rfc = (kwargs.get('rfc') or '').strip().upper()
         razon_social = (kwargs.get('razon_social') or '').strip().upper()

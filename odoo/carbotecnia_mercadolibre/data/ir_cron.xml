@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cron_ml_refresh_tokens" model="ir.cron">
+        <field name="name">ML: Refrescar tokens OAuth</field>
+        <field name="model_id" ref="model_ml_account"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_refresh_tokens()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

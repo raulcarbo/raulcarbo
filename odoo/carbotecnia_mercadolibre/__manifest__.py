@@ -1,0 +1,26 @@
+{
+    'name': 'MercadoLibre → Odoo — Carbotecnia',
+    'version': '18.0.1.0.0',
+    'category': 'Sales/Sales',
+    'summary': 'Sincroniza pedidos de MercadoLibre a Odoo y dispara autofacturación CFDI',
+    'author': 'Carbotecnia',
+    'website': 'https://www.carbotecnia.info',
+    'depends': [
+        'sale_management',
+        'stock',
+        'account',
+        'carbotecnia_autofactura',
+    ],
+    'data': [
+        'security/ir.model.access.csv',
+        'data/ml_data.xml',
+        'data/ir_cron.xml',
+        'views/ml_account_views.xml',
+        'views/sale_order_views.xml',
+        'views/portal_templates.xml',
+        'views/menu.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}

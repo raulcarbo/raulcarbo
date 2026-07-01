@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Placeholder para datos iniciales.
+         El almacén "MercadoLibre" se configura manualmente en la cuenta ML
+         para no interferir con la configuración de almacenes existente. -->
+</odoo>

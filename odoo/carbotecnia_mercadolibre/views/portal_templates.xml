@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Página: ingresar número de pedido ML -->
+    <template id="autofactura_buscar" name="Autofacturación — Buscar pedido ML">
+        <t t-call="web.layout">
+            <t t-set="head">
+                <link rel="stylesheet" href="/carbotecnia_autofactura/static/src/css/autofactura.css"/>
+            </t>
+            <div class="af-wrapper">
+                <div class="af-header">
+                    <img src="/web/image/website/logo" alt="Carbotecnia" class="af-logo"/>
+                    <h1 class="af-title">Genera tu factura</h1>
+                    <p class="af-subtitle">Compras en MercadoLibre</p>
+                </div>
+
+                <div class="af-card">
+                    <h2 class="af-section-title">Ingresa tu número de pedido</h2>
+                    <p class="af-hint">
+                        Escribe el <strong>número de pedido de MercadoLibre</strong> que aparece
+                        en tu compra (en "Detalle de compra" dentro de tu cuenta de ML).
+                    </p>
+
+                    <t t-if="error">
+                        <div class="af-alert af-alert-error" t-esc="error"/>
+                    </t>
+
+                    <form action="/autofactura/buscar" method="POST">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="af-field af-field-full">
+                            <label for="ml_number" class="af-field-label">
+                                N° de pedido MercadoLibre <span class="af-required">*</span>
+                            </label>
+                            <input type="text" id="ml_number" name="ml_number"
+                                   class="af-input" placeholder="2000012345678901"
+                                   t-att-value="ml_number" required="required"/>
+                            <span class="af-field-hint">Solo números, sin espacios</span>
+                        </div>
+                        <div class="af-actions" style="margin-top:20px;">
+                            <button type="submit" class="af-btn af-btn-primary">
+                                Buscar mi pedido
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="af-footer">
+                    <p>¿Dudas? <a href="mailto:ventas@carbotecnia.com.mx">ventas@carbotecnia.com.mx</a></p>
+                    <p class="af-footer-legal">Carbotecnia — Zapopan, Jalisco, México</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Página: pedido aún no surtido -->
+    <template id="autofactura_no_surtido" name="Pedido no surtido">
+        <t t-call="web.layout">
+            <t t-set="head">
+                <link rel="stylesheet" href="/carbotecnia_autofactura/static/src/css/autofactura.css"/>
+            </t>
+            <div class="af-wrapper">
+                <div class="af-header">
+                    <img src="/web/image/website/logo" alt="Carbotecnia" class="af-logo"/>
+                </div>
+                <div class="af-card af-card-error">
+                    <div class="af-icon-big">📦</div>
+                    <h2>Tu factura estará disponible pronto</h2>
+                    <p>Encontramos tu pedido <strong t-esc="order.ml_order_number"/>, pero
+                        aún no ha sido enviado desde nuestro almacén.</p>
+                    <p class="af-hint">Podrás generar tu factura una vez que tu producto salga
+                        a envío. Te avisaremos por MercadoLibre. Gracias por tu paciencia.</p>
+                    <a href="/autofactura" class="af-btn af-btn-secondary">Volver</a>
+                </div>
+                <div class="af-footer">
+                    <p>Carbotecnia — Zapopan, Jalisco, México</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

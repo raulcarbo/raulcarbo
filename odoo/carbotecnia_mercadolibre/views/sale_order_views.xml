@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sale_order_ml" model="ir.ui.view">
+        <field name="name">sale.order.mercadolibre</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='client_order_ref']" position="after">
+                <field name="ml_order_number" readonly="1"
+                       invisible="not ml_order_number"/>
+                <field name="ml_account_id" readonly="1"
+                       invisible="not ml_order_number"/>
+                <field name="ml_message_sent" readonly="1"
+                       invisible="not ml_order_number"/>
+                <field name="ml_pack_id" invisible="1"/>
+                <field name="ml_buyer_id" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Filtro para ver solo pedidos de ML -->
+    <record id="view_sale_order_filter_ml" model="ir.ui.view">
+        <field name="name">sale.order.filter.ml</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <filter name="my_sale_orders_filter" position="after">
+                <separator/>
+                <filter name="filter_ml" string="MercadoLibre"
+                        domain="[('ml_order_number', '!=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
+</odoo>
