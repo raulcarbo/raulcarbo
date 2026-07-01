@@ -15,7 +15,7 @@ class SaleOrder(models.Model):
         store=False,
     )
 
-    @api.depends('access_token', 'id')
+    @api.depends('access_token')
     def _compute_autofactura_url(self):
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         for order in self:
