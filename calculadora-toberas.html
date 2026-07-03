@@ -478,7 +478,17 @@ window.tbCalculate = function(){
    aro superior, tambor de alambre ranurado, brida inferior tipo plato,
    cuello cilíndrico liso y rosca NPT cónica. Gris acero + azul cielo. */
 function tbNozzleSvg(){
-  return '<svg width="78" height="118" viewBox="0 0 88 134" fill="none" aria-hidden="true">'+
+  var slots = '';
+  for(var y = 14.5; y <= 55; y += 2.9){
+    slots += '<line x1="30" y1="'+y+'" x2="70" y2="'+y+'"/>';
+  }
+  var threads = '';
+  for(var i = 0; i < 8; i++){
+    var ty = 83.5 + i*2.9;
+    threads += '<path d="M40 '+ty+' Q50 '+(ty+1.3)+' 60 '+ty+'" stroke="#F1F4F8" stroke-width="1.1" fill="none"/>'+
+               '<path d="M40 '+(ty+1.4)+' Q50 '+(ty+2.7)+' 60 '+(ty+1.4)+'" stroke="#6B7280" stroke-width=".8" fill="none" opacity=".7"/>';
+  }
+  return '<svg width="82" height="108" viewBox="0 0 100 132" fill="none" aria-hidden="true">'+
     '<defs>'+
     '<linearGradient id="tbSteel" x1="0" y1="0" x2="1" y2="0">'+
       '<stop offset="0" stop-color="#B8C0CC"/><stop offset=".28" stop-color="#F1F4F8"/>'+
@@ -487,41 +497,22 @@ function tbNozzleSvg(){
       '<stop offset="0" stop-color="#8B96A5"/><stop offset=".3" stop-color="#D5DBE3"/>'+
       '<stop offset=".6" stop-color="#AEB7C3"/><stop offset="1" stop-color="#78828F"/></linearGradient>'+
     '</defs>'+
-    /* aro superior */
-    '<rect x="7" y="3" width="74" height="8" rx="3" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* tapa superior redondeada, más ancha que el tambor */
+    '<rect x="21" y="2" width="58" height="9" rx="3.5" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
     /* tambor de alambre ranurado */
-    '<rect x="11" y="11" width="66" height="64" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
-    /* micro-ranuras horizontales finas (azul cielo) */
-    '<g stroke="#38BDF8" stroke-width="1.1" opacity=".85">'+
-    '<line x1="12.5" y1="15" x2="75.5" y2="15"/><line x1="12.5" y1="18.5" x2="75.5" y2="18.5"/>'+
-    '<line x1="12.5" y1="22" x2="75.5" y2="22"/><line x1="12.5" y1="25.5" x2="75.5" y2="25.5"/>'+
-    '<line x1="12.5" y1="29" x2="75.5" y2="29"/><line x1="12.5" y1="32.5" x2="75.5" y2="32.5"/>'+
-    '<line x1="12.5" y1="36" x2="75.5" y2="36"/><line x1="12.5" y1="39.5" x2="75.5" y2="39.5"/>'+
-    '<line x1="12.5" y1="43" x2="75.5" y2="43"/><line x1="12.5" y1="46.5" x2="75.5" y2="46.5"/>'+
-    '<line x1="12.5" y1="50" x2="75.5" y2="50"/><line x1="12.5" y1="53.5" x2="75.5" y2="53.5"/>'+
-    '<line x1="12.5" y1="57" x2="75.5" y2="57"/><line x1="12.5" y1="60.5" x2="75.5" y2="60.5"/>'+
-    '<line x1="12.5" y1="64" x2="75.5" y2="64"/><line x1="12.5" y1="67.5" x2="75.5" y2="67.5"/>'+
-    '<line x1="12.5" y1="71" x2="75.5" y2="71"/></g>'+
-    /* brida inferior tipo plato */
-    '<path d="M6 75 L82 75 L84 81 Q84 84 80 84 L8 84 Q4 84 4 81 Z" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
-    /* transición cónica al cuello */
-    '<path d="M30 84 L58 84 L55 94 L33 94 Z" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    '<rect x="26" y="11" width="48" height="47" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* micro-ranuras horizontales con puntas redondeadas (azul cielo) */
+    '<g stroke="#38BDF8" stroke-width="1.4" stroke-linecap="round" opacity=".9">'+slots+'</g>'+
+    /* brida inferior tipo plato, la parte más ancha */
+    '<path d="M16 58 L84 58 Q87 58 86.3 60.4 L84.2 66.2 Q83.5 68.5 80.8 68.5 L19.2 68.5 Q16.5 68.5 15.8 66.2 L13.7 60.4 Q13 58 16 58 Z" '+
+      'fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
     /* cuello cilíndrico liso */
-    '<rect x="33" y="94" width="22" height="11" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
-    /* niple roscado NPT, ancho y recto */
-    '<rect x="31" y="105" width="26" height="26" rx="1.5" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
-    /* hilos de rosca con paso ligeramente inclinado */
-    '<g stroke="#F1F4F8" stroke-width="1.1" opacity=".9">'+
-    '<line x1="31.5" y1="109" x2="56.5" y2="108"/><line x1="31.5" y1="112.5" x2="56.5" y2="111.5"/>'+
-    '<line x1="31.5" y1="116" x2="56.5" y2="115"/><line x1="31.5" y1="119.5" x2="56.5" y2="118.5"/>'+
-    '<line x1="31.5" y1="123" x2="56.5" y2="122"/><line x1="31.5" y1="126.5" x2="56.5" y2="125.5"/>'+
-    '<line x1="31.5" y1="130" x2="56.5" y2="129"/>'+
-    '</g>'+
-    '<g stroke="#6B7280" stroke-width=".8" opacity=".7">'+
-    '<line x1="31.5" y1="110.7" x2="56.5" y2="109.7"/><line x1="31.5" y1="114.2" x2="56.5" y2="113.2"/>'+
-    '<line x1="31.5" y1="117.7" x2="56.5" y2="116.7"/><line x1="31.5" y1="121.2" x2="56.5" y2="120.2"/>'+
-    '<line x1="31.5" y1="124.7" x2="56.5" y2="123.7"/><line x1="31.5" y1="128.2" x2="56.5" y2="127.2"/>'+
-    '</g>'+
+    '<rect x="39" y="68.5" width="22" height="13" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* niple roscado NPT recto, apenas más angosto que el cuello */
+    '<path d="M40 81.5 L60 81.5 L60 104 Q60 107.5 56.5 107.5 L43.5 107.5 Q40 107.5 40 104 Z" '+
+      'fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* hilos de rosca envolventes (curvas alternadas claro/oscuro) */
+    threads+
     '</svg>';
 }
 
