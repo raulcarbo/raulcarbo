@@ -474,27 +474,40 @@ window.tbCalculate = function(){
                    areaPerNozzle, spacingCm, spacingIn, ratio});
 };
 
-/* SVG estilizado de una tobera micro-ranurada (cabeza ranurada + niple) */
+/* SVG estilizado de una tobera micro-ranurada:
+   tambor cilíndrico con ranuras horizontales, bridas superior e inferior,
+   cuello cónico y tuerca hexagonal. Gris acero + azul cielo. */
 function tbNozzleSvg(){
-  return '<svg width="64" height="86" viewBox="0 0 64 86" fill="none" aria-hidden="true">'+
-    '<defs><linearGradient id="tbg" x1="0" y1="0" x2="0" y2="1">'+
-    '<stop offset="0" stop-color="#0E7490"/><stop offset="1" stop-color="#164E63"/></linearGradient></defs>'+
-    /* cabeza */
-    '<path d="M8 26 Q8 8 32 8 Q56 8 56 26 L56 34 Q56 38 52 38 L12 38 Q8 38 8 34 Z" fill="url(#tbg)"/>'+
-    /* micro-ranuras */
-    '<g stroke="#A5F3FC" stroke-width="1.6" stroke-linecap="round">'+
-    '<line x1="14" y1="16" x2="14" y2="32"/><line x1="20" y1="12.5" x2="20" y2="33.5"/>'+
-    '<line x1="26" y1="10.5" x2="26" y2="34.5"/><line x1="32" y1="10" x2="32" y2="35"/>'+
-    '<line x1="38" y1="10.5" x2="38" y2="34.5"/><line x1="44" y1="12.5" x2="44" y2="33.5"/>'+
-    '<line x1="50" y1="16" x2="50" y2="32"/></g>'+
-    /* cuello */
-    '<rect x="24" y="38" width="16" height="8" rx="2" fill="#155E75"/>'+
-    /* niple roscado */
-    '<rect x="27" y="46" width="10" height="30" rx="2" fill="url(#tbg)"/>'+
-    '<g stroke="#67E8F9" stroke-width="1.1" opacity=".75">'+
-    '<line x1="27" y1="52" x2="37" y2="50"/><line x1="27" y1="57" x2="37" y2="55"/>'+
-    '<line x1="27" y1="62" x2="37" y2="60"/><line x1="27" y1="67" x2="37" y2="65"/>'+
-    '<line x1="27" y1="72" x2="37" y2="70"/></g>'+
+  return '<svg width="80" height="112" viewBox="0 0 88 124" fill="none" aria-hidden="true">'+
+    '<defs>'+
+    '<linearGradient id="tbSteel" x1="0" y1="0" x2="1" y2="0">'+
+      '<stop offset="0" stop-color="#B8C0CC"/><stop offset=".28" stop-color="#F1F4F8"/>'+
+      '<stop offset=".55" stop-color="#D5DBE3"/><stop offset="1" stop-color="#98A2B0"/></linearGradient>'+
+    '<linearGradient id="tbSteelDark" x1="0" y1="0" x2="1" y2="0">'+
+      '<stop offset="0" stop-color="#8B96A5"/><stop offset=".3" stop-color="#D5DBE3"/>'+
+      '<stop offset=".6" stop-color="#AEB7C3"/><stop offset="1" stop-color="#78828F"/></linearGradient>'+
+    '</defs>'+
+    /* brida superior */
+    '<rect x="4" y="3" width="80" height="11" rx="3.5" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* tambor ranurado */
+    '<rect x="11" y="14" width="66" height="66" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* micro-ranuras horizontales (azul cielo) */
+    '<g stroke="#38BDF8" stroke-width="1.5" opacity=".85">'+
+    '<line x1="13" y1="19"   x2="75" y2="19"/><line x1="13" y1="23.5" x2="75" y2="23.5"/>'+
+    '<line x1="13" y1="28"   x2="75" y2="28"/><line x1="13" y1="32.5" x2="75" y2="32.5"/>'+
+    '<line x1="13" y1="37"   x2="75" y2="37"/><line x1="13" y1="41.5" x2="75" y2="41.5"/>'+
+    '<line x1="13" y1="46"   x2="75" y2="46"/><line x1="13" y1="50.5" x2="75" y2="50.5"/>'+
+    '<line x1="13" y1="55"   x2="75" y2="55"/><line x1="13" y1="59.5" x2="75" y2="59.5"/>'+
+    '<line x1="13" y1="64"   x2="75" y2="64"/><line x1="13" y1="68.5" x2="75" y2="68.5"/>'+
+    '<line x1="13" y1="73"   x2="75" y2="73"/><line x1="13" y1="77"  x2="75" y2="77"/></g>'+
+    /* brida inferior */
+    '<rect x="4" y="80" width="80" height="11" rx="3.5" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* cuello cónico */
+    '<path d="M30 91 L58 91 L54 105 L34 105 Z" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* tuerca hexagonal */
+    '<rect x="31" y="105" width="26" height="16" rx="1.5" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    '<line x1="39.5" y1="105" x2="39.5" y2="121" stroke="#78828F" stroke-width=".9"/>'+
+    '<line x1="48.5" y1="105" x2="48.5" y2="121" stroke="#F1F4F8" stroke-width=".9"/>'+
     '</svg>';
 }
 
