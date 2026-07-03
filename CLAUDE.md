@@ -125,6 +125,11 @@ Actúas como:
 - **Correo de cotizaciones:** `ventas@carbotecnia.com.mx`
 - **Sede:** Calle B No. 2105 Int. A, Zapopan, Jalisco, México
 
+### Agente Meta Ads
+
+- `meta-ads/CLAUDE.md` — agente **Carbo Ads**: administra y optimiza las campañas de Meta (Facebook/Instagram) de Carbotecnia. Al trabajar temas de Meta Ads, lee ese archivo primero.
+- `meta-ads/APRENDIZAJES.md` — registro vivo de qué funciona y qué no en la cuenta publicitaria; se actualiza con cada hallazgo validado.
+
 ### Calculadoras técnicas (archivos HTML en este repo)
 
 | Archivo | Calculadora |
