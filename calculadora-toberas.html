@@ -474,11 +474,11 @@ window.tbCalculate = function(){
                    areaPerNozzle, spacingCm, spacingIn, ratio});
 };
 
-/* SVG estilizado de una tobera micro-ranurada:
-   tambor cilíndrico con ranuras horizontales, bridas superior e inferior,
-   cuello cónico y tuerca hexagonal. Gris acero + azul cielo. */
+/* SVG estilizado de una tobera micro-ranurada, fiel a la foto del producto:
+   aro superior, tambor de alambre ranurado, brida inferior tipo plato,
+   cuello cilíndrico liso y rosca NPT cónica. Gris acero + azul cielo. */
 function tbNozzleSvg(){
-  return '<svg width="80" height="112" viewBox="0 0 88 124" fill="none" aria-hidden="true">'+
+  return '<svg width="78" height="118" viewBox="0 0 88 134" fill="none" aria-hidden="true">'+
     '<defs>'+
     '<linearGradient id="tbSteel" x1="0" y1="0" x2="1" y2="0">'+
       '<stop offset="0" stop-color="#B8C0CC"/><stop offset=".28" stop-color="#F1F4F8"/>'+
@@ -487,27 +487,40 @@ function tbNozzleSvg(){
       '<stop offset="0" stop-color="#8B96A5"/><stop offset=".3" stop-color="#D5DBE3"/>'+
       '<stop offset=".6" stop-color="#AEB7C3"/><stop offset="1" stop-color="#78828F"/></linearGradient>'+
     '</defs>'+
-    /* brida superior */
-    '<rect x="4" y="3" width="80" height="11" rx="3.5" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
-    /* tambor ranurado */
-    '<rect x="11" y="14" width="66" height="66" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
-    /* micro-ranuras horizontales (azul cielo) */
-    '<g stroke="#38BDF8" stroke-width="1.5" opacity=".85">'+
-    '<line x1="13" y1="19"   x2="75" y2="19"/><line x1="13" y1="23.5" x2="75" y2="23.5"/>'+
-    '<line x1="13" y1="28"   x2="75" y2="28"/><line x1="13" y1="32.5" x2="75" y2="32.5"/>'+
-    '<line x1="13" y1="37"   x2="75" y2="37"/><line x1="13" y1="41.5" x2="75" y2="41.5"/>'+
-    '<line x1="13" y1="46"   x2="75" y2="46"/><line x1="13" y1="50.5" x2="75" y2="50.5"/>'+
-    '<line x1="13" y1="55"   x2="75" y2="55"/><line x1="13" y1="59.5" x2="75" y2="59.5"/>'+
-    '<line x1="13" y1="64"   x2="75" y2="64"/><line x1="13" y1="68.5" x2="75" y2="68.5"/>'+
-    '<line x1="13" y1="73"   x2="75" y2="73"/><line x1="13" y1="77"  x2="75" y2="77"/></g>'+
-    /* brida inferior */
-    '<rect x="4" y="80" width="80" height="11" rx="3.5" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
-    /* cuello cónico */
-    '<path d="M30 91 L58 91 L54 105 L34 105 Z" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
-    /* tuerca hexagonal */
-    '<rect x="31" y="105" width="26" height="16" rx="1.5" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
-    '<line x1="39.5" y1="105" x2="39.5" y2="121" stroke="#78828F" stroke-width=".9"/>'+
-    '<line x1="48.5" y1="105" x2="48.5" y2="121" stroke="#F1F4F8" stroke-width=".9"/>'+
+    /* aro superior */
+    '<rect x="7" y="3" width="74" height="8" rx="3" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* tambor de alambre ranurado */
+    '<rect x="11" y="11" width="66" height="64" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* micro-ranuras horizontales finas (azul cielo) */
+    '<g stroke="#38BDF8" stroke-width="1.1" opacity=".85">'+
+    '<line x1="12.5" y1="15" x2="75.5" y2="15"/><line x1="12.5" y1="18.5" x2="75.5" y2="18.5"/>'+
+    '<line x1="12.5" y1="22" x2="75.5" y2="22"/><line x1="12.5" y1="25.5" x2="75.5" y2="25.5"/>'+
+    '<line x1="12.5" y1="29" x2="75.5" y2="29"/><line x1="12.5" y1="32.5" x2="75.5" y2="32.5"/>'+
+    '<line x1="12.5" y1="36" x2="75.5" y2="36"/><line x1="12.5" y1="39.5" x2="75.5" y2="39.5"/>'+
+    '<line x1="12.5" y1="43" x2="75.5" y2="43"/><line x1="12.5" y1="46.5" x2="75.5" y2="46.5"/>'+
+    '<line x1="12.5" y1="50" x2="75.5" y2="50"/><line x1="12.5" y1="53.5" x2="75.5" y2="53.5"/>'+
+    '<line x1="12.5" y1="57" x2="75.5" y2="57"/><line x1="12.5" y1="60.5" x2="75.5" y2="60.5"/>'+
+    '<line x1="12.5" y1="64" x2="75.5" y2="64"/><line x1="12.5" y1="67.5" x2="75.5" y2="67.5"/>'+
+    '<line x1="12.5" y1="71" x2="75.5" y2="71"/></g>'+
+    /* brida inferior tipo plato */
+    '<path d="M6 75 L82 75 L84 81 Q84 84 80 84 L8 84 Q4 84 4 81 Z" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* transición cónica al cuello */
+    '<path d="M32 84 L56 84 L52 94 L36 94 Z" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* cuello cilíndrico liso */
+    '<rect x="35" y="94" width="18" height="12" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* rosca NPT cónica (se estrecha hacia abajo) */
+    '<path d="M34 106 L54 106 L50.5 131 L37.5 131 Z" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* hilos de rosca con paso ligeramente inclinado */
+    '<g stroke="#F1F4F8" stroke-width="1" opacity=".9">'+
+    '<line x1="34.4" y1="109.5" x2="53.6" y2="108.5"/><line x1="34.8" y1="113" x2="53.1" y2="112"/>'+
+    '<line x1="35.3" y1="116.5" x2="52.6" y2="115.5"/><line x1="35.8" y1="120" x2="52.1" y2="119"/>'+
+    '<line x1="36.3" y1="123.5" x2="51.6" y2="122.5"/><line x1="36.8" y1="127" x2="51.1" y2="126"/>'+
+    '</g>'+
+    '<g stroke="#6B7280" stroke-width=".8" opacity=".7">'+
+    '<line x1="34.6" y1="111.2" x2="53.4" y2="110.2"/><line x1="35.1" y1="114.7" x2="52.9" y2="113.7"/>'+
+    '<line x1="35.6" y1="118.2" x2="52.4" y2="117.2"/><line x1="36.1" y1="121.7" x2="51.9" y2="120.7"/>'+
+    '<line x1="36.6" y1="125.2" x2="51.4" y2="124.2"/>'+
+    '</g>'+
     '</svg>';
 }
 
