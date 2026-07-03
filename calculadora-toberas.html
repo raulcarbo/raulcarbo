@@ -484,7 +484,7 @@ function tbNozzleSvg(){
   }
   var threads = '';
   for(var i = 0; i < 8; i++){
-    var ty = 107.5 + i*3;
+    var ty = 106.5 + i*3;
     threads += '<path d="M34 '+ty+' Q44 '+(ty+1.4)+' 54 '+ty+'" stroke="#F1F4F8" stroke-width="1.1" fill="none"/>'+
                '<path d="M34 '+(ty+1.5)+' Q44 '+(ty+2.9)+' 54 '+(ty+1.5)+'" stroke="#6B7280" stroke-width=".8" fill="none" opacity=".7"/>';
   }
@@ -503,14 +503,14 @@ function tbNozzleSvg(){
     '<rect x="11" y="11" width="66" height="64" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
     /* micro-ranuras horizontales finas (azul cielo) */
     '<g stroke="#38BDF8" stroke-width="1.1" opacity=".85">'+slots+'</g>'+
-    /* brida inferior tipo plato */
-    '<path d="M6 75 L82 75 L84 81 Q84 84 80 84 L8 84 Q4 84 4 81 Z" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
+    /* brida inferior, mismas dimensiones que el aro superior */
+    '<rect x="7" y="75" width="74" height="8" rx="3" fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
     /* transición cónica al cuello */
-    '<path d="M30 84 L58 84 L55 94 L33 94 Z" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    '<path d="M30 83 L58 83 L55 93 L33 93 Z" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
     /* cuello cilíndrico liso */
-    '<rect x="33" y="94" width="22" height="12" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
+    '<rect x="33" y="93" width="22" height="12" fill="url(#tbSteel)" stroke="#6B7280" stroke-width=".8"/>'+
     /* niple roscado NPT recto, apenas más angosto que el cuello, base redondeada */
-    '<path d="M34 106 L54 106 L54 129 Q54 132.5 50.5 132.5 L37.5 132.5 Q34 132.5 34 129 Z" '+
+    '<path d="M34 105 L54 105 L54 128 Q54 131.5 50.5 131.5 L37.5 131.5 Q34 131.5 34 128 Z" '+
       'fill="url(#tbSteelDark)" stroke="#6B7280" stroke-width=".8"/>'+
     /* hilos de rosca envolventes (curvas alternadas claro/oscuro) */
     threads+
