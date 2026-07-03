@@ -9,17 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --blue:#0E7490; --blue-dark:#155E75; --blue-deeper:#164E63;
-  --blue-soft:#CFFAFE; --blue-light:#ECFEFF; --blue-ice:#F7FDFF;
+  --blue:#0284C7; --blue-dark:#0369A1; --blue-deeper:#075985;
+  --blue-soft:#BAE6FD; --blue-light:#E0F2FE; --blue-ice:#F5FAFF;
   --ok:#065F46; --ok-soft:#D1FAE5;
   --warn:#92400E; --warn-soft:#FEF3C7;
   --err:#991B1B; --err-soft:#FEE2E2;
-  --surface:#F5F7FA; --surface-card:#fff;
-  --border:#D8E2EA; --border-soft:#E8F0F5;
+  --surface:#F3F5F8; --surface-card:#fff;
+  --border:#D3DAE3; --border-soft:#E5EAF0;
   --text:#121722; --text-soft:#2D3442; --muted:#5D6675; --faint:#8B96A5;
-  --shadow:0 4px 20px rgba(22,78,99,.10),0 2px 6px rgba(22,78,99,.05);
-  --shadow-sm:0 1px 3px rgba(22,78,99,.06),0 1px 2px rgba(22,78,99,.04);
-  --shadow-lg:0 8px 40px rgba(22,78,99,.14),0 4px 12px rgba(22,78,99,.07);
+  --shadow:0 4px 20px rgba(7,89,133,.10),0 2px 6px rgba(7,89,133,.05);
+  --shadow-sm:0 1px 3px rgba(7,89,133,.06),0 1px 2px rgba(7,89,133,.04);
+  --shadow-lg:0 8px 40px rgba(7,89,133,.14),0 4px 12px rgba(7,89,133,.07);
   --radius:12px; --radius-lg:18px;
   --font-title:'Poppins',sans-serif;
   --font-body:'DM Sans',sans-serif;
@@ -27,7 +27,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{
-  background:linear-gradient(180deg,#EBF7FA,#DDF0F5);
+  background:linear-gradient(180deg,#EEF1F5,#E1E6EC);
   color:var(--text);font-family:var(--font-body);font-size:15px;
   line-height:1.55;-webkit-font-smoothing:antialiased
 }
@@ -43,36 +43,36 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .brand{display:flex;align-items:center;gap:12px}
 .logo{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#fff;
   background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
-  box-shadow:0 6px 16px rgba(22,78,99,.32);font-weight:900;
+  box-shadow:0 6px 16px rgba(7,89,133,.32);font-weight:900;
   font-family:var(--font-title);font-size:9.5px;letter-spacing:-.01em;text-align:center;line-height:1.2}
 .brand-text h1{font-size:15px;font-weight:800;color:var(--blue-deeper);line-height:1.2}
 .brand-text span{display:block;font-size:11px;font-weight:600;color:var(--muted);
   text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
 .pill{border-radius:999px;padding:6px 13px;font-size:11.5px;font-weight:800;
-  white-space:nowrap;background:var(--blue-light);border:1px solid rgba(14,116,144,.25);
+  white-space:nowrap;background:var(--blue-light);border:1px solid rgba(2,132,199,.25);
   color:var(--blue-deeper);font-family:var(--font-title)}
 
 /* ── Hero banner ── */
-.hero-banner{background:linear-gradient(135deg,#04222E 0%,var(--blue-deeper) 50%,var(--blue) 100%);
+.hero-banner{background:linear-gradient(135deg,#1E2732 0%,#3E4B5E 50%,var(--blue) 100%);
   border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:18px;
   box-shadow:var(--shadow);position:relative;overflow:hidden}
 .hero-banner::before{content:"";position:absolute;top:-50px;right:-50px;
   width:280px;height:280px;border-radius:50%;
-  background:radial-gradient(circle,rgba(103,232,249,.22) 0%,transparent 70%);pointer-events:none}
+  background:radial-gradient(circle,rgba(125,211,252,.22) 0%,transparent 70%);pointer-events:none}
 .hero-inner{position:relative;z-index:1;
   display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
 .hero-inner h2{font-size:clamp(16px,2.2vw,22px);font-weight:800;color:#fff;
   letter-spacing:-.03em;line-height:1.15;margin-bottom:6px}
-.hero-inner h2 em{font-style:normal;color:#67E8F9}
+.hero-inner h2 em{font-style:normal;color:#7DD3FC}
 .hero-inner p{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.55;max-width:540px}
 .formula-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
   border-radius:12px;padding:14px 18px;backdrop-filter:blur(10px);white-space:nowrap}
 .formula-box .f-label{font-size:10px;font-weight:700;letter-spacing:.08em;
-  text-transform:uppercase;color:#67E8F9;margin-bottom:4px;display:block;
+  text-transform:uppercase;color:#7DD3FC;margin-bottom:4px;display:block;
   font-family:var(--font-title)}
 .formula-box .f-eq{font-family:var(--font-num);font-size:12.5px;font-weight:600;
   color:#fff;line-height:1.75}
-.formula-box .f-eq span{color:#67E8F9}
+.formula-box .f-eq span{color:#7DD3FC}
 
 /* ── Layout grid ── */
 .tb-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);
@@ -106,7 +106,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
   border-radius:14px;overflow:hidden;transition:border-color .15s,box-shadow .15s;
   background:var(--surface-card)}
 .tb-input-row.tb-single{grid-template-columns:1fr 96px}
-.tb-input-row:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(14,116,144,.14)}
+.tb-input-row:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(2,132,199,.14)}
 .tb-input-row.tb-err-ring{border-color:var(--err);box-shadow:0 0 0 4px rgba(185,28,28,.12)}
 .tb-input-row input{border:none;padding:11px 13px;font-family:var(--font-num);font-size:15px;
   background:var(--surface-card);color:var(--text);outline:none;width:100%;min-width:0}
@@ -125,8 +125,8 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .tb-btn{flex:1;padding:13px 18px;font-family:var(--font-body);font-weight:600;font-size:13.5px;
   letter-spacing:.02em;cursor:pointer;border-radius:999px;transition:all .15s;border:1.5px solid transparent}
 .tb-btn-primary{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
-  color:#fff;border-color:var(--blue-deeper);box-shadow:0 4px 12px rgba(22,78,99,.25)}
-.tb-btn-primary:hover{box-shadow:0 6px 18px rgba(22,78,99,.34);transform:translateY(-1px)}
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 4px 12px rgba(7,89,133,.25)}
+.tb-btn-primary:hover{box-shadow:0 6px 18px rgba(7,89,133,.34);transform:translateY(-1px)}
 .tb-btn-ghost{background:#fff;color:var(--text);border-color:var(--border)}
 .tb-btn-ghost:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
 
@@ -155,7 +155,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .tb-hero-sub b{color:var(--blue-dark)}
 .tb-crit-badge{display:inline-block;font-family:var(--font-num);font-size:9px;font-weight:600;
   letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px;
-  background:var(--blue-soft);color:var(--blue-deeper);border:1px solid #A5F3FC;margin-top:8px}
+  background:var(--blue-soft);color:var(--blue-deeper);border:1px solid #7DD3FC;margin-top:8px}
 
 /* Cards secundarias */
 .tb-card-duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
@@ -200,7 +200,7 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .tb-notice-red b{color:var(--err)}
 .tb-notice-amber{background:var(--warn-soft);border:1px solid #FCD34D;color:var(--warn)}
 .tb-notice-amber b{color:var(--warn)}
-.tb-notice-blue{background:var(--blue-light);border:1px solid #A5F3FC;color:var(--blue-deeper)}
+.tb-notice-blue{background:var(--blue-light);border:1px solid #7DD3FC;color:var(--blue-deeper)}
 .tb-notice-blue b{color:var(--blue)}
 
 /* ── Result actions ── */
@@ -213,9 +213,9 @@ h1,h2,h3,h4{font-family:var(--font-title)}
 .tb-action-btn svg{width:13px;height:13px}
 .tb-action-btn.tb-copied{background:var(--ok-soft);border-color:#6EE7B7;color:var(--ok)}
 .tb-action-btn-primary{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
-  color:#fff;border-color:var(--blue-deeper);box-shadow:0 4px 12px rgba(22,78,99,.22);font-weight:600}
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 4px 12px rgba(7,89,133,.22);font-weight:600}
 .tb-action-btn-primary:hover{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
-  color:#fff;border-color:var(--blue-deeper);box-shadow:0 6px 18px rgba(22,78,99,.32);transform:translateY(-1px)}
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 6px 18px rgba(7,89,133,.32);transform:translateY(-1px)}
 
 /* ── Mail picker ── */
 .mail-picker-wrap{position:relative;display:inline-block}
@@ -371,10 +371,10 @@ h1,h2,h3,h4{font-family:var(--font-title)}
       <div id="tb-results">
         <div class="tb-empty">
           <div class="tb-empty-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E7490" stroke-width="1.5">
-              <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.5" fill="#0E7490"/>
-              <circle cx="7.5" cy="9" r="1" fill="#0E7490"/><circle cx="16.5" cy="9" r="1" fill="#0E7490"/>
-              <circle cx="7.5" cy="15" r="1" fill="#0E7490"/><circle cx="16.5" cy="15" r="1" fill="#0E7490"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="1.5">
+              <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.5" fill="#0284C7"/>
+              <circle cx="7.5" cy="9" r="1" fill="#0284C7"/><circle cx="16.5" cy="9" r="1" fill="#0284C7"/>
+              <circle cx="7.5" cy="15" r="1" fill="#0284C7"/><circle cx="16.5" cy="15" r="1" fill="#0284C7"/>
             </svg>
           </div>
           <p>Complete los parámetros<br>y presione <strong>Calcular</strong>.</p>
@@ -706,10 +706,10 @@ window.tbReset = function(){
   ['tbr-size','tbr-vserv','tbr-vretro','tbr-qserv','tbr-qretro'].forEach(function(id){ if(tbEl(id)) tbEl(id).classList.remove('tb-err-ring'); });
   tbEl('tb-results').innerHTML =
     '<div class="tb-empty">'+
-      '<div class="tb-empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E7490" stroke-width="1.5">'+
-      '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.5" fill="#0E7490"/>'+
-      '<circle cx="7.5" cy="9" r="1" fill="#0E7490"/><circle cx="16.5" cy="9" r="1" fill="#0E7490"/>'+
-      '<circle cx="7.5" cy="15" r="1" fill="#0E7490"/><circle cx="16.5" cy="15" r="1" fill="#0E7490"/>'+
+      '<div class="tb-empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="1.5">'+
+      '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.5" fill="#0284C7"/>'+
+      '<circle cx="7.5" cy="9" r="1" fill="#0284C7"/><circle cx="16.5" cy="9" r="1" fill="#0284C7"/>'+
+      '<circle cx="7.5" cy="15" r="1" fill="#0284C7"/><circle cx="16.5" cy="15" r="1" fill="#0284C7"/>'+
       '</svg></div>'+
       '<p>Complete los parámetros<br>y presione <strong>Calcular</strong>.</p>'+
     '</div>';
