@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dimensionamiento de toberas micro-ranuradas · Carbotecnia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0E7490; --blue-dark:#155E75; --blue-deeper:#164E63;
+  --blue-soft:#CFFAFE; --blue-light:#ECFEFF; --blue-ice:#F7FDFF;
+  --ok:#065F46; --ok-soft:#D1FAE5;
+  --warn:#92400E; --warn-soft:#FEF3C7;
+  --err:#991B1B; --err-soft:#FEE2E2;
+  --surface:#F5F7FA; --surface-card:#fff;
+  --border:#D8E2EA; --border-soft:#E8F0F5;
+  --text:#121722; --text-soft:#2D3442; --muted:#5D6675; --faint:#8B96A5;
+  --shadow:0 4px 20px rgba(22,78,99,.10),0 2px 6px rgba(22,78,99,.05);
+  --shadow-sm:0 1px 3px rgba(22,78,99,.06),0 1px 2px rgba(22,78,99,.04);
+  --shadow-lg:0 8px 40px rgba(22,78,99,.14),0 4px 12px rgba(22,78,99,.07);
+  --radius:12px; --radius-lg:18px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  background:linear-gradient(180deg,#EBF7FA,#DDF0F5);
+  color:var(--text);font-family:var(--font-body);font-size:15px;
+  line-height:1.55;-webkit-font-smoothing:antialiased
+}
+button,input,select{font:inherit}
+h1,h2,h3,h4{font-family:var(--font-title)}
+
+.shell{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* ── Topbar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:var(--surface-card);border:1px solid var(--border);border-radius:16px;
+  padding:13px 20px;margin-bottom:18px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  box-shadow:0 6px 16px rgba(22,78,99,.32);font-weight:900;
+  font-family:var(--font-title);font-size:9.5px;letter-spacing:-.01em;text-align:center;line-height:1.2}
+.brand-text h1{font-size:15px;font-weight:800;color:var(--blue-deeper);line-height:1.2}
+.brand-text span{display:block;font-size:11px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.pill{border-radius:999px;padding:6px 13px;font-size:11.5px;font-weight:800;
+  white-space:nowrap;background:var(--blue-light);border:1px solid rgba(14,116,144,.25);
+  color:var(--blue-deeper);font-family:var(--font-title)}
+
+/* ── Hero banner ── */
+.hero-banner{background:linear-gradient(135deg,#04222E 0%,var(--blue-deeper) 50%,var(--blue) 100%);
+  border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:18px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero-banner::before{content:"";position:absolute;top:-50px;right:-50px;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(103,232,249,.22) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.hero-inner h2{font-size:clamp(16px,2.2vw,22px);font-weight:800;color:#fff;
+  letter-spacing:-.03em;line-height:1.15;margin-bottom:6px}
+.hero-inner h2 em{font-style:normal;color:#67E8F9}
+.hero-inner p{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.55;max-width:540px}
+.formula-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;padding:14px 18px;backdrop-filter:blur(10px);white-space:nowrap}
+.formula-box .f-label{font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:#67E8F9;margin-bottom:4px;display:block;
+  font-family:var(--font-title)}
+.formula-box .f-eq{font-family:var(--font-num);font-size:12.5px;font-weight:600;
+  color:#fff;line-height:1.75}
+.formula-box .f-eq span{color:#67E8F9}
+
+/* ── Layout grid ── */
+.tb-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);
+  gap:28px;align-items:start}
+
+/* ── Card ── */
+.tb-card{background:var(--surface-card);border:1px solid var(--border);
+  border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.tb-card-title{padding:20px 24px 14px;border-bottom:1px solid var(--border-soft);
+  background:linear-gradient(180deg,var(--surface-card),var(--blue-ice));
+  font-family:var(--font-title);font-weight:600;font-size:18px;letter-spacing:-.02em;
+  color:var(--text);margin:0}
+.tb-section{padding:22px 24px;border-bottom:1px solid var(--border-soft)}
+.tb-section:last-child{border-bottom:none}
+.tb-section-label{font-family:var(--font-num);font-size:10px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--blue);
+  margin:0 0 14px;padding-bottom:6px;border-bottom:1px solid var(--border-soft)}
+
+/* ── Fields ── */
+.tb-field{margin-bottom:16px}
+.tb-field:last-child{margin-bottom:0}
+.tb-field > label{display:block;font-weight:500;font-size:13px;color:var(--text);margin-bottom:7px}
+.tb-req{color:var(--blue);margin-left:2px;font-weight:700}
+.tb-hint{font-family:var(--font-num);font-size:9.5px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--faint);margin-top:6px;line-height:1.5}
+.tb-err{display:none;margin-top:6px;font-size:11px;color:var(--err)}
+.tb-field.has-error .tb-err{display:block}
+
+/* ── Input rows ── */
+.tb-input-row{display:grid;grid-template-columns:1fr 128px;border:1.5px solid var(--border);
+  border-radius:14px;overflow:hidden;transition:border-color .15s,box-shadow .15s;
+  background:var(--surface-card)}
+.tb-input-row.tb-single{grid-template-columns:1fr 96px}
+.tb-input-row:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(14,116,144,.14)}
+.tb-input-row.tb-err-ring{border-color:var(--err);box-shadow:0 0 0 4px rgba(185,28,28,.12)}
+.tb-input-row input{border:none;padding:11px 13px;font-family:var(--font-num);font-size:15px;
+  background:var(--surface-card);color:var(--text);outline:none;width:100%;min-width:0}
+.tb-input-row input::placeholder{color:#AAB4C2}
+.tb-input-row select,.tb-unit{border:none;border-left:1px solid var(--border);
+  padding:11px 10px;font-family:var(--font-body);font-size:13px;font-weight:500;
+  background:var(--surface);color:var(--text-soft);outline:none;cursor:pointer;appearance:none}
+.tb-input-row select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='none' stroke='%238B96A5' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 9px center;padding-right:24px}
+.tb-unit{cursor:default;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-num);font-size:11px;color:var(--faint)}
+
+/* ── Buttons ── */
+.tb-btn-row{display:flex;gap:10px;padding:20px 24px 24px}
+.tb-btn{flex:1;padding:13px 18px;font-family:var(--font-body);font-weight:600;font-size:13.5px;
+  letter-spacing:.02em;cursor:pointer;border-radius:999px;transition:all .15s;border:1.5px solid transparent}
+.tb-btn-primary{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 4px 12px rgba(22,78,99,.25)}
+.tb-btn-primary:hover{box-shadow:0 6px 18px rgba(22,78,99,.34);transform:translateY(-1px)}
+.tb-btn-ghost{background:#fff;color:var(--text);border-color:var(--border)}
+.tb-btn-ghost:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+
+/* ── Empty state ── */
+.tb-empty{text-align:center;padding:72px 24px;color:var(--faint);font-size:15px;
+  line-height:1.55;min-height:400px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center}
+.tb-empty-icon{width:52px;height:52px;border-radius:50%;background:var(--blue-light);
+  display:grid;place-items:center;margin-bottom:16px}
+
+/* ── Results ── */
+.tb-results-inner{padding:24px}
+
+/* Card grande: cantidad de toberas */
+.tb-hero-count{background:linear-gradient(135deg,var(--blue-ice),var(--blue-light));
+  border:1px solid var(--blue-soft);border-left:3px solid var(--blue);
+  border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:16px;
+  display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.tb-hero-label{font-family:var(--font-num);font-size:9.5px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.tb-hero-num{font-family:var(--font-num);font-weight:700;font-size:clamp(42px,7vw,64px);
+  letter-spacing:-.04em;color:var(--blue-deeper);line-height:.95}
+.tb-hero-num small{font-family:var(--font-body);font-size:15px;font-weight:600;
+  color:var(--muted);margin-left:8px;letter-spacing:0}
+.tb-hero-sub{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.5}
+.tb-hero-sub b{color:var(--blue-dark)}
+.tb-crit-badge{display:inline-block;font-family:var(--font-num);font-size:9px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px;
+  background:var(--blue-soft);color:var(--blue-deeper);border:1px solid #A5F3FC;margin-top:8px}
+
+/* Cards secundarias */
+.tb-card-duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.tb-mini-card{background:var(--surface-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm)}
+.tb-mini-label{font-family:var(--font-num);font-size:9px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.tb-geo-flex{display:flex;align-items:center;gap:16px}
+.tb-geo-val{font-family:var(--font-num);font-weight:600;font-size:26px;
+  letter-spacing:-.02em;color:var(--text);line-height:1.05}
+.tb-geo-val small{display:block;font-family:var(--font-num);font-size:11.5px;
+  font-weight:400;color:var(--faint);margin-top:5px}
+.tb-geo-note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+.tb-flow-row{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:10px;
+  padding:9px 0;border-bottom:1px dashed var(--border)}
+.tb-flow-row:last-child{border-bottom:none}
+.tb-flow-name{font-size:12.5px;color:var(--muted)}
+.tb-flow-val{font-family:var(--font-num);font-size:15px;font-weight:600;color:var(--text);
+  white-space:nowrap;text-align:right}
+.tb-flow-val small{display:block;font-size:10px;font-weight:400;color:var(--faint);margin-top:2px}
+
+/* Detalles */
+.tb-detail-group-title{font-family:var(--font-title);font-weight:600;font-size:14.5px;
+  letter-spacing:-.01em;color:var(--text);margin:20px 0 3px;
+  display:flex;align-items:center;gap:8px}
+.tb-detail-group-title::before{content:'';width:6px;height:6px;background:var(--blue);
+  border-radius:50%;display:inline-block}
+.tb-detail-row{display:grid;grid-template-columns:1fr auto;align-items:baseline;
+  gap:14px;padding:11px 0;border-bottom:1px dashed var(--border)}
+.tb-detail-row:last-child{border-bottom:none}
+.tb-dl{font-size:13px;color:var(--muted);line-height:1.4}
+.tb-dl small{display:block;font-size:11px;color:var(--faint);margin-top:2px}
+.tb-dv{text-align:right;font-family:var(--font-num);font-size:13.5px;
+  font-weight:500;color:var(--text);white-space:nowrap}
+.tb-dv small{display:block;font-size:10.5px;font-weight:400;color:var(--faint);margin-top:3px}
+
+/* ── Notices ── */
+.tb-notice{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:12.5px;line-height:1.6}
+.tb-notice b{display:block;font-family:var(--font-num);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.tb-notice-red{background:var(--err-soft);border:1px solid #FCA5A5;color:var(--err)}
+.tb-notice-red b{color:var(--err)}
+.tb-notice-amber{background:var(--warn-soft);border:1px solid #FCD34D;color:var(--warn)}
+.tb-notice-amber b{color:var(--warn)}
+.tb-notice-blue{background:var(--blue-light);border:1px solid #A5F3FC;color:var(--blue-deeper)}
+.tb-notice-blue b{color:var(--blue)}
+
+/* ── Result actions ── */
+.tb-result-actions{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);
+  display:flex;gap:10px;flex-wrap:wrap}
+.tb-action-btn{padding:9px 14px;font-family:var(--font-body);font-weight:500;font-size:12.5px;
+  display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--text);
+  border:1px solid var(--border);border-radius:999px;cursor:pointer;transition:all .15s}
+.tb-action-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.tb-action-btn svg{width:13px;height:13px}
+.tb-action-btn.tb-copied{background:var(--ok-soft);border-color:#6EE7B7;color:var(--ok)}
+.tb-action-btn-primary{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 4px 12px rgba(22,78,99,.22);font-weight:600}
+.tb-action-btn-primary:hover{background:linear-gradient(135deg,var(--blue-deeper),var(--blue));
+  color:#fff;border-color:var(--blue-deeper);box-shadow:0 6px 18px rgba(22,78,99,.32);transform:translateY(-1px)}
+
+/* ── Mail picker ── */
+.mail-picker-wrap{position:relative;display:inline-block}
+.mail-picker{position:absolute;z-index:999;bottom:calc(100% + 6px);left:0;background:#fff;
+  border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);padding:6px;
+  min-width:230px;display:none}
+.mail-picker.open{display:block}
+.mail-picker a{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;
+  text-decoration:none;color:var(--text);font-size:13px;font-weight:500}
+.mail-picker a:hover{background:var(--blue-light);color:var(--blue-deeper)}
+
+/* ── Footer ── */
+.page-footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  font-family:var(--font-num);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint)}
+
+/* ── Animations ── */
+@keyframes tbFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.tb-animate{animation:tbFadeUp .3s ease both}
+
+/* ── Responsive ── */
+@media(max-width:980px){
+  .tb-grid{grid-template-columns:1fr}
+  .hero-inner{grid-template-columns:1fr}
+  .formula-box{display:none}
+  .tb-card-duo{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .tb-section,.tb-results-inner{padding:16px 14px 20px}
+  .tb-card-title{padding:14px 14px 10px}
+  .tb-hero-count{grid-template-columns:1fr}
+  .tb-detail-row{grid-template-columns:1fr;gap:3px}
+  .tb-dv{text-align:left;white-space:normal}
+  .tb-btn-row{flex-direction:column;padding-left:14px;padding-right:14px}
+}
+@media print{
+  body{background:#fff}
+  .topbar,.hero-banner,.tb-btn-row,.tb-result-actions,.page-footer,.tb-card-inputs{display:none!important}
+  .tb-card{box-shadow:none;border:1px solid #ccc}
+  .tb-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Topbar -->
+  <nav class="topbar">
+    <div class="brand">
+      <div class="logo">C<br>A</div>
+      <div class="brand-text">
+        <h1>Carbotecnia</h1>
+        <span>Tratamiento de agua · México</span>
+      </div>
+    </div>
+    <span class="pill">Toberas micro-ranuradas v1.0</span>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero-banner">
+    <div class="hero-inner">
+      <div>
+        <h2>Dimensionamiento de <em>toberas micro-ranuradas</em> · Sistemas de distribución</h2>
+        <p>Calcula la cantidad de toberas requeridas en el falso fondo o colector inferior de un filtro de medios granulares, verificando que soporten los flujos de servicio y retrolavado sin alta caída de presión ni zonas muertas. Basado en MIP Carbotecnia de toberas micro-ranuradas.</p>
+      </div>
+      <div class="formula-box">
+        <span class="f-label">Motor hidráulico</span>
+        <div class="f-eq">Q = <span>A</span> × <span>v</span> (gpm)<br>
+        N = máx(Q<sub style="font-size:9px">serv</sub>/q<sub style="font-size:9px">serv</sub>, Q<sub style="font-size:9px">retro</sub>/q<sub style="font-size:9px">retro</sub>)<br>
+        s = √(<span>A</span>/N) × 30.48 cm</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main layout -->
+  <div class="tb-grid">
+
+    <!-- Inputs card -->
+    <div class="tb-card tb-card-inputs">
+      <p class="tb-card-title">Parámetros del sistema</p>
+
+      <div class="tb-section">
+        <div class="tb-section-label">Datos del filtro</div>
+
+        <div class="tb-field" id="tbf-size">
+          <label>Diámetro o área del tanque <span class="tb-req">*</span></label>
+          <div class="tb-input-row" id="tbr-size">
+            <input type="number" id="tb-size" placeholder="Ej. 36" min="0" step="any">
+            <select id="tb-size-unit">
+              <option value="din" selected>Ø pulgadas</option>
+              <option value="ft2">Área ft²</option>
+              <option value="m2">Área m²</option>
+            </select>
+          </div>
+          <div class="tb-hint">Diámetro interno del tanque, o área de sección si ya la conoces</div>
+          <div class="tb-err">Valor requerido mayor a cero.</div>
+        </div>
+
+        <div class="tb-field" id="tbf-vserv">
+          <label>Velocidad de flujo de servicio <span class="tb-req">*</span></label>
+          <div class="tb-input-row tb-single" id="tbr-vserv">
+            <input type="number" id="tb-vserv" placeholder="Ej. 5" min="0" step="any">
+            <span class="tb-unit">gpm/ft²</span>
+          </div>
+          <div class="tb-err">Valor requerido mayor a cero.</div>
+        </div>
+
+        <div class="tb-field" id="tbf-vretro">
+          <label>Velocidad de flujo de retrolavado <span class="tb-req">*</span></label>
+          <div class="tb-input-row tb-single" id="tbr-vretro">
+            <input type="number" id="tb-vretro" placeholder="Ej. 15" min="0" step="any">
+            <span class="tb-unit">gpm/ft²</span>
+          </div>
+          <div class="tb-hint">Suele ser de 3 a 4 veces mayor al flujo de servicio</div>
+          <div class="tb-err">Valor requerido mayor a cero.</div>
+        </div>
+      </div>
+
+      <div class="tb-section">
+        <div class="tb-section-label">Datos de la tobera elegida</div>
+
+        <div class="tb-field" id="tbf-qserv">
+          <label>Capacidad máxima de la tobera en servicio <span class="tb-req">*</span></label>
+          <div class="tb-input-row tb-single" id="tbr-qserv">
+            <input type="number" id="tb-qserv" value="4.0" min="0" step="any">
+            <span class="tb-unit">gpm</span>
+          </div>
+          <div class="tb-hint">Default 4.0 gpm por tobera · verificar ficha técnica del modelo</div>
+          <div class="tb-err">Valor requerido mayor a cero.</div>
+        </div>
+
+        <div class="tb-field" id="tbf-qretro">
+          <label>Capacidad máxima de la tobera en retrolavado <span class="tb-req">*</span></label>
+          <div class="tb-input-row tb-single" id="tbr-qretro">
+            <input type="number" id="tb-qretro" value="6.5" min="0" step="any">
+            <span class="tb-unit">gpm</span>
+          </div>
+          <div class="tb-hint">Default 6.5 gpm por tobera · verificar ficha técnica del modelo</div>
+          <div class="tb-err">Valor requerido mayor a cero.</div>
+        </div>
+      </div>
+
+      <div class="tb-btn-row">
+        <button type="button" class="tb-btn tb-btn-primary" id="tb-btn-calc">Calcular</button>
+        <button type="button" class="tb-btn tb-btn-ghost" id="tb-btn-reset">Limpiar</button>
+      </div>
+    </div><!-- /inputs -->
+
+    <!-- Results card -->
+    <div class="tb-card tb-card-results">
+      <p class="tb-card-title">Resultados del dimensionamiento</p>
+      <div id="tb-results">
+        <div class="tb-empty">
+          <div class="tb-empty-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E7490" stroke-width="1.5">
+              <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.5" fill="#0E7490"/>
+              <circle cx="7.5" cy="9" r="1" fill="#0E7490"/><circle cx="16.5" cy="9" r="1" fill="#0E7490"/>
+              <circle cx="7.5" cy="15" r="1" fill="#0E7490"/><circle cx="16.5" cy="15" r="1" fill="#0E7490"/>
+            </svg>
+          </div>
+          <p>Complete los parámetros<br>y presione <strong>Calcular</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tb-grid -->
+
+  <footer class="page-footer">
+    <span>© Carbotecnia · Calle B No. 2105 Int. A, Zapopan, Jalisco · www.carbotecnia.info</span>
+    <span>Pre-dimensionamiento referencial · MIP Toberas micro-ranuradas · Verificar con ficha técnica del modelo</span>
+  </footer>
+
+</div><!-- /shell -->
+
+<script>
+var TB = {
+  AREA_MAX_FT2:   0.50,   /* zona muerta: área máx cubierta por tobera */
+  SPACING_MAX_CM: 22,     /* zona muerta: distancia máx entre centros */
+  IN2_TO_FT2:     1/144,
+  M2_TO_FT2:      10.7639,
+  FT_TO_CM:       30.48,
+  GPM_TO_M3H:     0.227125,
+  RETRO_RATIO_LO: 3,
+  RETRO_RATIO_HI: 4
+};
+
+function tbEl(id){ return document.getElementById(id); }
+function tbFmt(n,d){ return isFinite(n)?n.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
+function tbFmtInt(n){ return isFinite(n)?Math.round(n).toLocaleString('es-MX'):'—'; }
+
+function tbValidate(){
+  var ok = true;
+  [['tbf-size','tb-size','tbr-size'],
+   ['tbf-vserv','tb-vserv','tbr-vserv'],
+   ['tbf-vretro','tb-vretro','tbr-vretro'],
+   ['tbf-qserv','tb-qserv','tbr-qserv'],
+   ['tbf-qretro','tb-qretro','tbr-qretro']].forEach(function(t){
+    var wrap=tbEl(t[0]), val=parseFloat(tbEl(t[1]).value), row=tbEl(t[2]);
+    if(!val||val<=0||isNaN(val)){
+      wrap.classList.add('has-error');
+      if(row) row.classList.add('tb-err-ring');
+      ok = false;
+    } else {
+      wrap.classList.remove('has-error');
+      if(row) row.classList.remove('tb-err-ring');
+    }
+  });
+  return ok;
+}
+
+function tbNormalize(){
+  var raw  = parseFloat(tbEl('tb-size').value);
+  var unit = tbEl('tb-size-unit').value;
+  var areaFt2, diamIn = null;
+  if(unit === 'din'){
+    diamIn  = raw;
+    areaFt2 = Math.PI * Math.pow(raw,2) / 4 * TB.IN2_TO_FT2;
+  } else if(unit === 'm2'){
+    areaFt2 = raw * TB.M2_TO_FT2;
+  } else {
+    areaFt2 = raw;
+  }
+  return {
+    areaFt2:  areaFt2,
+    areaM2:   areaFt2 / TB.M2_TO_FT2,
+    diamIn:   diamIn,
+    vServ:    parseFloat(tbEl('tb-vserv').value),
+    vRetro:   parseFloat(tbEl('tb-vretro').value),
+    qServ:    parseFloat(tbEl('tb-qserv').value),
+    qRetro:   parseFloat(tbEl('tb-qretro').value)
+  };
+}
+
+window.tbCalculate = function(){
+  if(!tbValidate()) return;
+  var I = tbNormalize();
+
+  var qTotServ  = I.areaFt2 * I.vServ;    /* gpm */
+  var qTotRetro = I.areaFt2 * I.vRetro;   /* gpm */
+
+  var nServ  = qTotServ  / I.qServ;
+  var nRetro = qTotRetro / I.qRetro;
+
+  var nReq   = Math.max(1, Math.ceil(Math.max(nServ, nRetro)));
+  var domin  = nRetro >= nServ ? 'retro' : 'serv';
+
+  var areaPerNozzle = I.areaFt2 / nReq;                       /* ft² */
+  var spacingFt     = Math.sqrt(areaPerNozzle);               /* ft, arreglo cuadrado */
+  var spacingCm     = spacingFt * TB.FT_TO_CM;
+  var spacingIn     = spacingFt * 12;
+
+  var ratio = I.vRetro / I.vServ;
+
+  tbRenderResults({I, qTotServ, qTotRetro, nServ, nRetro, nReq, domin,
+                   areaPerNozzle, spacingCm, spacingIn, ratio});
+};
+
+/* SVG estilizado de una tobera micro-ranurada (cabeza ranurada + niple) */
+function tbNozzleSvg(){
+  return '<svg width="64" height="86" viewBox="0 0 64 86" fill="none" aria-hidden="true">'+
+    '<defs><linearGradient id="tbg" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#0E7490"/><stop offset="1" stop-color="#164E63"/></linearGradient></defs>'+
+    /* cabeza */
+    '<path d="M8 26 Q8 8 32 8 Q56 8 56 26 L56 34 Q56 38 52 38 L12 38 Q8 38 8 34 Z" fill="url(#tbg)"/>'+
+    /* micro-ranuras */
+    '<g stroke="#A5F3FC" stroke-width="1.6" stroke-linecap="round">'+
+    '<line x1="14" y1="16" x2="14" y2="32"/><line x1="20" y1="12.5" x2="20" y2="33.5"/>'+
+    '<line x1="26" y1="10.5" x2="26" y2="34.5"/><line x1="32" y1="10" x2="32" y2="35"/>'+
+    '<line x1="38" y1="10.5" x2="38" y2="34.5"/><line x1="44" y1="12.5" x2="44" y2="33.5"/>'+
+    '<line x1="50" y1="16" x2="50" y2="32"/></g>'+
+    /* cuello */
+    '<rect x="24" y="38" width="16" height="8" rx="2" fill="#155E75"/>'+
+    /* niple roscado */
+    '<rect x="27" y="46" width="10" height="30" rx="2" fill="url(#tbg)"/>'+
+    '<g stroke="#67E8F9" stroke-width="1.1" opacity=".75">'+
+    '<line x1="27" y1="52" x2="37" y2="50"/><line x1="27" y1="57" x2="37" y2="55"/>'+
+    '<line x1="27" y1="62" x2="37" y2="60"/><line x1="27" y1="67" x2="37" y2="65"/>'+
+    '<line x1="27" y1="72" x2="37" y2="70"/></g>'+
+    '</svg>';
+}
+
+function tbRenderResults(r){
+  var I = r.I;
+  var dominLabel = r.domin === 'retro'
+    ? 'Criterio dominante: <b>flujo de retrolavado</b> ('+tbFmt(r.nRetro,1)+' toberas requeridas vs '+tbFmt(r.nServ,1)+' por servicio)'
+    : 'Criterio dominante: <b>flujo de servicio</b> ('+tbFmt(r.nServ,1)+' toberas requeridas vs '+tbFmt(r.nRetro,1)+' por retrolavado)';
+
+  var notices = '';
+
+  /* Alerta de zonas muertas (naranja) */
+  if(r.areaPerNozzle > TB.AREA_MAX_FT2 || r.spacingCm > TB.SPACING_MAX_CM)
+    notices += '<div class="tb-notice tb-notice-amber tb-animate"><b>⚠ Atención — Riesgo de zonas muertas</b>'+
+      'El distanciamiento entre toberas es elevado ('+tbFmt(r.spacingCm,1)+' cm entre centros · '+tbFmt(r.areaPerNozzle,2)+' ft² por tobera). '+
+      'Se recomienda aumentar la cantidad de toberas para evitar zonas muertas, efectos de pared y canalización del flujo en el medio granular.</div>';
+
+  /* Ratio retrolavado/servicio fuera de lo típico */
+  if(r.ratio < TB.RETRO_RATIO_LO || r.ratio > TB.RETRO_RATIO_HI)
+    notices += '<div class="tb-notice tb-notice-blue tb-animate"><b>Nota — Relación retrolavado/servicio</b>'+
+      'La velocidad de retrolavado capturada es '+tbFmt(r.ratio,1)+'× la de servicio. Lo típico es 3–4×. '+
+      'Verifica que la velocidad de retrolavado corresponda a la expansión requerida por tu medio granular y su temperatura de operación.</div>';
+
+  /* Recordatorio permanente (rojo): cuello de botella en ranura vs niple */
+  notices += '<div class="tb-notice tb-notice-red tb-animate"><b>⛔ Importante — Cuello de botella</b>'+
+    'El área disponible para el flujo en la ranura no debe ser limitante y debe ser <b>mayor que el área de sección interna del niple de conexión</b>. '+
+    'Verifícalo en la ficha técnica de la tobera seleccionada antes de fabricar el falso fondo.</div>';
+
+  var html =
+    '<div class="tb-results-inner">'+
+
+    /* Card 1: cantidad de toberas */
+    '<div class="tb-hero-count tb-animate">'+
+      '<div>'+
+        '<div class="tb-hero-label">Cantidad mínima de toberas a instalar</div>'+
+        '<div class="tb-hero-num">'+tbFmtInt(r.nReq)+'<small>toberas</small></div>'+
+        '<div class="tb-hero-sub">'+dominLabel+'</div>'+
+        '<span class="tb-crit-badge">'+(r.domin==='retro'?'Dimensionado por retrolavado':'Dimensionado por servicio')+'</span>'+
+      '</div>'+
+      '<div style="text-align:center">'+tbNozzleSvg()+'</div>'+
+    '</div>'+
+
+    /* Cards 2 y 3 */
+    '<div class="tb-card-duo tb-animate">'+
+      '<div class="tb-mini-card">'+
+        '<div class="tb-mini-label">Geometría y distribución</div>'+
+        '<div class="tb-geo-flex">'+
+          '<div>'+
+            '<div class="tb-geo-val">'+tbFmt(r.spacingCm,1)+' cm<small>'+tbFmt(r.spacingIn,1)+' pulgadas entre centros</small></div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="tb-geo-note">Distancia sugerida entre centros asumiendo <b>arreglo cuadrado</b> en el falso fondo o placa. '+
+          'Cada tobera cubre '+tbFmt(r.areaPerNozzle,3)+' ft² ('+tbFmt(r.areaPerNozzle/TB.M2_TO_FT2*10000,0)+' cm²).</div>'+
+      '</div>'+
+      '<div class="tb-mini-card">'+
+        '<div class="tb-mini-label">Verificación de flujos</div>'+
+        '<div class="tb-flow-row"><div class="tb-flow-name">Flujo total de servicio</div>'+
+          '<div class="tb-flow-val">'+tbFmt(r.qTotServ,1)+' gpm<small>'+tbFmt(r.qTotServ*TB.GPM_TO_M3H,2)+' m³/h</small></div></div>'+
+        '<div class="tb-flow-row"><div class="tb-flow-name">Flujo total de retrolavado</div>'+
+          '<div class="tb-flow-val">'+tbFmt(r.qTotRetro,1)+' gpm<small>'+tbFmt(r.qTotRetro*TB.GPM_TO_M3H,2)+' m³/h</small></div></div>'+
+        '<div class="tb-flow-row"><div class="tb-flow-name">Carga por tobera en retrolavado</div>'+
+          '<div class="tb-flow-val">'+tbFmt(r.qTotRetro/r.nReq,2)+' gpm<small>máx tobera: '+tbFmt(I.qRetro,1)+' gpm</small></div></div>'+
+      '</div>'+
+    '</div>'+
+
+    notices+
+
+    /* Detalles */
+    '<div class="tb-details tb-animate">'+
+      '<div class="tb-detail-group-title">Memoria de cálculo</div>'+
+      '<div class="tb-detail-row"><div class="tb-dl">Área del filtro'+(I.diamIn?'<small>Ø '+tbFmt(I.diamIn,1)+'" → π·D²/4</small>':'')+'</div>'+
+        '<div class="tb-dv">'+tbFmt(I.areaFt2,2)+' ft²<small>'+tbFmt(I.areaM2,3)+' m²</small></div></div>'+
+      '<div class="tb-detail-row"><div class="tb-dl">Flujo total de servicio<small>'+tbFmt(I.areaFt2,2)+' ft² × '+tbFmt(I.vServ,1)+' gpm/ft²</small></div>'+
+        '<div class="tb-dv">'+tbFmt(r.qTotServ,1)+' gpm</div></div>'+
+      '<div class="tb-detail-row"><div class="tb-dl">Flujo total de retrolavado<small>'+tbFmt(I.areaFt2,2)+' ft² × '+tbFmt(I.vRetro,1)+' gpm/ft²</small></div>'+
+        '<div class="tb-dv">'+tbFmt(r.qTotRetro,1)+' gpm</div></div>'+
+      '<div class="tb-detail-row"><div class="tb-dl">Toberas por flujo de servicio<small>'+tbFmt(r.qTotServ,1)+' gpm ÷ '+tbFmt(I.qServ,1)+' gpm/tobera</small></div>'+
+        '<div class="tb-dv">'+tbFmt(r.nServ,2)+'</div></div>'+
+      '<div class="tb-detail-row"><div class="tb-dl">Toberas por flujo de retrolavado<small>'+tbFmt(r.qTotRetro,1)+' gpm ÷ '+tbFmt(I.qRetro,1)+' gpm/tobera</small></div>'+
+        '<div class="tb-dv">'+tbFmt(r.nRetro,2)+'</div></div>'+
+      '<div class="tb-detail-row"><div class="tb-dl">Cantidad mínima requerida<small>⌈máx(servicio, retrolavado)⌉</small></div>'+
+        '<div class="tb-dv"><b>'+tbFmtInt(r.nReq)+' toberas</b></div></div>'+
+      '<div class="tb-detail-row"><div class="tb-dl">Área cubierta por tobera<small>Límite recomendado: '+TB.AREA_MAX_FT2.toFixed(2)+' ft²</small></div>'+
+        '<div class="tb-dv">'+tbFmt(r.areaPerNozzle,3)+' ft²</div></div>'+
+      '<div class="tb-detail-row"><div class="tb-dl">Distancia entre centros<small>√(área/tobera) · arreglo cuadrado · límite '+TB.SPACING_MAX_CM+' cm</small></div>'+
+        '<div class="tb-dv">'+tbFmt(r.spacingCm,1)+' cm<small>'+tbFmt(r.spacingIn,2)+' in</small></div></div>'+
+    '</div>'+
+
+    /* Acciones */
+    '<div class="tb-result-actions">'+
+      '<button type="button" class="tb-action-btn" id="tb-btn-print">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+
+          '<path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/>'+
+        '</svg>Imprimir / PDF</button>'+
+      '<button type="button" class="tb-action-btn" id="tb-btn-copy">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+
+          '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>'+
+        '</svg>Copiar resultados</button>'+
+      '<div class="mail-picker-wrap">'+
+        '<button type="button" class="tb-action-btn tb-action-btn-primary" id="tb-btn-email">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+
+            '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>'+
+          '</svg>Cotizar por correo</button>'+
+        '<div class="mail-picker" id="tb-mail-picker">'+
+          '<a id="tb-mail-gmail" href="#" target="_blank">📧 Gmail (web)</a>'+
+          '<a id="tb-mail-mailto" href="#">📨 Outlook / cliente de correo</a>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '</div>';
+
+  tbEl('tb-results').innerHTML = html;
+  tbEl('tb-btn-print').addEventListener('click', function(){ window.print(); });
+  tbEl('tb-btn-copy').addEventListener('click', function(){ tbCopySummary(r); });
+  tbEl('tb-btn-email').addEventListener('click', function(){ tbEmailQuote(r, this); });
+}
+
+function tbSummaryLines(r){
+  var I = r.I;
+  return [
+    '═══════════════════════════════════════════════════',
+    '  TOBERAS MICRO-RANURADAS · Carbotecnia v1.0',
+    '═══════════════════════════════════════════════════', '',
+    'DATOS DEL FILTRO',
+    (I.diamIn ? 'Diámetro:           '+tbFmt(I.diamIn,1)+' in' : 'Área capturada directamente'),
+    'Área del filtro:    '+tbFmt(I.areaFt2,2)+' ft² ('+tbFmt(I.areaM2,3)+' m²)',
+    'Vel. servicio:      '+tbFmt(I.vServ,1)+' gpm/ft²',
+    'Vel. retrolavado:   '+tbFmt(I.vRetro,1)+' gpm/ft² ('+tbFmt(r.ratio,1)+'× servicio)', '',
+    'TOBERA ELEGIDA',
+    'Cap. servicio:      '+tbFmt(I.qServ,1)+' gpm/tobera',
+    'Cap. retrolavado:   '+tbFmt(I.qRetro,1)+' gpm/tobera', '',
+    'RESULTADO',
+    'Flujo total servicio:     '+tbFmt(r.qTotServ,1)+' gpm',
+    'Flujo total retrolavado:  '+tbFmt(r.qTotRetro,1)+' gpm',
+    'Toberas por servicio:     '+tbFmt(r.nServ,2),
+    'Toberas por retrolavado:  '+tbFmt(r.nRetro,2),
+    'CANTIDAD MÍNIMA:          '+tbFmtInt(r.nReq)+' toberas ('+(r.domin==='retro'?'dominó retrolavado':'dominó servicio')+')',
+    'Área por tobera:          '+tbFmt(r.areaPerNozzle,3)+' ft²',
+    'Distancia entre centros:  '+tbFmt(r.spacingCm,1)+' cm ('+tbFmt(r.spacingIn,2)+' in) · arreglo cuadrado', '',
+    'NOTA: el área de flujo de la ranura debe ser mayor que el área',
+    'interna del niple de conexión (no debe ser limitante).', '',
+    '─────────────────────────────────────────────────',
+    'Carbotecnia · www.carbotecnia.info',
+    'Pre-dimensionamiento referencial · Verificar ficha técnica del modelo'
+  ];
+}
+
+function tbCopySummary(r){
+  navigator.clipboard.writeText(tbSummaryLines(r).join('\n')).then(function(){
+    var btn = tbEl('tb-btn-copy'), orig = btn.innerHTML;
+    btn.classList.add('tb-copied');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>Copiado';
+    setTimeout(function(){ btn.classList.remove('tb-copied'); btn.innerHTML = orig; }, 2000);
+  });
+}
+
+function tbShowMailPicker(subject, body, anchor){
+  var picker = tbEl('tb-mail-picker');
+  if(picker.classList.contains('open')){ picker.classList.remove('open'); return; }
+  tbEl('tb-mail-gmail').href = 'https://mail.google.com/mail/?view=cm&fs=1&to=ventas@carbotecnia.com.mx&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  tbEl('tb-mail-mailto').href = 'mailto:ventas@carbotecnia.com.mx?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  picker.classList.add('open');
+  function close(e){
+    if(!picker.contains(e.target) && e.target !== anchor){
+      picker.classList.remove('open');
+      document.removeEventListener('click', close);
+      document.removeEventListener('scroll', close, true);
+    }
+  }
+  setTimeout(function(){ document.addEventListener('click', close); document.addEventListener('scroll', close, true); }, 10);
+}
+
+function tbEmailQuote(r, anchor){
+  var I = r.I;
+  var subject = 'Solicitud de cotización — '+tbFmtInt(r.nReq)+' toberas micro-ranuradas'+
+    (I.diamIn ? ' · filtro Ø '+tbFmt(I.diamIn,0)+'"' : '');
+  var body = [
+    'Hola,', '',
+    'Les comparto el dimensionamiento del sistema de distribución para cotización.', ''
+  ].concat(tbSummaryLines(r)).concat([
+    '',
+    'Quedo en espera de su cotización.',
+    'Gracias.'
+  ]).join('\n');
+  tbShowMailPicker(subject, body, anchor);
+}
+
+window.tbReset = function(){
+  tbEl('tb-size').value  = '';
+  tbEl('tb-vserv').value = '';
+  tbEl('tb-vretro').value= '';
+  tbEl('tb-qserv').value = '4.0';
+  tbEl('tb-qretro').value= '6.5';
+  tbEl('tb-size-unit').value = 'din';
+  ['tbf-size','tbf-vserv','tbf-vretro','tbf-qserv','tbf-qretro'].forEach(function(id){ tbEl(id).classList.remove('has-error'); });
+  ['tbr-size','tbr-vserv','tbr-vretro','tbr-qserv','tbr-qretro'].forEach(function(id){ if(tbEl(id)) tbEl(id).classList.remove('tb-err-ring'); });
+  tbEl('tb-results').innerHTML =
+    '<div class="tb-empty">'+
+      '<div class="tb-empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E7490" stroke-width="1.5">'+
+      '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.5" fill="#0E7490"/>'+
+      '<circle cx="7.5" cy="9" r="1" fill="#0E7490"/><circle cx="16.5" cy="9" r="1" fill="#0E7490"/>'+
+      '<circle cx="7.5" cy="15" r="1" fill="#0E7490"/><circle cx="16.5" cy="15" r="1" fill="#0E7490"/>'+
+      '</svg></div>'+
+      '<p>Complete los parámetros<br>y presione <strong>Calcular</strong>.</p>'+
+    '</div>';
+};
+
+/* Wiring inline (sin DOMContentLoaded) — patrón seguro para WordPress:
+   el script corre al final del body cuando los elementos ya existen. */
+tbEl('tb-btn-calc').addEventListener('click', window.tbCalculate);
+tbEl('tb-btn-reset').addEventListener('click', window.tbReset);
+document.querySelectorAll('input[type="number"]').forEach(function(inp){
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter') window.tbCalculate(); });
+});
+</script>
+</body>
+</html>
