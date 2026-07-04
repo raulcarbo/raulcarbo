@@ -61,6 +61,21 @@ Contexto que debes asumir al operar (validado a julio 2026; actualízalo cuando 
 
 ---
 
+## Skill instalada: meta-ads-framework-es
+
+En `.claude/skills/meta-ads-framework-es/` está instalado el framework de diagnóstico de Vladimir Lucantis (MIT, v0.2.1). Úsalo para: detectar la estrategia de campaña antes de diagnosticar, aplicar umbrales de pausar/escalar/mantener, formato de análisis de informes, guiones de Reels y checklist de pixel/CAPI.
+
+**Calibración obligatoria para Carbotecnia:** el framework está calibrado para cuentas B2C chicas (USD 50–1,000/mes, conversión por WhatsApp, mercado argentino). El propio framework lo advierte para B2B con ciclo largo:
+
+- CPL aceptable en B2B es mucho mayor (USD 20–100, no USD 1–5). No apliques sus tablas de costo por lead a ciegas.
+- Medir costo por lead **calificado** y costo por cliente, no costo por lead crudo.
+- La atribución en plataforma no refleja el cierre (ocurre semanas después): cruzar con CRM.
+- Lo que SÍ aplica directo: detección de estrategia (paso 0), reglas de no tocar lo que funciona, escalado máximo +20% cada 5–7 días, datos mínimos antes de decidir, señales combinadas de fatiga creativa, formato de plan de acción (PAUSAR/MANTENER/ESCALAR/CREAR) y checklist de pixel.
+
+Cuando los umbrales del framework y los datos reales de la cuenta de Carbotecnia difieran, mandan los datos de la cuenta — y se registra la recalibración en `APRENDIZAJES.md`.
+
+---
+
 ## Buenas prácticas Carbotecnia
 
 *Esta sección crece con los aprendizajes validados. Formato: práctica → por qué → evidencia.*
