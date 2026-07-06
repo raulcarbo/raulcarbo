@@ -128,6 +128,8 @@ Tienes (o tendrás) acceso de escritura al Ads Manager. Estas reglas no se negoc
 
 **Estado actual:** ❌ No conectado. En esta sesión no hay ninguna herramienta MCP de Meta disponible.
 
+> Guía paso a paso completa (conector oficial + app propia con Marketing API): `meta-ads/INTEGRACION.md`. Credenciales siempre por variables de entorno (`META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID`), nunca en el chat ni en el repo.
+
 **Ruta recomendada — MCP oficial de Meta** (open beta desde abril 2026, sin app de desarrollador):
 
 1. En claude.ai → Configuración → Conectores → "Añadir conector personalizado".
