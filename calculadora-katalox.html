@@ -1126,7 +1126,7 @@ function toGpm(v, unit) {
 /* Calcula TCCV y configuración de series según carga C = [Fe²⁺] + 2[Mn²⁺]
    Fuente: MIP 260302 Katalox Light — Carbotecnia (revisión post-2023) */
 function getTCCV(loadC) {
-  if (loadC < 5)   return {tccv:4, vessels:1, alerta:null};
+  if (loadC < 5)   return {tccv:3, vessels:1, alerta:null};
   if (loadC <= 10) return {tccv:7, vessels:1, alerta:null};  /* criterio seguro Carbotecnia */
   if (loadC <= 30) return {tccv:4, vessels:2,
     alerta:'C > 10 mg/L: se requieren 2 recipientes en serie (Lead-Lag). TCCV de 4 min por etapa.'};
@@ -1172,9 +1172,12 @@ function buildParallelOptions(flowGpm, seriesVessels, bwRateGpmFt2, tccvMin) {
   return commercialTanks.filter(t=>t.diamIn>=36).map(tank=>{
     const trains=Math.max(2,Math.ceil(flowGpm/(SV_MAX*tank.areaFt2)));
     const fpt=flowGpm/trains;
-    const mft3=fpt*tccvMin*GPM_TO_FT3MIN;
-    const h=tankHydraulics(tank,fpt,mft3,bwRateGpmFt2);
-    return {...h,trains,seriesVessels,totalVessels:trains*seriesVessels,flowPerTrainGpm:fpt,mediaPerVesselFt3:mft3,totalMediaFt3:mft3*trains*seriesVessels};
+    const mreq=fpt*tccvMin*GPM_TO_FT3MIN;
+    /* Medio por recipiente = volumen estándar del tanque según tabla; el TCCV y
+       las alturas de cama se re-verifican con ese volumen, no con el teórico. */
+    const mstd=tank.bedFt3||mreq;
+    const h=tankHydraulics(tank,fpt,mstd,bwRateGpmFt2);
+    return {...h,trains,seriesVessels,totalVessels:trains*seriesVessels,flowPerTrainGpm:fpt,mediaPerVesselFt3:mstd,requiredMediaFt3:mreq,totalMediaFt3:mstd*trains*seriesVessels};
   }).filter(o=>o.velocity>=SV_MIN&&o.velocity<=SV_MAX)
     .sort((a,b)=>{
       const pa=a.heightOk?0:1, pb=b.heightOk?0:1;
@@ -1198,11 +1201,16 @@ function selectTank(flowGpm, mediaPerVesselFt3, seriesVessels, bwRateGpmFt2, tcc
       chosen=tank; break;
     }
   }
+  /* Re-verificación con el tanque recomendado: el medio por recipiente es su
+     volumen estándar de tabla; TCCV real, carga hidráulica y alturas de cama
+     se calculan con ese volumen y su área transversal. */
+  const stdMediaFt3=chosen.bedFt3||mediaPerVesselFt3;
   return {
-    ...tankHydraulics(chosen,flowGpm,mediaPerVesselFt3,bwRateGpmFt2),
+    ...tankHydraulics(chosen,flowGpm,stdMediaFt3,bwRateGpmFt2),
     minArea, isParallel:false, trains:1, seriesVessels,
     totalVessels:seriesVessels, flowPerTrainGpm:flowGpm,
-    mediaPerVesselFt3, totalMediaFt3:mediaPerVesselFt3*seriesVessels,
+    mediaPerVesselFt3:stdMediaFt3, requiredMediaFt3:mediaPerVesselFt3,
+    totalMediaFt3:stdMediaFt3*seriesVessels,
     parallelOptions
   };
 }
@@ -1340,7 +1348,8 @@ function calculate() {
   const tank=selectTank(Math.max(flowGpm,0.01),initialMedia,config.vessels,bwRate.gpmFt2,tccvMin);
   const mediaPerTankFt3=tank.mediaPerVesselFt3||initialMedia;
   const mediaTotalFt3=mediaPerTankFt3*config.vessels*tank.trains;
-  const realEbct=tank.flowPerTrainGpm>0?mediaPerTankFt3/tank.flowPerTrainGpm:0;
+  /* TCCV real = volumen estándar del tanque / caudal por tren (0.1337 ft³/gal) */
+  const realEbct=tank.flowPerTrainGpm>0?mediaPerTankFt3/(tank.flowPerTrainGpm*GPM_TO_FT3MIN):0;
   const ox = OXIDANTS[$('oxidant').value];
   const contConc = ox.isLiquid ? Math.max(0.1, Number($('contConc').value) || ox.defaultConc) : 0;
   const contDens = ox.isLiquid ? Math.max(0.8, Number($('contDens').value) || ox.defaultDens) : 1;
@@ -1375,7 +1384,7 @@ function render(r) {
   $('formulaEbct').textContent=`${fmt(r.tccvMin,1)} min`;
   $('statusConfig').textContent=isParallel?`${r.tank.trains} trenes`:(r.config.vessels===2?'2 tanques':'1 tanque');
   $('mediaFt3').textContent=fmt(r.mediaPerTankFt3,1);
-  $('mediaLiters').textContent=`${fmt(mediaPerTankL,0)} L por tanque`;
+  $('mediaLiters').textContent=`${fmt(mediaPerTankL,0)} L por tanque (estándar del tanque)`+(r.tank.requiredMediaFt3?` · requerido por TCCV: ${fmt(r.tank.requiredMediaFt3,1)} ft³`:'');
   $('mediaTotal').textContent=`${fmt(r.mediaTotalFt3,1)} ft³ (${fmt(totalL,0)} L)`;
   const bedIn=r.tank.bedDepthIn;
   const bedOk=bedIn>=BED_DEPTH_MIN_IN, bedOptOk=bedIn>=BED_DEPTH_OPT_IN;
@@ -1391,8 +1400,8 @@ function render(r) {
   $('tankDiameter').textContent=String(r.tank.diamIn);
   const svOk=r.tank.velocity>=SV_MIN&&r.tank.velocity<=SV_MAX;
   $('hydraulicText').textContent=svOk?`Recipiente ${r.tank.tankSize} dentro del rango conservador Carbotecnia: ${SV_MIN}–${SV_MAX} gpm/ft².`:`Recipiente ${r.tank.tankSize} fuera de ${SV_MIN}–${SV_MAX} gpm/ft²; revise arreglo en paralelo.`;
-  $('realEbct').textContent=`${fmt(r.realEbct,2)} min`;
-  $('surfaceVelocity').textContent=`${fmt(r.tank.velocity,2)} gpm/ft²`;
+  $('realEbct').textContent=`${fmt(r.realEbct,2)} min ${r.realEbct>=r.tccvMin*0.95?'✓':'⚠ < '+fmt(r.tccvMin,0)+' min'}`;
+  $('surfaceVelocity').textContent=`${fmt(r.tank.velocity,2)} gpm/ft² ${svOk?'✓ aceptable':'⚠ fuera de 4–8'}`;
   $('minArea').textContent=`${fmt(r.tank.minArea,2)} ft²`;
   $('vesselSize').textContent=r.tank.tankSize;
   $('vesselText').textContent=`Recipiente composite/FRP ${r.tank.diamIn}"×${r.tank.heightIn}". Flujo/tren: ${fmt(r.tank.flowPerTrainGpm,1)} gpm. Retrolavado: ${fmt(r.tank.backwashFlowGpm,1)} gpm/tanque a ${fmt(r.bwRate.gpmFt2,0)} gpm/ft² (${r.temp}°C).`;
@@ -1472,15 +1481,17 @@ function buildSummary(r) {
     `Configuración: ${r.tank.trains>1?`${r.tank.trains} trenes en paralelo × ${r.config.vessels} recipiente(s) en serie`:r.config.label}`,
     `Recipientes totales: ${r.tank.totalVessels}`,
     `Criterio dominante: ${r.config.dominantRule}`,
-    `TCCV aplicado: ${fmt(r.tccvMin,1)} min`,
-    `Volumen Katalox Light por tanque: ${fmt(r.mediaPerTankFt3,1)} ft³ (${fmt(mediaL,0)} L)`,
+    `TCCV objetivo: ${fmt(r.tccvMin,1)} min`,
+    `TCCV real (medio estándar del tanque): ${fmt(r.realEbct,2)} min ${r.realEbct>=r.tccvMin*0.95?'✓':'⚠ menor al objetivo'}`,
+    r.tank.requiredMediaFt3?`Medio mínimo requerido por TCCV: ${fmt(r.tank.requiredMediaFt3,1)} ft³`:null,
+    `Volumen Katalox Light por tanque (estándar): ${fmt(r.mediaPerTankFt3,1)} ft³ (${fmt(mediaL,0)} L)`,
     `Volumen total: ${fmt(r.mediaTotalFt3,1)} ft³ (${fmt(totalL,0)} L)`,
     (()=>{const cr=findCatalyzerTank(r.mediaPerTankFt3);if(!cr)return '';const pfx=cr.qty>1?cr.qty+'× ':'';return `Catalizador comercial recomendado/tanque: ${pfx}${cr.tank.tankSize}" (${cr.tank.bedFt3} ft³)`;})(),
     `Recipiente sugerido: ${r.tank.tankSize} composite/FRP`,
     `Profundidad de cama: ${fmt(r.tank.bedDepthIn,1)} in (mín. requerido: 29.5 in / óptimo: 47 in)`,
     `Espacio libre retrolavado (50%): ${fmt(r.tank.freeboardIn,1)} in`,
     `Altura requerida total: ${fmt(r.tank.requiredHeightIn,1)} in`,
-    `Velocidad superficial: ${fmt(r.tank.velocity,2)} gpm/ft² (rango Carbotecnia: ${SV_MIN}–${SV_MAX} gpm/ft²)`,
+    `Carga hidráulica: ${fmt(r.tank.velocity,2)} gpm/ft² ${r.tank.velocity>=SV_MIN&&r.tank.velocity<=SV_MAX?'✓ aceptable':'⚠ fuera de rango'} (rango: ${SV_MIN}–${SV_MAX} gpm/ft²)`,
     '',
     'RETROLAVADO',
     `Temperatura: ${r.temp}°C → velocidad recomendada: ${fmt(r.bwRate.gpmFt2,0)} gpm/ft² (${fmt(r.bwRate.mh,0)} m/h)`,
