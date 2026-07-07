@@ -282,16 +282,35 @@ body {
   cursor: pointer; transition: all .15s;
 }
 .btn-calc:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(183,77,50,.35); }
-.btn-copy {
-  width: 100%; padding: 10px 20px; margin-top: 8px;
-  border: 1.5px solid var(--line); border-radius: var(--radius);
-  font-family: var(--font-body);
-  font-size: .86rem; font-weight: 500;
-  background: #fff; color: var(--steel);
-  cursor: pointer; transition: all .15s;
+/* ── Copy bar (tres botones en resultados) ── */
+.copy-bar { display: none; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.copy-bar.visible { display: flex; }
+.copy-bar .cb-btn {
+  padding: 11px 18px; border-radius: 999px; cursor: pointer;
+  font-family: var(--font-title); font-size: .84rem; font-weight: 700;
+  border: 0; transition: transform .12s, box-shadow .12s;
 }
-.btn-copy:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
-.btn-copy:disabled { opacity: .5; cursor: not-allowed; }
+.copy-bar .cb-sec { background: #fff; color: var(--ink); border: 1.5px solid var(--line); }
+.copy-bar .cb-sec:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
+.copy-bar .cb-pri {
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #fff;
+  box-shadow: 0 6px 16px rgba(183,77,50,.25);
+}
+.copy-bar .cb-pri:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(183,77,50,.33); }
+
+/* ── Mail picker ── */
+.mail-picker-wrap { position: relative; display: inline-block; }
+.mail-picker {
+  position: absolute; z-index: 999; bottom: calc(100% + 6px); left: 0;
+  background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(15,23,42,.16); padding: 6px; min-width: 230px; display: none;
+}
+.mail-picker.open { display: block; }
+.mail-picker a {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px;
+  text-decoration: none; color: var(--ink); font-size: .84rem; font-weight: 500;
+}
+.mail-picker a:hover { background: var(--brand-light); color: var(--brand-dark); }
 .pending-note {
   display: none; align-items: center; gap: 7px;
   margin-top: 8px; font-size: .76rem;
@@ -582,7 +601,7 @@ body {
 @media print {
   body { background: #fff; }
   .calc-wrap { padding: 20px; max-width: 100%; }
-  .btn-calc, .btn-copy, .pending-note { display: none !important; }
+  .btn-calc, .copy-bar, .pending-note { display: none !important; }
 }
 
 /* ── Dosing additions ──────────────── */
@@ -827,7 +846,6 @@ body {
         </div>
 
         <button class="btn-calc" id="calculateResults" type="button">Dimensionar y calcular dosificación</button>
-        <button class="btn-copy" id="copySummary" type="button" disabled>Copiar resumen de ingeniería</button>
         <div class="pending-note" id="pendingNote">
           <div class="pending-dot"></div>
           Hay cambios sin aplicar
@@ -1013,6 +1031,19 @@ body {
           <li>En arreglos Lead-Lag o paralelo, instale puntos de muestreo entre tanques y a la salida final para verificar remoción por etapa.</li>
           <li>Vida útil típica: 7–10 años con retrolavados correctos y regeneraciones periódicas. Planificar recambio del medio a partir del año 7.</li>
         </ul>
+      </div>
+
+      <!-- Acciones de resultados -->
+      <div class="copy-bar" id="kxCopyBar">
+        <button type="button" class="cb-btn cb-sec" id="kx-btn-print">🖨 Imprimir / PDF</button>
+        <button type="button" class="cb-btn cb-sec" id="kx-btn-copy">📋 Copiar resultados</button>
+        <div class="mail-picker-wrap">
+          <button type="button" class="cb-btn cb-pri" id="kx-btn-email">✉ Cotizar por correo</button>
+          <div class="mail-picker" id="kx-mail-picker">
+            <a id="kx-mail-gmail" href="#" target="_blank">📧 Gmail (web)</a>
+            <a id="kx-mail-mailto" href="#">📨 Outlook / cliente de correo</a>
+          </div>
+        </div>
       </div>
 
     </section><!-- /results-column -->
@@ -1340,7 +1371,7 @@ function calculate() {
   } else {
     alertEl.style.display='none';
   }
-  if (tccvResult.tccv===null) return;  /* C > 30: no calcular, solo mostrar alerta */
+  if (tccvResult.tccv===null) { $('kxCopyBar').classList.remove('visible'); return; }  /* C > 30: no calcular, solo mostrar alerta */
   const tccvMin=tccvResult.tccv;
   const config=getConfiguration(loadC,iron,manganese,tccvResult.vessels);
   const bwRate=getBwRate(temp);
@@ -1368,7 +1399,7 @@ function calculate() {
   const dosing=calcDosing(iron,manganese,h2s,flowGpm);
   lastResult={flowInput,flowUnit:$('flowUnit').options[$('flowUnit').selectedIndex].text,flowGpm,iron,manganese,h2s,ph,temp,loadC,tccvMin,tccvAlerta:tccvResult.alerta,config,mediaPerTankFt3,mediaTotalFt3,realEbct,tank,regen,bwRate,cycles,dosing};
   render(lastResult);
-  $('copySummary').disabled=false;
+  $('kxCopyBar').classList.add('visible');
   $('copyFeedback').textContent='';
   markClean();
 }
@@ -1546,8 +1577,42 @@ async function copySummary() {
     ta.value=txt; document.body.appendChild(ta); ta.select();
     document.execCommand('copy'); ta.remove();
   }
-  $('copyFeedback').textContent='Resumen copiado al portapapeles.';
-  setTimeout(()=>{ $('copyFeedback').textContent=''; }, 2600);
+  const btn=$('kx-btn-copy');
+  btn.textContent='✅ Copiado';
+  setTimeout(()=>{ btn.textContent='📋 Copiar resultados'; }, 2000);
+}
+
+function showMailPicker(subject, body, anchor) {
+  const picker=$('kx-mail-picker');
+  if(picker.classList.contains('open')){ picker.classList.remove('open'); return; }
+  $('kx-mail-gmail').href='https://mail.google.com/mail/?view=cm&fs=1&to=ventas@carbotecnia.com.mx&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  $('kx-mail-mailto').href='mailto:ventas@carbotecnia.com.mx?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  picker.classList.add('open');
+  function close(e){
+    if(!picker.contains(e.target) && e.target!==anchor){
+      picker.classList.remove('open');
+      document.removeEventListener('click', close);
+      document.removeEventListener('scroll', close, true);
+    }
+  }
+  setTimeout(()=>{ document.addEventListener('click', close); document.addEventListener('scroll', close, true); }, 10);
+}
+
+function emailQuote(anchor) {
+  if(!lastResult) return;
+  const r=lastResult;
+  const subject='Solicitud de cotización — Sistema Katalox Light ('+fmt(r.flowGpm,1)+' GPM · '+r.tank.tankSize+')';
+  const body=[
+    'Hola,',
+    '',
+    'Les comparto el dimensionamiento para su revisión y cotización.',
+    '',
+    buildSummary(r),
+    '',
+    'Quedo en espera de su cotización.',
+    'Gracias.'
+  ].join('\n');
+  showMailPicker(subject, body, anchor);
 }
 let dirty=false;
 const pendingEl=$('pendingNote');
@@ -1556,7 +1621,6 @@ function markDirty() {
   dirty=true;
   pendingEl.style.display='flex';
   $('calculateResults').style.boxShadow='0 0 0 3px rgba(183,77,50,.4), 0 6px 18px rgba(183,77,50,.3)';
-  $('copySummary').disabled=true;
 }
 function markClean() {
   dirty=false;
@@ -1570,7 +1634,9 @@ function markClean() {
 });
 $('oxidant').addEventListener('change', updateContOxidantUI);
 $('calculateResults').addEventListener('click', calculate);
-$('copySummary').addEventListener('click', copySummary);
+$('kx-btn-print').addEventListener('click', () => window.print());
+$('kx-btn-copy').addEventListener('click', copySummary);
+$('kx-btn-email').addEventListener('click', function(){ emailQuote(this); });
 updateContOxidantUI();
 </script>
 </body>
