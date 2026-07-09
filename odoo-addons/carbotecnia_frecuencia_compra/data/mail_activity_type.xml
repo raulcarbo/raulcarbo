@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_activity_type_recuperar_cliente" model="mail.activity.type">
+        <field name="name">Recuperar cliente</field>
+        <field name="summary">Cliente en riesgo por frecuencia de compra</field>
+        <field name="icon">fa-heartbeat</field>
+        <field name="delay_count">3</field>
+        <field name="delay_unit">days</field>
+        <field name="res_model">res.partner</field>
+        <field name="category">default</field>
+    </record>
+</odoo>

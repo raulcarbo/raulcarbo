@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- Vista de búsqueda (filtros y agrupaciones del semáforo)      -->
+    <!-- ============================================================ -->
+    <record id="view_partner_frequency_search" model="ir.ui.view">
+        <field name="name">res.partner.frequency.search</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search string="Frecuencia de compra">
+                <field name="name" string="Cliente"/>
+                <field name="user_id" string="Vendedor"/>
+                <separator/>
+                <filter name="filter_verde" string="🟢 Al corriente"
+                        domain="[('carbo_health', '=', 'verde')]"/>
+                <filter name="filter_amarillo" string="🟡 En riesgo"
+                        domain="[('carbo_health', '=', 'amarillo')]"/>
+                <filter name="filter_rojo" string="🔴 Inactivo / perdido"
+                        domain="[('carbo_health', '=', 'rojo')]"/>
+                <separator/>
+                <filter name="filter_top" string="Top / Fiel"
+                        domain="[('carbo_segment', '=', 'top')]"/>
+                <filter name="filter_recurrente" string="Recurrente"
+                        domain="[('carbo_segment', '=', 'recurrente')]"/>
+                <filter name="filter_frecuente" string="Frecuente"
+                        domain="[('carbo_segment', '=', 'frecuente')]"/>
+                <filter name="filter_ocasional" string="Ocasional"
+                        domain="[('carbo_segment', '=', 'ocasional')]"/>
+                <separator/>
+                <filter name="filter_sin_vendedor" string="Sin vendedor asignado"
+                        domain="[('user_id', '=', False)]"/>
+                <filter name="filter_rojo_reciente" string="Perdidos recientes (12-18 m)"
+                        domain="[('carbo_health', '=', 'rojo'), ('carbo_months_inactive', '&lt;=', 18)]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_health" string="Semáforo"
+                            context="{'group_by': 'carbo_health'}"/>
+                    <filter name="group_segment" string="Segmento"
+                            context="{'group_by': 'carbo_segment'}"/>
+                    <filter name="group_user" string="Vendedor"
+                            context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Lista con semáforo de colores                                -->
+    <!-- ============================================================ -->
+    <record id="view_partner_frequency_list" model="ir.ui.view">
+        <field name="name">res.partner.frequency.list</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Frecuencia de compra" default_order="carbo_total_sales desc"
+                  decoration-success="carbo_health == 'verde'"
+                  decoration-warning="carbo_health == 'amarillo'"
+                  decoration-danger="carbo_health == 'rojo'">
+                <field name="name" string="Cliente"/>
+                <field name="carbo_health" widget="badge"
+                       decoration-success="carbo_health == 'verde'"
+                       decoration-warning="carbo_health == 'amarillo'"
+                       decoration-danger="carbo_health == 'rojo'"/>
+                <field name="carbo_segment"/>
+                <field name="carbo_months_inactive"/>
+                <field name="carbo_avg_interval"/>
+                <field name="carbo_overdue_ratio" optional="show"/>
+                <field name="carbo_last_purchase"/>
+                <field name="carbo_purchase_months" optional="show"/>
+                <field name="carbo_total_sales" sum="Total" widget="monetary"/>
+                <field name="carbo_avg_ticket" optional="hide"/>
+                <field name="user_id" string="Vendedor" widget="many2one_avatar_user"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Kanban agrupado por semáforo                                 -->
+    <!-- ============================================================ -->
+    <record id="view_partner_frequency_kanban" model="ir.ui.view">
+        <field name="name">res.partner.frequency.kanban</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="carbo_health" quick_create="false">
+                <field name="carbo_health"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <field name="name" class="fw-bold fs-6"/>
+                            <field name="carbo_segment" widget="badge"/>
+                        </div>
+                        <div class="text-muted small mt-1">
+                            <div>
+                                Sin comprar: <field name="carbo_months_inactive"/> meses
+                                (ritmo: cada <field name="carbo_avg_interval"/> m)
+                            </div>
+                            <div>
+                                Última compra: <field name="carbo_last_purchase"/>
+                            </div>
+                            <div>
+                                Venta total: $<field name="carbo_total_sales" widget="float" options="{'digits': [16, 0]}"/> MXN
+                            </div>
+                        </div>
+                        <footer class="pt-1">
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="activity_ids" widget="kanban_activity" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Gráfica y pivote                                             -->
+    <!-- ============================================================ -->
+    <record id="view_partner_frequency_graph" model="ir.ui.view">
+        <field name="name">res.partner.frequency.graph</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <graph string="Clientes por segmento" type="bar" stacked="1">
+                <field name="carbo_segment"/>
+                <field name="carbo_health"/>
+                <field name="carbo_total_sales" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_partner_frequency_pivot" model="ir.ui.view">
+        <field name="name">res.partner.frequency.pivot</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <pivot string="Frecuencia de compra">
+                <field name="carbo_segment" type="row"/>
+                <field name="carbo_health" type="col"/>
+                <field name="carbo_total_sales" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Pestaña en la ficha del cliente                              -->
+    <!-- ============================================================ -->
+    <record id="view_partner_form_frequency" model="ir.ui.view">
+        <field name="name">res.partner.form.frequency</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Frecuencia de compra" name="carbo_frequency"
+                      invisible="not carbo_last_purchase">
+                    <group>
+                        <group string="Semáforo">
+                            <field name="carbo_health" widget="badge"
+                                   decoration-success="carbo_health == 'verde'"
+                                   decoration-warning="carbo_health == 'amarillo'"
+                                   decoration-danger="carbo_health == 'rojo'"/>
+                            <field name="carbo_segment"/>
+                            <field name="carbo_months_inactive"/>
+                            <field name="carbo_avg_interval"/>
+                            <field name="carbo_overdue_ratio"/>
+                        </group>
+                        <group string="Historial">
+                            <field name="carbo_first_purchase"/>
+                            <field name="carbo_last_purchase"/>
+                            <field name="carbo_purchase_months"/>
+                            <field name="carbo_invoice_count"/>
+                            <field name="carbo_total_sales"/>
+                            <field name="carbo_avg_ticket"/>
+                            <field name="carbo_freq_last_update"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Acciones y menús                                             -->
+    <!-- ============================================================ -->
+    <record id="action_partner_frequency" model="ir.actions.act_window">
+        <field name="name">Semáforo de clientes</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,graph,pivot,form</field>
+        <field name="domain">[('carbo_purchase_months', '&gt;=', 2)]</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="view_partner_frequency_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aún no hay datos de frecuencia de compra
+            </p>
+            <p>
+                Ejecuta la acción "Actualizar frecuencia de compra" desde
+                Contactos, o espera al cálculo automático diario.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_partner_frequency_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="view_partner_frequency_kanban"/>
+        <field name="act_window_id" ref="action_partner_frequency"/>
+    </record>
+    <record id="action_partner_frequency_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_partner_frequency_list"/>
+        <field name="act_window_id" ref="action_partner_frequency"/>
+    </record>
+    <record id="action_partner_frequency_graph" model="ir.actions.act_window.view">
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_partner_frequency_graph"/>
+        <field name="act_window_id" ref="action_partner_frequency"/>
+    </record>
+    <record id="action_partner_frequency_pivot" model="ir.actions.act_window.view">
+        <field name="sequence" eval="4"/>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_partner_frequency_pivot"/>
+        <field name="act_window_id" ref="action_partner_frequency"/>
+    </record>
+
+    <!-- Acción enfocada a recuperación: solo amarillos y rojos recientes -->
+    <record id="action_partner_recovery" model="ir.actions.act_window">
+        <field name="name">Clientes por recuperar</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('carbo_purchase_months', '&gt;=', 2),
+            ('carbo_health', 'in', ('amarillo', 'rojo')),
+            ('carbo_months_inactive', '&lt;=', 18)]</field>
+        <field name="search_view_id" ref="view_partner_frequency_search"/>
+        <field name="view_id" ref="view_partner_frequency_list"/>
+    </record>
+
+    <record id="action_partner_recovery_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_partner_frequency_list"/>
+        <field name="act_window_id" ref="action_partner_recovery"/>
+    </record>
+    <record id="action_partner_recovery_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="view_partner_frequency_kanban"/>
+        <field name="act_window_id" ref="action_partner_recovery"/>
+    </record>
+
+    <menuitem id="menu_carbo_frequency_root"
+              name="Frecuencia de Compra"
+              parent="sale.sale_menu_root"
+              sequence="25"/>
+    <menuitem id="menu_carbo_frequency_semaforo"
+              name="Semáforo de clientes"
+              parent="menu_carbo_frequency_root"
+              action="action_partner_frequency"
+              sequence="1"/>
+    <menuitem id="menu_carbo_frequency_recovery"
+              name="Clientes por recuperar"
+              parent="menu_carbo_frequency_root"
+              action="action_partner_recovery"
+              sequence="2"/>
+
+</odoo>
