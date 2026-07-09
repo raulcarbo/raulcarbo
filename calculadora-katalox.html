@@ -1158,7 +1158,7 @@ function toGpm(v, unit) {
    Fuente: MIP 260302 Katalox Light — Carbotecnia (revisión post-2023) */
 function getTCCV(loadC) {
   if (loadC < 5)   return {tccv:3, vessels:1, alerta:null};
-  if (loadC <= 10) return {tccv:7, vessels:1, alerta:null};  /* criterio seguro Carbotecnia */
+  if (loadC <= 10) return {tccv:5, vessels:1, alerta:null};  /* criterio seguro Carbotecnia */
   if (loadC <= 30) return {tccv:4, vessels:2,
     alerta:'C > 10 mg/L: se requieren 2 recipientes en serie (Lead-Lag). TCCV de 4 min por etapa.'};
   return {tccv:null, vessels:null,
