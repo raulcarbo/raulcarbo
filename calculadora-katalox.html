@@ -1199,18 +1199,18 @@ function tankHydraulics(tank, flowPerTrainGpm, mediaPerVesselFt3, bwRateGpmFt2) 
   const heightOk = requiredHeightIn<=tank.heightIn;
   return { ...tank, velocity, bedDepthIn, bedDepthFt, freeboardIn, requiredHeightIn, heightOk, bedOk, backwashFlowGpm };
 }
-function buildParallelOptions(flowGpm, seriesVessels, bwRateGpmFt2, tccvMin) {
+/* Alternativas en paralelo, también seleccionadas por volumen: para cada
+   tanque grande, los trenes necesarios para que su volumen estándar
+   contenga el medio requerido por tren. */
+function buildParallelOptions(flowGpm, requiredMediaFt3, seriesVessels, bwRateGpmFt2) {
   return commercialTanks.filter(t=>t.diamIn>=36).map(tank=>{
-    const trains=Math.max(2,Math.ceil(flowGpm/(SV_MAX*tank.areaFt2)));
+    const trains=Math.max(2,Math.ceil(requiredMediaFt3/tank.bedFt3));
     const fpt=flowGpm/trains;
-    const mreq=fpt*tccvMin*GPM_TO_FT3MIN;
-    /* Medio por recipiente = volumen estándar del tanque según tabla; el TCCV y
-       las alturas de cama se re-verifican con ese volumen, no con el teórico. */
-    const mstd=tank.bedFt3||mreq;
-    const h=tankHydraulics(tank,fpt,mstd,bwRateGpmFt2);
-    return {...h,trains,seriesVessels,totalVessels:trains*seriesVessels,flowPerTrainGpm:fpt,mediaPerVesselFt3:mstd,requiredMediaFt3:mreq,totalMediaFt3:mstd*trains*seriesVessels};
-  }).filter(o=>o.velocity>=SV_MIN&&o.velocity<=SV_MAX)
-    .sort((a,b)=>{
+    const h=tankHydraulics(tank,fpt,tank.bedFt3,bwRateGpmFt2);
+    return {...h,trains,seriesVessels,totalVessels:trains*seriesVessels,flowPerTrainGpm:fpt,mediaPerVesselFt3:tank.bedFt3,requiredMediaFt3:requiredMediaFt3/trains,totalMediaFt3:tank.bedFt3*trains*seriesVessels};
+  }).sort((a,b)=>{
+      const va=(a.velocity>=SV_MIN&&a.velocity<=SV_MAX)?0:1, vb=(b.velocity>=SV_MIN&&b.velocity<=SV_MAX)?0:1;
+      if(va!==vb) return va-vb;
       const pa=a.heightOk?0:1, pb=b.heightOk?0:1;
       if(pa!==pb) return pa-pb;
       if(a.totalVessels!==b.totalVessels) return a.totalVessels-b.totalVessels;
@@ -1219,23 +1219,17 @@ function buildParallelOptions(flowGpm, seriesVessels, bwRateGpmFt2, tccvMin) {
 }
 function selectTank(flowGpm, mediaPerVesselFt3, seriesVessels, bwRateGpmFt2, tccvMin) {
   const minArea=flowGpm/SV_MAX;
-  const maxArea=flowGpm/SV_MIN;
   const biggest=commercialTanks[commercialTanks.length-1];
-  const parallelOptions=buildParallelOptions(flowGpm,seriesVessels,bwRateGpmFt2,tccvMin||TCCV_DEFAULT);
-  if (minArea>biggest.areaFt2 && parallelOptions.length) {
+  const parallelOptions=buildParallelOptions(flowGpm,mediaPerVesselFt3,seriesVessels,bwRateGpmFt2);
+  /* Selección POR VOLUMEN: el tanque más pequeño cuyo volumen de medio
+     estándar contiene el medio requerido (flujo × TCCV). Nunca uno menor.
+     La carga hidráulica se verifica después y se marca aceptable o no. */
+  const chosen=commercialTanks.find(t=>t.bedFt3>=mediaPerVesselFt3);
+  if (!chosen) {
+    /* Ni el tanque más grande contiene el medio requerido: dividir en trenes */
     return {...parallelOptions[0], minArea, isParallel:true, parallelOptions};
   }
-  let chosen=commercialTanks.find(t=>t.areaFt2>=minArea)||biggest;
-  for (const tank of commercialTanks) {
-    const v=flowGpm/tank.areaFt2;
-    if (tank.areaFt2>=minArea && tank.areaFt2<=maxArea && v>=SV_MIN && v<=SV_MAX) {
-      chosen=tank; break;
-    }
-  }
-  /* Re-verificación con el tanque recomendado: el medio por recipiente es su
-     volumen estándar de tabla; TCCV real, carga hidráulica y alturas de cama
-     se calculan con ese volumen y su área transversal. */
-  const stdMediaFt3=chosen.bedFt3||mediaPerVesselFt3;
+  const stdMediaFt3=chosen.bedFt3;
   return {
     ...tankHydraulics(chosen,flowGpm,stdMediaFt3,bwRateGpmFt2),
     minArea, isParallel:false, trains:1, seriesVessels,
