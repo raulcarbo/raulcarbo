@@ -22,12 +22,25 @@ y calcula por cliente:
 **Segmentos** (mismos umbrales que el Excel): Top/Fiel ≥24 meses con compra ·
 Recurrente 12–23 · Frecuente 6–11 · Ocasional 2–5 · Compra única 1.
 
-**Semáforo:**
+**Semáforo (relativo al ritmo propio de cada cliente):**
 - 🟢 **Al corriente** — compra dentro de su ritmo habitual.
-- 🟡 **En riesgo** — 7 a 12 meses sin comprar, **o** superó 1.5× su propio
-  intervalo (un cliente que compraba cada mes y lleva 3 sin comprar se pone
-  amarillo aunque no llegue a 7 meses).
-- 🔴 **Inactivo / perdido** — más de 12 meses sin comprar.
+- 🟡 **En riesgo** — se atrasó **más de 1.2×** su intervalo de compra.
+- 🔴 **Inactivo / perdido** — llegó a **1.7×** su intervalo sin comprar.
+
+Cada cliente se juzga contra *su* patrón, no contra un número igual para todos.
+Ejemplos de cuándo cambia de color según qué tan seguido compra:
+
+| Ritmo del cliente | 🟡 En riesgo | 🔴 Perdido |
+|---|---|---|
+| Mensual (1 m) | 2 meses | 4 meses |
+| Trimestral (3 m) | 4 meses | 6 meses |
+| Semestral (6 m) | 8 meses | ~11 meses |
+| Anual (12 m) | ~15 meses | ~21 meses |
+
+Hay **pisos mínimos** (🟡 no antes de 2 meses, 🔴 no antes de 4) para que un
+cliente que compra a diario/semanal no se ponga amarillo por unos días de
+variación normal. Los clientes con **una sola compra** (sin ritmo medible)
+usan umbrales fijos de 7 y 12 meses.
 
 **Alertas:** al terminar el cálculo se crea una actividad **"Recuperar
 cliente"** (vence el mismo día) asignada al vendedor del cliente cuando:
@@ -55,11 +68,14 @@ En *Ajustes → Técnico → Parámetros del sistema* (crear si no existen):
 
 | Clave | Default | Significado |
 |---|---|---|
-| `carbo.risk_months` | 7 | Meses sin comprar para pasar a 🟡 |
-| `carbo.inactive_months` | 12 | Meses sin comprar para pasar a 🔴 |
-| `carbo.ratio_warning` | 1.5 | Multiplicador del ritmo propio para 🟡 |
+| `carbo.ratio_warning` | 1.2 | Multiplicador del ritmo propio para pasar a 🟡 |
+| `carbo.ratio_lost` | 1.7 | Multiplicador del ritmo propio para pasar a 🔴 |
+| `carbo.min_risk_months` | 2 | Piso: no marcar 🟡 antes de N meses |
+| `carbo.min_lost_months` | 4 | Piso: no marcar 🔴 antes de N meses |
+| `carbo.risk_months` | 7 | 🟡 fijo para clientes de una sola compra |
+| `carbo.inactive_months` | 12 | 🔴 fijo para clientes de una sola compra |
 | `carbo.alert_min_sales` | 10000 | Venta histórica mínima (MXN) para generar alerta |
-| `carbo.alert_max_red_months` | 18 | No alertar rojos con más de N meses inactivos |
+| `carbo.alert_max_lost_ratio` | 3.0 | No alertar rojos con más de N× su ciclo inactivos |
 | `carbo.alert_default_user_id` | 0 | ID de usuario que recibe alertas de clientes sin vendedor (0 = no alertar) |
 
 ## Instalación en Odoo.sh

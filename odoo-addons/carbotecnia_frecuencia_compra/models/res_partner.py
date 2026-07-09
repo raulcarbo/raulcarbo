@@ -35,8 +35,8 @@ class ResPartner(models.Model):
     carbo_overdue_ratio = fields.Float(
         string="Retraso vs. su ritmo", readonly=True, digits=(6, 1),
         help="Meses sin comprar dividido entre su intervalo promedio. "
-             "1.0 = compró justo cuando le tocaba; 3.0 = lleva el triple "
-             "de su ciclo normal sin comprar.")
+             "1.0 = compró justo cuando le tocaba; 1.2 = entra en riesgo (🟡); "
+             "1.7 = se considera perdido (🔴).")
     carbo_segment = fields.Selection(
         [
             ("top", "Top / Fiel"),
@@ -55,9 +55,11 @@ class ResPartner(models.Model):
             ("rojo", "🔴 Inactivo / perdido"),
         ],
         string="Semáforo", readonly=True,
-        help="Verde: compra dentro de su ritmo habitual. "
-             "Amarillo: 7-12 meses sin comprar, o superó 1.5× su intervalo "
-             "habitual. Rojo: más de 12 meses sin comprar.")
+        help="Relativo al ritmo propio de cada cliente. "
+             "Verde: compra dentro de su ritmo habitual. "
+             "Amarillo: en riesgo, superó 1.2× su intervalo de compra. "
+             "Rojo: perdido, llegó a 1.7× su intervalo sin comprar. "
+             "(Clientes con una sola compra usan 7 y 12 meses fijos.)")
     carbo_freq_last_update = fields.Datetime(
         string="Último cálculo de frecuencia", readonly=True)
 
@@ -70,9 +72,14 @@ class ResPartner(models.Model):
         clientes a partir de las facturas de cliente publicadas, y después
         genera las actividades de recuperación."""
         icp = self.env["ir.config_parameter"].sudo()
+        # Umbrales relativos al ritmo propio de cada cliente
+        ratio_warning = float(icp.get_param("carbo.ratio_warning", "1.2"))
+        ratio_lost = float(icp.get_param("carbo.ratio_lost", "1.7"))
+        min_risk_months = int(icp.get_param("carbo.min_risk_months", "2"))
+        min_lost_months = int(icp.get_param("carbo.min_lost_months", "4"))
+        # Fallback fijo para clientes con una sola compra (sin ritmo medible)
         risk_months = int(icp.get_param("carbo.risk_months", "7"))
         inactive_months = int(icp.get_param("carbo.inactive_months", "12"))
-        ratio_warning = float(icp.get_param("carbo.ratio_warning", "1.5"))
 
         today = fields.Date.context_today(self)
         now = fields.Datetime.now()
@@ -128,17 +135,23 @@ class ResPartner(models.Model):
             else:
                 segment = "unico"
 
-            # Semáforo: reglas fijas del Excel + regla personalizada por
-            # ritmo propio del cliente
-            if months_inactive > inactive_months:
+            # Semáforo relativo al ritmo propio de cada cliente:
+            # 🟡 cuando se atrasa >1.2x su intervalo habitual, 🔴 al llegar a
+            # 1.7x. Pisos mínimos para no marcar a compradores muy frecuentes por
+            # unas semanas de variación normal. Para clientes con una sola
+            # compra (sin ritmo medible) se usa el fallback fijo.
+            if avg_interval > 0:
+                risk_threshold = max(
+                    min_risk_months, avg_interval * ratio_warning)
+                lost_threshold = max(
+                    min_lost_months, avg_interval * ratio_lost)
+            else:
+                risk_threshold = risk_months
+                lost_threshold = inactive_months
+
+            if months_inactive >= lost_threshold:
                 health = "rojo"
-            elif months_inactive >= risk_months:
-                health = "amarillo"
-            elif (
-                avg_interval
-                and months_inactive >= 2
-                and months_inactive > avg_interval * ratio_warning
-            ):
+            elif months_inactive >= risk_threshold:
                 health = "amarillo"
             else:
                 health = "verde"
@@ -176,7 +189,7 @@ class ResPartner(models.Model):
         rojo reciente (recién perdido, todavía recuperable)."""
         icp = self.env["ir.config_parameter"].sudo()
         min_sales = float(icp.get_param("carbo.alert_min_sales", "10000"))
-        max_red_months = int(icp.get_param("carbo.alert_max_red_months", "18"))
+        max_lost_ratio = float(icp.get_param("carbo.alert_max_lost_ratio", "3.0"))
         default_user_id = int(
             icp.get_param("carbo.alert_default_user_id", "0"))
         default_user = (
@@ -199,11 +212,13 @@ class ResPartner(models.Model):
 
         created = 0
         for partner in partners:
-            # Rojo solo si es pérdida reciente: si lleva años inactivo ya no
-            # generamos ruido, eso se trabaja como campaña aparte.
+            # Rojo solo si es pérdida reciente (hasta 3x su ciclo habitual).
+            # Más allá ya es historia vieja: se trabaja como campaña aparte,
+            # no como actividad urgente para el vendedor.
             if (
                 partner.carbo_health == "rojo"
-                and partner.carbo_months_inactive > max_red_months
+                and partner.carbo_overdue_ratio
+                and partner.carbo_overdue_ratio > max_lost_ratio
             ):
                 continue
 
