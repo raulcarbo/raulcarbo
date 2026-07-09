@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="carbotecnia_dashboard.Dashboard">
+    <div class="o_carbo_dashboard h-100 overflow-auto p-3 bg-view">
+
+        <!-- Encabezado + selector de periodo -->
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <h3 class="me-auto mb-0">Dashboard Comercial</h3>
+            <span t-if="state.loading" class="text-muted small">
+                <i class="fa fa-spinner fa-spin me-1"/>Actualizando…
+            </span>
+            <div class="btn-group">
+                <button class="btn btn-sm"
+                        t-att-class="state.period === 'month' ? 'btn-primary' : 'btn-outline-primary'"
+                        t-on-click="() => this.setPeriod('month')">Mes</button>
+                <button class="btn btn-sm"
+                        t-att-class="state.period === 'quarter' ? 'btn-primary' : 'btn-outline-primary'"
+                        t-on-click="() => this.setPeriod('quarter')">Trimestre</button>
+                <button class="btn btn-sm"
+                        t-att-class="state.period === 'year' ? 'btn-primary' : 'btn-outline-primary'"
+                        t-on-click="() => this.setPeriod('year')">Año</button>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card o_carbo_kpi h-100">
+                    <div class="card-body">
+                        <div class="o_carbo_kpi_label">Ventas del periodo</div>
+                        <div class="o_carbo_kpi_value" t-esc="fmtMXN(state.kpis.total)"/>
+                        <div class="o_carbo_kpi_sub"
+                             t-att-class="(state.kpis.delta !== null &amp;&amp; state.kpis.delta &lt; 0) ? 'text-danger' : 'text-success'"
+                             t-esc="deltaText"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card o_carbo_kpi h-100">
+                    <div class="card-body">
+                        <div class="o_carbo_kpi_label">Pedidos confirmados</div>
+                        <div class="o_carbo_kpi_value" t-esc="state.kpis.orders"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card o_carbo_kpi h-100">
+                    <div class="card-body">
+                        <div class="o_carbo_kpi_label">Ticket promedio</div>
+                        <div class="o_carbo_kpi_value" t-esc="fmtMXN(state.kpis.avgTicket)"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-6 col-xl">
+                <div class="card o_carbo_kpi h-100">
+                    <div class="card-body">
+                        <div class="o_carbo_kpi_label">Leads nuevos</div>
+                        <div class="o_carbo_kpi_value" t-esc="state.kpis.newLeads"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-6 col-xl">
+                <div class="card o_carbo_kpi h-100">
+                    <div class="card-body">
+                        <div class="o_carbo_kpi_label">Pipeline abierto (esperado)</div>
+                        <div class="o_carbo_kpi_value" t-esc="fmtMXN(state.kpis.pipeline)"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficas -->
+        <div class="row g-3">
+            <div class="col-12 col-xl-8">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">Tendencia de ventas — últimos 12 meses</h6>
+                        <div class="o_carbo_chart"><canvas t-ref="trendChart"/></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">Ventas por categoría de producto</h6>
+                        <div class="o_carbo_chart"><canvas t-ref="categChart"/></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">Ventas por vendedor</h6>
+                        <div class="o_carbo_chart"><canvas t-ref="sellerChart"/></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">Top clientes del periodo</h6>
+                        <div class="o_carbo_chart"><canvas t-ref="clientsChart"/></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

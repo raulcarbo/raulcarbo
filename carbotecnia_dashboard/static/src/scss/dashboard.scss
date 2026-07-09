@@ -1,0 +1,28 @@
+.o_carbo_dashboard {
+    .o_carbo_kpi {
+        .o_carbo_kpi_label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--bs-secondary-color, #6c757d);
+        }
+        .o_carbo_kpi_value {
+            font-size: 1.45rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .o_carbo_kpi_sub {
+            font-size: 0.78rem;
+        }
+    }
+
+    .o_carbo_chart {
+        position: relative;
+        height: 300px;
+    }
+
+    .o_carbo_table {
+        max-height: 340px;
+        overflow-y: auto;
+    }
+}

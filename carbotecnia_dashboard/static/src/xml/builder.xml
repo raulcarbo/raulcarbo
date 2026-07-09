@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="carbotecnia_dashboard.Builder">
+    <div class="o_carbo_dashboard h-100 overflow-auto p-3 bg-view" t-ref="root">
+
+        <!-- Encabezado -->
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <h3 class="me-auto mb-0" t-esc="state.active ? state.active.name : 'Mis dashboards'"/>
+            <span t-if="state.loading" class="text-muted small">
+                <i class="fa fa-spinner fa-spin me-1"/>Actualizando…
+            </span>
+            <select t-if="state.dashboards.length > 1"
+                    class="form-select form-select-sm w-auto"
+                    t-on-change="onSelectDashboard">
+                <option t-foreach="state.dashboards" t-as="dash" t-key="dash.id"
+                        t-att-value="dash.id"
+                        t-att-selected="state.active &amp;&amp; dash.id === state.active.id"
+                        t-esc="dash.name"/>
+            </select>
+            <button class="btn btn-sm btn-outline-secondary" t-on-click="refresh" title="Actualizar">
+                <i class="fa fa-refresh"/>
+            </button>
+            <button class="btn btn-sm btn-outline-primary" t-on-click="openConfig">
+                <i class="fa fa-cog me-1"/>Configurar
+            </button>
+        </div>
+
+        <!-- Sin dashboards -->
+        <div t-if="!state.loading &amp;&amp; !state.active" class="text-center text-muted py-5">
+            <p class="mb-2">Aún no hay dashboards configurados.</p>
+            <button class="btn btn-primary" t-on-click="openConfig">Crear el primero</button>
+        </div>
+
+        <!-- Widgets -->
+        <div t-if="state.active" class="row g-3">
+            <t t-foreach="state.active.widgets" t-as="w" t-key="w.id">
+                <div t-attf-class="col-12 col-xl-{{w.col_span}}">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title" t-esc="w.name"/>
+
+                            <div t-if="w.error" class="alert alert-warning mb-0" t-esc="w.error"/>
+
+                            <t t-elif="w.display_type === 'kpi'">
+                                <div class="o_carbo_kpi_value display-6 fw-bold"
+                                     t-esc="fmtValue(w, w.value)"/>
+                            </t>
+
+                            <t t-elif="w.display_type === 'chart'">
+                                <div class="o_carbo_chart">
+                                    <canvas t-att-data-wid="w.id"/>
+                                </div>
+                            </t>
+
+                            <t t-elif="w.display_type === 'table'">
+                                <div class="table-responsive o_carbo_table">
+                                    <table class="table table-sm table-striped mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th t-foreach="w.columns" t-as="col"
+                                                    t-key="col_index" t-esc="col"/>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="w.rows" t-as="row" t-key="row_index">
+                                                <td t-foreach="row" t-as="cell" t-key="cell_index">
+                                                    <t t-if="isNumber(cell)" t-esc="fmtValue(w, cell)"/>
+                                                    <t t-else="" t-esc="cell"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </div>
+</t>
+
+</templates>

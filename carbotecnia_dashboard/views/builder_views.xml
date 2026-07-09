@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Acción cliente: visor de dashboards configurables -->
+    <record id="action_carbo_dashboard_builder" model="ir.actions.client">
+        <field name="name">Mis dashboards</field>
+        <field name="tag">carbo_dashboard_builder</field>
+    </record>
+
+    <!-- Configuración (backoffice) -->
+    <record id="view_carbo_dashboard_list" model="ir.ui.view">
+        <field name="name">carbo.dashboard.list</field>
+        <field name="model">carbo.dashboard</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="group_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_carbo_dashboard_form" model="ir.ui.view">
+        <field name="name">carbo.dashboard.form</field>
+        <field name="model">carbo.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="group_ids" widget="many2many_tags"
+                               placeholder="Vacío = visible para todos"/>
+                    </group>
+                    <notebook>
+                        <page string="Widgets">
+                            <field name="widget_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="display_type"/>
+                                    <field name="chart_type"/>
+                                    <field name="source"/>
+                                    <field name="col_span"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_carbo_dashboard_widget_form" model="ir.ui.view">
+        <field name="name">carbo.dashboard.widget.form</field>
+        <field name="model">carbo.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <form string="Widget">
+                <sheet>
+                    <group>
+                        <group string="Presentación">
+                            <field name="name"/>
+                            <field name="display_type" widget="radio"/>
+                            <field name="chart_type" invisible="display_type != 'chart'"
+                                   required="display_type == 'chart'"/>
+                            <field name="col_span"/>
+                            <field name="is_money"/>
+                        </group>
+                        <group string="Fuente de datos">
+                            <field name="source" widget="radio"/>
+                        </group>
+                    </group>
+                    <group string="Datos (sin código)" invisible="source != 'model'">
+                        <group>
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="model_name" invisible="1"/>
+                            <field name="domain" widget="domain"
+                                   options="{'model': 'model_name', 'in_dialog': True}"/>
+                        </group>
+                        <group>
+                            <field name="groupby_field_id" options="{'no_create': True}"
+                                   invisible="display_type == 'kpi'"/>
+                            <field name="groupby_ttype" invisible="1"/>
+                            <field name="date_granularity"
+                                   invisible="display_type == 'kpi' or groupby_ttype not in ('date', 'datetime')"/>
+                            <field name="aggregate"/>
+                            <field name="measure_field_id" options="{'no_create': True}"
+                                   invisible="aggregate == 'count'"
+                                   required="source == 'model' and aggregate != 'count'"/>
+                            <field name="limit" invisible="display_type == 'kpi'"/>
+                            <field name="order_desc"
+                                   invisible="display_type == 'kpi' or groupby_ttype in ('date', 'datetime')"/>
+                        </group>
+                    </group>
+                    <group string="Consulta SQL (solo lectura, solo administradores)"
+                           invisible="source != 'sql'" groups="base.group_system">
+                        <field name="sql_query" nolabel="1" colspan="2"
+                               placeholder="SELECT etiqueta, valor FROM ... GROUP BY 1 ORDER BY 2 DESC"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_carbo_dashboard_config" model="ir.actions.act_window">
+        <field name="name">Configurar dashboards</field>
+        <field name="res_model">carbo.dashboard</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menús (cuelgan del root definido en dashboard_views.xml) -->
+    <menuitem id="menu_carbo_dashboard_builder"
+              name="Mis dashboards"
+              parent="menu_carbotecnia_dashboard_root"
+              action="action_carbo_dashboard_builder"
+              sequence="2"/>
+
+    <menuitem id="menu_carbo_dashboard_config"
+              name="Configuración"
+              parent="menu_carbotecnia_dashboard_root"
+              action="action_carbo_dashboard_config"
+              groups="carbotecnia_dashboard.group_carbo_dashboard_manager"
+              sequence="90"/>
+</odoo>

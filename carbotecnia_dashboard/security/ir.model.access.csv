@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_carbo_dashboard_user,carbo.dashboard user,model_carbo_dashboard,base.group_user,1,0,0,0
+access_carbo_dashboard_widget_user,carbo.dashboard.widget user,model_carbo_dashboard_widget,base.group_user,1,0,0,0
+access_carbo_dashboard_manager,carbo.dashboard manager,model_carbo_dashboard,group_carbo_dashboard_manager,1,1,1,1
+access_carbo_dashboard_widget_manager,carbo.dashboard.widget manager,model_carbo_dashboard_widget,group_carbo_dashboard_manager,1,1,1,1
