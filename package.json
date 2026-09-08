@@ -1,0 +1,10 @@
+{
+  "name": "carbo-seguimiento-acciones",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/servidor.mjs",
+    "precios": "node scripts/actualizar-precios.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

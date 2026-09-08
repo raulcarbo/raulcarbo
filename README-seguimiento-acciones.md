@@ -1,7 +1,7 @@
 # Seguimiento de acciones · CAGR a 5 años
 
-Captura automática del precio de tus acciones cada mañana a las **8:30 CDMX** y cálculo del
-rendimiento anual compuesto (CAGR) implícito contra **tu** precio objetivo.
+Aprietas un botón y trae el precio de tus acciones en ese momento, y calcula el rendimiento
+anual compuesto (CAGR) implícito contra **tu** precio objetivo.
 
 ```
 CAGR = (Precio objetivo / Precio de mercado)^(1/n) − 1
@@ -9,17 +9,48 @@ CAGR = (Precio objetivo / Precio de mercado)^(1/n) − 1
 
 Es decir: qué tanto tiene que rendir la acción, por año, para llegar a donde tú dices que vale.
 
+Hay además una captura automática diaria a las 8:30 CDMX, pero es respaldo — sirve para que el
+histórico crezca solo aunque no abras nada. El botón no depende de ella.
+
+---
+
+## Arranque rápido
+
+```bash
+node scripts/servidor.mjs     # o: npm start
+```
+
+Abre `http://127.0.0.1:8080` y aprieta **Actualizar precios ahora**. Eso es todo.
+
+---
+
+## Por qué hace falta el servidor local (y no es un capricho)
+
+El navegador **no puede pedirle precios a Yahoo directamente**. Yahoo no manda la cabecera
+CORS que autoriza a una página ajena a leer su respuesta, así que el `fetch` se bloquea. No es
+un bug del tablero: es cómo funciona la seguridad del navegador.
+
+Las salidas posibles son tres, y cada una tiene su precio:
+
+| Camino | Ventaja | Costo |
+|---|---|---|
+| **Servidor local** (el que usa esto) | Sin llaves, sin terceros, guarda el histórico | Correr un comando |
+| Proxy CORS público | No requiere nada | Depende de un tercero que se cae, limita peticiones y ve qué tickers consultas |
+| API con llave (Finnhub, Twelve Data) | Estable | Hay que registrarse, y la llave queda expuesta en el HTML |
+
+El tablero intenta las dos primeras en ese orden. Si detecta el servidor local, lo usa
+(verás el chip **servidor local**). Si abres el HTML suelto, cae al proxy público
+(chip **sin servidor**) y te avisa si no lo logra. Tus precios objetivo nunca salen del
+navegador en ningún caso; por el proxy sólo viaja el ticker.
+
 ---
 
 ## Por qué no hay n8n aquí
 
-n8n necesita un servidor prendido 24/7, Docker, actualizaciones y alguien que lo cuide.
-Para bajar N precios una vez al día eso es infraestructura con dueño y sin sueldo.
-
-Este montaje usa **GitHub Actions** (el cron ya vive en GitHub) y una **página estática**.
-Costo cero, cero servidores, y el histórico queda versionado en git automáticamente.
-Si algún día necesitas ramificar lógica de verdad (alertas por correo, cruces con IBKR,
-webhooks), ahí sí n8n empieza a pagar su renta.
+n8n necesita un servidor prendido 24/7, Docker, actualizaciones y alguien que lo cuide. Este
+servidor lo prendes cuando lo vas a usar y lo apagas con Ctrl+C: son 200 líneas sin
+dependencias, no una plataforma. Si algún día necesitas ramificar lógica de verdad (alertas
+por correo, cruces con IBKR, webhooks), ahí sí n8n empieza a pagar su renta.
 
 ---
 
@@ -28,9 +59,11 @@ webhooks), ahí sí n8n empieza a pagar su renta.
 | Archivo | Qué hace |
 |---|---|
 | `data/watchlist.json` | **Tu lista.** Tickers + precio objetivo. Fuente de verdad. |
-| `.github/workflows/precios-acciones.yml` | Cron 8:30 CDMX, lunes a viernes. |
-| `scripts/actualizar-precios.mjs` | Baja precios y calcula CAGR. Node puro, sin dependencias. |
-| `data/precios.json` · `data/precios.js` | Snapshot del día (lo genera el robot). |
+| `scripts/servidor.mjs` | Servidor local. Lo que hace funcionar el botón. |
+| `scripts/precios-core.mjs` | Núcleo: baja precios y calcula CAGR. |
+| `scripts/actualizar-precios.mjs` | CLI que usa el cron. |
+| `.github/workflows/precios-acciones.yml` | Captura automática 8:30 CDMX, L–V (respaldo). |
+| `data/precios.json` · `data/precios.js` | Último snapshot. |
 | `data/historico.csv` | Bitácora append-only, una fila por ticker por captura. Ábrelo en Excel. |
 | `seguimiento-acciones.html` | El tablero. |
 
@@ -38,9 +71,15 @@ webhooks), ahí sí n8n empieza a pagar su renta.
 Respaldo automático: Stooq. Google Finance no tiene API pública — sólo se puede raspar
 la página, que se rompe cada vez que Google le mueve al HTML. Por eso, Yahoo.
 
+El servidor escucha **sólo en 127.0.0.1**: escribe archivos del repo y no tiene contraseña,
+así que no debe quedar expuesto a la red local.
+
 ---
 
-## Puesta en marcha (una sola vez)
+## Puesta en marcha del cron (opcional)
+
+El botón funciona sin nada de esto. Estos pasos sólo son para que el histórico crezca solo
+cada mañana aunque no abras el tablero.
 
 ### 1. Dale permiso de escritura al robot
 
@@ -61,31 +100,33 @@ no dispara: puedes correrlo a mano, pero no solo.
 Al terminar debe aparecer un commit nuevo con `data/precios.json`, `data/precios.js` e
 `data/historico.csv`.
 
-### 4. Abre el tablero
+### 4. Dónde abrir el tablero
 
-- **Local:** `git pull` y abre `seguimiento-acciones.html` con doble clic. Funciona sin servidor.
-- **En línea:** `Settings → Pages → Deploy from a branch` → rama por defecto, carpeta `/ (root)`.
-  Queda en `https://raulcarbo.github.io/raulcarbo/seguimiento-acciones.html`.
-  Ojo: GitHub Pages en repo público es **público**. Si tus precios objetivo son privados,
-  quédate con el archivo local.
+- **Con servidor local** (recomendado): `node scripts/servidor.mjs` → `http://127.0.0.1:8080`.
+  El botón funciona, la watchlist se guarda sola y el histórico crece.
+- **Archivo suelto:** doble clic al HTML. Se ve el último snapshot; el botón depende del
+  proxy público.
+- **GitHub Pages:** `Settings → Pages → Deploy from a branch` → rama por defecto, carpeta
+  `/ (root)`. Ojo: en repo público, tus precios objetivo del `watchlist.json` quedan
+  **públicos**. Si eso te incomoda, quédate en local.
 
 ---
 
 ## Uso diario
 
-**Poner precios objetivo.** Dos caminos:
+**Traer precios.** Aprieta **Actualizar precios ahora**. Con el servidor local corriendo,
+cada captura se guarda en `data/` y agrega una fila al histórico.
 
-1. **En el tablero** (rápido): escribe el objetivo en la columna, el CAGR se recalcula al
-   instante y se guarda en tu navegador. Es tuyo y local, no se sube a ningún lado.
-2. **En `data/watchlist.json`** (permanente): edita `objetivo` y haz commit. Así el CAGR
-   también queda en `historico.csv` y lo ve cualquiera que abra el tablero.
+**Poner precios objetivo.** Escribe el objetivo en la columna: el CAGR se recalcula al
+instante y se guarda en tu navegador. Cuando ya te gusten, aprieta **Guardar watchlist** —
+con servidor local escribe `data/watchlist.json` directo (después sólo haces commit).
+Sin servidor, el botón dice **Exportar watchlist.json** y lo descarga para que lo subas a mano.
 
-El botón **Exportar watchlist.json** convierte lo que traes en el tablero al archivo listo
-para reemplazar `data/watchlist.json`. Ese es el puente entre "lo probé" y "quedó fijo".
+Al guardar, los objetivos dejan de vivir en el navegador y pasan al archivo. Es a propósito:
+si se quedaran los dos, la copia del navegador taparía en silencio lo que edites en el archivo.
 
 **Agregar acciones.** Escribe el ticker en notación Yahoo (`BRK-B`, no `BRK.B`; `WALMEX.MX`
-para la BMV; `ASML` para el ADR). Aparece en gris hasta que el robot lo capture a la mañana
-siguiente — para eso hay que exportar el watchlist y subirlo.
+para la BMV; `ASML` para el ADR). Aparece en gris hasta que aprietes Actualizar.
 
 **Semáforo.** Verde ≥ 15 % · Ámbar ≥ 10 % · Rojo abajo. Ajusta los umbrales en el tablero
 según tu tasa de descuento. Si tu piso es el S&P a 10 %, todo lo rojo no merece tu capital
@@ -93,7 +134,7 @@ ni tu atención.
 
 ---
 
-## El detalle del horario que sí importa
+## El detalle del horario (aplica sólo al cron)
 
 México ya no cambia horario: es **UTC−6 todo el año**. El cron está en `30 14 * * 1-5`
 (14:30 UTC = 8:30 CDMX). Pero la bolsa de Nueva York sí cambia:
@@ -123,7 +164,10 @@ falla, es cómo funciona la cola gratuita. El snapshot guarda la hora real de ca
 | El cron no dispara solo | No está en la rama por defecto | Paso 2 |
 | Un ticker sale "precio no actualizado hoy" | Símbolo mal escrito, o Yahoo lo estranguló | Verifica el ticker en finance.yahoo.com. Si existe, es throttling: se arregla solo mañana |
 | Todos fallan y el workflow sale rojo | Yahoo cambió el endpoint o cortó el acceso | Revisa el log del job; el respaldo de Stooq debería cubrirlo |
-| El tablero dice "Todavía no hay datos" | Aún no corre el workflow | Córrelo a mano (paso 3) |
+| El tablero dice "Todavía no hay datos" | Nunca se ha capturado | Aprieta Actualizar precios ahora |
+| El chip dice "sin servidor" | Abriste el HTML sin `servidor.mjs` | `node scripts/servidor.mjs` y entra por `http://127.0.0.1:8080` |
+| "El navegador no pudo alcanzar Yahoo" | CORS bloqueó el directo y los proxies públicos fallaron | Corre el servidor local. Es el camino confiable |
+| El puerto 8080 está ocupado | Otra cosa lo usa | El servidor prueba 8081, 8082… solo; mira la URL que imprime |
 
 Si falla un ticker, **el robot no tira la corrida**: conserva su último precio bueno, lo marca
 como obsoleto en el tablero y sigue con los demás. Sólo falla en rojo si fallan todos.

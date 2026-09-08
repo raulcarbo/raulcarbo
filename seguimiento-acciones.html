@@ -100,6 +100,25 @@ h1,h2,h3{font-family:var(--font-title)}
 .btn.ghost:hover{border-color:var(--faint);color:var(--text);background:var(--blue-light);transform:none}
 .btn-row{display:flex;gap:12px;flex-wrap:wrap}
 
+/* ── Barra de captura ── */
+.barra-accion{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.btn-actualizar{display:inline-flex;align-items:center;gap:9px;padding:12px 22px;
+  font-size:14.5px;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;
+  background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:#fff;
+  box-shadow:0 4px 16px rgba(0,87,160,.32);transition:all .2s}
+.btn-actualizar:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 7px 20px rgba(0,87,160,.42)}
+.btn-actualizar:disabled{opacity:.6;cursor:progress;transform:none}
+.btn-actualizar .giro{display:inline-block;font-size:16px}
+.btn-actualizar.cargando .giro{animation:girar .9s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+.estado-captura{font-size:12.5px;color:var(--muted);line-height:1.45;flex:1;min-width:200px}
+.estado-captura.err{color:var(--fail);font-weight:600}
+.estado-captura.ok{color:var(--pass);font-weight:600}
+.chip-modo{font-family:var(--font-num);font-size:10.5px;font-weight:700;
+  padding:4px 10px;border-radius:999px;background:var(--blue-soft);
+  color:var(--blue-dark);border:1px solid rgba(0,87,160,.2);white-space:nowrap}
+.chip-modo.limitado{background:var(--warn-bg);color:var(--warn);border-color:rgba(194,114,0,.28)}
+
 /* ── Resumen ── */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
 .stat{background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius);
@@ -171,7 +190,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
 
 @media print{
   html,body{background:#fff}
-  .topbar,.hero-banner,.btn-row,.controls,.btn-x,.nota{display:none!important}
+  .topbar,.hero-banner,.btn-row,.controls,.btn-x,.nota,.barra-accion{display:none!important}
   .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
   table{min-width:0}
   .obj-input{border:none;background:transparent;padding:0;width:auto}
@@ -196,7 +215,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
     <div class="hero-inner">
       <div>
         <h2>¿Qué rendimiento anual te <em>tiene que dar</em> para llegar a tu precio objetivo?</h2>
-        <p>Cada mañana a las 8:30 CDMX se captura el precio de mercado. Tú pones el precio objetivo
+        <p>Aprietas el botón y trae los precios en ese momento. Tú pones el precio objetivo
            y la tabla te dice el rendimiento anual compuesto implícito. Ordena por CAGR: arriba queda
            lo que más paga por unidad de tiempo, no lo que más te gusta.</p>
       </div>
@@ -205,6 +224,14 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
         <div class="f-eq">CAGR = (<span>Objetivo</span> / <span>Precio</span>)<sup>1/n</sup> − 1</div>
       </div>
     </div>
+  </div>
+
+  <div class="barra-accion">
+    <button type="button" class="btn-actualizar" id="btnActualizar">
+      <span class="giro">⟳</span> Actualizar precios ahora
+    </button>
+    <span class="chip-modo" id="chipModo">detectando…</span>
+    <span class="estado-captura" id="estadoCaptura"></span>
   </div>
 
   <div class="stats" id="stats"></div>
@@ -247,8 +274,9 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
         </div>
         <button type="button" class="btn" id="btnAgregar">Agregar</button>
       </div>
-      <p class="hint">El ticker nuevo aparece en gris hasta la siguiente captura. Para que el robot lo baje
-         cada mañana, exporta el <code>watchlist.json</code> y súbelo al repo.</p>
+      <p class="hint">El ticker nuevo aparece en gris hasta que aprietes <strong>Actualizar precios ahora</strong>.
+         Para que además lo baje el robot cada mañana, guarda la watchlist (con servidor local se guarda
+         sola; sin él, exporta el <code>watchlist.json</code> y súbelo al repo).</p>
     </div>
   </div>
 
@@ -267,8 +295,10 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
       <li>Sólo cuenta la <strong>revalorización del precio</strong>. No incluye dividendos, recompras,
           impuestos, comisiones ni tipo de cambio. Si la acción paga dividendo, tu rendimiento real es mayor.</li>
       <li>El precio objetivo lo pones tú. La calidad del CAGR es exactamente la calidad de ese objetivo.</li>
-      <li>Los precios se capturan una vez al día. Esto es una herramienta de seguimiento de tesis a largo plazo,
-          no un tablero de trading.</li>
+      <li>El botón trae el precio del momento. Con el servidor local corriendo, cada captura se guarda
+          en <code>data/</code> y alimenta el histórico; sin él, sólo se ve en pantalla.</li>
+      <li>Esto es seguimiento de tesis a largo plazo, no un tablero de trading. Si te encuentras
+          apretando el botón cada diez minutos, el problema ya no es la herramienta.</li>
     </ul>
   </div>
 
@@ -557,6 +587,216 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
            promedio !== null && promedio * 100 >= Number(cfg.verde) ? 'ok' : 'mid');
   }
 
+  /* ────────────────── captura en vivo ──────────────────
+     El navegador NO puede pedirle precios a Yahoo directamente: Yahoo no manda
+     la cabecera CORS que autoriza a una página ajena a leer la respuesta.
+     Por eso hay dos caminos, en orden de confiabilidad:
+
+       1. Servidor local (node scripts/servidor.mjs) — la petición sale de Node,
+          donde no hay CORS. Sin llaves, sin terceros, y guarda el histórico.
+       2. Proxy CORS público — si abriste el HTML suelto o desde GitHub Pages.
+          Depende de un tercero que puede caerse o limitar peticiones, y ese
+          tercero ve qué tickers consultas (tus precios objetivo nunca salen
+          del navegador).
+  */
+
+  var modoServidor = false;
+  var viaQueSirvio = null;      // se recuerda la estrategia que funcionó
+
+  var PROXIES = [
+    { nombre:'allorigins', arma:function(u){ return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); } },
+    { nombre:'corsproxy',  arma:function(u){ return 'https://corsproxy.io/?url=' + encodeURIComponent(u); } },
+    { nombre:'codetabs',   arma:function(u){ return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); } }
+  ];
+
+  function urlYahoo(ticker){
+    return 'https://query1.finance.yahoo.com/v8/finance/chart/' +
+           encodeURIComponent(ticker) + '?interval=1d&range=5d&includePrePost=false';
+  }
+
+  function conTiempoLimite(url, ms){
+    var ctrl = new AbortController();
+    var id = setTimeout(function(){ ctrl.abort(); }, ms || 15000);
+    return fetch(url, { signal: ctrl.signal })
+      .then(function(r){
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .finally(function(){ clearTimeout(id); });
+  }
+
+  /* Traduce la respuesta de Yahoo al mismo formato que produce el servidor. */
+  function leerMetaYahoo(j, ticker){
+    var meta = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
+    if (!meta) {
+      var err = j && j.chart && j.chart.error && j.chart.error.description;
+      throw new Error(err || 'respuesta sin datos');
+    }
+    var precio = meta.regularMarketPrice;
+    if (typeof precio !== 'number' || !isFinite(precio)) throw new Error('sin precio de mercado');
+    var previo = (typeof meta.previousClose === 'number') ? meta.previousClose : meta.chartPreviousClose;
+    return {
+      ticker: ticker,
+      nombre: meta.longName || meta.shortName || ticker,
+      moneda: meta.currency || 'USD',
+      precio: precio,
+      cierreAnterior: (typeof previo === 'number' && isFinite(previo)) ? previo : null,
+      varDia: (typeof previo === 'number' && previo > 0) ? (precio / previo - 1) : null
+    };
+  }
+
+  /* Intenta directo y luego cada proxy; recuerda la vía que sirvió. */
+  function cotizarNavegador(ticker){
+    var objetivo = urlYahoo(ticker);
+    var vias = [{ nombre:'directo', url: objetivo }].concat(
+      PROXIES.map(function(p){ return { nombre: p.nombre, url: p.arma(objetivo) }; })
+    );
+    if (viaQueSirvio){
+      vias.sort(function(a,b){
+        return (b.nombre === viaQueSirvio) - (a.nombre === viaQueSirvio);
+      });
+    }
+
+    var i = 0;
+    function siguiente(ultimoError){
+      if (i >= vias.length) {
+        return Promise.reject(ultimoError || new Error('ninguna vía disponible'));
+      }
+      var via = vias[i++];
+      return conTiempoLimite(via.url, 15000)
+        .then(function(j){
+          var q = leerMetaYahoo(j, ticker);
+          viaQueSirvio = via.nombre;
+          q.via = via.nombre;
+          return q;
+        })
+        .catch(function(e){ return siguiente(e); });
+    }
+    return siguiente(null);
+  }
+
+  /* Arma un snapshot equivalente al del servidor, conservando el historial. */
+  function armarSnapshot(cotizaciones, errores){
+    var anios = Number(cfg.horizonte) || 5;
+    var previas = {};
+    (datos && datos.acciones ? datos.acciones : []).forEach(function(a){ previas[a.ticker] = a; });
+
+    var ahora = new Date();
+    var fecha = ahora.toLocaleDateString('en-CA', { timeZone:'America/Mexico_City' });
+    var hora  = ahora.toLocaleTimeString('es-MX', {
+      timeZone:'America/Mexico_City', hour:'2-digit', minute:'2-digit', hour12:false });
+
+    var acciones = filas().map(function(f){
+      var q = cotizaciones[f.ticker];
+      var anterior = previas[f.ticker] || {};
+      var historial = (anterior.historial || []).slice();
+
+      if (q){
+        if (historial.length && historial[historial.length-1].f === fecha) historial.pop();
+        historial.push({ f: fecha, p: Number(q.precio.toFixed(4)) });
+      }
+
+      var precio = q ? q.precio : f.precio;
+      return {
+        ticker: f.ticker,
+        nombre: q ? q.nombre : (f.nombre || ''),
+        moneda: q ? q.moneda : (f.moneda || ''),
+        precio: (typeof precio === 'number' && isFinite(precio)) ? Number(precio.toFixed(4)) : null,
+        varDia: q ? q.varDia : f.varDia,
+        objetivo: f.objetivo,
+        upside: upside(precio, f.objetivo),
+        cagr: cagr(precio, f.objetivo, anios),
+        historial: historial.slice(-260),
+        obsoleto: !q,
+        error: q ? null : (errores[f.ticker] || null)
+      };
+    });
+
+    return {
+      generado: ahora.toISOString(), fecha: fecha, hora: hora,
+      zona: 'America/Mexico_City', horizonte_anios: anios,
+      umbrales_cagr_pct: { verde: Number(cfg.verde), ambar: Number(cfg.ambar) },
+      acciones: acciones
+    };
+  }
+
+  /* Captura secuencial desde el navegador (en serie para no provocar throttling). */
+  function capturarDesdeNavegador(tickers, avisar){
+    var cotizaciones = {}, errores = {}, i = 0;
+    function paso(){
+      if (i >= tickers.length) return Promise.resolve({ cotizaciones: cotizaciones, errores: errores });
+      var t = tickers[i++];
+      avisar('Consultando ' + t + '… (' + i + ' de ' + tickers.length + ')');
+      return cotizarNavegador(t)
+        .then(function(q){ cotizaciones[t] = q; })
+        .catch(function(e){ errores[t] = e.message; })
+        .then(paso);
+    }
+    return paso();
+  }
+
+  function fijarEstado(texto, clase){
+    var el = document.getElementById('estadoCaptura');
+    el.textContent = texto || '';
+    el.className = 'estado-captura' + (clase ? ' ' + clase : '');
+  }
+
+  function actualizarPill(){
+    var pill = document.getElementById('pillCaptura');
+    pill.classList.remove('stale');
+    if (datos && datos.fecha){
+      var viejos = (datos.acciones || []).filter(function(a){ return a.obsoleto; }).length;
+      pill.textContent = 'Captura: ' + datos.fecha + ' · ' + datos.hora + ' CDMX' +
+                         (viejos ? ' · ' + viejos + ' sin actualizar' : '');
+      if (viejos) pill.classList.add('stale');
+    } else {
+      pill.textContent = 'Sin captura todavía';
+      pill.classList.add('stale');
+    }
+  }
+
+  function actualizarAhora(){
+    var btn = document.getElementById('btnActualizar');
+    var lista = filas().map(function(f){ return f.ticker; });
+    if (!lista.length){ fijarEstado('No hay tickers en la lista.', 'err'); return; }
+
+    btn.disabled = true; btn.classList.add('cargando');
+    fijarEstado('Consultando precios…');
+
+    var trabajo = modoServidor
+      ? fetch('/api/precios')
+          .then(function(r){ return r.json().then(function(j){
+              if (!r.ok || j.error) throw new Error(j.error || ('HTTP ' + r.status));
+              return j; }); })
+          .then(function(j){
+            datos = j.snapshot;
+            var fallos = j.fallos || [];
+            fijarEstado(fallos.length
+              ? fallos.length + ' de ' + datos.acciones.length + ' sin precio: ' + fallos.join(' · ')
+              : datos.acciones.length + ' precios actualizados y guardados en data/.',
+              fallos.length ? 'err' : 'ok');
+          })
+      : capturarDesdeNavegador(lista, function(m){ fijarEstado(m); })
+          .then(function(r){
+            var ok = Object.keys(r.cotizaciones).length;
+            var mal = Object.keys(r.errores);
+            if (!ok){
+              throw new Error('El navegador no pudo alcanzar Yahoo (CORS o proxies caídos). ' +
+                              'Corre el servidor local: node scripts/servidor.mjs');
+            }
+            datos = armarSnapshot(r.cotizaciones, r.errores);
+            fijarEstado(mal.length
+              ? ok + ' actualizados · sin precio: ' + mal.join(', ') + ' (vía ' + viaQueSirvio + ')'
+              : ok + ' precios actualizados (vía ' + viaQueSirvio + '). No se guardan en disco sin el servidor local.',
+              mal.length ? 'err' : 'ok');
+          });
+
+    trabajo
+      .then(function(){ actualizarPill(); render(); })
+      .catch(function(e){ fijarEstado(e.message, 'err'); })
+      .finally(function(){ btn.disabled = false; btn.classList.remove('cargando'); });
+  }
+
   /* ── acciones de la barra ── */
   function toast(msg){
     var t = document.getElementById('toast');
@@ -595,7 +835,11 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
   }
 
   function watchlistJSON(){
-    var lista = ordenar(filas());
+    // Orden alfabético fijo, no el de la tabla: así el diff en git muestra
+    // sólo lo que de verdad cambió, no el reacomodo del día.
+    var lista = filas().slice().sort(function(a,b){
+      return String(a.ticker).localeCompare(String(b.ticker));
+    });
     return JSON.stringify({
       _comentario: "Fuente de verdad de la lista. Edita 'objetivo' con TU precio objetivo. Usa la notacion de ticker de Yahoo Finance (BRK-B, no BRK.B).",
       horizonte_anios: Number(cfg.horizonte) || 5,
@@ -620,18 +864,31 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
     document.getElementById('umbralVerde').value = cfg.verde;
     document.getElementById('umbralAmbar').value = cfg.ambar;
 
-    var pill = document.getElementById('pillCaptura');
-    if (datos.fecha){
-      var desactualizados = (datos.acciones || []).filter(function(a){ return a.obsoleto; }).length;
-      pill.textContent = 'Captura: ' + datos.fecha + ' · ' + datos.hora + ' CDMX' +
-                         (desactualizados ? ' · ' + desactualizados + ' sin actualizar' : '');
-      if (desactualizados) pill.classList.add('stale');
-    } else {
-      pill.textContent = 'Sin captura todavía';
-      pill.classList.add('stale');
-    }
-
+    actualizarPill();
     render();
+  }
+
+  /* ¿Hay servidor local detrás? Define de dónde saldrán los precios al
+     apretar el botón, y si la watchlist se puede guardar sola. */
+  function detectarServidor(){
+    var chip = document.getElementById('chipModo');
+    return fetch('/api/salud', { cache: 'no-store' })
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+      .then(function(j){
+        if (!j || !j.ok) return Promise.reject();
+        modoServidor = true;
+        chip.textContent = 'servidor local';
+        chip.classList.remove('limitado');
+        chip.title = 'Los precios los baja Node. Se guardan en data/ y crecen el histórico.';
+        document.getElementById('btnExportar').textContent = '💾 Guardar watchlist';
+      })
+      .catch(function(){
+        modoServidor = false;
+        chip.textContent = 'sin servidor';
+        chip.classList.add('limitado');
+        chip.title = 'El navegador no puede consultar Yahoo directo (CORS): se intentará vía proxy público. ' +
+                     'Para que sea confiable, corre: node scripts/servidor.mjs';
+      });
   }
 
   document.getElementById('horizonte').addEventListener('change', function(e){
@@ -660,11 +917,13 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
     extra.push(t); guardarLS(LS_EXT, extra);
     inp.value = ''; objInp.value = '';
     render();
-    toast(t + ' agregado · exporta el watchlist.json para que el robot lo capture');
+    toast(t + ' agregado · aprieta "Actualizar precios ahora"');
   });
   document.getElementById('nuevoTicker').addEventListener('keydown', function(e){
     if (e.key === 'Enter') document.getElementById('btnAgregar').click();
   });
+
+  document.getElementById('btnActualizar').addEventListener('click', actualizarAhora);
 
   document.getElementById('btnImprimir').addEventListener('click', function(){ window.print(); });
 
@@ -684,8 +943,42 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
   });
 
   document.getElementById('btnExportar').addEventListener('click', function(){
-    descargar('watchlist.json', watchlistJSON(), 'application/json');
-    toast('Súbelo a data/watchlist.json en el repo');
+    if (!modoServidor){
+      descargar('watchlist.json', watchlistJSON(), 'application/json');
+      toast('Súbelo a data/watchlist.json en el repo');
+      return;
+    }
+    // Con servidor local se guarda directo: sin descargar ni copiar a mano.
+    fetch('/api/watchlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: watchlistJSON()
+    })
+      .then(function(r){ return r.json().then(function(j){
+          if (!r.ok || j.error) throw new Error(j.error || ('HTTP ' + r.status));
+          return j; }); })
+      .then(function(j){
+        // El archivo ya es la fuente de verdad: pasamos los objetivos a los datos
+        // en memoria y limpiamos los overrides locales. Si dejáramos la copia en
+        // el navegador, mañana taparía en silencio lo que edites en el archivo.
+        var actuales = {};
+        filas().forEach(function(f){ actuales[f.ticker] = f.objetivo; });
+        if (!datos.acciones) datos.acciones = [];
+        var yaEstan = {};
+        datos.acciones.forEach(function(a){
+          a.objetivo = actuales[a.ticker] !== undefined ? actuales[a.ticker] : a.objetivo;
+          yaEstan[a.ticker] = true;
+        });
+        extra.forEach(function(t){
+          if (!yaEstan[t]) datos.acciones.push({ ticker:t, nombre:'', moneda:'',
+            precio:null, varDia:null, historial:[], objetivo:actuales[t], obsoleto:false });
+        });
+        objetivos = {}; extra = [];
+        guardarLS(LS_OBJ, objetivos); guardarLS(LS_EXT, extra);
+        render();
+        toast('Watchlist guardada · ' + j.guardadas + ' acciones');
+      })
+      .catch(function(e){ toast('No se pudo guardar: ' + e.message); });
   });
 
   document.getElementById('btnCSV').addEventListener('click', function(){
@@ -695,14 +988,13 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
 
   /* window.PRECIOS lo pone data/precios.js. Si no existe (repo recién clonado o
      ruta distinta), intentamos el JSON por fetch; si tampoco, arrancamos vacío. */
-  if (window.PRECIOS) {
-    iniciar(window.PRECIOS);
-  } else {
-    fetch('data/precios.json')
+  detectarServidor().then(function(){
+    if (window.PRECIOS) return iniciar(window.PRECIOS);
+    return fetch('data/precios.json')
       .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(iniciar)
       .catch(function(){ iniciar(null); });
-  }
+  });
 })();
 </script>
 </body>
