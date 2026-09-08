@@ -14,42 +14,91 @@ histórico crezca solo aunque no abras nada. El botón no depende de ella.
 
 ---
 
-## Arranque rápido
+## Publicarlo en GitHub Pages (la ruta elegida)
 
-```bash
-node scripts/servidor.mjs     # o: npm start
+El tablero queda en un URL que abres desde cualquier lado, incluido el celular, sin instalar nada.
+
+> **Advertencia asumida:** `raulcarbo/raulcarbo` es un repo **público**. Al publicarlo, tu lista de
+> tickers y tus precios objetivo del `watchlist.json` quedan visibles para cualquiera y son
+> indexables por Google. Cualquiera podrá ver qué acciones sigues y a cuánto crees que valen.
+> Si algún día eso te estorba, abajo está la ruta local privada.
+
+### 1. Activa Pages
+
+`Settings → Pages → Source: Deploy from a branch` → elige la rama y la carpeta `/ (root)` → **Save**.
+Espera un minuto y queda en:
+
+```
+https://raulcarbo.github.io/raulcarbo/seguimiento-acciones.html
 ```
 
-Abre `http://127.0.0.1:8080` y aprieta **Actualizar precios ahora**. Eso es todo.
+### 2. Publica tu proxy de precios
+
+Sin esto el botón depende de proxies públicos gratuitos que se caen y limitan peticiones.
+El tuyo es gratis, no lleva llaves y **no requiere terminal**:
+
+1. `dash.cloudflare.com` → **Workers & Pages** → **Create** → *Start with Hello World*
+2. Nómbralo (p. ej. `precios`) → **Deploy**
+3. **Edit code** → borra todo → pega el contenido completo de `proxy-precios/worker.js` → **Deploy**
+4. Copia el URL que te da: `https://precios.TU-USUARIO.workers.dev`
+5. En el tablero, abre **Fuente de precios (avanzado)**, pega el URL y dale **Probar y guardar**
+
+El chip junto al botón debe cambiar de `sin servidor` a `proxy propio`. Listo: el botón trae
+precios en el momento.
+
+El Worker sólo acepta destinos de Yahoo y Stooq. Esa lista blanca es lo que evita que se
+convierta en proxy abierto y que Cloudflare te lo cierre por abuso.
+
+### 3. Pon tus precios objetivo
+
+En el tablero, escribe el objetivo en la columna: el CAGR se recalcula al instante y se guarda en
+tu navegador. Eso ya te sirve.
+
+Para que además queden fijos (y el robot de las 8:30 los use), edita `data/watchlist.json`
+**directo en GitHub**: entra al archivo, dale al lápiz, cambia los `objetivo` y confirma.
+No necesitas descargar ni subir nada.
 
 ---
 
-## Por qué hace falta el servidor local (y no es un capricho)
+## La ruta local (privada, si algún día la quieres)
 
-El navegador **no puede pedirle precios a Yahoo directamente**. Yahoo no manda la cabecera
-CORS que autoriza a una página ajena a leer su respuesta, así que el `fetch` se bloquea. No es
-un bug del tablero: es cómo funciona la seguridad del navegador.
+```bash
+node scripts/servidor.mjs     # o doble clic a abrir-tablero.command / .bat
+```
 
-Las salidas posibles son tres, y cada una tiene su precio:
+Nada sale de tu máquina, el botón no necesita proxy y cada captura se guarda sola en `data/`.
+Requiere Node.js instalado (`nodejs.org`, instalador normal). Los lanzadores de doble clic te
+avisan si falta.
+
+---
+
+## Por qué hace falta un proxy (y no es un capricho)
+
+El navegador **no puede pedirle precios a Yahoo directamente**. Yahoo no manda la cabecera CORS
+que autoriza a una página ajena a leer su respuesta, así que el `fetch` se bloquea. No es un bug
+del tablero: es cómo funciona la seguridad del navegador. Algo tiene que hacer la petición desde
+fuera del navegador y reenviarla.
 
 | Camino | Ventaja | Costo |
 |---|---|---|
-| **Servidor local** (el que usa esto) | Sin llaves, sin terceros, guarda el histórico | Correr un comando |
-| Proxy CORS público | No requiere nada | Depende de un tercero que se cae, limita peticiones y ve qué tickers consultas |
-| API con llave (Finnhub, Twelve Data) | Estable | Hay que registrarse, y la llave queda expuesta en el HTML |
+| **Tu Worker de Cloudflare** | Gratis, sin llaves, no se cae, nadie más ve tus consultas | 5 minutos de configuración, una vez |
+| **Servidor local** | Igual de confiable, y guarda el histórico solo | Requiere Node y correrlo cuando lo usas |
+| Proxy CORS público | Cero configuración | Se cae, limita peticiones, y el tercero ve qué tickers consultas |
+| API con llave (Finnhub, Twelve Data) | Estable | Registro, y la llave queda expuesta en el HTML público |
 
-El tablero intenta las dos primeras en ese orden. Si detecta el servidor local, lo usa
-(verás el chip **servidor local**). Si abres el HTML suelto, cae al proxy público
-(chip **sin servidor**) y te avisa si no lo logra. Tus precios objetivo nunca salen del
-navegador en ningún caso; por el proxy sólo viaja el ticker.
+El tablero los intenta en ese orden y recuerda cuál funcionó. El chip junto al botón te dice en
+cuál está: **servidor local**, **proxy propio** o **sin servidor** (el modo frágil).
+
+Tus precios objetivo nunca viajan por el proxy — sólo el ticker. Pero si publicaste el
+`watchlist.json` con objetivos en un repo público, ahí sí están a la vista de todos.
 
 ---
 
 ## Por qué no hay n8n aquí
 
-n8n necesita un servidor prendido 24/7, Docker, actualizaciones y alguien que lo cuide. Este
-servidor lo prendes cuando lo vas a usar y lo apagas con Ctrl+C: son 200 líneas sin
-dependencias, no una plataforma. Si algún día necesitas ramificar lógica de verdad (alertas
+n8n necesita un servidor prendido 24/7, Docker, actualizaciones y alguien que lo cuide. Aquí no
+hay nada que cuidar: el Worker de Cloudflare es un archivo de 100 líneas que corre sólo cuando lo
+llamas, y el servidor local lo prendes y lo apagas. Si algún día necesitas ramificar lógica de verdad (alertas
 por correo, cruces con IBKR, webhooks), ahí sí n8n empieza a pagar su renta.
 
 ---
@@ -59,7 +108,9 @@ por correo, cruces con IBKR, webhooks), ahí sí n8n empieza a pagar su renta.
 | Archivo | Qué hace |
 |---|---|
 | `data/watchlist.json` | **Tu lista.** Tickers + precio objetivo. Fuente de verdad. |
-| `scripts/servidor.mjs` | Servidor local. Lo que hace funcionar el botón. |
+| `proxy-precios/worker.js` | Tu proxy de precios en Cloudflare. Lo que hace funcionar el botón en Pages. |
+| `scripts/servidor.mjs` | Servidor local (ruta privada alterna). |
+| `abrir-tablero.command` · `.bat` | Doble clic para levantar el servidor local. |
 | `scripts/precios-core.mjs` | Núcleo: baja precios y calcula CAGR. |
 | `scripts/actualizar-precios.mjs` | CLI que usa el cron. |
 | `.github/workflows/precios-acciones.yml` | Captura automática 8:30 CDMX, L–V (respaldo). |
@@ -100,30 +151,22 @@ no dispara: puedes correrlo a mano, pero no solo.
 Al terminar debe aparecer un commit nuevo con `data/precios.json`, `data/precios.js` e
 `data/historico.csv`.
 
-### 4. Dónde abrir el tablero
-
-- **Con servidor local** (recomendado): `node scripts/servidor.mjs` → `http://127.0.0.1:8080`.
-  El botón funciona, la watchlist se guarda sola y el histórico crece.
-- **Archivo suelto:** doble clic al HTML. Se ve el último snapshot; el botón depende del
-  proxy público.
-- **GitHub Pages:** `Settings → Pages → Deploy from a branch` → rama por defecto, carpeta
-  `/ (root)`. Ojo: en repo público, tus precios objetivo del `watchlist.json` quedan
-  **públicos**. Si eso te incomoda, quédate en local.
-
----
-
 ## Uso diario
 
-**Traer precios.** Aprieta **Actualizar precios ahora**. Con el servidor local corriendo,
-cada captura se guarda en `data/` y agrega una fila al histórico.
+**Traer precios.** Aprieta **Actualizar precios ahora**. En Pages los precios se ven en pantalla
+pero no se guardan en el repo — eso lo hace el cron de las 8:30 o el servidor local.
 
-**Poner precios objetivo.** Escribe el objetivo en la columna: el CAGR se recalcula al
-instante y se guarda en tu navegador. Cuando ya te gusten, aprieta **Guardar watchlist** —
-con servidor local escribe `data/watchlist.json` directo (después sólo haces commit).
-Sin servidor, el botón dice **Exportar watchlist.json** y lo descarga para que lo subas a mano.
+**Poner precios objetivo.** Escríbelos en la columna: el CAGR se recalcula al instante y se
+guarda en tu navegador. Para que sean permanentes y los use el robot, edita
+`data/watchlist.json` **directo en GitHub** (ícono del lápiz).
 
-Al guardar, los objetivos dejan de vivir en el navegador y pasan al archivo. Es a propósito:
-si se quedaran los dos, la copia del navegador taparía en silencio lo que edites en el archivo.
+Ojo con esto: los objetivos que escribes en el tablero viven **sólo en ese navegador**. Si abres
+el tablero desde el celular, no están ahí. El archivo del repo es lo único que ven todos tus
+dispositivos.
+
+Con servidor local hay un atajo: el botón dice **Guardar watchlist** y escribe el archivo
+directo. Al hacerlo, los objetivos dejan de vivir en el navegador y pasan al archivo — a
+propósito, para que la copia del navegador no tape en silencio lo que edites en el archivo.
 
 **Agregar acciones.** Escribe el ticker en notación Yahoo (`BRK-B`, no `BRK.B`; `WALMEX.MX`
 para la BMV; `ASML` para el ADR). Aparece en gris hasta que aprietes Actualizar.
@@ -165,8 +208,11 @@ falla, es cómo funciona la cola gratuita. El snapshot guarda la hora real de ca
 | Un ticker sale "precio no actualizado hoy" | Símbolo mal escrito, o Yahoo lo estranguló | Verifica el ticker en finance.yahoo.com. Si existe, es throttling: se arregla solo mañana |
 | Todos fallan y el workflow sale rojo | Yahoo cambió el endpoint o cortó el acceso | Revisa el log del job; el respaldo de Stooq debería cubrirlo |
 | El tablero dice "Todavía no hay datos" | Nunca se ha capturado | Aprieta Actualizar precios ahora |
-| El chip dice "sin servidor" | Abriste el HTML sin `servidor.mjs` | `node scripts/servidor.mjs` y entra por `http://127.0.0.1:8080` |
-| "El navegador no pudo alcanzar Yahoo" | CORS bloqueó el directo y los proxies públicos fallaron | Corre el servidor local. Es el camino confiable |
+| El chip dice "sin servidor" | No has configurado tu proxy | Publica el Worker (paso 2) y pégalo en "Fuente de precios (avanzado)" |
+| El Worker responde pero el tablero lo rechaza | Pegaste sólo parte del código, o el URL equivocado | Vuelve a pegar `worker.js` completo y usa el URL `*.workers.dev` de Cloudflare |
+| Pages muestra 404 | Rama o carpeta equivocada | `Settings → Pages`: la rama donde están estos archivos, carpeta `/ (root)` |
+| Cambié un objetivo y no se ve en otra computadora | Vive en el navegador donde lo escribiste | Edítalo en `data/watchlist.json` desde GitHub para que sea permanente |
+| "Ninguna fuente respondió" | CORS bloqueó el directo y los proxies públicos fallaron | Lo mismo: configura tu Worker |
 | El puerto 8080 está ocupado | Otra cosa lo usa | El servidor prueba 8081, 8082… solo; mira la URL que imprime |
 
 Si falla un ticker, **el robot no tira la corrida**: conserva su último precio bueno, lo marca

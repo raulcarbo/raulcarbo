@@ -119,6 +119,24 @@ h1,h2,h3{font-family:var(--font-title)}
   color:var(--blue-dark);border:1px solid rgba(0,87,160,.2);white-space:nowrap}
 .chip-modo.limitado{background:var(--warn-bg);color:var(--warn);border-color:rgba(194,114,0,.28)}
 
+/* ── Fuente de precios (avanzado) ── */
+.avanzado{margin-bottom:18px;font-size:12.5px}
+.avanzado summary{cursor:pointer;color:var(--muted);font-weight:600;
+  padding:6px 0;list-style:none;display:inline-flex;align-items:center;gap:6px;
+  user-select:none;transition:color .15s}
+.avanzado summary:hover{color:var(--blue)}
+.avanzado summary::-webkit-details-marker{display:none}
+.avanzado summary::before{content:'▸';font-size:10px;transition:transform .15s}
+.avanzado[open] summary::before{transform:rotate(90deg)}
+.avanzado-cuerpo{background:var(--surface-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 18px;margin-top:8px;box-shadow:var(--shadow-sm)}
+.avanzado-cuerpo p{color:var(--muted);line-height:1.6;margin-bottom:12px}
+.avanzado-cuerpo code{font-family:var(--font-num);font-size:11.5px;
+  background:var(--blue-soft);padding:2px 6px;border-radius:4px;color:var(--blue-dark)}
+.fila-proxy{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.fila-proxy .field{flex:1;min-width:260px}
+.fila-proxy input{width:100%;font-size:13px}
+
 /* ── Resumen ── */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
 .stat{background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius);
@@ -190,7 +208,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
 
 @media print{
   html,body{background:#fff}
-  .topbar,.hero-banner,.btn-row,.controls,.btn-x,.nota,.barra-accion{display:none!important}
+  .topbar,.hero-banner,.btn-row,.controls,.btn-x,.nota,.barra-accion,.avanzado{display:none!important}
   .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
   table{min-width:0}
   .obj-input{border:none;background:transparent;padding:0;width:auto}
@@ -233,6 +251,25 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
     <span class="chip-modo" id="chipModo">detectando…</span>
     <span class="estado-captura" id="estadoCaptura"></span>
   </div>
+
+  <details class="avanzado" id="panelAvanzado">
+    <summary>Fuente de precios (avanzado)</summary>
+    <div class="avanzado-cuerpo">
+      <p>El navegador no puede consultar Yahoo directo: lo bloquea CORS. Publicado en GitHub Pages,
+         el tablero cae en proxies públicos gratuitos, que se caen y limitan peticiones.
+         Si pones aquí tu propio proxy, deja de depender de terceros. El código y las instrucciones
+         (sin terminal, plan gratis de Cloudflare) están en <code>proxy-precios/worker.js</code>.</p>
+      <div class="fila-proxy">
+        <div class="field">
+          <label for="urlProxy">URL de tu proxy de precios</label>
+          <input type="url" id="urlProxy" placeholder="https://precios.tu-usuario.workers.dev"
+                 autocomplete="off" spellcheck="false">
+        </div>
+        <button type="button" class="btn ghost" id="btnProbarProxy">Probar y guardar</button>
+      </div>
+      <p id="estadoProxy" style="margin:10px 0 0"></p>
+    </div>
+  </details>
 
   <div class="stats" id="stats"></div>
 
@@ -316,6 +353,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
   var LS_OBJ = 'carbo.acciones.objetivos.v1';
   var LS_CFG = 'carbo.acciones.config.v1';
   var LS_EXT = 'carbo.acciones.extra.v1';
+  var LS_PXY = 'carbo.acciones.proxy.v1';
 
   var datos = null;
   var orden = { col: 'cagr', dir: -1 };
@@ -332,6 +370,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
   var objetivos = leerLS(LS_OBJ, {});          // { TICKER: numero }  — anula lo del repo
   var extra     = leerLS(LS_EXT, []);          // tickers agregados aquí, aún sin captura
   var cfg       = leerLS(LS_CFG, { horizonte:5, verde:15, ambar:10 });
+  var proxioPropio = leerLS(LS_PXY, '');   // Worker propio, si lo configuró
 
   /* ── formato ── */
   var fmtNum = function(v, d){
@@ -603,11 +642,19 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
   var modoServidor = false;
   var viaQueSirvio = null;      // se recuerda la estrategia que funcionó
 
-  var PROXIES = [
+  var PROXIES_PUBLICOS = [
     { nombre:'allorigins', arma:function(u){ return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); } },
     { nombre:'corsproxy',  arma:function(u){ return 'https://corsproxy.io/?url=' + encodeURIComponent(u); } },
     { nombre:'codetabs',   arma:function(u){ return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); } }
   ];
+
+  /* Tu propio proxy va primero: no se cae, no limita y nadie más ve tus consultas. */
+  function proxies(){
+    if (!proxioPropio) return PROXIES_PUBLICOS;
+    var base = proxioPropio.replace(/\/+$/, '');
+    return [{ nombre:'tu proxy', arma:function(u){ return base + '/?url=' + encodeURIComponent(u); } }]
+      .concat(PROXIES_PUBLICOS);
+  }
 
   function urlYahoo(ticker){
     return 'https://query1.finance.yahoo.com/v8/finance/chart/' +
@@ -649,7 +696,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
   function cotizarNavegador(ticker){
     var objetivo = urlYahoo(ticker);
     var vias = [{ nombre:'directo', url: objetivo }].concat(
-      PROXIES.map(function(p){ return { nombre: p.nombre, url: p.arma(objetivo) }; })
+      proxies().map(function(p){ return { nombre: p.nombre, url: p.arma(objetivo) }; })
     );
     if (viaQueSirvio){
       vias.sort(function(a,b){
@@ -781,8 +828,10 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
             var ok = Object.keys(r.cotizaciones).length;
             var mal = Object.keys(r.errores);
             if (!ok){
-              throw new Error('El navegador no pudo alcanzar Yahoo (CORS o proxies caídos). ' +
-                              'Corre el servidor local: node scripts/servidor.mjs');
+              throw new Error('Ninguna fuente respondió (CORS bloquea el acceso directo y los proxies ' +
+                              (proxioPropio ? 'fallaron). Revisa tu proxy en "Fuente de precios (avanzado)".'
+                                            : 'públicos fallaron). Configura tu propio proxy en ' +
+                                              '"Fuente de precios (avanzado)": es gratis y deja de fallar.'));
             }
             datos = armarSnapshot(r.cotizaciones, r.errores);
             fijarEstado(mal.length
@@ -860,6 +909,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
       cfg.ambar = datos.umbrales_cagr_pct.ambar;
     }
 
+    document.getElementById('urlProxy').value    = proxioPropio || '';
     document.getElementById('horizonte').value   = String(cfg.horizonte);
     document.getElementById('umbralVerde').value = cfg.verde;
     document.getElementById('umbralAmbar').value = cfg.ambar;
@@ -884,11 +934,22 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
       })
       .catch(function(){
         modoServidor = false;
-        chip.textContent = 'sin servidor';
-        chip.classList.add('limitado');
-        chip.title = 'El navegador no puede consultar Yahoo directo (CORS): se intentará vía proxy público. ' +
-                     'Para que sea confiable, corre: node scripts/servidor.mjs';
+        pintarChipSinServidor();
       });
+  }
+
+  function pintarChipSinServidor(){
+    var chip = document.getElementById('chipModo');
+    if (proxioPropio){
+      chip.textContent = 'proxy propio';
+      chip.classList.remove('limitado');
+      chip.title = 'Los precios pasan por tu Worker: ' + proxioPropio;
+    } else {
+      chip.textContent = 'sin servidor';
+      chip.classList.add('limitado');
+      chip.title = 'El navegador no puede consultar Yahoo directo (CORS): se intentará vía proxy público, ' +
+                   'que puede fallar. Configura tu propio proxy en "Fuente de precios (avanzado)".';
+    }
   }
 
   document.getElementById('horizonte').addEventListener('change', function(e){
@@ -924,6 +985,46 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
   });
 
   document.getElementById('btnActualizar').addEventListener('click', actualizarAhora);
+
+  /* Probar el proxy antes de guardarlo: guardar un URL roto y descubrirlo
+     mañana a media consulta es peor que no tener proxy. */
+  document.getElementById('btnProbarProxy').addEventListener('click', function(){
+    var inp = document.getElementById('urlProxy');
+    var est = document.getElementById('estadoProxy');
+    var val = inp.value.trim().replace(/\/+$/, '');
+
+    if (!val){
+      proxioPropio = ''; guardarLS(LS_PXY, '');
+      if (!modoServidor) pintarChipSinServidor();
+      est.textContent = 'Proxy borrado. Se usarán los públicos.';
+      est.style.color = 'var(--muted)';
+      return;
+    }
+    // https hacia internet; http sólo en loopback, donde no hay nada que interceptar.
+    var esLocal = /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?(\/|$)/i.test(val);
+    if (!esLocal && !/^https:\/\/[^\s/$.?#][^\s]*$/i.test(val)){
+      est.textContent = 'Tiene que ser un URL https completo (http sólo se acepta en localhost).';
+      est.style.color = 'var(--fail)'; inp.focus(); return;
+    }
+
+    est.textContent = 'Probando…'; est.style.color = 'var(--muted)';
+    var prueba = val + '/?url=' + encodeURIComponent(urlYahoo('AAPL'));
+
+    conTiempoLimite(prueba, 15000)
+      .then(function(j){
+        leerMetaYahoo(j, 'AAPL');            // si parsea, el proxy sirve de verdad
+        proxioPropio = val; guardarLS(LS_PXY, val);
+        viaQueSirvio = 'tu proxy';
+        if (!modoServidor) pintarChipSinServidor();
+        est.textContent = 'Funciona. Guardado: de aquí en adelante los precios pasan por tu proxy.';
+        est.style.color = 'var(--pass)';
+      })
+      .catch(function(e){
+        est.textContent = 'No respondió bien (' + e.message + '). Revisa que hayas pegado el ' +
+                          'código completo del Worker y que el URL sea el que te dio Cloudflare.';
+        est.style.color = 'var(--fail)';
+      });
+  });
 
   document.getElementById('btnImprimir').addEventListener('click', function(){ window.print(); });
 
