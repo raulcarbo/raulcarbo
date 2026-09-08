@@ -100,6 +100,55 @@ export function upside(precio, objetivo) {
 
 /* ─────────────────────────── fuentes ─────────────────────────── */
 
+/**
+ * Finnhub · fuente primaria cuando hay llave.
+ *
+ * Yahoo y Stooq filtran por IP: por eso tumbaron al runner de GitHub y por eso
+ * Cloudflare puede correr la misma suerte. Finnhub filtra por token, así que le
+ * da igual desde dónde llames. Plan gratuito: 60 llamadas por minuto.
+ *
+ * La llave sale de FINNHUB_TOKEN (variable de entorno en el servidor local o
+ * secreto del repo en Actions) o del propio Worker, que la inyecta sin que
+ * llegue nunca al navegador.
+ */
+export async function desdeFinnhub(ticker, { nombreConocido = null } = {}) {
+  const token = (process.env.FINNHUB_TOKEN || '').trim();
+  if (!token) throw new Error('Finnhub: sin FINNHUB_TOKEN');
+
+  // Finnhub usa punto donde Yahoo usa guion: BRK-B → BRK.B
+  const simbolo = ticker.replace(/-/g, '.');
+  const q = await traer(viaProxy(
+    `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(simbolo)}&token=${token}`));
+
+  const precio = num(q?.c);
+  // Finnhub devuelve 200 con todo en cero cuando el símbolo no existe.
+  if (precio === null || precio === 0) throw new Error('Finnhub: sin cotización para ' + simbolo);
+
+  // El nombre requiere una segunda llamada: sólo la hacemos si no lo tenemos ya.
+  let nombre = nombreConocido;
+  if (!nombre) {
+    try {
+      const perfil = await traer(viaProxy(
+        `https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(simbolo)}&token=${token}`));
+      nombre = perfil?.name || null;
+    } catch { /* el nombre es cosmético: no vale tirar la captura por él */ }
+  }
+
+  const previo = num(q.pc);
+  return {
+    fuente: 'finnhub',
+    precio,
+    cierreAnterior: previo,
+    moneda: 'USD',                       // el plan gratuito cubre EE. UU.
+    nombre: nombre || ticker,
+    bolsa: null,
+    max52s: null,
+    min52s: null,
+    marcaMercado: q.t ? new Date(q.t * 1000).toISOString() : null,
+    estadoMercado: null,
+  };
+}
+
 /** Yahoo Finance · chart v8. El bloque meta ya trae todo lo necesario. */
 export async function desdeYahoo(ticker) {
   const hosts = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com'];
@@ -175,23 +224,35 @@ export async function desdeStooq(ticker) {
   };
 }
 
-export async function cotizar(ticker) {
+export async function cotizar(ticker, opciones = {}) {
+  const errores = [];
+
+  // Finnhub primero si hay llave: es la única que no filtra por IP.
+  if (process.env.FINNHUB_TOKEN) {
+    try { return await desdeFinnhub(ticker, opciones); }
+    catch (e) { errores.push(e.message); }
+  }
+
+  try { return await desdeYahoo(ticker); }
+  catch (e) { errores.push(e.message); }
+
   try {
-    return await desdeYahoo(ticker);
-  } catch (eY) {
-    try {
-      const r = await desdeStooq(ticker);
-      r.aviso = `Yahoo falló (${eY.message}); se usó Stooq.`;
-      return r;
-    } catch (eS) {
-      throw new Error(`${eY.message} || Stooq: ${eS.message}`);
-    }
+    const r = await desdeStooq(ticker);
+    r.aviso = 'Fuentes previas fallaron: ' + errores.join(' || ');
+    return r;
+  } catch (e) {
+    errores.push('Stooq: ' + e.message);
+    throw new Error(errores.join(' || '));
   }
 }
 
 /** Para los logs: deja claro si se está saliendo por proxy o directo. */
 export function describirSalida() {
-  return PROXY ? `proxy ${PROXY}` : 'directo (sin PROXY_PRECIOS)';
+  const ruta   = PROXY ? `proxy ${PROXY}` : 'directo (sin PROXY_PRECIOS)';
+  const fuente = process.env.FINNHUB_TOKEN
+    ? 'Finnhub (con llave) → Yahoo → Stooq'
+    : 'Yahoo → Stooq  ⚠ sin FINNHUB_TOKEN: ambas filtran por IP';
+  return `${ruta} · fuentes: ${fuente}`;
 }
 
 /* ─────────────────────────── lectura / escritura ─────────────────────────── */
@@ -235,7 +296,7 @@ export async function generarSnapshot(watchlist, previo, { registrar = () => {} 
     let fila;
 
     try {
-      const q = await cotizar(ticker);
+      const q = await cotizar(ticker, { nombreConocido: entrada.nombre || anterior.nombre || null });
       fila = {
         ticker,
         nombre: entrada.nombre || q.nombre,

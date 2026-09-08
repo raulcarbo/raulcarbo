@@ -32,6 +32,10 @@ jobs:
         # Cloudflare para salir por otra IP:
         #   Settings → Secrets and variables → Actions → Variables → New repository variable
         env:
+          # Llave de Finnhub: filtra por token y no por IP, así que es la única
+          # fuente que no bloquea al runner. Settings → Secrets and variables →
+          # Actions → Secrets → New repository secret, nombre FINNHUB_TOKEN.
+          FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
           PROXY_PRECIOS: ${{ vars.PROXY_PRECIOS }}
         run: node scripts/actualizar-precios.mjs
 

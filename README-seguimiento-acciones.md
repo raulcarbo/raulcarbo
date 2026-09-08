@@ -32,7 +32,22 @@ Espera un minuto y queda en:
 https://raulcarbo.github.io/raulcarbo/seguimiento-acciones.html
 ```
 
-### 2. Publica tu proxy de precios
+### 2. Consigue una llave de Finnhub
+
+**Este es el paso que hace que todo funcione.** Yahoo cerró su API oficial en 2017; lo que usa
+todo el mundo (incluido `yfinance`) es un endpoint interno no documentado que estrangula por IP
+— y ya nos bloqueó los runners de GitHub. Finnhub filtra por token, así que le da igual desde
+dónde llames.
+
+1. Regístrate gratis en `finnhub.io` y copia tu API key
+2. Guárdala en dos lugares:
+   - **Para el botón:** en tu Worker (paso 3), como Secret llamado `FINNHUB_TOKEN`
+   - **Para el cron:** `Settings → Secrets and variables → Actions → Secrets →
+     New repository secret`, nombre `FINNHUB_TOKEN`
+
+Plan gratuito: 60 llamadas por minuto. Tú vas a usar unas 5 por clic.
+
+### 3. Publica tu proxy de precios
 
 Sin esto el botón depende de proxies públicos gratuitos que se caen y limitan peticiones.
 El tuyo es gratis, no lleva llaves y **no requiere terminal**:
@@ -40,16 +55,19 @@ El tuyo es gratis, no lleva llaves y **no requiere terminal**:
 1. `dash.cloudflare.com` → **Workers & Pages** → **Create** → *Start with Hello World*
 2. Nómbralo (p. ej. `precios`) → **Deploy**
 3. **Edit code** → borra todo → pega el contenido completo de `proxy-precios/worker.js` → **Deploy**
-4. Copia el URL que te da: `https://precios.TU-USUARIO.workers.dev`
-5. En el tablero, abre **Fuente de precios (avanzado)**, pega el URL y dale **Probar y guardar**
+4. **Settings → Variables and Secrets → Add** · Type: **Secret** · Name: `FINNHUB_TOKEN` ·
+   Value: tu llave → **Deploy**
+5. Copia el URL que te da: `https://precios.TU-USUARIO.workers.dev`
+6. En el tablero, abre **Fuente de precios (avanzado)**, pega el URL y dale **Probar y guardar**
 
-El chip junto al botón debe cambiar de `sin servidor` a `proxy propio`. Listo: el botón trae
-precios en el momento.
+Debe decir *"Funciona con Finnhub"* y el chip cambiar a `proxy propio`. Si dice que falta la
+llave, te falta el paso 4.
 
-El Worker sólo acepta destinos de Yahoo y Stooq. Esa lista blanca es lo que evita que se
+La llave vive sólo dentro del Worker: la página pública nunca la ve. El Worker sólo acepta
+destinos de Yahoo/Stooq y dos rutas de Finnhub — esas listas blancas son lo que evita que se
 convierta en proxy abierto y que Cloudflare te lo cierre por abuso.
 
-### 3. Pon tus precios objetivo
+### 4. Pon tus precios objetivo
 
 En el tablero, escribe el objetivo en la columna: el CAGR se recalcula al instante y se guarda en
 tu navegador. Eso ya te sirve.
@@ -199,6 +217,25 @@ falla, es cómo funciona la cola gratuita. El snapshot guarda la hora real de ca
 
 ---
 
+## Sobre la API de Yahoo (y por qué hay Finnhub)
+
+Yahoo **cerró su API oficial en 2017** y nunca la repuso. `query1.finance.yahoo.com/v8/...` es un
+endpoint interno no documentado: no es una API, es una puerta de servicio que Yahoo tolera y
+cierra cuando quiere. `yfinance` y `yahoo_fin` pegan al mismo sitio y comen los mismos bloqueos.
+
+Por eso la fuente primaria es **Finnhub** y Yahoo quedó como respaldo. Orden de la cascada:
+
+1. **Finnhub** (si hay llave) — filtra por token, inmune al bloqueo por IP
+2. **Yahoo** — sin llave, pero bloquea rangos de datacenter
+3. **Stooq** — último recurso
+
+Nota sobre MCP: existen servidores MCP de datos financieros (Alpha Vantage, entre otros) y
+sirven para que *un asistente de IA* consulte precios en conversación. **No sirven para el
+tablero**: MCP es un protocolo para asistentes, y una página web en el navegador no lo habla.
+Son dos problemas distintos.
+
+---
+
 ## Bloqueo por IP: lo que descubrió la primera corrida real
 
 Yahoo **responde 429 (Too Many Requests) a las IP de datacenter de GitHub Actions**, y Stooq
@@ -234,7 +271,9 @@ variable de entorno de Cloudflare, así que no queda expuesta en la página púb
 | Un ticker sale "precio no actualizado hoy" | Símbolo mal escrito, o Yahoo lo estranguló | Verifica el ticker en finance.yahoo.com. Si existe, es throttling: se arregla solo mañana |
 | Todos fallan y el workflow sale rojo | Yahoo cambió el endpoint o cortó el acceso | Revisa el log del job; el respaldo de Stooq debería cubrirlo |
 | El tablero dice "Todavía no hay datos" | Nunca se ha capturado | Aprieta Actualizar precios ahora |
-| El chip dice "sin servidor" | No has configurado tu proxy | Publica el Worker (paso 2) y pégalo en "Fuente de precios (avanzado)" |
+| El chip dice "sin servidor" | No has configurado tu proxy | Publica el Worker y pégalo en "Fuente de precios (avanzado)" |
+| "Tu proxy responde, pero Yahoo lo está bloqueando (429)" | Falta la llave de Finnhub en el Worker | Settings → Variables and Secrets del Worker → Secret `FINNHUB_TOKEN` |
+| "Finnhub: sin cotización para X" | El símbolo no existe, o no está en el plan gratuito (que cubre EE. UU.) | Verifica el ticker. Para bolsas fuera de EE. UU. hace falta plan de paga |
 | El Worker responde pero el tablero lo rechaza | Pegaste sólo parte del código, o el URL equivocado | Vuelve a pegar `worker.js` completo y usa el URL `*.workers.dev` de Cloudflare |
 | Pages muestra 404 | Rama o carpeta equivocada | `Settings → Pages`: la rama donde están estos archivos, carpeta `/ (root)` |
 | Cambié un objetivo y no se ve en otra computadora | Vive en el navegador donde lo escribiste | Edítalo en `data/watchlist.json` desde GitHub para que sea permanente |

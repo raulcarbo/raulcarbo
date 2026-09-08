@@ -34,13 +34,14 @@ async function main() {
     // Falla sólo si NINGÚN ticker se pudo capturar: eso es problema de red o de fuente,
     // no de un símbolo mal escrito.
     if (fallos.length === snapshot.acciones.length) {
-      if (!process.env.PROXY_PRECIOS) {
+      if (!process.env.FINNHUB_TOKEN) {
         console.error(
-          '\nNingún ticker se pudo capturar y no hay proxy configurado.\n' +
-          'Yahoo responde 429 a las IP de datacenter de GitHub Actions.\n' +
-          'Arreglo: Settings → Secrets and variables → Actions → Variables →\n' +
-          'New repository variable, nombre PROXY_PRECIOS, valor el URL de tu\n' +
-          'Worker de Cloudflare (ver proxy-precios/worker.js).'
+          '\nNingún ticker se pudo capturar.\n' +
+          'Yahoo y Stooq filtran por IP y bloquean a los runners de GitHub.\n' +
+          'Arreglo: consigue una llave gratuita en finnhub.io y guárdala en\n' +
+          'Settings → Secrets and variables → Actions → Secrets →\n' +
+          'New repository secret, nombre FINNHUB_TOKEN.\n' +
+          'Finnhub filtra por token, no por IP: desde donde llames da igual.'
         );
       }
       process.exit(1);

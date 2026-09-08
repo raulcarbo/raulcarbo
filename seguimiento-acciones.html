@@ -648,13 +648,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
     { nombre:'codetabs',   arma:function(u){ return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); } }
   ];
 
-  /* Tu propio proxy va primero: no se cae, no limita y nadie más ve tus consultas. */
-  function proxies(){
-    if (!proxioPropio) return PROXIES_PUBLICOS;
-    var base = proxioPropio.replace(/\/+$/, '');
-    return [{ nombre:'tu proxy', arma:function(u){ return base + '/?url=' + encodeURIComponent(u); } }]
-      .concat(PROXIES_PUBLICOS);
-  }
+
 
   function urlYahoo(ticker){
     return 'https://query1.finance.yahoo.com/v8/finance/chart/' +
@@ -680,6 +674,21 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
       .finally(function(){ clearTimeout(id); });
   }
 
+  /* Finnhub responde plano: c=precio actual, pc=cierre anterior. No trae nombre
+     (eso es otra llamada), así que se conserva el que ya tuviéramos. */
+  function leerFinnhub(j, ticker){
+    var p = j && j.c;
+    if (typeof p !== 'number' || !isFinite(p) || p === 0){
+      // Finnhub devuelve 200 con ceros cuando el símbolo no existe en el plan.
+      throw new Error('Finnhub: sin cotización para ' + ticker);
+    }
+    var pc = (typeof j.pc === 'number' && j.pc > 0) ? j.pc : null;
+    return {
+      ticker: ticker, nombre: '', moneda: 'USD',
+      precio: p, cierreAnterior: pc, varDia: pc ? (p / pc - 1) : null
+    };
+  }
+
   /* Traduce la respuesta de Yahoo al mismo formato que produce el servidor. */
   function leerMetaYahoo(j, ticker){
     var meta = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
@@ -700,12 +709,32 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
     };
   }
 
-  /* Intenta directo y luego cada proxy; recuerda la vía que sirvió. */
-  function cotizarNavegador(ticker){
+  /* Vías ordenadas de más a menos confiable. Finnhub va primero cuando hay
+     Worker propio: es la única fuente que filtra por llave y no por IP, así
+     que es la que no se cae cuando Yahoo decide bloquear un rango. */
+  function viasPara(ticker){
     var objetivo = urlYahoo(ticker);
-    var vias = [{ nombre:'directo', url: objetivo }].concat(
-      proxies().map(function(p){ return { nombre: p.nombre, url: p.arma(objetivo) }; })
-    );
+    var lista = [];
+
+    if (proxioPropio){
+      var base = proxioPropio.replace(/\/+$/, '');
+      lista.push({ nombre:'finnhub',
+                   url: base + '/finnhub?symbol=' + encodeURIComponent(ticker.replace(/-/g, '.')),
+                   leer: leerFinnhub });
+      lista.push({ nombre:'tu proxy',
+                   url: base + '/?url=' + encodeURIComponent(objetivo),
+                   leer: leerMetaYahoo });
+    }
+    lista.push({ nombre:'directo', url: objetivo, leer: leerMetaYahoo });
+    PROXIES_PUBLICOS.forEach(function(p){
+      lista.push({ nombre: p.nombre, url: p.arma(objetivo), leer: leerMetaYahoo });
+    });
+    return lista;
+  }
+
+  /* Recorre las vías en orden y recuerda la que sirvió. */
+  function cotizarNavegador(ticker){
+    var vias = viasPara(ticker);
     if (viaQueSirvio){
       vias.sort(function(a,b){
         return (b.nombre === viaQueSirvio) - (a.nombre === viaQueSirvio);
@@ -720,7 +749,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
       var via = vias[i++];
       return conTiempoLimite(via.url, 15000)
         .then(function(j){
-          var q = leerMetaYahoo(j, ticker);
+          var q = via.leer(j, ticker);
           viaQueSirvio = via.nombre;
           q.via = via.nombre;
           return q;
@@ -754,7 +783,7 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
       var precio = q ? q.precio : f.precio;
       return {
         ticker: f.ticker,
-        nombre: q ? q.nombre : (f.nombre || ''),
+        nombre: (q && q.nombre) || f.nombre || '',
         moneda: q ? q.moneda : (f.moneda || ''),
         precio: (typeof precio === 'number' && isFinite(precio)) ? Number(precio.toFixed(4)) : null,
         varDia: q ? q.varDia : f.varDia,
@@ -1016,35 +1045,60 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
     }
 
     est.textContent = 'Probando…'; est.style.color = 'var(--muted)';
-    var prueba = val + '/?url=' + encodeURIComponent(urlYahoo('AAPL'));
 
-    conTiempoLimite(prueba, 15000)
+    function guardar(){
+      proxioPropio = val; guardarLS(LS_PXY, val);
+      if (!modoServidor) pintarChipSinServidor();
+    }
+
+    // Se prueba primero la ruta de Finnhub: si responde, es la que va a usar el
+    // tablero, y de paso confirma que la llave quedó bien puesta en el Worker.
+    conTiempoLimite(val + '/finnhub?symbol=AAPL', 15000)
       .then(function(j){
-        leerMetaYahoo(j, 'AAPL');            // si parsea, el proxy sirve de verdad
-        proxioPropio = val; guardarLS(LS_PXY, val);
-        viaQueSirvio = 'tu proxy';
-        if (!modoServidor) pintarChipSinServidor();
-        est.textContent = 'Funciona. Guardado: de aquí en adelante los precios pasan por tu proxy.';
+        leerFinnhub(j, 'AAPL');
+        guardar();
+        viaQueSirvio = 'finnhub';
+        est.textContent = 'Funciona con Finnhub. Es la ruta buena: filtra por llave, ' +
+                          'no por IP, así que nadie te bloquea por dónde llamas.';
         est.style.color = 'var(--pass)';
       })
-      .catch(function(e){
-        var msg;
-        if (e.estado === 429){
-          // Tu proxy sirve; quien bloquea es Yahoo, y contra eso el Worker no puede.
-          msg = 'Tu proxy responde, pero Yahoo lo está bloqueando por IP (429). ' +
-                'Cloudflare no te salva de esto: hace falta una fuente que no filtre por IP ' +
-                '(Finnhub o Twelve Data, con llave gratuita guardada dentro del Worker).';
-        } else if (e.estado === 403){
-          msg = 'Tu proxy rechazó el destino (403). Revisa que la lista HOSTS_PERMITIDOS del ' +
-                'Worker no se haya quedado a medias al pegar el código.';
-        } else if (e.estado){
-          msg = 'El proxy respondió ' + e.estado + '. ' + e.message;
-        } else {
-          msg = 'No se pudo alcanzar el proxy (' + e.message + '). Revisa que el URL sea el ' +
-                'que te dio Cloudflare y que le hayas dado Deploy.';
-        }
-        est.textContent = msg;
-        est.style.color = 'var(--fail)';
+      .catch(function(eF){
+        // Sin llave (503) o con Finnhub caído: probamos la ruta de Yahoo.
+        return conTiempoLimite(val + '/?url=' + encodeURIComponent(urlYahoo('AAPL')), 15000)
+          .then(function(j){
+            leerMetaYahoo(j, 'AAPL');
+            guardar();
+            viaQueSirvio = 'tu proxy';
+            var sinLlave = (eF.estado === 503);
+            est.textContent = 'Guardado. Funciona vía Yahoo' +
+              (sinLlave
+                ? ', pero tu Worker no tiene FINNHUB_TOKEN. Yahoo puede bloquearte por IP en ' +
+                  'cualquier momento: añade la llave (Settings → Variables and Secrets del Worker) ' +
+                  'y quedas a salvo de eso.'
+                : '. Finnhub no respondió (' + eF.message + ').');
+            est.style.color = sinLlave ? 'var(--warn)' : 'var(--pass)';
+          })
+          .catch(function(eY){
+            var msg;
+            if (eY.estado === 429 || eF.estado === 429){
+              msg = 'Tu proxy responde, pero Yahoo lo está bloqueando por IP (429). ' +
+                    'Añade una llave gratuita de Finnhub al Worker (Settings → Variables and ' +
+                    'Secrets, nombre FINNHUB_TOKEN): filtra por token y no por IP.';
+            } else if (eF.estado === 503){
+              msg = 'Tu Worker responde pero no tiene FINNHUB_TOKEN, y la ruta de Yahoo falló (' +
+                    eY.message + '). Añade la llave de Finnhub al Worker.';
+            } else if (eY.estado === 403 || eF.estado === 403){
+              msg = 'Tu proxy rechazó el destino (403). Revisa que el código del Worker se haya ' +
+                    'pegado completo, sin cortar las listas de hosts y rutas permitidas.';
+            } else if (eY.estado){
+              msg = 'El proxy respondió ' + eY.estado + '. ' + eY.message;
+            } else {
+              msg = 'No se pudo alcanzar el proxy (' + eY.message + '). Revisa que el URL sea el ' +
+                    'que te dio Cloudflare y que le hayas dado Deploy.';
+            }
+            est.textContent = msg;
+            est.style.color = 'var(--fail)';
+          });
       });
   });
 
