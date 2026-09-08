@@ -1,0 +1,11 @@
+{
+  "_comentario": "Fuente de verdad de la lista. Edita 'objetivo' con TU precio objetivo a 5 años. Usa la notacion de ticker de Yahoo Finance (BRK-B, no BRK.B).",
+  "horizonte_anios": 5,
+  "umbrales_cagr_pct": { "verde": 15, "ambar": 10 },
+  "acciones": [
+    { "ticker": "BRK-B", "objetivo": null, "notas": "" },
+    { "ticker": "MU",    "objetivo": null, "notas": "" },
+    { "ticker": "VST",   "objetivo": null, "notas": "" },
+    { "ticker": "OSCR",  "objetivo": null, "notas": "" }
+  ]
+}

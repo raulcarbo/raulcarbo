@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seguimiento de Acciones · CAGR a 5 años</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0057A0; --blue-dark:#003D73; --blue-deeper:#002850;
+  --blue-soft:#E8F2FB; --blue-mid:#00A3E0; --blue-light:#F0F7FF;
+  --surface:#FAFBFD; --surface-card:#fff;
+  --border:#DAE2EC; --border-focus:#0057A0;
+  --text:#1A2B3D; --muted:#5A6E80; --faint:#8A9BB0;
+  --pass:#0A8754; --pass-bg:#E6F5EE;
+  --warn:#C27200; --warn-bg:#FFF4E5;
+  --fail:#C53030; --fail-bg:#FDE8E8;
+  --shadow:0 4px 16px rgba(0,87,160,.10),0 2px 6px rgba(0,0,0,.04);
+  --shadow-sm:0 1px 3px rgba(0,87,160,.07),0 1px 2px rgba(0,0,0,.04);
+  --radius:12px; --radius-lg:18px;
+  --font-title:'Poppins',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-num:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:linear-gradient(180deg,#EBF3FB,#DDE9F5);color:var(--text);
+  font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+h1,h2,h3{font-family:var(--font-title)}
+
+.shell{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 64px}
+
+/* ── Topbar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:var(--surface-card);border:1px solid var(--border);border-radius:16px;
+  padding:13px 20px;margin-bottom:18px;box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--blue-deeper));
+  box-shadow:0 6px 16px rgba(0,87,160,.32);font-weight:900;
+  font-family:var(--font-title);font-size:9.5px;letter-spacing:-.01em;text-align:center;line-height:1.2}
+.brand-text h1{font-size:15px;font-weight:800;color:var(--blue-deeper);line-height:1.2}
+.brand-text span{display:block;font-size:11px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.pill{border-radius:999px;padding:6px 13px;font-size:11.5px;font-weight:800;
+  white-space:nowrap;background:var(--blue-soft);border:1px solid rgba(0,87,160,.2);
+  color:var(--blue-dark);font-family:var(--font-title)}
+.pill.stale{background:var(--warn-bg);border-color:rgba(194,114,0,.28);color:var(--warn)}
+
+/* ── Hero ── */
+.hero-banner{background:linear-gradient(135deg,var(--blue-deeper) 0%,var(--blue-dark) 50%,var(--blue) 100%);
+  border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:18px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero-banner::before{content:"";position:absolute;top:-50px;right:-50px;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,163,224,.22) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+@media(max-width:720px){.hero-inner{grid-template-columns:1fr}}
+.hero-inner h2{font-size:clamp(16px,2.2vw,22px);font-weight:800;color:#fff;
+  letter-spacing:-.03em;line-height:1.15;margin-bottom:6px}
+.hero-inner h2 em{font-style:normal;color:rgba(0,163,224,1)}
+.hero-inner p{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.55;max-width:520px}
+.formula-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;padding:14px 18px;backdrop-filter:blur(10px);white-space:nowrap}
+.formula-box .f-label{font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(0,163,224,.9);margin-bottom:4px;display:block;font-family:var(--font-title)}
+.formula-box .f-eq{font-family:var(--font-num);font-size:13px;font-weight:600;color:#fff;line-height:1.6}
+.formula-box .f-eq span{color:rgba(0,163,224,.9)}
+
+/* ── Card ── */
+.card{background:var(--surface-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+.card-head{padding:16px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.card-head h3{font-size:14px;font-weight:800;color:var(--blue-deeper);letter-spacing:-.01em}
+.card-body{padding:20px 22px}
+
+/* ── Controles ── */
+.controls{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
+.field{display:grid;gap:6px}
+.field label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.field input,.field select{border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:9px 12px;font-family:var(--font-num);font-size:14px;font-weight:600;
+  color:var(--text);background:var(--surface-card);outline:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus{border-color:var(--border-focus);box-shadow:0 0 0 3.5px rgba(0,87,160,.11)}
+.field.grow{flex:1;min-width:150px}
+.field.grow input{width:100%}
+.hint{font-size:11.5px;color:var(--faint);line-height:1.45}
+
+/* ── Botones ── */
+.btn{padding:10px 18px;border:none;border-radius:var(--radius);
+  font-family:var(--font-body);font-size:13.5px;font-weight:700;cursor:pointer;
+  background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(0,87,160,.30);transition:all .2s}
+.btn:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,87,160,.38)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:var(--surface-card);color:var(--muted);
+  border:1.5px solid var(--border);box-shadow:none}
+.btn.ghost:hover{border-color:var(--faint);color:var(--text);background:var(--blue-light);transform:none}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap}
+
+/* ── Resumen ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;box-shadow:var(--shadow-sm)}
+.stat .s-label{font-size:10.5px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.stat .s-value{font-family:var(--font-num);font-size:21px;font-weight:700;color:var(--blue-deeper);line-height:1.1}
+.stat.ok .s-value{color:var(--pass)}
+.stat.mid .s-value{color:var(--warn)}
+
+/* ── Tabla ── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead th{background:var(--blue-soft);color:var(--blue-dark);
+  font-family:var(--font-title);font-size:10.5px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.06em;text-align:right;
+  padding:11px 12px;border-bottom:1.5px solid var(--border);white-space:nowrap;
+  cursor:pointer;user-select:none;position:relative}
+thead th:first-child,thead th.left{text-align:left}
+thead th.plain{cursor:default}
+thead th .arrow{opacity:.45;font-size:9px;margin-left:3px}
+tbody td{padding:11px 12px;border-bottom:1px solid var(--border);
+  text-align:right;font-family:var(--font-num);font-size:14px;font-weight:600;white-space:nowrap}
+tbody td.left{text-align:left;font-family:var(--font-body)}
+tbody tr:hover{background:var(--blue-light)}
+tbody tr.sin-precio{opacity:.62}
+.tk{font-family:var(--font-num);font-weight:700;color:var(--blue-deeper);font-size:14.5px}
+td.left small{display:block;font-family:var(--font-body);font-size:11px;
+  font-weight:500;color:var(--faint);letter-spacing:0;margin-top:1px;
+  max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.moneda{font-size:10.5px;color:var(--faint);font-weight:500;margin-left:3px}
+.obj-input{width:104px;text-align:right;border:1.5px solid var(--border);border-radius:8px;
+  padding:6px 9px;font-family:var(--font-num);font-size:13.5px;font-weight:600;
+  color:var(--text);background:var(--surface-card);outline:none;transition:border-color .15s,box-shadow .15s}
+.obj-input:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(0,87,160,.11)}
+.obj-input.vacio{border-color:rgba(194,114,0,.45);background:var(--warn-bg)}
+.up{color:var(--pass)} .down{color:var(--fail)} .nulo{color:var(--faint);font-weight:500}
+.badge{display:inline-block;border-radius:999px;padding:4px 11px;
+  font-family:var(--font-num);font-size:13px;font-weight:700;min-width:74px;text-align:center}
+.badge.verde{background:var(--pass-bg);color:var(--pass)}
+.badge.ambar{background:var(--warn-bg);color:var(--warn)}
+.badge.rojo{background:var(--fail-bg);color:var(--fail)}
+.badge.gris{background:#EEF2F6;color:var(--faint);font-weight:600}
+.spark{display:inline-block;vertical-align:middle}
+.btn-x{border:none;background:transparent;color:var(--faint);cursor:pointer;
+  font-size:16px;line-height:1;padding:4px 7px;border-radius:6px;transition:all .15s}
+.btn-x:hover{background:var(--fail-bg);color:var(--fail)}
+.aviso-fila{font-size:10.5px;color:var(--warn);font-family:var(--font-body);font-weight:600}
+
+/* ── Estado vacío ── */
+.vacio-panel{padding:46px 26px;text-align:center}
+.vacio-panel h3{font-size:17px;color:var(--blue-deeper);margin-bottom:8px}
+.vacio-panel p{font-size:13.5px;color:var(--muted);max-width:560px;margin:0 auto 6px}
+.vacio-panel code{font-family:var(--font-num);font-size:12.5px;background:var(--blue-soft);
+  padding:2px 7px;border-radius:5px;color:var(--blue-dark)}
+
+/* ── Nota metodológica ── */
+.nota{background:var(--blue-light);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 17px;font-size:12.5px;color:var(--muted);line-height:1.6}
+.nota strong{color:var(--blue-deeper)}
+.nota ul{margin:7px 0 0 17px} .nota li{margin-bottom:3px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:var(--blue-deeper);color:#fff;padding:11px 20px;border-radius:999px;
+  font-size:13px;font-weight:600;box-shadow:0 8px 26px rgba(0,40,80,.34);
+  transition:transform .28s ease;z-index:99;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media print{
+  html,body{background:#fff}
+  .topbar,.hero-banner,.btn-row,.controls,.btn-x,.nota{display:none!important}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  table{min-width:0}
+  .obj-input{border:none;background:transparent;padding:0;width:auto}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">CAGR<br>5&nbsp;años</div>
+      <div class="brand-text">
+        <h1>Seguimiento de Acciones</h1>
+        <span>Precio · Objetivo · Rendimiento anual implícito</span>
+      </div>
+    </div>
+    <div class="pill" id="pillCaptura">Sin datos</div>
+  </div>
+
+  <div class="hero-banner">
+    <div class="hero-inner">
+      <div>
+        <h2>¿Qué rendimiento anual te <em>tiene que dar</em> para llegar a tu precio objetivo?</h2>
+        <p>Cada mañana a las 8:30 CDMX se captura el precio de mercado. Tú pones el precio objetivo
+           y la tabla te dice el rendimiento anual compuesto implícito. Ordena por CAGR: arriba queda
+           lo que más paga por unidad de tiempo, no lo que más te gusta.</p>
+      </div>
+      <div class="formula-box">
+        <span class="f-label">Fórmula</span>
+        <div class="f-eq">CAGR = (<span>Objetivo</span> / <span>Precio</span>)<sup>1/n</sup> − 1</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="card">
+    <div class="card-head">
+      <h3>Cartera en seguimiento</h3>
+      <div class="controls">
+        <div class="field">
+          <label for="horizonte">Horizonte</label>
+          <select id="horizonte">
+            <option value="3">3 años</option>
+            <option value="5" selected>5 años</option>
+            <option value="7">7 años</option>
+            <option value="10">10 años</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="umbralVerde">Umbral verde %</label>
+          <input type="number" id="umbralVerde" value="15" min="0" step="0.5" style="width:92px">
+        </div>
+        <div class="field">
+          <label for="umbralAmbar">Umbral ámbar %</label>
+          <input type="number" id="umbralAmbar" value="10" min="0" step="0.5" style="width:92px">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap" id="tablaWrap"></div>
+
+    <div class="card-body" style="border-top:1px solid var(--border)">
+      <div class="controls" style="margin-bottom:16px">
+        <div class="field grow">
+          <label for="nuevoTicker">Agregar ticker (notación Yahoo Finance)</label>
+          <input type="text" id="nuevoTicker" placeholder="p. ej. GOOGL, BRK-B, ASML, WALMEX.MX" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="nuevoObjetivo">Precio objetivo</label>
+          <input type="number" id="nuevoObjetivo" placeholder="opcional" step="0.01" min="0" style="width:130px">
+        </div>
+        <button type="button" class="btn" id="btnAgregar">Agregar</button>
+      </div>
+      <p class="hint">El ticker nuevo aparece en gris hasta la siguiente captura. Para que el robot lo baje
+         cada mañana, exporta el <code>watchlist.json</code> y súbelo al repo.</p>
+    </div>
+  </div>
+
+  <div class="btn-row" style="margin-bottom:18px">
+    <button type="button" class="btn" id="btnImprimir">🖨️ Imprimir / PDF</button>
+    <button type="button" class="btn ghost" id="btnCopiar">📋 Copiar tabla</button>
+    <button type="button" class="btn ghost" id="btnExportar">⬇️ Exportar watchlist.json</button>
+    <button type="button" class="btn ghost" id="btnCSV">⬇️ Exportar tabla CSV</button>
+  </div>
+
+  <div class="nota">
+    <strong>Cómo leer esto.</strong>
+    <ul>
+      <li><strong>CAGR a n años</strong> = rendimiento anual compuesto que necesita la acción para ir del
+          precio de hoy a <em>tu</em> precio objetivo en n años. Es el rendimiento que estás suponiendo, no una predicción.</li>
+      <li>Sólo cuenta la <strong>revalorización del precio</strong>. No incluye dividendos, recompras,
+          impuestos, comisiones ni tipo de cambio. Si la acción paga dividendo, tu rendimiento real es mayor.</li>
+      <li>El precio objetivo lo pones tú. La calidad del CAGR es exactamente la calidad de ese objetivo.</li>
+      <li>Los precios se capturan una vez al día. Esto es una herramienta de seguimiento de tesis a largo plazo,
+          no un tablero de trading.</li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Datos generados por el workflow. Se carga como <script> para que también funcione
+     abriendo el archivo directo desde el disco (file://), donde fetch() está bloqueado. -->
+<script src="data/precios.js" onerror="window.__sinArchivoDatos=true"></script>
+<script>
+(function(){
+  'use strict';
+
+  var LS_OBJ = 'carbo.acciones.objetivos.v1';
+  var LS_CFG = 'carbo.acciones.config.v1';
+  var LS_EXT = 'carbo.acciones.extra.v1';
+
+  var datos = null;
+  var orden = { col: 'cagr', dir: -1 };
+
+  /* ── almacenamiento local (tolerante a modo privado) ── */
+  function leerLS(clave, porDefecto){
+    try { var v = localStorage.getItem(clave); return v ? JSON.parse(v) : porDefecto; }
+    catch(e){ return porDefecto; }
+  }
+  function guardarLS(clave, valor){
+    try { localStorage.setItem(clave, JSON.stringify(valor)); } catch(e){ /* sin persistencia */ }
+  }
+
+  var objetivos = leerLS(LS_OBJ, {});          // { TICKER: numero }  — anula lo del repo
+  var extra     = leerLS(LS_EXT, []);          // tickers agregados aquí, aún sin captura
+  var cfg       = leerLS(LS_CFG, { horizonte:5, verde:15, ambar:10 });
+
+  /* ── formato ── */
+  var fmtNum = function(v, d){
+    if (v === null || v === undefined || !isFinite(v)) return '—';
+    return v.toLocaleString('es-MX', { minimumFractionDigits: d, maximumFractionDigits: d });
+  };
+  var fmtPct = function(v, d){
+    if (v === null || v === undefined || !isFinite(v)) return '—';
+    return (v >= 0 ? '+' : '') + (v * 100).toLocaleString('es-MX',
+      { minimumFractionDigits: d, maximumFractionDigits: d }) + ' %';
+  };
+
+  /* ── cálculo ── */
+  function cagr(precio, objetivo, anios){
+    if (!(precio > 0) || !(objetivo > 0) || !(anios > 0)) return null;
+    return Math.pow(objetivo / precio, 1 / anios) - 1;
+  }
+  function upside(precio, objetivo){
+    if (!(precio > 0) || !(objetivo > 0)) return null;
+    return objetivo / precio - 1;
+  }
+
+  /* ── modelo de filas: repo + overrides locales + tickers extra ── */
+  function filas(){
+    var base = (datos && datos.acciones ? datos.acciones : []).map(function(a){
+      return {
+        ticker: a.ticker,
+        nombre: a.nombre || '',
+        moneda: a.moneda || '',
+        precio: (typeof a.precio === 'number' && isFinite(a.precio)) ? a.precio : null,
+        varDia: (typeof a.varDia === 'number' && isFinite(a.varDia)) ? a.varDia : null,
+        historial: a.historial || [],
+        objetivo: a.objetivo,
+        obsoleto: !!a.obsoleto,
+        error: a.error || null,
+        soloLocal: false
+      };
+    });
+    var vistos = {};
+    base.forEach(function(f){ vistos[f.ticker] = true; });
+
+    extra.forEach(function(t){
+      if (vistos[t]) return;
+      vistos[t] = true;
+      base.push({ ticker:t, nombre:'', moneda:'', precio:null, varDia:null,
+                  historial:[], objetivo:null, obsoleto:false, error:null, soloLocal:true });
+    });
+
+    var anios = Number(cfg.horizonte) || 5;
+    base.forEach(function(f){
+      if (Object.prototype.hasOwnProperty.call(objetivos, f.ticker)) f.objetivo = objetivos[f.ticker];
+      var o = (typeof f.objetivo === 'number' && isFinite(f.objetivo) && f.objetivo > 0) ? f.objetivo : null;
+      f.objetivo = o;
+      f.upside = upside(f.precio, o);
+      f.cagr   = cagr(f.precio, o, anios);
+    });
+    return base;
+  }
+
+  function ordenar(lista){
+    var col = orden.col, dir = orden.dir;
+    return lista.slice().sort(function(a, b){
+      var va = a[col], vb = b[col];
+      if (col === 'ticker') return dir * String(va).localeCompare(String(vb));
+      var na = (va === null || va === undefined || !isFinite(va));
+      var nb = (vb === null || vb === undefined || !isFinite(vb));
+      if (na && nb) return String(a.ticker).localeCompare(String(b.ticker));
+      if (na) return 1;                       // los sin dato siempre al final
+      if (nb) return -1;
+      if (va === vb) return String(a.ticker).localeCompare(String(b.ticker));
+      return dir * (va - vb);
+    });
+  }
+
+  /* ── sparkline ── */
+  function sparkline(hist){
+    if (!hist || hist.length < 2) return '<span class="nulo">—</span>';
+    var pts = hist.slice(-60).map(function(h){ return h.p; }).filter(function(p){ return isFinite(p); });
+    if (pts.length < 2) return '<span class="nulo">—</span>';
+    var min = Math.min.apply(null, pts), max = Math.max.apply(null, pts);
+    var w = 88, h = 26, rango = (max - min) || 1;
+    var d = pts.map(function(p, i){
+      var x = (i / (pts.length - 1)) * (w - 2) + 1;
+      var y = h - 2 - ((p - min) / rango) * (h - 4);
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+    var sube = pts[pts.length - 1] >= pts[0];
+    var color = sube ? '#0A8754' : '#C53030';
+    return '<svg class="spark" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h +
+           '" aria-hidden="true"><polyline points="' + d + '" fill="none" stroke="' + color +
+           '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+  }
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+
+  /* ── render ── */
+  function claseCagr(v){
+    if (v === null) return 'gris';
+    var verde = Number(cfg.verde), ambar = Number(cfg.ambar);
+    if (v * 100 >= verde) return 'verde';
+    if (v * 100 >= ambar) return 'ambar';
+    return 'rojo';
+  }
+
+  function flecha(col){
+    if (orden.col !== col) return '<span class="arrow">↕</span>';
+    return '<span class="arrow">' + (orden.dir === 1 ? '▲' : '▼') + '</span>';
+  }
+
+  function render(){
+    var lista = ordenar(filas());
+    var anios = Number(cfg.horizonte) || 5;
+    var wrap  = document.getElementById('tablaWrap');
+
+    if (!lista.length){
+      wrap.innerHTML =
+        '<div class="vacio-panel"><h3>Todavía no hay datos</h3>' +
+        '<p>Agrega tickers abajo, o corre el workflow <code>Precios de acciones</code> en GitHub Actions ' +
+        'para generar <code>data/precios.js</code>.</p></div>';
+      document.getElementById('stats').innerHTML = '';
+      return;
+    }
+
+    var html =
+      '<table><thead><tr>' +
+        '<th class="left" data-col="ticker">Ticker ' + flecha('ticker') + '</th>' +
+        '<th data-col="precio">Precio ' + flecha('precio') + '</th>' +
+        '<th data-col="varDia">Δ día ' + flecha('varDia') + '</th>' +
+        '<th class="plain">Precio objetivo</th>' +
+        '<th data-col="upside">Upside total ' + flecha('upside') + '</th>' +
+        '<th data-col="cagr">CAGR ' + anios + ' años ' + flecha('cagr') + '</th>' +
+        '<th class="plain">Tendencia</th>' +
+        '<th class="plain"></th>' +
+      '</tr></thead><tbody>';
+
+    lista.forEach(function(f){
+      var sinPrecio = (f.precio === null);
+      html += '<tr class="' + (sinPrecio ? 'sin-precio' : '') + '">' +
+        '<td class="left"><span class="tk">' + esc(f.ticker) + '</span>' +
+          (f.nombre ? '<small>' + esc(f.nombre) + '</small>' : '') +
+          (f.soloLocal ? '<small class="aviso-fila">pendiente de captura</small>' : '') +
+          (f.obsoleto ? '<small class="aviso-fila">precio no actualizado hoy</small>' : '') +
+        '</td>' +
+        '<td>' + (sinPrecio ? '<span class="nulo">—</span>'
+                            : fmtNum(f.precio, 2) + '<span class="moneda">' + esc(f.moneda) + '</span>') + '</td>' +
+        '<td class="' + (f.varDia === null ? 'nulo' : (f.varDia >= 0 ? 'up' : 'down')) + '">' +
+          fmtPct(f.varDia, 2) + '</td>' +
+        '<td><input type="number" class="obj-input' + (f.objetivo === null ? ' vacio' : '') +
+          '" data-ticker="' + esc(f.ticker) + '" step="0.01" min="0" placeholder="objetivo" value="' +
+          (f.objetivo === null ? '' : f.objetivo) + '" aria-label="Precio objetivo de ' + esc(f.ticker) + '"></td>' +
+        '<td class="' + (f.upside === null ? 'nulo' : (f.upside >= 0 ? 'up' : 'down')) + '">' +
+          fmtPct(f.upside, 1) + '</td>' +
+        '<td><span class="badge ' + claseCagr(f.cagr) + '">' + fmtPct(f.cagr, 1) + '</span></td>' +
+        '<td>' + sparkline(f.historial) + '</td>' +
+        '<td><button type="button" class="btn-x" data-borrar="' + esc(f.ticker) +
+            '" title="Quitar de la lista" aria-label="Quitar ' + esc(f.ticker) + '">×</button></td>' +
+      '</tr>';
+    });
+
+    wrap.innerHTML = html + '</tbody></table>';
+
+    /* resumen */
+    var conCagr  = lista.filter(function(f){ return f.cagr !== null; });
+    var superan  = conCagr.filter(function(f){ return f.cagr * 100 >= Number(cfg.verde); });
+    var promedio = conCagr.length
+      ? conCagr.reduce(function(s, f){ return s + f.cagr; }, 0) / conCagr.length : null;
+    var faltan   = lista.length - conCagr.length;
+
+    document.getElementById('stats').innerHTML =
+      stat('Acciones en lista', String(lista.length), '') +
+      stat('Con CAGR calculado', conCagr.length + ' de ' + lista.length,
+           faltan ? '' : 'ok') +
+      stat('Superan el umbral (' + cfg.verde + ' %)', String(superan.length), superan.length ? 'ok' : '') +
+      stat('CAGR promedio', promedio === null ? '—' : fmtPct(promedio, 1),
+           promedio !== null && promedio * 100 >= Number(cfg.verde) ? 'ok' : 'mid');
+
+    enlazarTabla();
+  }
+
+  function stat(label, valor, clase){
+    return '<div class="stat ' + clase + '"><div class="s-label">' + label +
+           '</div><div class="s-value">' + valor + '</div></div>';
+  }
+
+  function enlazarTabla(){
+    var wrap = document.getElementById('tablaWrap');
+
+    wrap.querySelectorAll('thead th[data-col]').forEach(function(th){
+      th.addEventListener('click', function(){
+        var col = th.getAttribute('data-col');
+        if (orden.col === col) orden.dir = -orden.dir;
+        else { orden.col = col; orden.dir = (col === 'ticker') ? 1 : -1; }
+        render();
+      });
+    });
+
+    wrap.querySelectorAll('.obj-input').forEach(function(inp){
+      inp.addEventListener('input', function(){
+        var t = inp.getAttribute('data-ticker');
+        var v = parseFloat(inp.value);
+        if (isFinite(v) && v > 0) objetivos[t] = v; else delete objetivos[t];
+        guardarLS(LS_OBJ, objetivos);
+        actualizarFila(inp, t);
+      });
+      // Reordenar sólo al salir del campo: reordenar mientras escribes mueve la fila bajo el cursor.
+      // Se difiere a la siguiente vuelta del bucle de eventos porque 'change' se dispara
+      // durante el blur, y reemplazar el innerHTML de la tabla ahí revienta el DOM.
+      inp.addEventListener('change', function(){ setTimeout(render, 0); });
+    });
+
+    wrap.querySelectorAll('[data-borrar]').forEach(function(b){
+      b.addEventListener('click', function(){
+        var t = b.getAttribute('data-borrar');
+        if (!confirm('¿Quitar ' + t + ' de la lista?\n\nSe quita de esta vista. Para quitarlo del robot que captura precios, exporta el watchlist.json y súbelo al repo.')) return;
+        delete objetivos[t];
+        extra = extra.filter(function(x){ return x !== t; });
+        if (datos && datos.acciones) datos.acciones = datos.acciones.filter(function(a){ return a.ticker !== t; });
+        guardarLS(LS_OBJ, objetivos);
+        guardarLS(LS_EXT, extra);
+        render();
+      });
+    });
+  }
+
+  /* Recalcula sólo la fila editada, para no perder el foco del input mientras se escribe. */
+  function actualizarFila(inp, ticker){
+    var f = filas().filter(function(x){ return x.ticker === ticker; })[0];
+    if (!f) return;
+    var tr = inp.closest('tr');
+    var tds = tr.children;
+    tds[4].className = (f.upside === null ? 'nulo' : (f.upside >= 0 ? 'up' : 'down'));
+    tds[4].textContent = fmtPct(f.upside, 1);
+    tds[5].innerHTML = '<span class="badge ' + claseCagr(f.cagr) + '">' + fmtPct(f.cagr, 1) + '</span>';
+    inp.classList.toggle('vacio', f.objetivo === null);
+    actualizarStats();
+  }
+
+  function actualizarStats(){
+    var lista    = filas();
+    var conCagr  = lista.filter(function(f){ return f.cagr !== null; });
+    var superan  = conCagr.filter(function(f){ return f.cagr * 100 >= Number(cfg.verde); });
+    var promedio = conCagr.length
+      ? conCagr.reduce(function(s, f){ return s + f.cagr; }, 0) / conCagr.length : null;
+    document.getElementById('stats').innerHTML =
+      stat('Acciones en lista', String(lista.length), '') +
+      stat('Con CAGR calculado', conCagr.length + ' de ' + lista.length, '') +
+      stat('Superan el umbral (' + cfg.verde + ' %)', String(superan.length), superan.length ? 'ok' : '') +
+      stat('CAGR promedio', promedio === null ? '—' : fmtPct(promedio, 1),
+           promedio !== null && promedio * 100 >= Number(cfg.verde) ? 'ok' : 'mid');
+  }
+
+  /* ── acciones de la barra ── */
+  function toast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._id);
+    t._id = setTimeout(function(){ t.classList.remove('show'); }, 2300);
+  }
+
+  function tablaTexto(sep){
+    var anios = Number(cfg.horizonte) || 5;
+    var enc = ['Ticker','Nombre','Precio','Moneda','Var dia %','Objetivo','Upside %','CAGR ' + anios + 'a %'];
+    var out = [enc.join(sep)];
+    ordenar(filas()).forEach(function(f){
+      out.push([
+        f.ticker,
+        '"' + String(f.nombre).replace(/"/g, '""') + '"',
+        f.precio === null ? '' : f.precio,
+        f.moneda,
+        f.varDia === null ? '' : (f.varDia * 100).toFixed(2),
+        f.objetivo === null ? '' : f.objetivo,
+        f.upside === null ? '' : (f.upside * 100).toFixed(2),
+        f.cagr === null ? '' : (f.cagr * 100).toFixed(2)
+      ].join(sep));
+    });
+    return out.join('\n');
+  }
+
+  function descargar(nombre, contenido, mime){
+    var blob = new Blob([contenido], { type: mime + ';charset=utf-8' });
+    var url  = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = nombre;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function watchlistJSON(){
+    var lista = ordenar(filas());
+    return JSON.stringify({
+      _comentario: "Fuente de verdad de la lista. Edita 'objetivo' con TU precio objetivo. Usa la notacion de ticker de Yahoo Finance (BRK-B, no BRK.B).",
+      horizonte_anios: Number(cfg.horizonte) || 5,
+      umbrales_cagr_pct: { verde: Number(cfg.verde), ambar: Number(cfg.ambar) },
+      acciones: lista.map(function(f){
+        return { ticker: f.ticker, objetivo: f.objetivo, notas: '' };
+      })
+    }, null, 2) + '\n';
+  }
+
+  /* ── arranque ── */
+  function iniciar(d){
+    datos = d || { acciones: [] };
+
+    if (datos.horizonte_anios && !leerLS(LS_CFG, null)) cfg.horizonte = datos.horizonte_anios;
+    if (datos.umbrales_cagr_pct && !leerLS(LS_CFG, null)){
+      cfg.verde = datos.umbrales_cagr_pct.verde;
+      cfg.ambar = datos.umbrales_cagr_pct.ambar;
+    }
+
+    document.getElementById('horizonte').value   = String(cfg.horizonte);
+    document.getElementById('umbralVerde').value = cfg.verde;
+    document.getElementById('umbralAmbar').value = cfg.ambar;
+
+    var pill = document.getElementById('pillCaptura');
+    if (datos.fecha){
+      var desactualizados = (datos.acciones || []).filter(function(a){ return a.obsoleto; }).length;
+      pill.textContent = 'Captura: ' + datos.fecha + ' · ' + datos.hora + ' CDMX' +
+                         (desactualizados ? ' · ' + desactualizados + ' sin actualizar' : '');
+      if (desactualizados) pill.classList.add('stale');
+    } else {
+      pill.textContent = 'Sin captura todavía';
+      pill.classList.add('stale');
+    }
+
+    render();
+  }
+
+  document.getElementById('horizonte').addEventListener('change', function(e){
+    cfg.horizonte = Number(e.target.value); guardarLS(LS_CFG, cfg); render();
+  });
+  ['umbralVerde','umbralAmbar'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', function(e){
+      cfg[id === 'umbralVerde' ? 'verde' : 'ambar'] = Number(e.target.value);
+      guardarLS(LS_CFG, cfg); render();
+    });
+  });
+
+  document.getElementById('btnAgregar').addEventListener('click', function(){
+    var inp = document.getElementById('nuevoTicker');
+    var t = inp.value.trim().toUpperCase();
+    if (!t) { toast('Escribe un ticker'); inp.focus(); return; }
+    if (!/^[A-Z0-9.\-^=]{1,15}$/.test(t)) { toast('Ticker no válido'); inp.focus(); return; }
+
+    var yaEsta = filas().some(function(f){ return f.ticker === t; });
+    if (yaEsta) { toast(t + ' ya está en la lista'); inp.value = ''; return; }
+
+    var objInp = document.getElementById('nuevoObjetivo');
+    var o = parseFloat(objInp.value);
+    if (isFinite(o) && o > 0) { objetivos[t] = o; guardarLS(LS_OBJ, objetivos); }
+
+    extra.push(t); guardarLS(LS_EXT, extra);
+    inp.value = ''; objInp.value = '';
+    render();
+    toast(t + ' agregado · exporta el watchlist.json para que el robot lo capture');
+  });
+  document.getElementById('nuevoTicker').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') document.getElementById('btnAgregar').click();
+  });
+
+  document.getElementById('btnImprimir').addEventListener('click', function(){ window.print(); });
+
+  document.getElementById('btnCopiar').addEventListener('click', function(){
+    var txt = tablaTexto('\t');
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt)
+        .then(function(){ toast('Tabla copiada · pégala en Excel o Sheets'); })
+        .catch(function(){ toast('No se pudo copiar'); });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = txt; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); toast('Tabla copiada'); }
+      catch(e){ toast('No se pudo copiar'); }
+      document.body.removeChild(ta);
+    }
+  });
+
+  document.getElementById('btnExportar').addEventListener('click', function(){
+    descargar('watchlist.json', watchlistJSON(), 'application/json');
+    toast('Súbelo a data/watchlist.json en el repo');
+  });
+
+  document.getElementById('btnCSV').addEventListener('click', function(){
+    var f = (datos && datos.fecha) ? datos.fecha : 'hoy';
+    descargar('acciones-' + f + '.csv', '﻿' + tablaTexto(','), 'text/csv');
+  });
+
+  /* window.PRECIOS lo pone data/precios.js. Si no existe (repo recién clonado o
+     ruta distinta), intentamos el JSON por fetch; si tampoco, arrancamos vacío. */
+  if (window.PRECIOS) {
+    iniciar(window.PRECIOS);
+  } else {
+    fetch('data/precios.json')
+      .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(iniciar)
+      .catch(function(){ iniciar(null); });
+  }
+})();
+</script>
+</body>
+</html>

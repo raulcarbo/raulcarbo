@@ -1,0 +1,44 @@
+name: Precios de acciones (8:30 CDMX)
+
+on:
+  schedule:
+    # 14:30 UTC = 8:30 a. m. CDMX (México ya no aplica horario de verano: UTC-6 fijo).
+    # Lunes a viernes. GitHub suele retrasar los cron unos minutos en horas pico.
+    - cron: '30 14 * * 1-5'
+  workflow_dispatch:          # botón "Run workflow" para capturar a mano cuando quieras
+
+permissions:
+  contents: write             # necesario para regresar el commit con los precios
+
+concurrency:
+  group: precios-acciones
+  cancel-in-progress: false
+
+jobs:
+  capturar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Capturar precios y calcular CAGR
+        run: node scripts/actualizar-precios.mjs
+
+      - name: Commit del snapshot
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/precios.json data/precios.js data/historico.csv
+          if git diff --staged --quiet; then
+            echo "Sin cambios en los precios; no se hace commit."
+            exit 0
+          fi
+          git commit -m "data: precios $(TZ=America/Mexico_City date '+%Y-%m-%d %H:%M') CDMX"
+          for i in 1 2 3 4; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            echo "Push falló, reintento $i..."; sleep $((2 ** i))
+          done
+          echo "No se pudo hacer push tras 4 intentos"; exit 1
