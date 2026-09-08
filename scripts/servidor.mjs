@@ -20,6 +20,7 @@
 
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
+import { exec } from 'node:child_process';
 import path from 'node:path';
 import {
   RAIZ, TZ, leerWatchlist, leerPrevio, generarSnapshot, escribirSalidas, guardarWatchlist,
@@ -175,6 +176,17 @@ function escuchar(puerto, intentosRestantes = 10) {
     console.log(`  Abre:  ${url}`);
     console.log('  El botón "Actualizar ahora" baja precios en el momento.');
     console.log('  Ctrl+C para detener.\n');
+    if (!process.argv.includes('--no-abrir')) abrirNavegador(url);
+  });
+}
+
+/** Abre el navegador solo, para que nadie tenga que copiar el URL a mano. */
+function abrirNavegador(url) {
+  const cmd = process.platform === 'darwin' ? `open "${url}"`
+            : process.platform === 'win32'  ? `start "" "${url}"`
+            : `xdg-open "${url}"`;
+  exec(cmd, err => {
+    if (err) console.log(`  (Abre el navegador a mano en ${url})`);
   });
 }
 
