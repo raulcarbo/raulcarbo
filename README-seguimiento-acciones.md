@@ -199,6 +199,32 @@ falla, es cómo funciona la cola gratuita. El snapshot guarda la hora real de ca
 
 ---
 
+## Bloqueo por IP: lo que descubrió la primera corrida real
+
+Yahoo **responde 429 (Too Many Requests) a las IP de datacenter de GitHub Actions**, y Stooq
+devuelve su página de error en vez de CSV. Comprobado en dos corridas del workflow. No es
+throttling por volumen propio: bloquean rangos enteros saturados de scrapers. Reintentar no
+sirve; hay que salir por otra IP.
+
+Consecuencias prácticas:
+
+| Ruta | Sale desde | Estado |
+|---|---|---|
+| Servidor local | Tu conexión de casa/oficina | Debería funcionar: es una IP residencial normal |
+| Botón en Pages | La red de Cloudflare (tu Worker) | **Por confirmar** — depende de si Yahoo bloquea también a Cloudflare |
+| Cron de GitHub Actions | Runners de GitHub | **Bloqueado**. Necesita salir por tu Worker |
+
+Para que el cron funcione, define la variable de repositorio con el URL de tu Worker:
+`Settings → Secrets and variables → Actions → Variables → New repository variable`,
+nombre `PROXY_PRECIOS`, valor `https://precios.TU-USUARIO.workers.dev`.
+
+**Si Yahoo también bloquea a Cloudflare**, el tablero te lo dirá con esas palabras al probar el
+proxy. En ese caso el arreglo es cambiar de fuente a una que filtre por llave y no por IP
+(Finnhub o Twelve Data, ambas con plan gratuito). La llave se guarda **dentro del Worker**, como
+variable de entorno de Cloudflare, así que no queda expuesta en la página pública.
+
+---
+
 ## Cuando algo truena
 
 | Síntoma | Causa | Arreglo |

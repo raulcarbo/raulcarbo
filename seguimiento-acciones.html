@@ -666,7 +666,15 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
     var id = setTimeout(function(){ ctrl.abort(); }, ms || 15000);
     return fetch(url, { signal: ctrl.signal })
       .then(function(r){
-        if (!r.ok) throw new Error('HTTP ' + r.status);
+        if (!r.ok){
+          // El cuerpo distingue "mi proxy está mal" de "Yahoo me está bloqueando".
+          return r.text().catch(function(){ return ''; }).then(function(t){
+            var e = new Error('HTTP ' + r.status +
+              (t ? ' · ' + t.slice(0, 160).replace(/\s+/g, ' ').trim() : ''));
+            e.estado = r.status;
+            throw e;
+          });
+        }
         return r.json();
       })
       .finally(function(){ clearTimeout(id); });
@@ -1020,8 +1028,22 @@ td.left small{display:block;font-family:var(--font-body);font-size:11px;
         est.style.color = 'var(--pass)';
       })
       .catch(function(e){
-        est.textContent = 'No respondió bien (' + e.message + '). Revisa que hayas pegado el ' +
-                          'código completo del Worker y que el URL sea el que te dio Cloudflare.';
+        var msg;
+        if (e.estado === 429){
+          // Tu proxy sirve; quien bloquea es Yahoo, y contra eso el Worker no puede.
+          msg = 'Tu proxy responde, pero Yahoo lo está bloqueando por IP (429). ' +
+                'Cloudflare no te salva de esto: hace falta una fuente que no filtre por IP ' +
+                '(Finnhub o Twelve Data, con llave gratuita guardada dentro del Worker).';
+        } else if (e.estado === 403){
+          msg = 'Tu proxy rechazó el destino (403). Revisa que la lista HOSTS_PERMITIDOS del ' +
+                'Worker no se haya quedado a medias al pegar el código.';
+        } else if (e.estado){
+          msg = 'El proxy respondió ' + e.estado + '. ' + e.message;
+        } else {
+          msg = 'No se pudo alcanzar el proxy (' + e.message + '). Revisa que el URL sea el ' +
+                'que te dio Cloudflare y que le hayas dado Deploy.';
+        }
+        est.textContent = msg;
         est.style.color = 'var(--fail)';
       });
   });
