@@ -32,6 +32,20 @@ const TIMEOUT_MS    = 15000;
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
            '(KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 
+/**
+ * Proxy opcional (el mismo Worker de Cloudflare que usa el tablero).
+ *
+ * Yahoo responde 429 a las IP de datacenter de GitHub Actions: están saturadas
+ * de scrapers y las bloquea por rango, no por volumen propio. Reintentar no
+ * sirve. Salir por otra IP sí. Si defines PROXY_PRECIOS, todas las peticiones
+ * salen por ahí.
+ */
+const PROXY = (process.env.PROXY_PRECIOS || '').trim().replace(/\/+$/, '');
+
+function viaProxy(url) {
+  return PROXY ? `${PROXY}/?url=${encodeURIComponent(url)}` : url;
+}
+
 /* ─────────────────────────── utilidades ─────────────────────────── */
 
 const dormir = ms => new Promise(r => setTimeout(r, ms));
@@ -46,7 +60,13 @@ async function traer(url, { tipo = 'json' } = {}) {
       signal: ctrl.signal,
       headers: { 'User-Agent': UA, 'Accept': tipo === 'json' ? 'application/json' : 'text/csv,*/*' },
     });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (!r.ok) {
+      // El cuerpo del error dice mucho más que el código: bloqueo por IP,
+      // captcha, símbolo inexistente… sin él sólo queda adivinar.
+      const pista = await r.text().catch(() => '');
+      throw new Error(`HTTP ${r.status}` +
+        (pista ? ` · ${pista.slice(0, 140).replace(/\s+/g, ' ').trim()}` : ''));
+    }
     return tipo === 'json' ? await r.json() : await r.text();
   } finally {
     clearTimeout(t);
@@ -90,7 +110,7 @@ export async function desdeYahoo(ticker) {
     const url  = `https://${host}/v8/finance/chart/${encodeURIComponent(ticker)}` +
                  `?interval=1d&range=5d&includePrePost=false`;
     try {
-      const j = await traer(url);
+      const j = await traer(viaProxy(url));
       const meta = j?.chart?.result?.[0]?.meta;
       if (!meta) throw new Error(j?.chart?.error?.description || 'respuesta sin meta');
 
@@ -121,10 +141,21 @@ export async function desdeYahoo(ticker) {
 export async function desdeStooq(ticker) {
   // Stooq usa minúsculas y sufijo de mercado; para tickers de EE. UU. es ".us".
   const simbolo = `${ticker.toLowerCase().replace(/\./g, '-')}.us`;
-  const csv = await traer(
-    `https://stooq.com/q/l/?s=${encodeURIComponent(simbolo)}&f=sd2t2ohlcv&h&e=csv`,
-    { tipo: 'csv' }
-  );
+  const hosts = ['stooq.com', 'stooq.pl'];   // el .com bloquea algunas IP; el .pl sirve el mismo dato
+
+  let csv, ultimoError;
+  for (const host of hosts) {
+    try {
+      csv = await traer(
+        viaProxy(`https://${host}/q/l/?s=${encodeURIComponent(simbolo)}&f=sd2t2ohlcv&h&e=csv`),
+        { tipo: 'csv' }
+      );
+      break;
+    } catch (e) {
+      ultimoError = new Error(`${host}: ${e.message}`);
+    }
+  }
+  if (csv === undefined) throw ultimoError;
 
   const filas = csv.trim().split('\n');
   if (filas.length < 2) throw new Error('Stooq: CSV vacío');
@@ -153,9 +184,14 @@ export async function cotizar(ticker) {
       r.aviso = `Yahoo falló (${eY.message}); se usó Stooq.`;
       return r;
     } catch (eS) {
-      throw new Error(`${eY.message} | ${eS.message}`);
+      throw new Error(`${eY.message} || Stooq: ${eS.message}`);
     }
   }
+}
+
+/** Para los logs: deja claro si se está saliendo por proxy o directo. */
+export function describirSalida() {
+  return PROXY ? `proxy ${PROXY}` : 'directo (sin PROXY_PRECIOS)';
 }
 
 /* ─────────────────────────── lectura / escritura ─────────────────────────── */

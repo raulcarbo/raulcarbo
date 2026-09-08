@@ -27,6 +27,12 @@ jobs:
           node-version: '20'
 
       - name: Capturar precios y calcular CAGR
+        # Yahoo responde 429 a las IP de datacenter de GitHub Actions. Define la
+        # variable de repositorio PROXY_PRECIOS con el URL de tu Worker de
+        # Cloudflare para salir por otra IP:
+        #   Settings → Secrets and variables → Actions → Variables → New repository variable
+        env:
+          PROXY_PRECIOS: ${{ vars.PROXY_PRECIOS }}
         run: node scripts/actualizar-precios.mjs
 
       - name: Commit del snapshot
