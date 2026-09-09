@@ -14,6 +14,37 @@ histórico crezca solo aunque no abras nada. El botón no depende de ella.
 
 ---
 
+## Antes de montar nada: la hoja de Google hace casi todo esto
+
+`GOOGLEFINANCE()` es una función nativa de Google Sheets. Google trae el precio del lado de sus
+servidores, así que **esquiva todos los problemas que este repo tuvo que resolver**: sin CORS,
+sin bloqueo por IP, sin llave de API, sin Worker, sin cron, sin servidor.
+
+Cuatro fórmulas y ya:
+
+```
+A4: NASDAQ:MU
+B4: =IFERROR(GOOGLEFINANCE($A4,"name"),"")
+C4: =IFERROR(GOOGLEFINANCE($A4,"price"),"")
+D4: 300                                          ← tu precio objetivo
+E4: =IF(OR($D4="",$C4=""),"",$D4/$C4-1)          ← upside total
+F4: =IF(OR($D4="",$C4=""),"",($D4/$C4)^(1/$B$1)-1)   ← CAGR, con el horizonte en B1
+G4: =IF($F4="","",IF($F4>=0.15,"🟢",IF($F4>=0.10,"🟡","🔴")))
+```
+
+Ordenar por CAGR, formato condicional para el semáforo, `SPARKLINE()` para la tendencia,
+imprimir a PDF, abrirlo en el celular: todo eso ya viene en Sheets.
+
+**Limitaciones reales:** hasta 20 minutos de retraso (irrelevante para una tesis a 5 años), sin
+dividendos, y `#N/A` ocasionales que se arreglan solos. Cubre bolsas de EE. UU., BMV y varias
+europeas.
+
+**Entonces, ¿para qué sirve este repo?** Para lo que la hoja no hace: un histórico versionado en
+git con una fila por captura, un tablero publicable con URL propia, y captura programada sin
+abrir nada. Si no necesitas eso, **usa la hoja y no montes esto**. Mejor es mejor que nuevo.
+
+---
+
 ## Publicarlo en GitHub Pages (la ruta elegida)
 
 El tablero queda en un URL que abres desde cualquier lado, incluido el celular, sin instalar nada.
